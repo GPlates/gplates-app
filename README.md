@@ -6,9 +6,6 @@
 
 The following steps worked on my Macbook Pro.
 
-- `git clone https://github.com/michaelchin/gplates-edu-app.git test`
-- `cd test`
-- `conda deactivate`
 - `nvm use 16`
 - `npm install`
 - `source ./set-env.sh`
