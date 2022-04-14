@@ -1,0 +1,7 @@
+{
+  "name": "GPlates In Schools",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
