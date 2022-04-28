@@ -1,4 +1,14 @@
-# GPlates Education Ionic App
+# GPlates App
+
+ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.org.au/), comprising a GPlates app with integrated lesson plans, to provide an Earth Science-focused education engagement initiative.
+
+## How to contribute code
+
+- Open an issue
+- Create a new branch for the issue
+- Work on the new branch
+- Create a pull request for code review and merge
+- Remove the branch
 
 ## Run the app in the simulators
 
@@ -17,10 +27,18 @@ The following steps worked on my Macbook Pro.
 - `npm install -g serve`
 - `serve -s build`
 
+Or
+
+- `npm start`
+
 ## Deploy on Android device
 
 - `npx cap open android`
 - choose your device and click the "run" button in Android Studio
+
+Or 
+
+- Run `ionic capacitor run android` and select your device
 
 ## Deploy on ios device
 
@@ -44,7 +62,7 @@ The following steps worked on my Macbook Pro.
 
 `convert output.png -resize 1000x1000 -background Black -gravity center -extent 2000x2000 out.png`
 
-Use xcode to change icon and splash image.
+Use [cordova-res](https://www.npmjs.com/package/cordova-res) to generate icon and splash images.
 
 ## Framework candidates
 
