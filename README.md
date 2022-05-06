@@ -43,8 +43,14 @@ Or
 ## Deploy on ios device
 
 - `ionic capacitor copy ios`
+- Open XCode with `npx cap open ios`
 - Add an account with your Apple ID and choose the team under "signing&capabilities" in XCode
-- `ionic capacitor run ios -l --external`
+<img width="800" alt="add account" src="https://user-images.githubusercontent.com/2688316/167048512-49d68826-ff34-4b48-8a89-45f6ae194f04.png">
+<img width="800" alt="select team" src="https://user-images.githubusercontent.com/2688316/167048695-05d4bc9c-eb0f-4c6a-a109-b0f02c43a281.png">
+If you get a profile error, select the device can fix the error.
+<img width="800" alt="select device" src="https://user-images.githubusercontent.com/2688316/167048749-1cda74f4-4551-4a70-b431-f515d3ec4bf8.png">
+
+- Run the app in XCode or run this command `ionic capacitor run ios -l --external`
 - On your ios device, go to "Settings > General > Device Management" to trust the developer
 
 ## Some random notes
