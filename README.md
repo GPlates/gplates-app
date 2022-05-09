@@ -1,6 +1,6 @@
 # GPlates App
 
- The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.org.au/), comprising a GPlates app with integrated lesson plans, to provide an Earth Science-focused education engagement initiative.
+The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.org.au/), comprising a GPlates app with integrated lesson plans, to provide an Earth Science-focused education engagement initiative.
 
 ## How to contribute code
 
@@ -24,19 +24,19 @@ The following steps worked on my Macbook Pro.
 
 ## Serve as a web page
 
+- `ionic serve`
+
+or
+
 - `npm install -g serve`
 - `serve -s build`
-
-Or
-
-- `npm start`
 
 ## Deploy on Android device
 
 - `npx cap open android`
 - choose your device and click the "run" button in Android Studio
 
-Or 
+Or
 
 - Run `ionic capacitor run android` and select your device
 
@@ -45,24 +45,24 @@ Or
 - `ionic capacitor copy ios`
 - Open XCode with `npx cap open ios`
 - Add an account with your Apple ID and choose the team under "signing&capabilities" in XCode
-<img width="800" alt="add account" src="https://user-images.githubusercontent.com/2688316/167048512-49d68826-ff34-4b48-8a89-45f6ae194f04.png">
-<img width="800" alt="select team" src="https://user-images.githubusercontent.com/2688316/167048695-05d4bc9c-eb0f-4c6a-a109-b0f02c43a281.png">
-If you get a profile error, select the device can fix the error.
-<img width="800" alt="select device" src="https://user-images.githubusercontent.com/2688316/167048749-1cda74f4-4551-4a70-b431-f515d3ec4bf8.png">
+  <img width="800" alt="add account" src="https://user-images.githubusercontent.com/2688316/167048512-49d68826-ff34-4b48-8a89-45f6ae194f04.png">
+  <img width="800" alt="select team" src="https://user-images.githubusercontent.com/2688316/167048695-05d4bc9c-eb0f-4c6a-a109-b0f02c43a281.png">
+  If you get a profile error, select the device can fix the error.
+  <img width="800" alt="select device" src="https://user-images.githubusercontent.com/2688316/167048749-1cda74f4-4551-4a70-b431-f515d3ec4bf8.png">
 
 - Run the app in XCode or run this command `ionic capacitor run ios -l --external`
 - On your ios device, go to "Settings > General > Device Management" to trust the developer
 
 ## Some random notes
 
-* nvm use 16
-* source ./set-env.sh
-* ionic capacitor add android
-* ionic capacitor run android
-* ionic capacitor run ios
-* npx cap open android
-* npx cap serve
-* npx cap open ios
+- nvm use 16
+- source ./set-env.sh
+- ionic capacitor add android
+- ionic capacitor run android
+- ionic capacitor run ios
+- npx cap open android
+- npx cap serve
+- npx cap open ios
 
 #### use chrome inspect to debug android chrome://inspect/#devices
 
@@ -76,23 +76,22 @@ Use [cordova-res](https://www.npmjs.com/package/cordova-res) to generate icon an
 
 https://cordova.apache.org
 
-* WebView-based
-* time-saving, easier to maintain and cost-effective
+- WebView-based
+- time-saving, easier to maintain and cost-effective
 
 #### Ionic
 
 https://ionicframework.com
 
-* based on Cordova and support moden frameworks, such as React, Angular, Vue.
+- based on Cordova and support moden frameworks, such as React, Angular, Vue.
 
 #### React Native
 
 https://reactnative.dev
 
-* not web-based
-* learning curve???
-* work with cesiumjs??? https://github.com/CesiumGS/cesium/issues/7629#issuecomment-531862873
-
+- not web-based
+- learning curve???
+- work with cesiumjs??? https://github.com/CesiumGS/cesium/issues/7629#issuecomment-531862873
 
 ## 3D globe candidates
 
@@ -100,14 +99,13 @@ https://reactnative.dev
 
 https://cesium.com/platform/cesiumjs/
 
-* We already have experience with it. Easy to find support.
+- We already have experience with it. Easy to find support.
 
 #### globe.gl
 
 https://globe.gl
 
-* small, unfamiliar, hard to find help
-
+- small, unfamiliar, hard to find help
 
 #### Use the following command to extent/resize image
 
@@ -117,7 +115,7 @@ resize the gplates-logo-3152x2732.png to 1000x1000 and put the resized image at 
 
 `convert gplates-logo-3152x2732.png -resize 1024x1024 -background 'rgba(0,0,0,0)' -gravity center -extent 1024x1024 icon.png`
 
-`convert gplates-logo-3152x2732.png -resize 200 -background 'rgba(0,0,0,0)' -gravity center -extent 432x432 icon-background.png` 
+`convert gplates-logo-3152x2732.png -resize 200 -background 'rgba(0,0,0,0)' -gravity center -extent 432x432 icon-background.png`
 
 `cordova-res ios --skip-config --copy`
 
@@ -134,5 +132,3 @@ https://github.com/michaelchin/docker-geoserver
 http://localhost:8600/geoserver/web/
 
 `docker-compose -f docker-compose-build.yml up -d --build`
-
-

@@ -1,0 +1,15 @@
+.scene-mode-icon {
+  &.button {
+    height: 36px;
+    width: 20px;
+  }
+  height: 32px;
+  width: 32px;
+}
+
+.scene-mode-icon {
+  &:not(.button) {
+    margin: 0 16px;
+  }
+  fill: white;
+}
