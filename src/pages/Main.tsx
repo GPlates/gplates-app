@@ -1,4 +1,34 @@
-import { IonContent, IonPage, useIonViewDidEnter } from '@ionic/react'
+import {
+  IonButton,
+  IonContent,
+  IonPage,
+  IonRippleEffect,
+  useIonViewDidEnter,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonFabList
+
+} from '@ionic/react'
+
+import {
+  logoFacebook,
+  logoTwitter,
+  logoYoutube,
+  logoPwa,
+  logoNpm,
+  logoIonic,
+  logoGithub,
+  logoJavascript,
+  logoAngular,
+  logoVimeo,
+  logoChrome,
+  logoReact,
+  cogOutline,
+  earthOutline,
+  exitOutline
+} from 'ionicons/icons';
+
 import './Main.css'
 
 import {
@@ -123,7 +153,35 @@ const Main: React.FC = () => {
         {/*<CustomToolbar scene={scene} />*/}
         <div id="cesiumContainer" />
         <div id="credit" style={{display: 'none'}} />
+        <IonFab vertical="bottom" horizontal="start">
+          <IonFabButton>Menu</IonFabButton>
+          <IonFabList side="end">
+            <IonFabButton>
+              <IonIcon icon={cogOutline}></IonIcon>
+            </IonFabButton>
+            <IonFabButton>
+              <IonIcon icon={earthOutline} />
+            </IonFabButton>
+            <IonFabButton>
+              <IonIcon icon={exitOutline} />
+            </IonFabButton>
+            <IonFabButton>
+              <IonIcon class="vectorMap"/>
+            </IonFabButton>
+          </IonFabList>
+        </IonFab>
       </IonContent>
+      {/*<div style={{*/}
+      {/*  position: "absolute", display: "flex", flexDirection: "column", margin: '0 50px 0 50px',*/}
+      {/*  justifyContent: 'center', height: "200px", width:'100px'*/}
+      {/*}}>*/}
+      {/*  <IonButton*/}
+      {/*    color="primary" className="ion-activatable ripple-parent"*/}
+      {/*  >*/}
+      {/*    Play*/}
+      {/*    <IonRippleEffect type="unbounded"></IonRippleEffect>*/}
+      {/*  </IonButton>*/}
+      {/*</div>*/}
     </IonPage>
   )
 }
