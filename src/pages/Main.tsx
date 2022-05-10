@@ -90,14 +90,12 @@ const Main: React.FC = () => {
 
     if (document.getElementsByClassName('cesium-viewer').length === 0) {
       viewer = new Viewer('cesiumContainer', {
+        baseLayerPicker: false,
         imageryProvider: gplates_wmts,
       })
       setScene(viewer.scene)
-      if (scene) {
-        scene.skyAtmosphere.show = false
-        scene.fog.enabled = false
-        scene.globe.showGroundAtmosphere = false
-      }
+      viewer.scene.fog.enabled = false
+      viewer.scene.globe.showGroundAtmosphere = false
 
       const gplates_coastlines = new WebMapTileServiceImageryProvider({
         url: 'http://www.earthbyte.org:8600/geoserver/gwc/service/wmts',
