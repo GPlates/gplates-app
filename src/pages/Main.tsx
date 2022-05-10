@@ -171,17 +171,6 @@ const Main: React.FC = () => {
           </IonFabList>
         </IonFab>
       </IonContent>
-      {/*<div style={{*/}
-      {/*  position: "absolute", display: "flex", flexDirection: "column", margin: '0 50px 0 50px',*/}
-      {/*  justifyContent: 'center', height: "200px", width:'100px'*/}
-      {/*}}>*/}
-      {/*  <IonButton*/}
-      {/*    color="primary" className="ion-activatable ripple-parent"*/}
-      {/*  >*/}
-      {/*    Play*/}
-      {/*    <IonRippleEffect type="unbounded"></IonRippleEffect>*/}
-      {/*  </IonButton>*/}
-      {/*</div>*/}
     </IonPage>
   )
 }
