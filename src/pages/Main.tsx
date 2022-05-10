@@ -92,6 +92,10 @@ const Main: React.FC = () => {
       viewer = new Viewer('cesiumContainer', {
         baseLayerPicker: false,
         imageryProvider: gplates_wmts,
+        animation: false,
+        creditContainer: "credit",
+        timeline: false,
+        fullscreenButton: false
       })
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
@@ -118,6 +122,7 @@ const Main: React.FC = () => {
       <IonContent fullscreen>
         {/*<CustomToolbar scene={scene} />*/}
         <div id="cesiumContainer" />
+        <div id="credit" style={{display: 'none'}} />
       </IonContent>
     </IonPage>
   )
