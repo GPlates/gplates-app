@@ -1,4 +1,34 @@
-import { IonContent, IonPage, useIonViewDidEnter } from '@ionic/react'
+import {
+  IonButton,
+  IonContent,
+  IonPage,
+  IonRippleEffect,
+  useIonViewDidEnter,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonFabList
+
+} from '@ionic/react'
+
+import {
+  logoFacebook,
+  logoTwitter,
+  logoYoutube,
+  logoPwa,
+  logoNpm,
+  logoIonic,
+  logoGithub,
+  logoJavascript,
+  logoAngular,
+  logoVimeo,
+  logoChrome,
+  logoReact,
+  cogOutline,
+  earthOutline,
+  exitOutline
+} from 'ionicons/icons';
+
 import './Main.css'
 
 import {
@@ -92,6 +122,10 @@ const Main: React.FC = () => {
       viewer = new Viewer('cesiumContainer', {
         baseLayerPicker: false,
         imageryProvider: gplates_wmts,
+        animation: false,
+        creditContainer: "credit",
+        timeline: false,
+        fullscreenButton: false
       })
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
@@ -118,6 +152,24 @@ const Main: React.FC = () => {
       <IonContent fullscreen>
         {/*<CustomToolbar scene={scene} />*/}
         <div id="cesiumContainer" />
+        <div id="credit" style={{display: 'none'}} />
+        <IonFab vertical="bottom" horizontal="start">
+          <IonFabButton>Menu</IonFabButton>
+          <IonFabList side="end">
+            <IonFabButton>
+              <IonIcon icon={cogOutline}></IonIcon>
+            </IonFabButton>
+            <IonFabButton>
+              <IonIcon icon={earthOutline} />
+            </IonFabButton>
+            <IonFabButton>
+              <IonIcon icon={exitOutline} />
+            </IonFabButton>
+            <IonFabButton>
+              <IonIcon class="vectorMap"/>
+            </IonFabButton>
+          </IonFabList>
+        </IonFab>
       </IonContent>
     </IonPage>
   )

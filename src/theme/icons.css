@@ -1,0 +1,5 @@
+/* COMMON COLOR #bfbfbf*/
+/* ion-icon cannot access the asset out of src directory*/
+.vectorMap {
+    content: url("../assets/icons/vector_map.svg");
+}
