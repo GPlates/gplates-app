@@ -24,7 +24,7 @@ The following steps worked on my Macbook Pro.
 
 ## Serve as a web page
 
-- `ionic serve`
+- `npm start`/`ionic serve`
 
 or
 
