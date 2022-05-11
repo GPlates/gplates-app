@@ -3,3 +3,7 @@
 .vectorMap {
     content: url("../assets/icons/vector_map.svg");
 }
+
+.questionIcon {
+    content: url("../assets/icons/question_icon.svg");
+}
