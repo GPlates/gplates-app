@@ -168,6 +168,12 @@ const Main: React.FC = () => {
             <IonFabButton>
               <IonIcon class="vectorMap"/>
             </IonFabButton>
+            <IonFabButton>
+              <IonIcon class="questionIcon"/>
+            </IonFabButton>
+            <IonFabButton>
+              <IonIcon class="questionIcon"/>
+            </IonFabButton>
           </IonFabList>
         </IonFab>
       </IonContent>
