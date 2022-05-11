@@ -130,7 +130,7 @@ const Main: React.FC = () => {
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
       viewer.scene.globe.showGroundAtmosphere = false
-      //viewer.scene.skyAtmosphere.show = false 
+      viewer.scene.skyAtmosphere.show = false 
 
       const gplates_coastlines = new WebMapTileServiceImageryProvider({
         url: 'http://www.earthbyte.org:8600/geoserver/gwc/service/wmts',
