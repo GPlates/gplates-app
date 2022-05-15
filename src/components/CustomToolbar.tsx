@@ -59,7 +59,7 @@ const CustomToolbar = (props: any) => {
   }
 
   return (
-    <div>
+    <div className="custom-toolbar">
       <IonButton
         onClick={() => {
           props.scene.camera.flyHome()
