@@ -1,0 +1,58 @@
+.container {
+  ion-item {
+    &::part(native) {
+      height: 100%;
+    }
+    flex-grow: 1;
+  }
+  display: flex;
+  flex-wrap: wrap;
+  transition: all 150ms;
+}
+
+.show-button {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+}
+
+.seek-buttons {
+  > div {
+    margin-left: auto;
+  }
+  ion-button {
+    &::part(native) {
+      padding: 0;
+    }
+    height: 40px;
+    width: 40px;
+  }
+  --padding-start: 4px;
+  --inner-padding-end: 4px;
+}
+
+.container .slider {
+  ion-button {
+    &::part(native) {
+      padding: 0;
+    }
+    height: 40px;
+    width: 40px;
+  }
+  --padding-start: 8px;
+  --inner-padding-end: 8px;
+  flex-grow: 100;
+  width: min(100vw, 400px);
+}
+
+.time-input {
+  ion-input {
+    :not(.sc-ion-input-ios) {
+      margin-right: 8px;
+    }
+    text-align: right;
+    min-height: 48px;
+    width: 80px;
+  }
+  --inner-padding-end: 8px;
+}

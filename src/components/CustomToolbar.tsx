@@ -61,13 +61,14 @@ const CustomToolbar = (props: any) => {
   return (
     <div className="custom-toolbar">
       <IonButton
+        className="round-button"
         onClick={() => {
           props.scene.camera.flyHome()
         }}
       >
         <IonIcon icon={homeOutline} />
       </IonButton>
-      <IonButton id="scene-mode-button">
+      <IonButton className="round-button" id="scene-mode-button">
         <svg className="button scene-mode-icon" viewBox="0 0 64 64">
           <path d={mode.path} />
         </svg>
@@ -93,7 +94,7 @@ const CustomToolbar = (props: any) => {
           </IonContent>
         </IonPopover>
       </IonButton>
-      <IonButton id="help-button">
+      <IonButton className="round-button" id="help-button">
         <IonIcon icon={helpOutline} />
         <IonPopover trigger="help-button">
           <IonContent>

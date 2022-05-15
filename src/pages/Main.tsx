@@ -26,6 +26,7 @@ import {
 import CustomToolbar from '../components/CustomToolbar'
 import { useState } from 'react'
 import { SettingMenuPage } from './SettingMenuPage'
+import AgeSlider from '../components/AgeSlider'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -57,6 +58,7 @@ const test_animation = () => {
 // }
 
 const Main: React.FC = () => {
+  const [isAgeSliderShown, setIsAgeSliderShown] = useState(false)
   const [scene, setScene] = useState<Scene>()
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
 
@@ -157,43 +159,55 @@ const Main: React.FC = () => {
         <div className="buttons-top-right">
           <CustomToolbar scene={scene} />
         </div>
-        <IonFab vertical="bottom" horizontal="start">
-          <IonFabButton>Menu</IonFabButton>
-          <IonFabList side="end">
-            <IonFabButton
-              onClick={() => {
-                setIsSettingMenuPageShow(true)
-              }}
-            >
-              <IonIcon icon={cogOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={earthOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={exitOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon class="vectorMap" />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon class="questionIcon" />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon class="questionIcon" />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon class="questionIcon" />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon class="questionIcon" />
-            </IonFabButton>
-          </IonFabList>
-        </IonFab>
-        <div>
-          <SettingMenuPage
-            isShow={isSettingMenuPageShow}
-            closeModal={closeSettingMenuPage}
+        <div className="toolbar-bottom">
+          <div
+            className={
+              isAgeSliderShown ? 'fab-container' : 'fab-container hidden'
+            }
+          >
+            <IonFab>
+              <IonFabButton>Menu</IonFabButton>
+              <IonFabList side="end">
+                <IonFabButton
+                  onClick={() => {
+                    setIsSettingMenuPageShow(true)
+                  }}
+                >
+                  <IonIcon icon={cogOutline} />
+                </IonFabButton>
+                <IonFabButton>
+                  <IonIcon icon={earthOutline} />
+                </IonFabButton>
+                <IonFabButton>
+                  <IonIcon icon={exitOutline} />
+                </IonFabButton>
+                <IonFabButton>
+                  <IonIcon class="vectorMap" />
+                </IonFabButton>
+                <IonFabButton>
+                  <IonIcon class="questionIcon" />
+                </IonFabButton>
+                <IonFabButton>
+                  <IonIcon class="questionIcon" />
+                </IonFabButton>
+                <IonFabButton>
+                  <IonIcon class="questionIcon" />
+                </IonFabButton>
+                <IonFabButton>
+                  <IonIcon class="questionIcon" />
+                </IonFabButton>
+              </IonFabList>
+            </IonFab>
+            <div>
+              <SettingMenuPage
+                isShow={isSettingMenuPageShow}
+                closeModal={closeSettingMenuPage}
+              />
+            </div>
+          </div>
+          <AgeSlider
+            isShown={isAgeSliderShown}
+            setIsShown={setIsAgeSliderShown}
           />
         </div>
       </IonContent>
