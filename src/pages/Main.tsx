@@ -1,44 +1,27 @@
 import {
-  IonButton,
   IonContent,
-  IonPage,
-  IonRippleEffect,
-  useIonViewDidEnter,
   IonFab,
   IonFabButton,
+  IonFabList,
   IonIcon,
-  IonFabList
-
+  IonPage,
+  useIonViewDidEnter,
 } from '@ionic/react'
 
-import {
-  logoFacebook,
-  logoTwitter,
-  logoYoutube,
-  logoPwa,
-  logoNpm,
-  logoIonic,
-  logoGithub,
-  logoJavascript,
-  logoAngular,
-  logoVimeo,
-  logoChrome,
-  logoReact,
-  cogOutline,
-  earthOutline,
-  exitOutline
-} from 'ionicons/icons'
+import { cogOutline, earthOutline, exitOutline } from 'ionicons/icons'
 
-import './Main.css'
+import './Main.scss'
 
 import {
-  Ion,
-  Viewer,
+  Camera,
   Credit,
-  WebMapTileServiceImageryProvider,
-  SingleTileImageryProvider,
   GeographicTilingScheme,
-  Scene
+  Ion,
+  Rectangle,
+  Scene,
+  SingleTileImageryProvider,
+  Viewer,
+  WebMapTileServiceImageryProvider,
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
 import { useState } from 'react'
@@ -60,7 +43,7 @@ const test_animation = () => {
     new SingleTileImageryProvider({
       url: `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
         count % 15
-      }.jpeg`
+      }.jpeg`,
     })
   )
   console.log(viewer.imageryLayers.length)
@@ -78,6 +61,14 @@ const Main: React.FC = () => {
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
 
   useIonViewDidEnter(() => {
+    // Rough bounding box of Australia
+    Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(
+      112.8,
+      -43.7,
+      153.7,
+      -10.4
+    )
+
     var gridsetName = 'EPSG:4326'
     var gridNames = [
       'EPSG:4326:0',
@@ -101,7 +92,7 @@ const Main: React.FC = () => {
       'EPSG:4326:18',
       'EPSG:4326:19',
       'EPSG:4326:20',
-      'EPSG:4326:21'
+      'EPSG:4326:21',
     ]
     const style = ''
     const format = 'image/jpeg'
@@ -117,7 +108,7 @@ const Main: React.FC = () => {
       //minimumLevel: 1,
       maximumLevel: 8,
       tilingScheme: new GeographicTilingScheme(),
-      credit: new Credit('EarthByte Geology')
+      credit: new Credit('EarthByte Geology'),
     })
 
     if (document.getElementsByClassName('cesium-viewer').length === 0) {
@@ -127,12 +118,16 @@ const Main: React.FC = () => {
         animation: false,
         creditContainer: 'credit',
         timeline: false,
-        fullscreenButton: false
+        fullscreenButton: false,
+        geocoder: false,
+        homeButton: false,
+        navigationHelpButton: false,
+        sceneModePicker: false,
       })
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
       viewer.scene.globe.showGroundAtmosphere = false
-      viewer.scene.skyAtmosphere.show = false 
+      viewer.scene.skyAtmosphere.show = false
 
       const gplates_coastlines = new WebMapTileServiceImageryProvider({
         url: 'http://www.earthbyte.org:8600/geoserver/gwc/service/wmts',
@@ -144,7 +139,7 @@ const Main: React.FC = () => {
         //minimumLevel: 1,
         maximumLevel: 8,
         tilingScheme: new GeographicTilingScheme(),
-        credit: new Credit('EarthByte Coastlines')
+        credit: new Credit('EarthByte Coastlines'),
       })
       viewer.imageryLayers.addImageryProvider(gplates_coastlines)
     }
@@ -157,15 +152,19 @@ const Main: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        {/*<CustomToolbar scene={scene} />*/}
-        <div id='cesiumContainer' />
-        <div id='credit' style={{ display: 'none' }} />
-        <IonFab vertical='bottom' horizontal='start'>
+        <div id="cesiumContainer" />
+        <div id="credit" style={{ display: 'none' }} />
+        <div className="buttons-top-right">
+          <CustomToolbar scene={scene} />
+        </div>
+        <IonFab vertical="bottom" horizontal="start">
           <IonFabButton>Menu</IonFabButton>
-          <IonFabList side='end'>
-            <IonFabButton onClick={() => {
-              setIsSettingMenuPageShow(true)
-            }}>
+          <IonFabList side="end">
+            <IonFabButton
+              onClick={() => {
+                setIsSettingMenuPageShow(true)
+              }}
+            >
               <IonIcon icon={cogOutline} />
             </IonFabButton>
             <IonFabButton>
@@ -175,24 +174,27 @@ const Main: React.FC = () => {
               <IonIcon icon={exitOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='vectorMap' />
+              <IonIcon class="vectorMap" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='questionIcon' />
+              <IonIcon class="questionIcon" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='questionIcon' />
+              <IonIcon class="questionIcon" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="questionIcon"/>
+              <IonIcon class="questionIcon" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="questionIcon"/>
+              <IonIcon class="questionIcon" />
             </IonFabButton>
           </IonFabList>
         </IonFab>
         <div>
-          <SettingMenuPage isShow={isSettingMenuPageShow} closeModal={closeSettingMenuPage} />
+          <SettingMenuPage
+            isShow={isSettingMenuPageShow}
+            closeModal={closeSettingMenuPage}
+          />
         </div>
       </IonContent>
     </IonPage>
