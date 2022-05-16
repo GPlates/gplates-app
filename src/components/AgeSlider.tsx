@@ -49,17 +49,26 @@ const AgeSlider = (props: any) => {
           <IonRange />
         </IonItem>
       </div>
-      <div className={hidden ? 'buttons hidden' : 'buttons'}>
-        {props.buttons}
-        <IonButton
-          className="round-button show-button"
-          onClick={() => {
-            setHidden(!hidden)
-          }}
-          size="default"
-        >
-          <IonIcon icon={hidden ? timeOutline : chevronUpCircleOutline} />
-        </IonButton>
+      <div
+        className={
+          hidden
+            ? 'bottom buttons container hidden'
+            : 'bottom buttons container'
+        }
+      >
+        <div className="time">{props.age} Ma</div>
+        <div>
+          {props.buttons}
+          <IonButton
+            className="round-button show-button"
+            onClick={() => {
+              setHidden(!hidden)
+            }}
+            size="default"
+          >
+            <IonIcon icon={hidden ? timeOutline : chevronUpCircleOutline} />
+          </IonButton>
+        </div>
       </div>
     </div>
   )

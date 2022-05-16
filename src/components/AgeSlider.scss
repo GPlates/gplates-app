@@ -18,6 +18,10 @@ $transition: all 150ms;
   }
 }
 
+.buttons {
+  margin: 8px;
+}
+
 .container {
   ion-item {
     &::part(native) {
@@ -27,12 +31,7 @@ $transition: all 150ms;
   }
   display: flex;
   flex-wrap: wrap;
-  transition: $transition;
-}
-
-.buttons {
-  float: right;
-  margin: 4px;
+  justify-content: space-between;
   transition: $transition;
 }
 
@@ -63,6 +62,14 @@ $transition: all 150ms;
   --inner-padding-end: 8px;
   flex-grow: 100;
   width: min(100vw, 400px);
+}
+
+.time {
+  align-items: center;
+  display: flex;
+  font-size: 20px;
+  padding: 8px;
+  text-shadow: 1px 1px 8px #000000, 1px 1px 8px #000000, 1px 1px 8px #000000;
 }
 
 .time-input {
