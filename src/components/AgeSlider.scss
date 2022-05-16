@@ -1,3 +1,23 @@
+$transition: all 150ms;
+
+@media screen and (max-width: 352px) {
+  .hidden {
+    transform: translateY(-154px);
+  }
+}
+
+@media screen and (min-width: 352px) and (max-width: 752px) {
+  .hidden {
+    transform: translateY(-106px);
+  }
+}
+
+@media screen and (min-width: 752px) {
+  .hidden {
+    transform: translateY(-58px);
+  }
+}
+
 .container {
   ion-item {
     &::part(native) {
@@ -7,13 +27,13 @@
   }
   display: flex;
   flex-wrap: wrap;
-  transition: all 150ms;
+  transition: $transition;
 }
 
-.show-button {
-  position: absolute;
-  bottom: 4px;
-  right: 8px;
+.buttons {
+  float: right;
+  margin: 4px;
+  transition: $transition;
 }
 
 .seek-buttons {
@@ -47,12 +67,13 @@
 
 .time-input {
   ion-input {
-    :not(.sc-ion-input-ios) {
-      margin-right: 8px;
+    input {
+      padding-right: 8px !important;
     }
     text-align: right;
-    min-height: 48px;
-    width: 80px;
   }
+  --padding-start: 16px;
   --inner-padding-end: 8px;
+  min-height: 48px;
+  width: 168px;
 }

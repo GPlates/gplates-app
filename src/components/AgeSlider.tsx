@@ -8,30 +8,22 @@ import {
   IonRange,
 } from '@ionic/react'
 import {
-  chevronDownOutline,
-  chevronUpOutline,
+  chevronUpCircleOutline,
   playOutline,
   playSkipBackOutline,
   playBackOutline,
   playForwardOutline,
+  timeOutline,
 } from 'ionicons/icons'
-import { Fragment } from 'react'
+import { useState } from 'react'
 
 const AgeSlider = (props: any) => {
   // TODO: Round to nearest valid integer on blur
+  const [hidden, setHidden] = useState(true)
 
   return (
-    <Fragment>
-      <IonButton
-        className="round-button show-button"
-        onClick={() => {
-          props.setIsShown(true)
-        }}
-        size="default"
-      >
-        <IonIcon icon={chevronUpOutline} />
-      </IonButton>
-      <div className={props.isShown ? 'container' : 'container hidden'}>
+    <div>
+      <div className={hidden ? 'container hidden' : 'container'}>
         <IonItem className="time-input" lines="none">
           <IonLabel>Time:</IonLabel>
           <IonInput inputMode="numeric" min={0} max={100000} />
@@ -55,18 +47,21 @@ const AgeSlider = (props: any) => {
         </IonItem>
         <IonItem className="slider" lines="none">
           <IonRange />
-          <IonButton
-            fill="clear"
-            onClick={() => {
-              props.setIsShown(false)
-            }}
-            size="default"
-          >
-            <IonIcon icon={chevronDownOutline} />
-          </IonButton>
         </IonItem>
       </div>
-    </Fragment>
+      <div className={hidden ? 'buttons hidden' : 'buttons'}>
+        {props.buttons}
+        <IonButton
+          className="round-button show-button"
+          onClick={() => {
+            setHidden(!hidden)
+          }}
+          size="default"
+        >
+          <IonIcon icon={hidden ? timeOutline : chevronUpCircleOutline} />
+        </IonButton>
+      </div>
+    </div>
   )
 }
 export default AgeSlider
