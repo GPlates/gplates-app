@@ -18,15 +18,35 @@ import {
 import { useState } from 'react'
 
 const AgeSlider = (props: any) => {
-  // TODO: Round to nearest valid integer on blur
   const [hidden, setHidden] = useState(true)
+  const minAge = 0
+  const maxAge = 1000
+
+  const setAge = (age: string | null | undefined) => {
+    const number = Number(age)
+    if (number) {
+      if (number < minAge) {
+        props.setAge(minAge)
+      } else if (number > maxAge) {
+        props.setAge(maxAge)
+      } else {
+        props.setAge(Math.round(Number(age)))
+      }
+    }
+  }
 
   return (
     <div>
       <div className={hidden ? 'container hidden' : 'container'}>
         <IonItem className="time-input" lines="none">
           <IonLabel>Time:</IonLabel>
-          <IonInput inputMode="numeric" min={0} max={100000} />
+          <IonInput
+            inputMode="numeric"
+            min={minAge}
+            max={maxAge}
+            onIonChange={(e) => setAge(e.detail.value)}
+            value={props.age}
+          />
           Ma
         </IonItem>
         <IonItem className="seek-buttons" lines="none">
@@ -46,7 +66,12 @@ const AgeSlider = (props: any) => {
           </div>
         </IonItem>
         <IonItem className="slider" lines="none">
-          <IonRange />
+          <IonRange
+            min={minAge}
+            max={maxAge}
+            onIonChange={(e) => props.setAge(e.detail.value)}
+            value={props.age}
+          />
         </IonItem>
       </div>
       <div

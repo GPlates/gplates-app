@@ -58,6 +58,7 @@ const test_animation = () => {
 // }
 
 const Main: React.FC = () => {
+  const [age, setAge] = useState(0)
   const [scene, setScene] = useState<Scene>()
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
   document.body.classList.add('dark') // Enable dark mode
@@ -157,7 +158,11 @@ const Main: React.FC = () => {
         <div id="cesiumContainer" />
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
-          <AgeSlider buttons={<CustomToolbar scene={scene} />} age={230} />
+          <AgeSlider
+            buttons={<CustomToolbar scene={scene} />}
+            age={age}
+            setAge={setAge}
+          />
         </div>
         <IonFab vertical="bottom" horizontal="start">
           <IonFabButton>Menu</IonFabButton>
