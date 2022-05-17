@@ -8,7 +8,7 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 - Create a new branch for the issue
 - Work on the new branch
 - Create a pull request for code review and merge
-- Remove the branch
+- Once the issue is closed, remove the branch
 
 ## Run the app in the simulators
 
