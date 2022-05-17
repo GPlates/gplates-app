@@ -9,6 +9,6 @@
 }
 
 .demo_raster_map_icon {
-    content: url("src/assets/rasterMenu/demo_raster_map_icon.png");
+    content: url("../assets/rasterMenu/demo_raster_map_icon.png");
     font-size: 120px;
 }
