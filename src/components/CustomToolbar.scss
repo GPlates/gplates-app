@@ -1,5 +1,8 @@
 .help {
   img {
+    &.drop-shadow {
+      filter: drop-shadow(0 0 2px black);
+    }
     height: 64px;
     width: auto;
   }
@@ -12,6 +15,10 @@
   }
 
   margin-top: 40px;
+}
+
+.cesium-navigation-help-details {
+  color: var(--ion-color-dark)
 }
 
 .scene-mode-icon {
@@ -27,7 +34,7 @@
   &:not(.button) {
     margin: 0 16px;
   }
-  fill: white;
+  fill: var(--ion-color-dark);
 }
 
 .swiper-pagination {

@@ -111,6 +111,7 @@ const CustomToolbar = (props: any) => {
                         <td>
                           <img
                             alt="touch-drag"
+                            className="drop-shadow"
                             src="cesium/Widgets/Images/NavigationHelp/TouchDrag.svg"
                           />
                         </td>
@@ -127,6 +128,7 @@ const CustomToolbar = (props: any) => {
                         <td>
                           <img
                             alt="touch-zoom"
+                            className="drop-shadow"
                             src="cesium/Widgets/Images/NavigationHelp/TouchZoom.svg"
                           />
                         </td>
@@ -143,6 +145,7 @@ const CustomToolbar = (props: any) => {
                         <td>
                           <img
                             alt="touch-tilt"
+                            className="drop-shadow"
                             src="cesium/Widgets/Images/NavigationHelp/TouchTilt.svg"
                           />
                         </td>
@@ -159,6 +162,7 @@ const CustomToolbar = (props: any) => {
                         <td>
                           <img
                             alt="touch-rotate"
+                            className="drop-shadow"
                             src="cesium/Widgets/Images/NavigationHelp/TouchRotate.svg"
                           />
                         </td>

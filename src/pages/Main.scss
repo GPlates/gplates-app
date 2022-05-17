@@ -2,6 +2,12 @@
     &::part(native) {
         padding: 0;
     }
+    ion-icon {
+        color: var(--ion-color-dark);
+    }
+    svg {
+        fill: var(--ion-color-dark);
+    }
     --background: var(--ion-color-light);
     --border-radius: 20px;
     height: 40px;
