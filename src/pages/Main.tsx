@@ -5,7 +5,7 @@ import {
   IonFabList,
   IonIcon,
   IonPage,
-  useIonViewDidEnter,
+  useIonViewDidEnter
 } from '@ionic/react'
 
 import { cogOutline, earthOutline, exitOutline } from 'ionicons/icons'
@@ -21,12 +21,13 @@ import {
   Scene,
   SingleTileImageryProvider,
   Viewer,
-  WebMapTileServiceImageryProvider,
+  WebMapTileServiceImageryProvider
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
 import { useState } from 'react'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
+import { RasterMenu } from '../components/RasterMenu'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -42,9 +43,9 @@ const test_animation = () => {
   console.log(`dang dang dang~~~ ${count % 15}`)
   viewer.imageryLayers.addImageryProvider(
     new SingleTileImageryProvider({
-      url: `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
+      'url': `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
         count % 15
-      }.jpeg`,
+      }.jpeg`
     })
   )
   console.log(viewer.imageryLayers.length)
@@ -61,6 +62,7 @@ const Main: React.FC = () => {
   const [age, setAge] = useState(0)
   const [scene, setScene] = useState<Scene>()
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
+  const [isRasterMenuShow, setIsRasterMenuPageShow] = useState(false)
 
   useIonViewDidEnter(() => {
     // Rough bounding box of Australia
@@ -94,7 +96,7 @@ const Main: React.FC = () => {
       'EPSG:4326:18',
       'EPSG:4326:19',
       'EPSG:4326:20',
-      'EPSG:4326:21',
+      'EPSG:4326:21'
     ]
     const style = ''
     const format = 'image/jpeg'
@@ -110,7 +112,7 @@ const Main: React.FC = () => {
       //minimumLevel: 1,
       maximumLevel: 8,
       tilingScheme: new GeographicTilingScheme(),
-      credit: new Credit('EarthByte Geology'),
+      credit: new Credit('EarthByte Geology')
     })
 
     if (document.getElementsByClassName('cesium-viewer').length === 0) {
@@ -124,7 +126,7 @@ const Main: React.FC = () => {
         geocoder: false,
         homeButton: false,
         navigationHelpButton: false,
-        sceneModePicker: false,
+        sceneModePicker: false
       })
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
@@ -141,7 +143,7 @@ const Main: React.FC = () => {
         //minimumLevel: 1,
         maximumLevel: 8,
         tilingScheme: new GeographicTilingScheme(),
-        credit: new Credit('EarthByte Coastlines'),
+        credit: new Credit('EarthByte Coastlines')
       })
       viewer.imageryLayers.addImageryProvider(gplates_coastlines)
     }
@@ -151,21 +153,27 @@ const Main: React.FC = () => {
     setIsSettingMenuPageShow(false)
   }
 
+  const closeRasterMenu = () => {
+    setIsRasterMenuPageShow(false)
+  }
+
   return (
     <IonPage>
       <IonContent fullscreen>
-        <div id="cesiumContainer" />
-        <div id="credit" style={{ display: 'none' }} />
-        <div className="toolbar-top">
+        <div id='cesiumContainer' />
+        <div id='credit' style={{ 'display': 'none' }} />
+        <div className='toolbar-top'>
           <AgeSlider
             buttons={<CustomToolbar scene={scene} />}
             age={age}
             setAge={setAge}
           />
         </div>
-        <IonFab vertical="bottom" horizontal="start">
-          <IonFabButton>Menu</IonFabButton>
-          <IonFabList side="end">
+        <IonFab vertical='bottom' horizontal='start'>
+          <IonFabButton onClick={() => {
+            closeRasterMenu()
+          }}>Menu</IonFabButton>
+          <IonFabList side='end'>
             <IonFabButton
               onClick={() => {
                 setIsSettingMenuPageShow(true)
@@ -173,26 +181,30 @@ const Main: React.FC = () => {
             >
               <IonIcon icon={cogOutline} />
             </IonFabButton>
-            <IonFabButton>
+            <IonFabButton
+              onClick={() => {
+                setIsRasterMenuPageShow(true)
+              }}
+            >
               <IonIcon icon={earthOutline} />
             </IonFabButton>
             <IonFabButton>
               <IonIcon icon={exitOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="vectorMap" />
+              <IonIcon class='vectorMap' />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="questionIcon" />
+              <IonIcon class='questionIcon' />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="questionIcon" />
+              <IonIcon class='questionIcon' />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="questionIcon" />
+              <IonIcon class='questionIcon' />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="questionIcon" />
+              <IonIcon class='questionIcon' />
             </IonFabButton>
           </IonFabList>
         </IonFab>
@@ -201,6 +213,7 @@ const Main: React.FC = () => {
             isShow={isSettingMenuPageShow}
             closeModal={closeSettingMenuPage}
           />
+          <RasterMenu isShow={isRasterMenuShow} closeWindow={closeRasterMenu} />
         </div>
       </IonContent>
     </IonPage>
