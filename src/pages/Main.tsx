@@ -61,7 +61,6 @@ const Main: React.FC = () => {
   const [age, setAge] = useState(0)
   const [scene, setScene] = useState<Scene>()
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
-  document.body.classList.add('dark') // Enable dark mode
 
   useIonViewDidEnter(() => {
     // Rough bounding box of Australia
