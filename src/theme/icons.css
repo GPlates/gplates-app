@@ -1,14 +1,13 @@
 /* COMMON COLOR #bfbfbf*/
 /* ion-icon cannot access the asset out of src directory*/
-.vectorMap {
+.vector-map {
     content: url("../assets/icons/vector_map.svg");
 }
 
-.questionIcon {
+.question-icon {
     content: url("../assets/icons/question_icon.svg");
 }
 
-.demo_raster_map_icon {
+.demo-raster-map-icon {
     content: url("../assets/rasterMenu/demo_raster_map_icon.png");
-    font-size: 120px;
 }

@@ -8,7 +8,7 @@ import {
   useIonViewDidEnter
 } from '@ionic/react'
 
-import { cogOutline, earthOutline, exitOutline } from 'ionicons/icons'
+import {cogOutline, earthOutline, exitOutline} from 'ionicons/icons'
 
 import './Main.scss'
 
@@ -157,19 +157,23 @@ const Main: React.FC = () => {
     setIsRasterMenuPageShow(false)
   }
 
+  const isViewerLoading = () => {
+    return viewer.scene.globe.tilesLoaded
+  }
+
   return (
     <IonPage>
       <IonContent fullscreen>
-        <div id='cesiumContainer' />
-        <div id='credit' style={{ 'display': 'none' }} />
+        <div id='cesiumContainer'/>
+        <div id='credit' style={{'display': 'none'}}/>
         <div className='toolbar-top'>
           <AgeSlider
-            buttons={<CustomToolbar scene={scene} />}
+            buttons={<CustomToolbar scene={scene}/>}
             age={age}
             setAge={setAge}
           />
         </div>
-        <IonFab vertical='bottom' horizontal='start'>
+        <IonFab vertical='bottom' horizontal='start' className={'toolbar-bottom'}>
           <IonFabButton onClick={() => {
             closeRasterMenu()
           }}>Menu</IonFabButton>
@@ -179,32 +183,32 @@ const Main: React.FC = () => {
                 setIsSettingMenuPageShow(true)
               }}
             >
-              <IonIcon icon={cogOutline} />
+              <IonIcon icon={cogOutline}/>
             </IonFabButton>
             <IonFabButton
               onClick={() => {
                 setIsRasterMenuPageShow(true)
               }}
             >
-              <IonIcon icon={earthOutline} />
+              <IonIcon icon={earthOutline}/>
             </IonFabButton>
             <IonFabButton>
-              <IonIcon icon={exitOutline} />
+              <IonIcon icon={exitOutline}/>
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='vectorMap' />
+              <IonIcon class='vector-map'/>
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='questionIcon' />
+              <IonIcon class='question-icon'/>
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='questionIcon' />
+              <IonIcon class='question-icon'/>
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='questionIcon' />
+              <IonIcon class='question-icon'/>
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='questionIcon' />
+              <IonIcon class='question-icon'/>
             </IonFabButton>
           </IonFabList>
         </IonFab>
@@ -215,7 +219,7 @@ const Main: React.FC = () => {
           />
           <RasterMenu isShow={isRasterMenuShow} closeWindow={closeRasterMenu} addLayer={(newLayer: any) => {
             viewer.imageryLayers.addImageryProvider(newLayer)
-          }} />
+          }} isViewerLoading={isViewerLoading}/>
         </div>
       </IonContent>
     </IonPage>

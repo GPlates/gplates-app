@@ -15,10 +15,20 @@
 }
 
 .toolbar-top {
-    top: 0;
-    left: 0;
-    overflow: hidden;
-    position: absolute;
-    height: auto;
-    width: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  height: auto;
+  width: 100%;
+}
+
+.toolbar-bottom {
+  ion-fab-list {
+    ion-fab-button {
+      ion-icon {
+        font-size: 30px;
+      }
+    }
+  }
 }
