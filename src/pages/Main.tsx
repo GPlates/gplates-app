@@ -103,7 +103,7 @@ const Main: React.FC = () => {
     const layerName = 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref'
 
     const gplates_wmts = new WebMapTileServiceImageryProvider({
-      url: 'http://www.earthbyte.org:8600/geoserver/gwc/service/wmts',
+      url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
       layer: layerName,
       style: style,
       format: format,
@@ -134,7 +134,7 @@ const Main: React.FC = () => {
       viewer.scene.skyAtmosphere.show = false
 
       const gplates_coastlines = new WebMapTileServiceImageryProvider({
-        url: 'http://www.earthbyte.org:8600/geoserver/gwc/service/wmts',
+        url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
         layer: 'gplates:Matthews_etal_GPC_2016_Coastlines_Polyline',
         style: '',
         format: 'image/png',
@@ -213,7 +213,9 @@ const Main: React.FC = () => {
             isShow={isSettingMenuPageShow}
             closeModal={closeSettingMenuPage}
           />
-          <RasterMenu isShow={isRasterMenuShow} closeWindow={closeRasterMenu} />
+          <RasterMenu isShow={isRasterMenuShow} closeWindow={closeRasterMenu} addLayer={(newLayer: any) => {
+            viewer.imageryLayers.addImageryProvider(newLayer)
+          }} />
         </div>
       </IonContent>
     </IonPage>
