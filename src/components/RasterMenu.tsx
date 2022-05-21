@@ -7,7 +7,7 @@ import {
 } from '@ionic/react'
 
 import './RasterMenu.scss'
-import { Credit, GeographicTilingScheme, WebMapTileServiceImageryProvider } from 'cesium'
+import {Credit, GeographicTilingScheme, WebMapTileServiceImageryProvider} from 'cesium'
 
 var gridsetName = 'EPSG:4326'
 var gridNames = [
@@ -116,6 +116,7 @@ interface ContainerProps {
   isShow: boolean
   closeWindow: Function
   addLayer: Function
+  isViewerLoading: Function
 }
 
 
@@ -127,27 +128,41 @@ function initialSelection() {
   return isSelectedList
 }
 
-export const RasterMenu: React.FC<ContainerProps> = ({ isShow, closeWindow, addLayer }) => {
+const delay = (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLayer, isViewerLoading}) => {
   const [isSelectedList, setIsSelectedList] = useState(initialSelection())
+  const [isLoading, setIsLoading] = useState(false)
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
     optionList.push(
-      <IonCard className={isSelectedList[i] ? 'selected_opt' : 'unselected_opt'}
-               onClick={(e) => {
-                 select(i)
-                 addLayer(rasterMaps[i].layer)
-               }}>
-        <IonIcon class={'demo_raster_map_icon'} />
+      <IonCard
+        key={'raster-menu-element-' + i}
+        className={isSelectedList[i] ? 'selected-opt' : 'unselected-opt'}
+        onClick={async (e) => {
+          select(i)
+          setIsLoading(true)
+          addLayer(rasterMaps[i].layer)
+          await delay(500)
+          while (!isViewerLoading()) {
+            await delay(500)
+          }
+          setIsLoading(false)
+        }}>
+        <IonIcon class={'demo-raster-map-icon'}/>
         <IonCardHeader>
           <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
           <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
         </IonCardHeader>
-        <div />
+        <div/>
       </IonCard>
     )
   }
 
+  // select the target one and unselect rest all
   const select = (index: number) => {
     let temp = [...isSelectedList]
     for (let i = 0; i < isSelectedList.length; i++) {
@@ -159,12 +174,15 @@ export const RasterMenu: React.FC<ContainerProps> = ({ isShow, closeWindow, addL
   }
 
   return (
-    <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
-      <div className={'raster_menu_backdrop'} onClick={() => {
+    <div style={{visibility: isShow ? 'visible' : 'hidden'}}>
+      <div className={'raster-menu-backdrop'} onClick={() => {
         closeWindow()
-      }} />
-      <div className={'raster_menu_scroll'}>
+      }}/>
+      <div className={'raster-menu-scroll'}>
         {optionList}
+      </div>
+      <div className={'raster-menu-loading'} style={{visibility: isLoading ? 'visible' : 'hidden'}}>
+        <p>Loading...</p>
       </div>
     </div>
   )

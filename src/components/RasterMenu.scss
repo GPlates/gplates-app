@@ -1,4 +1,4 @@
-.raster_menu_scroll {
+.raster-menu-scroll {
   text-align: center;
   white-space: nowrap;
   overflow-x: scroll;
@@ -11,7 +11,8 @@
   background: rgba(0, 0, 0, 0.5);
 
   ion-icon {
-    margin-top: 1rem
+    margin-top: 1rem;
+    font-size: 120px;
   }
 
   ion-card {
@@ -22,8 +23,7 @@
   }
 }
 
-
-.selected_opt {
+.selected-opt {
   div {
     background-color: #428cff;
     height: 0.5rem;
@@ -35,17 +35,36 @@
   }
 }
 
-.unselected_opt {
+.unselected-opt {
   div {
     height: 0.5rem;
     width: 100%
   }
 }
 
-.raster_menu_backdrop {
+.raster-menu-backdrop {
   position: absolute;
   bottom: 0;
   width: 100%;
   height: 100vh;
+}
 
+.raster-menu-loading {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #0d0d0d;
+  opacity: 0.5;
+  z-index: 9999;
+  child-align: middle;
+
+  p {
+    display: block;
+    margin: auto;
+    text-align: center;
+    width: 50%;
+    padding: 40vh 0;
+    font-size: 2rem;
+  }
 }
