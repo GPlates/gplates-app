@@ -9,6 +9,8 @@ import {
 } from '@ionic/react'
 import {
   chevronUpCircleOutline,
+  cogOutline,
+  pauseOutline,
   playOutline,
   playSkipBackOutline,
   playBackOutline,
@@ -16,23 +18,17 @@ import {
   timeOutline,
 } from 'ionicons/icons'
 import { useState } from 'react'
+import { setNumber } from '../functions/input'
 
 const AgeSlider = (props: any) => {
   const [hidden, setHidden] = useState(true)
+  const [playing, setPlaying] = useState(false)
   const minAge = 0
   const maxAge = 1000
 
-  const setAge = (age: string | null | undefined) => {
-    const number = Number(age)
-    if (number) {
-      if (number < minAge) {
-        props.setAge(minAge)
-      } else if (number > maxAge) {
-        props.setAge(maxAge)
-      } else {
-        props.setAge(Math.round(Number(age)))
-      }
-    }
+  const openMenu = () => {
+    props.setMenuState(true)
+    props.setHighlightAnimation(true)
   }
 
   return (
@@ -44,15 +40,21 @@ const AgeSlider = (props: any) => {
             inputMode="numeric"
             min={minAge}
             max={maxAge}
-            onIonChange={(e) => setAge(e.detail.value)}
+            onIonChange={(e) =>
+              setNumber(props.setAge, e.detail.value, minAge, maxAge)
+            }
             value={props.age}
           />
           Ma
         </IonItem>
         <IonItem className="seek-buttons" lines="none">
           <div>
-            <IonButton fill="clear" size="default">
-              <IonIcon icon={playOutline} />
+            <IonButton
+              fill="clear"
+              onClick={() => setPlaying(!playing)}
+              size="default"
+            >
+              <IonIcon icon={playing ? pauseOutline : playOutline} />
             </IonButton>
             <IonButton fill="clear" size="default">
               <IonIcon icon={playSkipBackOutline} />
@@ -62,6 +64,9 @@ const AgeSlider = (props: any) => {
             </IonButton>
             <IonButton fill="clear" size="default">
               <IonIcon icon={playForwardOutline} />
+            </IonButton>
+            <IonButton fill="clear" onClick={openMenu} size="default">
+              <IonIcon icon={cogOutline} />
             </IonButton>
           </div>
         </IonItem>
