@@ -5,10 +5,10 @@ import {
   IonFabList,
   IonIcon,
   IonPage,
-  useIonViewDidEnter
+  useIonViewDidEnter,
 } from '@ionic/react'
 
-import {cogOutline, earthOutline, exitOutline} from 'ionicons/icons'
+import { cogOutline, earthOutline, exitOutline } from 'ionicons/icons'
 
 import './Main.scss'
 
@@ -21,7 +21,7 @@ import {
   Scene,
   SingleTileImageryProvider,
   Viewer,
-  WebMapTileServiceImageryProvider
+  WebMapTileServiceImageryProvider,
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
 import { useState } from 'react'
@@ -43,9 +43,9 @@ const test_animation = () => {
   console.log(`dang dang dang~~~ ${count % 15}`)
   viewer.imageryLayers.addImageryProvider(
     new SingleTileImageryProvider({
-      'url': `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
+      url: `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
         count % 15
-      }.jpeg`
+      }.jpeg`,
     })
   )
   console.log(viewer.imageryLayers.length)
@@ -61,6 +61,7 @@ const test_animation = () => {
 const Main: React.FC = () => {
   const [age, setAge] = useState(0)
   const [scene, setScene] = useState<Scene>()
+  const [highlightAnimation, setHighlightAnimation] = useState(false)
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
   const [isRasterMenuShow, setIsRasterMenuPageShow] = useState(false)
 
@@ -96,7 +97,7 @@ const Main: React.FC = () => {
       'EPSG:4326:18',
       'EPSG:4326:19',
       'EPSG:4326:20',
-      'EPSG:4326:21'
+      'EPSG:4326:21',
     ]
     const style = ''
     const format = 'image/jpeg'
@@ -112,7 +113,7 @@ const Main: React.FC = () => {
       //minimumLevel: 1,
       maximumLevel: 8,
       tilingScheme: new GeographicTilingScheme(),
-      credit: new Credit('EarthByte Geology')
+      credit: new Credit('EarthByte Geology'),
     })
 
     if (document.getElementsByClassName('cesium-viewer').length === 0) {
@@ -126,7 +127,7 @@ const Main: React.FC = () => {
         geocoder: false,
         homeButton: false,
         navigationHelpButton: false,
-        sceneModePicker: false
+        sceneModePicker: false,
       })
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
@@ -143,13 +144,14 @@ const Main: React.FC = () => {
         //minimumLevel: 1,
         maximumLevel: 8,
         tilingScheme: new GeographicTilingScheme(),
-        credit: new Credit('EarthByte Coastlines')
+        credit: new Credit('EarthByte Coastlines'),
       })
       viewer.imageryLayers.addImageryProvider(gplates_coastlines)
     }
   })
 
   const closeSettingMenuPage = () => {
+    setHighlightAnimation(false)
     setIsSettingMenuPageShow(false)
   }
 
@@ -164,62 +166,78 @@ const Main: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <div id='cesiumContainer'/>
-        <div id='credit' style={{'display': 'none'}}/>
-        <div className='toolbar-top'>
+        <div id="cesiumContainer" />
+        <div id="credit" style={{ display: 'none' }} />
+        <div className="toolbar-top">
           <AgeSlider
-            buttons={<CustomToolbar scene={scene}/>}
+            buttons={<CustomToolbar scene={scene} />}
             age={age}
+            setHighlightAnimation={setHighlightAnimation}
             setAge={setAge}
+            setMenuState={setIsSettingMenuPageShow}
           />
         </div>
-        <IonFab vertical='bottom' horizontal='start' className={'toolbar-bottom'}>
-          <IonFabButton onClick={() => {
-            closeRasterMenu()
-          }}>Menu</IonFabButton>
-          <IonFabList side='end'>
+        <IonFab
+          vertical="bottom"
+          horizontal="start"
+          className={'toolbar-bottom'}
+        >
+          <IonFabButton
+            onClick={() => {
+              closeRasterMenu()
+            }}
+          >
+            Menu
+          </IonFabButton>
+          <IonFabList side="end">
             <IonFabButton
               onClick={() => {
                 setIsSettingMenuPageShow(true)
               }}
             >
-              <IonIcon icon={cogOutline}/>
+              <IonIcon icon={cogOutline} />
             </IonFabButton>
             <IonFabButton
               onClick={() => {
                 setIsRasterMenuPageShow(true)
               }}
             >
-              <IonIcon icon={earthOutline}/>
+              <IonIcon icon={earthOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon icon={exitOutline}/>
+              <IonIcon icon={exitOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='vector-map'/>
+              <IonIcon class="vector-map" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='question-icon'/>
+              <IonIcon class="question-icon" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='question-icon'/>
+              <IonIcon class="question-icon" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='question-icon'/>
+              <IonIcon class="question-icon" />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class='question-icon'/>
+              <IonIcon class="question-icon" />
             </IonFabButton>
           </IonFabList>
         </IonFab>
         <div>
           <SettingMenuPage
+            highlightAnimation={highlightAnimation}
             isShow={isSettingMenuPageShow}
             closeModal={closeSettingMenuPage}
           />
-          <RasterMenu isShow={isRasterMenuShow} closeWindow={closeRasterMenu} addLayer={(newLayer: any) => {
-            viewer.imageryLayers.addImageryProvider(newLayer)
-          }} isViewerLoading={isViewerLoading}/>
+          <RasterMenu
+            isShow={isRasterMenuShow}
+            closeWindow={closeRasterMenu}
+            addLayer={(newLayer: any) => {
+              viewer.imageryLayers.addImageryProvider(newLayer)
+            }}
+            isViewerLoading={isViewerLoading}
+          />
         </div>
       </IonContent>
     </IonPage>

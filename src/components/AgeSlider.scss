@@ -1,18 +1,18 @@
 $transition: all 150ms;
 
-@media screen and (max-width: 352px) {
+@media screen and (max-width: 396px) {
   .hidden {
     transform: translateY(-154px);
   }
 }
 
-@media screen and (min-width: 352px) and (max-width: 752px) {
+@media screen and (min-width: 396px) and (max-width: 796px) {
   .hidden {
     transform: translateY(-106px);
   }
 }
 
-@media screen and (min-width: 752px) {
+@media screen and (min-width: 796px) {
   .hidden {
     transform: translateY(-58px);
   }
@@ -45,6 +45,9 @@ $transition: all 150ms;
     }
     height: 40px;
     width: 40px;
+  }
+  ion-icon {
+    font-size: 24px;
   }
   --padding-start: 4px;
   --inner-padding-end: 4px;
