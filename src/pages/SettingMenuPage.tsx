@@ -217,7 +217,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   }
                   value={increment}
                 />
-                M per frame
+                Myr per frame
               </IonItem>
             </IonCol>
             <IonCol className="reverse-col">
