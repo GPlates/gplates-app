@@ -152,6 +152,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonRow>
             <IonCol>
               <IonRange
+                dir="rtl"
                 dualKnobs={true}
                 min={minAge}
                 max={maxAge}
