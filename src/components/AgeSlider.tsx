@@ -72,6 +72,7 @@ const AgeSlider = (props: any) => {
         </IonItem>
         <IonItem className="slider" lines="none">
           <IonRange
+            dir="rtl"
             min={minAge}
             max={maxAge}
             onIonChange={(e) => props.setAge(e.detail.value)}

@@ -61,8 +61,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   useEffect(() => {
     if (highlightAnimation) {
       setTimeout(() => {
-        animationRef.current?.scrollIntoView()
-      }, 10)
+        animationRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
     }
   }, [highlightAnimation])
 
@@ -152,6 +152,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonRow>
             <IonCol>
               <IonRange
+                dir="rtl"
                 dualKnobs={true}
                 min={minAge}
                 max={maxAge}
@@ -216,7 +217,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   }
                   value={increment}
                 />
-                M per frame
+                Myr per frame
               </IonItem>
             </IonCol>
             <IonCol className="reverse-col">

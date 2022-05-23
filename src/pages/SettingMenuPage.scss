@@ -8,24 +8,25 @@ ion-list {
 
 /* The animation code */
 @keyframes highlight {
-    0%  {border-color: rgba(0, 0, 0, 0);}
-    50%  {border-color: var(--ion-color-primary);}
-    100% {border-color: rgba(0, 0, 0, 0);}
+    0%  {outline-color: rgba(0, 0, 0, 0);}
+    50%  {outline-color: var(--ion-color-primary);}
+    100% {outline-color: rgba(0, 0, 0, 0);}
 }
 
 /* The element to apply the animation to */
 .highlight {
     animation-name: highlight;
-    animation-delay: 300ms;
+    animation-delay: 600ms;
     animation-duration: 300ms;
     animation-iteration-count: 2;
     animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-    border: solid 3px rgba(0, 0, 0, 0);
-    border-radius: 16px;
 }
 
 .animation-settings {
     $min-col-width: calc(100vw - 10px);
+    outline: solid 3px rgba(0, 0, 0, 0);
+    outline-offset: -3px;
+    border-radius: 16px;
 
     ion-col {
         min-width: min(240px, $min-col-width);
