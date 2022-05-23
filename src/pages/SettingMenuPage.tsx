@@ -61,8 +61,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   useEffect(() => {
     if (highlightAnimation) {
       setTimeout(() => {
-        animationRef.current?.scrollIntoView()
-      }, 10)
+        animationRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
     }
   }, [highlightAnimation])
 
