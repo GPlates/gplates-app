@@ -35,7 +35,7 @@ var gridNames = [
   'EPSG:4326:21'
 ]
 
-const gplates_test = new WebMapTileServiceImageryProvider({
+const topography = new WebMapTileServiceImageryProvider({
   url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
   layer: 'gplates:topography',
   style: '',
@@ -48,9 +48,22 @@ const gplates_test = new WebMapTileServiceImageryProvider({
   credit: new Credit('EarthByte Coastlines')
 })
 
-const gplates_wmts = new WebMapTileServiceImageryProvider({
+const geology = new WebMapTileServiceImageryProvider({
   url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
   layer: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
+  style: '',
+  format: 'image/jpeg',
+  tileMatrixSetID: gridsetName,
+  tileMatrixLabels: gridNames,
+  //minimumLevel: 1,
+  maximumLevel: 8,
+  tilingScheme: new GeographicTilingScheme(),
+  credit: new Credit('EarthByte Geology')
+})
+
+const agegrid = new WebMapTileServiceImageryProvider({
+  url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
+  layer: 'gplates:agegrid',
   style: '',
   format: 'image/jpeg',
   tileMatrixSetID: gridsetName,
@@ -76,39 +89,22 @@ const gplates_coastlines = new WebMapTileServiceImageryProvider({
 
 const rasterMaps = [
   {
-    layer: gplates_test,
-    title: 'Clouds',
-    subTitle: 'Current'
+    layer: geology,
+    title: 'Geology',
+    subTitle: '???',
+    icon: 'geology-icon'
   },
   {
-    layer: gplates_wmts,
-    title: 'Clouds',
-    subTitle: 'Current'
+    layer: agegrid,
+    title: 'Agegrid',
+    subTitle: '???',
+    icon: 'agegrid-icon'
   },
   {
-    layer: gplates_coastlines,
-    title: 'Clouds',
-    subTitle: 'Current'
-  },
-  {
-    layer: gplates_coastlines,
-    title: 'Clouds',
-    subTitle: 'Current'
-  },
-  {
-    layer: gplates_coastlines,
-    title: 'Clouds',
-    subTitle: 'Current'
-  },
-  {
-    layer: gplates_coastlines,
-    title: 'Clouds',
-    subTitle: 'Current'
-  },
-  {
-    layer: gplates_coastlines,
-    title: 'Clouds',
-    subTitle: 'Current'
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'topography-icon'
   }
 ]
 
@@ -152,7 +148,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
           }
           setIsLoading(false)
         }}>
-        <IonIcon class={'demo-raster-map-icon'}/>
+        <IonIcon class={rasterMaps[i].icon} />
         <IonCardHeader>
           <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
           <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
