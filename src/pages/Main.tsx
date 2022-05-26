@@ -134,6 +134,8 @@ const Main: React.FC = () => {
       viewer.scene.globe.showGroundAtmosphere = false
       viewer.scene.skyAtmosphere.show = false
 
+      viewer.scene.globe.tileCacheSize = 1000
+
       const gplates_coastlines = new WebMapTileServiceImageryProvider({
         url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
         layer: 'gplates:Matthews_etal_GPC_2016_Coastlines_Polyline',
