@@ -170,14 +170,14 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
   }
 
   return (
-    <div style={{visibility: isShow ? 'visible' : 'hidden'}}>
+    <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div className={'raster-menu-backdrop'} onClick={() => {
         closeWindow()
-      }}/>
+      }} />
       <div className={'raster-menu-scroll'}>
         {optionList}
       </div>
-      <div className={'raster-menu-loading'} style={{visibility: isLoading ? 'visible' : 'hidden'}}>
+      <div className={'raster-menu-loading'} style={{ visibility: isLoading ? 'visible' : 'hidden' }}>
         <p>Loading...</p>
       </div>
     </div>
