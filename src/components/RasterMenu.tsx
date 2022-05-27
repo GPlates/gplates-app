@@ -173,12 +173,12 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
           }
           setIsLoading(false)
         }}>
-        <IonIcon src={rasterMaps[i].icon} class={'map-icon'} />
+        <img src={rasterMaps[i].icon} className={'map-icon'} alt={'global icon'} />
         <IonCardHeader>
           <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
           <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
         </IonCardHeader>
-        <div/>
+        <div />
       </IonCard>
     )
   }
