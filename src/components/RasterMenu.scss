@@ -1,7 +1,7 @@
 $raster-menu-bottom: 5rem;
 $icon-size: 6rem;
 $card-top-margin: 0.5rem;
-$card-bottom-margin: 0;
+$card-bottom-margin: 0.5rem;
 $card-header-vertical-padding: 0.5rem;
 $selected-bar-height: 0rem;
 $header-height: 3.5rem;
@@ -47,7 +47,8 @@ $chevron-vertical-position: ($raster-menu-height - $arrow-size)/2 + $raster-menu
 }
 
 .map-icon {
-  font-size: $icon-size;
+  height: $icon-size;
+  width: $icon-size
 }
 
 .selected-opt {
@@ -109,16 +110,4 @@ $chevron-vertical-position: ($raster-menu-height - $arrow-size)/2 + $raster-menu
 
 .left {
   left: 0.5rem;
-}
-
-.agegrid-icon {
-  content: url("../assets/rasterMenu/agegrid-256x256.png");
-}
-
-.geology-icon {
-  content: url("../assets/rasterMenu/geology-256x256.png");
-}
-
-.topography-icon {
-  content: url("../assets/rasterMenu/topography-256x256.png");
 }

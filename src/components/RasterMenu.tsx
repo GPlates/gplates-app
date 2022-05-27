@@ -93,43 +93,43 @@ const rasterMaps = [
     layer: geology,
     title: 'Geology',
     subTitle: '???',
-    icon: 'geology-icon'
+    icon: 'assets/raster_menu/geology-256x256.png'
   },
   {
     layer: agegrid,
     title: 'Agegrid',
     subTitle: '???',
-    icon: 'agegrid-icon'
+    icon: 'assets/raster_menu/agegrid-256x256.png'
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'topography-icon'
+    icon: 'assets/raster_menu/topography-256x256.png'
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'topography-icon'
+    icon: 'assets/raster_menu/topography-256x256.png'
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'topography-icon'
+    icon: 'assets/raster_menu/topography-256x256.png'
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'topography-icon'
+    icon: 'assets/raster_menu/topography-256x256.png'
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'topography-icon'
+    icon: 'assets/raster_menu/topography-256x256.png'
   }
 ]
 
@@ -173,12 +173,12 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
           }
           setIsLoading(false)
         }}>
-        <IonIcon class={rasterMaps[i].icon + ' map-icon'} />
+        <img src={rasterMaps[i].icon} className={'map-icon'} alt={'global icon'} />
         <IonCardHeader>
           <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
           <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
         </IonCardHeader>
-        <div/>
+        <div />
       </IonCard>
     )
   }
