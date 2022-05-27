@@ -7,7 +7,8 @@ import {
 } from '@ionic/react'
 
 import './RasterMenu.scss'
-import {Credit, GeographicTilingScheme, WebMapTileServiceImageryProvider} from 'cesium'
+import { Credit, GeographicTilingScheme, WebMapTileServiceImageryProvider } from 'cesium'
+import { chevronBack, chevronForward } from 'ionicons/icons'
 
 var gridsetName = 'EPSG:4326'
 var gridNames = [
@@ -105,6 +106,30 @@ const rasterMaps = [
     title: 'Topography',
     subTitle: '???',
     icon: 'topography-icon'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'topography-icon'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'topography-icon'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'topography-icon'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'topography-icon'
   }
 ]
 
@@ -148,7 +173,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
           }
           setIsLoading(false)
         }}>
-        <IonIcon class={rasterMaps[i].icon} />
+        <IonIcon class={rasterMaps[i].icon + ' map-icon'} />
         <IonCardHeader>
           <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
           <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
@@ -180,6 +205,8 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
       <div className={'raster-menu-loading'} style={{ visibility: isLoading ? 'visible' : 'hidden' }}>
         <p>Loading...</p>
       </div>
+      <IonIcon icon={chevronForward} className={'raster-menu-arrow right'} />
+      <IonIcon icon={chevronBack} className={'raster-menu-arrow left'} />
     </div>
   )
 }

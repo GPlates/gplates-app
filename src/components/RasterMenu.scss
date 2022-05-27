@@ -1,42 +1,59 @@
+$raster-menu-bottom: 5rem;
+$icon-size: 6rem;
+$card-top-margin: 0.5rem;
+$card-bottom-margin: 0;
+$card-header-vertical-padding: 0.5rem;
+$selected-bar-height: 0rem;
+$header-height: 3.5rem;
+$title-font-size: 1rem;
+$subtitle-font-size: 0.8rem;
+$arrow-size: 2rem;
+$raster-menu-height: $icon-size + $card-top-margin + $card-bottom-margin + $selected-bar-height + $header-height;
+$chevron-vertical-position: ($raster-menu-height - $arrow-size)/2 + $raster-menu-bottom;
+
 .raster-menu-scroll {
   text-align: center;
   white-space: nowrap;
   overflow-x: scroll;
   overflow-y: hidden;
   position: absolute;
-  bottom: 5rem;
+  bottom: $raster-menu-bottom;
   width: 100%;
-  height: auto;
+  height: $raster-menu-height;
 
   background: rgba(var(--ion-color-light-rgb), 0.5);
-
-  ion-icon {
-    font-size: 7rem;
-  }
 
   ion-card {
     display: inline-block;
     background-color: rgba(0, 0, 0, 0);
     box-shadow: 0 0;
-    margin: 0.5rem 0.25rem 0 0.25rem;
+    margin: 0.5rem 0.8rem 0;
   }
 
   ion-card-header {
     padding-inline: 0;
-    padding: 0.5rem 0
+    padding: $card-header-vertical-padding 0;
+    height: $header-height;
   }
 
   ion-card-title {
-    font-size: 1rem;
+    font-size: $title-font-size;
     --font-color: var(--ion-text-color);
   }
 
+  ion-card-subtitle {
+    font-size: $subtitle-font-size;
+  }
+}
+
+.map-icon {
+  font-size: $icon-size;
 }
 
 .selected-opt {
   div {
     background-color: var(--ion-color-primary);
-    height: 0.5rem;
+    height: $selected-bar-height;
     width: 100%
   }
 
@@ -47,7 +64,7 @@
 
 .unselected-opt {
   div {
-    height: 0.5rem;
+    height: $selected-bar-height;
     width: 100%
   }
 }
@@ -77,6 +94,21 @@
     padding: 40vh 0;
     font-size: 2rem;
   }
+}
+
+.raster-menu-arrow {
+  font-size: $arrow-size;
+  position: absolute;
+  opacity: 1;
+  bottom: $chevron-vertical-position;
+}
+
+.right {
+  right: 0.5rem;
+}
+
+.left {
+  left: 0.5rem;
 }
 
 .agegrid-icon {
