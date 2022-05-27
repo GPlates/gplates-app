@@ -5,7 +5,7 @@ import {
   IonFabList,
   IonIcon,
   IonPage,
-  useIonViewDidEnter,
+  useIonViewDidEnter
 } from '@ionic/react'
 
 import { cogOutline, earthOutline, exitOutline } from 'ionicons/icons'
@@ -28,6 +28,7 @@ import { useState } from 'react'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
+import { AboutPage } from './AboutPage'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -64,6 +65,7 @@ const Main: React.FC = () => {
   const [highlightAnimation, setHighlightAnimation] = useState(false)
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
   const [isRasterMenuShow, setIsRasterMenuPageShow] = useState(false)
+  const [isAboutPageShow, setIsAboutPageShow] = useState(false)
 
   useIonViewDidEnter(() => {
     // Rough bounding box of Australia
@@ -161,6 +163,10 @@ const Main: React.FC = () => {
     setIsRasterMenuPageShow(false)
   }
 
+  const closeAboutPage = () => {
+    setIsAboutPageShow(false)
+  }
+
   const isViewerLoading = () => {
     return viewer.scene.globe.tilesLoaded
   }
@@ -168,9 +174,9 @@ const Main: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <div id="cesiumContainer" />
-        <div id="credit" style={{ display: 'none' }} />
-        <div className="toolbar-top">
+        <div id='cesiumContainer' />
+        <div id='credit' style={{ display: 'none' }} />
+        <div className='toolbar-top'>
           <AgeSlider
             buttons={<CustomToolbar scene={scene} />}
             age={age}
@@ -180,8 +186,8 @@ const Main: React.FC = () => {
           />
         </div>
         <IonFab
-          vertical="bottom"
-          horizontal="start"
+          vertical='bottom'
+          horizontal='start'
           className={'toolbar-bottom'}
         >
           <IonFabButton
@@ -189,9 +195,9 @@ const Main: React.FC = () => {
               closeRasterMenu()
             }}
           >
-            Menu
+            <IonIcon src={'/assets/setting_menu_page/toolbox.svg'} style={{ fontSize: '2rem' }} />
           </IonFabButton>
-          <IonFabList side="end">
+          <IonFabList side='end'>
             <IonFabButton
               onClick={() => {
                 setIsSettingMenuPageShow(true)
@@ -210,19 +216,21 @@ const Main: React.FC = () => {
               <IonIcon icon={exitOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="vector-map" />
+              <IonIcon src={'assets/setting_menu_page/vector_map.svg'} />
+            </IonFabButton>
+            <IonFabButton onClick={() => {
+              setIsAboutPageShow(true)
+            }}>
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="question-icon" />
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="question-icon" />
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="question-icon" />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon class="question-icon" />
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
           </IonFabList>
         </IonFab>
@@ -239,6 +247,10 @@ const Main: React.FC = () => {
               viewer.imageryLayers.addImageryProvider(newLayer)
             }}
             isViewerLoading={isViewerLoading}
+          />
+          <AboutPage
+            isShow={isAboutPageShow}
+            closeModal={closeAboutPage}
           />
         </div>
       </IonContent>
