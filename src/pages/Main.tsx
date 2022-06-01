@@ -29,25 +29,29 @@ import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
+import { sqlite } from '../App'
+import { CachingService } from '../functions/cache'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
 
-let viewer: Viewer
+let cachingService: CachingService
 let count = 0
+let viewer: Viewer
 
 // The times and clock in the below links seem useful
 // https://sandcastle.cesium.com/index.html?src=Web%20Map%20Tile%20Service%20with%20Time.html
 // https://cesium.com/learn/cesiumjs/ref-doc/WebMapTileServiceImageryProvider.html#.ConstructorOptions
-const test_animation = () => {
+const testAnimation = async () => {
   count += 1
-  console.log(`dang dang dang~~~ ${count % 15}`)
+  console.log(count % 15)
+  const url = await cachingService?.getCachedRequest(
+    `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
+      count % 15
+    }.jpeg`
+  )
   viewer.imageryLayers.addImageryProvider(
-    new SingleTileImageryProvider({
-      url: `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
-        count % 15
-      }.jpeg`,
-    })
+    new SingleTileImageryProvider({ url })
   )
   console.log(viewer.imageryLayers.length)
   if (viewer.imageryLayers.length > 15) {
@@ -55,9 +59,9 @@ const test_animation = () => {
   }
 }
 
-// const onClickButton = () => {
-//   setInterval(test_animation, 1000);
-// }
+const startAnimation = () => {
+  setInterval(testAnimation, 100)
+}
 
 const Main: React.FC = () => {
   const [age, setAge] = useState(0)
@@ -69,7 +73,17 @@ const Main: React.FC = () => {
   // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
   const [settingsPath, setSettingsPath] = useState('root')
 
-  useIonViewDidEnter(() => {
+  useIonViewDidEnter(async () => {
+    // Initialize SQLite connection
+    const db = await sqlite.createConnection(
+      'db_main',
+      false,
+      'no-encryption',
+      1
+    )
+    await db.open()
+    cachingService = new CachingService(db)
+
     // Rough bounding box of Australia
     Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(
       112.8,
@@ -230,7 +244,7 @@ const Main: React.FC = () => {
             >
               <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
-            <IonFabButton>
+            <IonFabButton onClick={() => startAnimation()}>
               <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
