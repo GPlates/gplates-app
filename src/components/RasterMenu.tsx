@@ -7,7 +7,8 @@ import {
 } from '@ionic/react'
 
 import './RasterMenu.scss'
-import {Credit, GeographicTilingScheme, WebMapTileServiceImageryProvider} from 'cesium'
+import { Credit, GeographicTilingScheme, WebMapTileServiceImageryProvider } from 'cesium'
+import { chevronBack, chevronForward } from 'ionicons/icons'
 
 var gridsetName = 'EPSG:4326'
 var gridNames = [
@@ -92,19 +93,43 @@ const rasterMaps = [
     layer: geology,
     title: 'Geology',
     subTitle: '???',
-    icon: 'geology-icon'
+    icon: 'assets/raster_menu/geology-256x256.png'
   },
   {
     layer: agegrid,
     title: 'Agegrid',
     subTitle: '???',
-    icon: 'agegrid-icon'
+    icon: 'assets/raster_menu/agegrid-256x256.png'
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'topography-icon'
+    icon: 'assets/raster_menu/topography-256x256.png'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'assets/raster_menu/topography-256x256.png'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'assets/raster_menu/topography-256x256.png'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'assets/raster_menu/topography-256x256.png'
+  },
+  {
+    layer: topography,
+    title: 'Topography',
+    subTitle: '???',
+    icon: 'assets/raster_menu/topography-256x256.png'
   }
 ]
 
@@ -148,12 +173,12 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
           }
           setIsLoading(false)
         }}>
-        <IonIcon class={rasterMaps[i].icon} />
+        <img src={rasterMaps[i].icon} className={'map-icon'} alt={'global icon'} />
         <IonCardHeader>
           <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
           <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
         </IonCardHeader>
-        <div/>
+        <div />
       </IonCard>
     )
   }
@@ -170,16 +195,18 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
   }
 
   return (
-    <div style={{visibility: isShow ? 'visible' : 'hidden'}}>
+    <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div className={'raster-menu-backdrop'} onClick={() => {
         closeWindow()
-      }}/>
+      }} />
       <div className={'raster-menu-scroll'}>
         {optionList}
       </div>
-      <div className={'raster-menu-loading'} style={{visibility: isLoading ? 'visible' : 'hidden'}}>
+      <div className={'raster-menu-loading'} style={{ visibility: isLoading ? 'visible' : 'hidden' }}>
         <p>Loading...</p>
       </div>
+      <IonIcon icon={chevronForward} className={'raster-menu-arrow right'} />
+      <IonIcon icon={chevronBack} className={'raster-menu-arrow left'} />
     </div>
   )
 }

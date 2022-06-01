@@ -28,6 +28,7 @@ import { useState } from 'react'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
+import { AboutPage } from './AboutPage'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -60,10 +61,13 @@ const test_animation = () => {
 
 const Main: React.FC = () => {
   const [age, setAge] = useState(0)
+  const [animateRange, setAnimateRange] = useState({ lower: 0, upper: 0 })
   const [scene, setScene] = useState<Scene>()
-  const [highlightAnimation, setHighlightAnimation] = useState(false)
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
   const [isRasterMenuShow, setIsRasterMenuPageShow] = useState(false)
+  const [isAboutPageShow, setIsAboutPageShow] = useState(false)
+  // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
+  const [settingsPath, setSettingsPath] = useState('root')
 
   useIonViewDidEnter(() => {
     // Rough bounding box of Australia
@@ -153,12 +157,16 @@ const Main: React.FC = () => {
   })
 
   const closeSettingMenuPage = () => {
-    setHighlightAnimation(false)
     setIsSettingMenuPageShow(false)
+    setSettingsPath('root')
   }
 
   const closeRasterMenu = () => {
     setIsRasterMenuPageShow(false)
+  }
+
+  const closeAboutPage = () => {
+    setIsAboutPageShow(false)
   }
 
   const isViewerLoading = () => {
@@ -174,9 +182,9 @@ const Main: React.FC = () => {
           <AgeSlider
             buttons={<CustomToolbar scene={scene} />}
             age={age}
-            setHighlightAnimation={setHighlightAnimation}
             setAge={setAge}
             setMenuState={setIsSettingMenuPageShow}
+            setMenuPath={setSettingsPath}
           />
         </div>
         <IonFab
@@ -189,7 +197,10 @@ const Main: React.FC = () => {
               closeRasterMenu()
             }}
           >
-            Menu
+            <IonIcon
+              src={'/assets/setting_menu_page/toolbox.svg'}
+              style={{ fontSize: '2rem' }}
+            />
           </IonFabButton>
           <IonFabList side="end">
             <IonFabButton
@@ -210,27 +221,34 @@ const Main: React.FC = () => {
               <IonIcon icon={exitOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="vector-map" />
+              <IonIcon src={'assets/setting_menu_page/vector_map.svg'} />
+            </IonFabButton>
+            <IonFabButton
+              onClick={() => {
+                setIsAboutPageShow(true)
+              }}
+            >
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="question-icon" />
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="question-icon" />
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon class="question-icon" />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon class="question-icon" />
+              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
           </IonFabList>
         </IonFab>
         <div>
           <SettingMenuPage
-            highlightAnimation={highlightAnimation}
-            isShow={isSettingMenuPageShow}
+            animateRange={animateRange}
+            setAnimateRange={setAnimateRange}
             closeModal={closeSettingMenuPage}
+            isShow={isSettingMenuPageShow}
+            path={settingsPath}
+            setPath={setSettingsPath}
           />
           <RasterMenu
             isShow={isRasterMenuShow}
@@ -240,6 +258,7 @@ const Main: React.FC = () => {
             }}
             isViewerLoading={isViewerLoading}
           />
+          <AboutPage isShow={isAboutPageShow} closeModal={closeAboutPage} />
         </div>
       </IonContent>
     </IonPage>

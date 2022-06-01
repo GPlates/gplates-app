@@ -17,18 +17,26 @@ import {
   playForwardOutline,
   timeOutline,
 } from 'ionicons/icons'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { setNumber } from '../functions/input'
 
-const AgeSlider = (props: any) => {
+interface AgeSliderProps {
+  buttons: any
+  age: number
+  setAge: Dispatch<SetStateAction<number>>
+  setMenuPath: Dispatch<SetStateAction<string>>
+  setMenuState: Dispatch<SetStateAction<boolean>>
+}
+
+const AgeSlider = (props: AgeSliderProps) => {
   const [hidden, setHidden] = useState(true)
   const [playing, setPlaying] = useState(false)
   const minAge = 0
   const maxAge = 1000
 
   const openMenu = () => {
+    props.setMenuPath('animation')
     props.setMenuState(true)
-    props.setHighlightAnimation(true)
   }
 
   return (
@@ -75,7 +83,7 @@ const AgeSlider = (props: any) => {
             dir="rtl"
             min={minAge}
             max={maxAge}
-            onIonChange={(e) => props.setAge(e.detail.value)}
+            onIonChange={(e) => props.setAge(e.detail.value as number)}
             value={props.age}
           />
         </IonItem>

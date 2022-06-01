@@ -1,9 +1,0 @@
-/* COMMON COLOR #bfbfbf*/
-/* ion-icon cannot access the asset out of src directory*/
-.vector-map {
-    content: url("../assets/icons/vector_map.svg");
-}
-
-.question-icon {
-    content: url("../assets/icons/question_icon.svg");
-}
