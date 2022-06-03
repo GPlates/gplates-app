@@ -6,6 +6,12 @@ ion-list {
     overflow-y: auto;
 }
 
+@media screen and (max-width: 796px) {
+    ion-toolbar {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
 /* The animation code */
 @keyframes highlight {
     0%  {outline-color: rgba(0, 0, 0, 0);}
