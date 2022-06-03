@@ -1,7 +1,7 @@
-import React from 'react'
+import { Dispatch, SetStateAction } from 'react'
 
 export const setNumber = (
-  setter: React.Dispatch<React.SetStateAction<number>>,
+  setter: Dispatch<SetStateAction<number>>,
   value: string | null | undefined,
   min?: number,
   max?: number

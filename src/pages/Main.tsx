@@ -5,7 +5,7 @@ import {
   IonFabList,
   IonIcon,
   IonPage,
-  useIonViewDidEnter
+  useIonViewDidEnter,
 } from '@ionic/react'
 
 import { cogOutline, earthOutline, exitOutline } from 'ionicons/icons'
@@ -61,11 +61,13 @@ const test_animation = () => {
 
 const Main: React.FC = () => {
   const [age, setAge] = useState(0)
+  const [animateRange, setAnimateRange] = useState({ lower: 0, upper: 0 })
   const [scene, setScene] = useState<Scene>()
-  const [highlightAnimation, setHighlightAnimation] = useState(false)
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
   const [isRasterMenuShow, setIsRasterMenuPageShow] = useState(false)
   const [isAboutPageShow, setIsAboutPageShow] = useState(false)
+  // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
+  const [settingsPath, setSettingsPath] = useState('root')
 
   useIonViewDidEnter(() => {
     // Rough bounding box of Australia
@@ -155,8 +157,8 @@ const Main: React.FC = () => {
   })
 
   const closeSettingMenuPage = () => {
-    setHighlightAnimation(false)
     setIsSettingMenuPageShow(false)
+    setSettingsPath('root')
   }
 
   const closeRasterMenu = () => {
@@ -174,20 +176,20 @@ const Main: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <div id='cesiumContainer' />
-        <div id='credit' style={{ display: 'none' }} />
-        <div className='toolbar-top'>
+        <div id="cesiumContainer" />
+        <div id="credit" style={{ display: 'none' }} />
+        <div className="toolbar-top">
           <AgeSlider
             buttons={<CustomToolbar scene={scene} />}
             age={age}
-            setHighlightAnimation={setHighlightAnimation}
             setAge={setAge}
             setMenuState={setIsSettingMenuPageShow}
+            setMenuPath={setSettingsPath}
           />
         </div>
         <IonFab
-          vertical='bottom'
-          horizontal='start'
+          vertical="bottom"
+          horizontal="start"
           className={'toolbar-bottom'}
         >
           <IonFabButton
@@ -195,9 +197,12 @@ const Main: React.FC = () => {
               closeRasterMenu()
             }}
           >
-            <IonIcon src={'/assets/setting_menu_page/toolbox.svg'} style={{ fontSize: '2rem' }} />
+            <IonIcon
+              src={'/assets/setting_menu_page/toolbox.svg'}
+              style={{ fontSize: '2rem' }}
+            />
           </IonFabButton>
-          <IonFabList side='end'>
+          <IonFabList side="end">
             <IonFabButton
               onClick={() => {
                 setIsSettingMenuPageShow(true)
@@ -218,9 +223,11 @@ const Main: React.FC = () => {
             <IonFabButton>
               <IonIcon src={'assets/setting_menu_page/vector_map.svg'} />
             </IonFabButton>
-            <IonFabButton onClick={() => {
-              setIsAboutPageShow(true)
-            }}>
+            <IonFabButton
+              onClick={() => {
+                setIsAboutPageShow(true)
+              }}
+            >
               <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
@@ -236,9 +243,12 @@ const Main: React.FC = () => {
         </IonFab>
         <div>
           <SettingMenuPage
-            highlightAnimation={highlightAnimation}
-            isShow={isSettingMenuPageShow}
+            animateRange={animateRange}
+            setAnimateRange={setAnimateRange}
             closeModal={closeSettingMenuPage}
+            isShow={isSettingMenuPageShow}
+            path={settingsPath}
+            setPath={setSettingsPath}
           />
           <RasterMenu
             isShow={isRasterMenuShow}
@@ -248,10 +258,7 @@ const Main: React.FC = () => {
             }}
             isViewerLoading={isViewerLoading}
           />
-          <AboutPage
-            isShow={isAboutPageShow}
-            closeModal={closeAboutPage}
-          />
+          <AboutPage isShow={isAboutPageShow} closeModal={closeAboutPage} />
         </div>
       </IonContent>
     </IonPage>

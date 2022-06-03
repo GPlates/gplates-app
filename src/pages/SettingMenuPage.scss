@@ -2,8 +2,13 @@ ion-checkbox.single-setting-option {
     margin-right: 0.75rem;
 }
 
-ion-list {
-    overflow-y: auto;
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 200ms;
 }
 
 @media screen and (max-width: 796px) {
@@ -14,18 +19,24 @@ ion-list {
 
 /* The animation code */
 @keyframes highlight {
-    0%  {outline-color: rgba(0, 0, 0, 0);}
-    50%  {outline-color: var(--ion-color-primary);}
-    100% {outline-color: rgba(0, 0, 0, 0);}
+    0% {
+        outline-color: rgba(0, 0, 0, 0);
+    }
+    50% {
+        outline-color: var(--ion-color-primary);
+    }
+    100% {
+        outline-color: rgba(0, 0, 0, 0);
+    }
 }
 
-/* The element to apply the animation to */
-.highlight {
-    animation-name: highlight;
-    animation-delay: 600ms;
-    animation-duration: 300ms;
-    animation-iteration-count: 2;
-    animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 200ms;
 }
 
 .animation-settings {
@@ -63,4 +74,17 @@ ion-list {
         flex-wrap: wrap;
         min-width: min(512px, $min-col-width);
     }
+}
+
+.settings-list {
+    $toolbar-height: 48px;
+    &.ios {
+        $toolbar-height: 44px;
+    }
+    position: absolute;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: $toolbar-height;
+    height: calc(100% - $toolbar-height);
+    width: 100%;
 }

@@ -1,3 +1,19 @@
+/* The animation code */
+@keyframes outline-animation {
+  0%  {outline-color: rgba(0, 0, 0, 0);}
+  50%  {outline-color: var(--ion-color-primary);}
+  100% {outline-color: rgba(0, 0, 0, 0);}
+}
+
+/* The element to apply the animation to */
+.outline-animation {
+  animation-name: outline-animation;
+  animation-delay: 600ms;
+  animation-duration: 300ms;
+  animation-iteration-count: 2;
+  animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
 .round-button {
     &::part(native) {
         padding: 0;
