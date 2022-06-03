@@ -11,3 +11,7 @@ export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https://services.gradle.org/distr
 
 export SKIP_PREFLIGHT_CHECK=true
 
+# Workaround for bug in source-map for Node v18
+# See: https://github.com/gatsbyjs/gatsby/issues/35607#issuecomment-1122762324
+# & https://github.com/parcel-bundler/parcel/issues/8005#issuecomment-1120149358
+export NODE_OPTIONS=--no-experimental-fetch

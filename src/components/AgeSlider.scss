@@ -2,19 +2,25 @@ $transition: all 150ms;
 
 @media screen and (max-width: 396px) {
   .hidden {
-    transform: translateY(-154px);
+    transform: translateY(calc(-154px - env(safe-area-inset-top)));
   }
 }
 
 @media screen and (min-width: 396px) and (max-width: 796px) {
   .hidden {
-    transform: translateY(-106px);
+    transform: translateY(calc(-106px - env(safe-area-inset-top)));
   }
 }
 
 @media screen and (min-width: 796px) {
   .hidden {
-    transform: translateY(-58px);
+    transform: translateY(calc(-58px - env(safe-area-inset-top)));
+  }
+}
+
+.ios {
+  .container:not(.buttons:not(.hidden)) {
+    padding-top: env(safe-area-inset-top);
   }
 }
 
@@ -23,6 +29,9 @@ $transition: all 150ms;
 }
 
 .container {
+  &:not(.buttons) {
+    background-color: var(--ion-color-dark-contrast);
+  }
   ion-item {
     &::part(native) {
       height: 100%;
@@ -50,10 +59,13 @@ $transition: all 150ms;
     font-size: 24px;
   }
   --padding-start: 4px;
-  --inner-padding-end: 4px;
+  --padding-end: 4px;
+  --ion-safe-area-left: 0;
+  --ion-safe-area-right: 0;
+  width: 228px;
 }
 
-.container .slider {
+.slider {
   ion-button {
     &::part(native) {
       padding: 0;
@@ -61,8 +73,9 @@ $transition: all 150ms;
     height: 40px;
     width: 40px;
   }
-  --padding-start: 8px;
+  --inner-padding-start: 8px;
   --inner-padding-end: 8px;
+  --ion-safe-area-left: 0;
   flex-grow: 100;
   width: min(100vw, 400px);
 }
@@ -71,7 +84,7 @@ $transition: all 150ms;
   align-items: center;
   color: white;
   display: flex;
-  font-size: 20px;
+  font-size: 28px;
   padding: 8px;
   text-shadow: 1px 1px 8px #000000, 1px 1px 8px #000000, 1px 1px 8px #000000;
 }
@@ -84,7 +97,8 @@ $transition: all 150ms;
     text-align: right;
   }
   --padding-start: 16px;
-  --inner-padding-end: 8px;
+  --padding-end: 16px;
+  --ion-safe-area-right: 0;
   min-height: 48px;
   width: 168px;
 }
