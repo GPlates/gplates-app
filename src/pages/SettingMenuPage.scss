@@ -11,6 +11,25 @@ ion-checkbox.single-setting-option {
     transition: opacity 200ms;
 }
 
+@media screen and (max-width: 796px) {
+    ion-toolbar {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+/* The animation code */
+@keyframes highlight {
+    0% {
+        outline-color: rgba(0, 0, 0, 0);
+    }
+    50% {
+        outline-color: var(--ion-color-primary);
+    }
+    100% {
+        outline-color: rgba(0, 0, 0, 0);
+    }
+}
+
 .fade-exit {
     opacity: 1;
 }
@@ -65,7 +84,7 @@ ion-checkbox.single-setting-option {
     position: absolute;
     overflow-y: auto;
     overflow-x: hidden;
-    top: $toolbar-height;
-    height: calc(100% - $toolbar-height);
+    top: calc($toolbar-height + env(safe-area-inset-top));
+    height: calc(100% - ($toolbar-height + env(safe-area-inset-top)));
     width: 100%;
 }

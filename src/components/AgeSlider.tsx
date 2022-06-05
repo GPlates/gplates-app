@@ -89,13 +89,16 @@ const AgeSlider = (props: AgeSliderProps) => {
         </IonItem>
       </div>
       <div
-        className={
-          hidden
-            ? 'bottom buttons container hidden'
-            : 'bottom buttons container'
-        }
+        className={hidden ? 'buttons container hidden' : 'buttons container'}
       >
-        <div className="time">{props.age} Ma</div>
+        <div
+          className="time"
+          onClick={() => {
+            setHidden(!hidden)
+          }}
+        >
+          {props.age} Ma
+        </div>
         <div>
           {props.buttons}
           <IonButton

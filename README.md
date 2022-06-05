@@ -71,6 +71,7 @@ To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how
 - npx cap open android
 - npx cap serve
 - npx cap open ios
+- brew install cocoapods
 
 #### use chrome inspect to debug android chrome://inspect/#devices
 
