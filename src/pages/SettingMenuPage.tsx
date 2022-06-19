@@ -28,6 +28,7 @@ import {
 import { setNumber } from '../functions/input'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
+import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
 
 interface ContainerProps {
   animateRange: { lower: number; upper: number }
@@ -129,11 +130,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             <IonRange min={20} max={80} step={2} />
           </IonItem>
 
-          <IonItemDivider>Main Setting Section2</IonItemDivider>
-          <IonItem>
-            <IonLabel>Background Color</IonLabel>
-            <IonToggle />
-          </IonItem>
+          <BackgroundColorSettings />
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>
