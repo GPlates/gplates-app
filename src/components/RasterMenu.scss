@@ -61,6 +61,7 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) + $ra
   }
 
   ion-card-title {
+    font-weight: bolder;
     color: var(--ion-color-primary)
   }
 }
@@ -69,6 +70,10 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) + $ra
   div {
     height: $selected-bar-height;
     width: 100%
+  }
+
+  ion-card-title {
+    font-weight: normal;
   }
 }
 
@@ -112,5 +117,11 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) + $ra
 
 .left {
   left: 0.5rem;
+}
+
+@media (prefers-color-scheme: light) {
+  .raster-menu-scroll {
+    background: rgba(var(--ion-color-light-rgb), 0.25);
+  }
 }
 
