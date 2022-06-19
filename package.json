@@ -16,6 +16,7 @@
     "@ionic/react": "^6.1.4",
     "@ionic/react-router": "^6.1.4",
     "react": "^18.1.0",
+    "react-colorful": "^5.5.1",
     "react-dom": "^18.1.0",
     "react-router-dom": "^5.3.1",
     "react-transition-group": "^4.4.2",

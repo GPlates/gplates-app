@@ -28,6 +28,8 @@ import {
 import { setNumber } from '../functions/input'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
+import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
+import { Viewer } from 'cesium'
 
 interface ContainerProps {
   animateRange: { lower: number; upper: number }
@@ -36,6 +38,7 @@ interface ContainerProps {
   isShow: boolean
   path: string
   setPath: Dispatch<SetStateAction<string>>
+  viewer: Viewer
 }
 
 // main component for setting menu
@@ -46,6 +49,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   isShow,
   path,
   setPath,
+  viewer
 }) => {
   const titles: { [key: string]: string } = {
     root: 'Settings Menu',
@@ -129,11 +133,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             <IonRange min={20} max={80} step={2} />
           </IonItem>
 
-          <IonItemDivider>Main Setting Section2</IonItemDivider>
-          <IonItem>
-            <IonLabel>Background Color</IonLabel>
-            <IonToggle />
-          </IonItem>
+          <BackgroundColorSettings viewer={viewer}/>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>
