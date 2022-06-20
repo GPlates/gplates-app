@@ -35,6 +35,7 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer}) => {
   const changeBackground = () => {
     if(isBackgroundSettingEnable) {
       viewer.scene.skyBox = new Cesium.SkyBox({})
+      viewer.scene.backgroundColor = Cesium.Color.BLACK
       if(isStarryBackgroundEnable) {
         viewer.scene.backgroundColor = Cesium.Color.TRANSPARENT
       }
