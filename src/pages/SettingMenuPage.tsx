@@ -69,6 +69,12 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [animateExact, setAnimateExact] = useState(false)
   const [animateLoop, setAnimateLoop] = useState(false)
 
+  // background setting
+  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] = useState(false)
+  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
+  const [isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable] = useState(false)
+  const [color, setColor] = useState({ r: 255, g: 255, b: 255 });
+
   const reverseAnimation = () => {
     const lower = animateRange.upper
     const upper = animateRange.lower
@@ -133,7 +139,12 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             <IonRange min={20} max={80} step={2} />
           </IonItem>
 
-          <BackgroundColorSettings viewer={viewer}/>
+          <BackgroundColorSettings viewer={viewer} backgroundSetting={{
+            isBackgroundSettingEnable, setIsBackgroundSettingEnable,
+            isStarryBackgroundEnable, setIsStarryBackgroundEnable,
+            isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable,
+            color, setColor}
+          }/>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>

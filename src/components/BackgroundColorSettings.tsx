@@ -19,14 +19,21 @@ const defaultBackground = () => {
 
 interface ContainerProps {
   viewer: Viewer
+  backgroundSetting: any
 }
 
-export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer}) => {
-  // background parameters
-  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] = useState(false)
-  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
-  const [isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable] = useState(false)
-  const [color, setColor] = useState({ r: 255, g: 255, b: 255 });
+export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer, backgroundSetting}) => {
+  const isBackgroundSettingEnable = backgroundSetting.isBackgroundSettingEnable
+  const setIsBackgroundSettingEnable = backgroundSetting.setIsBackgroundSettingEnable
+
+  const isStarryBackgroundEnable = backgroundSetting.isStarryBackgroundEnable
+  const setIsStarryBackgroundEnable = backgroundSetting.setIsStarryBackgroundEnable
+
+  const isCustomisedColorBackgroundEnable = backgroundSetting.isCustomisedColorBackgroundEnable
+  const setIsCustomisedColorBackgroundEnable = backgroundSetting.setIsCustomisedColorBackgroundEnable
+
+  const color = backgroundSetting.color
+  const setColor = backgroundSetting.setColor
 
   const setDefaultBackground = (viewer: Viewer) => {
     viewer.scene.skyBox = defaultBackground()
