@@ -144,7 +144,7 @@ const Main: React.FC = () => {
       viewer.scene.fog.enabled = false
       viewer.scene.globe.showGroundAtmosphere = false
       viewer.scene.skyAtmosphere.show = false
-      viewer.scene.backgroundColor = Cesium.Color.TRANSPARENT
+      viewer.scene.backgroundColor = Cesium.Color.BLACK
 
       viewer.scene.globe.tileCacheSize = 1000
 
