@@ -61,7 +61,6 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer, backg
 
   return (
     <div>
-      <IonItemDivider>Background Settings</IonItemDivider>
       <IonItem>
         <IonLabel>Customized Background</IonLabel>
         <IonToggle checked={isBackgroundSettingEnable}
@@ -70,7 +69,7 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer, backg
                    }} />
       </IonItem>
       <IonItem disabled={!isBackgroundSettingEnable || isStarryBackgroundEnable}>
-        <IonLabel>Pure Color Background</IonLabel>
+        <IonLabel>Single Colour Background</IonLabel>
         <IonToggle checked={isCustomisedColorBackgroundEnable}
                    onIonChange={() => {
                      setIsCustomisedColorBackgroundEnable(!isCustomisedColorBackgroundEnable)
