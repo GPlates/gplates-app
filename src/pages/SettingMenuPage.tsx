@@ -81,6 +81,22 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     setAnimateRange({ lower, upper })
   }
 
+  const subPageRouting = (path: string, name: string) => {
+    return (
+      <IonItem
+      button
+      onClick={() => {
+        setPath(path)
+      }}
+      >
+        {!isPlatform('ios') && (
+          <IonIcon icon={chevronForward} slot={'end'} />
+        )}
+        <IonLabel>{name}</IonLabel>
+      </IonItem>
+    )
+  }
+
   return (
     <IonModal isOpen={isShow} animated backdropDismiss={false}>
       <IonToolbar>
@@ -120,17 +136,10 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         classNames={'fade'}
       >
         <IonList className={'settings-list'}>
-          <IonItem
-            button
-            onClick={() => {
-              setPath('animation')
-            }}
-          >
-            {!isPlatform('ios') && (
-              <IonIcon icon={chevronForward} slot={'end'} />
-            )}
-            <IonLabel>Animation Settings</IonLabel>
-          </IonItem>
+          {subPageRouting('animation', 'Animation Settings')}
+          {subPageRouting('backgroundSetting', 'Background Settings')}
+
+
           <IonItemDivider>Main Setting Section1</IonItemDivider>
           <IonItem>
             <IonLabel>Animation Speed</IonLabel>
@@ -138,13 +147,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonItem>
             <IonRange min={20} max={80} step={2} />
           </IonItem>
-
-          <BackgroundColorSettings viewer={viewer} backgroundSetting={{
-            isBackgroundSettingEnable, setIsBackgroundSettingEnable,
-            isStarryBackgroundEnable, setIsStarryBackgroundEnable,
-            isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable,
-            color, setColor}
-          }/>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>
@@ -320,6 +322,22 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonGrid>
         </IonList>
       </CSSTransition>
+
+      {/* background setting subpage */}
+      <CSSTransition
+        in={path === 'backgroundSetting'}
+        timeout={200}
+        unmountOnExit
+        classNames={'fade'}
+      >
+        <BackgroundColorSettings viewer={viewer} backgroundSetting={{
+          isBackgroundSettingEnable, setIsBackgroundSettingEnable,
+          isStarryBackgroundEnable, setIsStarryBackgroundEnable,
+          isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable,
+          color, setColor}
+        }/>
+      </CSSTransition>
+
     </IonModal>
   )
 }
