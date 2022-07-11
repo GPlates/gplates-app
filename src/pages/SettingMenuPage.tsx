@@ -141,12 +141,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
 
           <IonItemDivider>Main Setting Section1</IonItemDivider>
-          <IonItem>
-            <IonLabel>Animation Speed</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonRange min={20} max={80} step={2} />
-          </IonItem>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>
