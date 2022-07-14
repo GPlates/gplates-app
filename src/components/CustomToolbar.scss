@@ -21,6 +21,10 @@
   color: var(--ion-color-dark)
 }
 
+.popover {
+  --width: 320px;
+}
+
 .scene-mode-icon {
   &.button {
     height: 36px;

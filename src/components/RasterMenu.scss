@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 $raster-menu-bottom: 5rem;
 $icon-size: 6rem;
 $card-top-margin: 0.5rem;
@@ -9,7 +11,7 @@ $title-font-size: 1rem;
 $subtitle-font-size: 0.8rem;
 $arrow-size: 2rem;
 $raster-menu-height: $icon-size + $card-top-margin + $card-bottom-margin + $selected-bar-height + $header-height;
-$chevron-vertical-position: ($raster-menu-height - $arrow-size)/2 + $raster-menu-bottom;
+$chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) + $raster-menu-bottom;
 
 .raster-menu-scroll {
   text-align: center;
@@ -111,3 +113,4 @@ $chevron-vertical-position: ($raster-menu-height - $arrow-size)/2 + $raster-menu
 .left {
   left: 0.5rem;
 }
+

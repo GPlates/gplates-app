@@ -11,6 +11,25 @@ ion-checkbox.single-setting-option {
     transition: opacity 200ms;
 }
 
+@media screen and (max-width: 796px) {
+    ion-toolbar {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+/* The animation code */
+@keyframes highlight {
+    0% {
+        outline-color: rgba(0, 0, 0, 0);
+    }
+    50% {
+        outline-color: var(--ion-color-primary);
+    }
+    100% {
+        outline-color: rgba(0, 0, 0, 0);
+    }
+}
+
 .fade-exit {
     opacity: 1;
 }
@@ -21,13 +40,13 @@ ion-checkbox.single-setting-option {
 }
 
 .animation-settings {
-    $min-col-width: calc(100vw - 10px);
+    --min-column-width: calc(100vw - 10px);
     outline: solid 3px rgba(0, 0, 0, 0);
     outline-offset: -3px;
     border-radius: 16px;
 
     ion-col {
-        min-width: min(240px, $min-col-width);
+        min-width: min(240px, var(--min-column-width));
         width: 100% !important;
     }
     ion-input {
@@ -40,7 +59,7 @@ ion-checkbox.single-setting-option {
         padding-left: 8px;
     }
     .increment-col {
-        min-width: min(320px, $min-col-width);
+        min-width: min(320px, var(--min-column-width));
     }
     .reverse-col {
         ion-button {
@@ -53,19 +72,19 @@ ion-checkbox.single-setting-option {
         align-items: center;
         display: flex;
         flex-wrap: wrap;
-        min-width: min(512px, $min-col-width);
+        min-width: min(512px, var(--min-column-width));
     }
 }
 
 .settings-list {
-    $toolbar-height: 48px;
+    --toolbar-height: 48px;
     &.ios {
-        $toolbar-height: 44px;
+        --toolbar-height: 44px;
     }
     position: absolute;
     overflow-y: auto;
     overflow-x: hidden;
-    top: $toolbar-height;
-    height: calc(100% - $toolbar-height);
+    top: calc(var(--toolbar-height) + env(safe-area-inset-top));
+    height: calc(100% - (var(--toolbar-height) + env(safe-area-inset-top)));
     width: 100%;
 }

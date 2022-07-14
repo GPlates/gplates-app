@@ -43,6 +43,7 @@ Or
 ## Deploy on ios device
 
 - `ionic capacitor copy ios`
+- install pods (see below for notes on how to install CocoaPods): `cd ios/App/; pod install; cd ../..`
 - Open XCode with `npx cap open ios`
 - Add an account with your Apple ID and choose the team under "signing&capabilities" in XCode
   <img width="800" alt="add account" src="https://user-images.githubusercontent.com/2688316/167048512-49d68826-ff34-4b48-8a89-45f6ae194f04.png">
@@ -52,6 +53,13 @@ Or
 
 - Run the app in XCode or run this command `ionic capacitor run ios -l --external`
 - On your ios device, go to "Settings > General > Device Management" to trust the developer
+
+### CocoaPods on macs
+CocoaPods is required to create the 'ios/App/Pods' folder, and the XCode build will fail without this.
+
+You can try `sudo gem install cocoapods` to install [CocoaPods](https://cocoapods.org) on your Mac. However, this [**does not**](https://github.com/CocoaPods/CocoaPods/issues/11056) work on an M1 chip.
+
+To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how-to-run-cocoapods-on-apple-silicon-m1) mac, use HomeBrew: `brew install cocoapods`
 
 ## Some random notes
 
@@ -63,6 +71,7 @@ Or
 - npx cap open android
 - npx cap serve
 - npx cap open ios
+- brew install cocoapods
 
 #### use chrome inspect to debug android chrome://inspect/#devices
 
