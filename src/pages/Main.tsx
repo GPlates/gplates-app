@@ -19,59 +19,75 @@ import {
   Ion,
   Rectangle,
   Scene,
-  SingleTileImageryProvider,
   Viewer,
   WebMapTileServiceImageryProvider,
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
 import { sqlite } from '../App'
 import { CachingService } from '../functions/cache'
+import { AnimationService } from '../functions/animation'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
 
+// TODO: Dynamically assign these variables based on selected raster
+const URL =
+  'https://geosrv.earthbyte.org/geoserver/Lithodat/wms?service=WMS&version=1.1.0&request=GetMap&layers=Lithodat%3Acontinental_polygons_{count}Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=image%2Fpng%3B%20mode%3D8bit'
+const LIMIT_UPPER = 410
+const LIMIT_LOWER = 0
+
+let animationService: AnimationService
 let cachingService: CachingService
-let count = 0
 let viewer: Viewer
-
-// The times and clock in the below links seem useful
-// https://sandcastle.cesium.com/index.html?src=Web%20Map%20Tile%20Service%20with%20Time.html
-// https://cesium.com/learn/cesiumjs/ref-doc/WebMapTileServiceImageryProvider.html#.ConstructorOptions
-const testAnimation = async () => {
-  count += 1
-  console.log(count % 15)
-  const url = await cachingService?.getCachedRequest(
-    `assets/images/EarthByte_Zahirovic_etal_2016_ESR_r888_AgeGrid-${
-      count % 15
-    }.jpeg`
-  )
-  viewer.imageryLayers.addImageryProvider(
-    new SingleTileImageryProvider({ url })
-  )
-  console.log(viewer.imageryLayers.length)
-  if (viewer.imageryLayers.length > 15) {
-    viewer.imageryLayers.remove(viewer.imageryLayers.get(0), true)
-  }
-}
-
-const startAnimation = () => {
-  setInterval(testAnimation, 100)
-}
 
 const Main: React.FC = () => {
   const [age, setAge] = useState(0)
-  const [animateRange, setAnimateRange] = useState({ lower: 0, upper: 0 })
+  const [animateExact, setAnimateExact] = useState(false)
+  const [animateLoop, setAnimateLoop] = useState(false)
+  const [animateRange, setAnimateRange] = useState({
+    lower: LIMIT_LOWER,
+    upper: LIMIT_UPPER,
+  })
+  const [fps, setFps] = useState(10)
+  const [increment, setIncrement] = useState(1)
+  const [playing, _setPlaying] = useState(false)
   const [scene, setScene] = useState<Scene>()
   const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
   const [isRasterMenuShow, setIsRasterMenuPageShow] = useState(false)
   const [isAboutPageShow, setIsAboutPageShow] = useState(false)
   // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
   const [settingsPath, setSettingsPath] = useState('root')
+
+  // Animation
+  animationService = new AnimationService(
+    cachingService,
+    viewer,
+    age,
+    setAge,
+    animateExact,
+    setAnimateExact,
+    fps,
+    increment,
+    LIMIT_LOWER,
+    LIMIT_UPPER,
+    animateLoop,
+    setAnimateLoop,
+    playing,
+    _setPlaying,
+    animateRange,
+    setAnimateRange,
+    URL
+  )
+  useEffect(() => {
+    if (isSettingMenuPageShow) {
+      animationService.setPlaying(false)
+    }
+  })
 
   useIonViewDidEnter(async () => {
     // Initialize SQLite connection
@@ -195,8 +211,9 @@ const Main: React.FC = () => {
         <div className="toolbar-top">
           <AgeSlider
             buttons={<CustomToolbar scene={scene} />}
-            age={age}
-            setAge={setAge}
+            animationService={animationService}
+            minAge={LIMIT_LOWER}
+            maxAge={LIMIT_UPPER}
             setMenuState={setIsSettingMenuPageShow}
             setMenuPath={setSettingsPath}
           />
@@ -244,7 +261,7 @@ const Main: React.FC = () => {
             >
               <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
-            <IonFabButton onClick={() => startAnimation()}>
+            <IonFabButton>
               <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
             </IonFabButton>
             <IonFabButton>
@@ -257,8 +274,18 @@ const Main: React.FC = () => {
         </IonFab>
         <div>
           <SettingMenuPage
+            animateExact={animateExact}
+            setAnimateExact={setAnimateExact}
+            animateLoop={animateLoop}
+            setAnimateLoop={setAnimateLoop}
             animateRange={animateRange}
             setAnimateRange={setAnimateRange}
+            fps={fps}
+            setFps={setFps}
+            increment={increment}
+            setIncrement={setIncrement}
+            minAge={LIMIT_LOWER}
+            maxAge={LIMIT_UPPER}
             closeModal={closeSettingMenuPage}
             isShow={isSettingMenuPageShow}
             path={settingsPath}

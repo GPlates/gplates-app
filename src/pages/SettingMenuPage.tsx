@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect } from 'react'
 import './SettingMenuPage.scss'
 import {
   IonModal,
@@ -30,8 +30,18 @@ import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
 
 interface ContainerProps {
+  animateExact: boolean
+  setAnimateExact: Dispatch<SetStateAction<boolean>>
+  animateLoop: boolean
+  setAnimateLoop: Dispatch<SetStateAction<boolean>>
   animateRange: { lower: number; upper: number }
   setAnimateRange: Dispatch<SetStateAction<{ lower: number; upper: number }>>
+  fps: number
+  setFps: Dispatch<SetStateAction<number>>
+  increment: number
+  setIncrement: Dispatch<SetStateAction<number>>
+  minAge: number
+  maxAge: number
   closeModal: Function
   isShow: boolean
   path: string
@@ -40,8 +50,18 @@ interface ContainerProps {
 
 // main component for setting menu
 export const SettingMenuPage: React.FC<ContainerProps> = ({
+  animateExact,
+  setAnimateExact,
+  animateLoop,
+  setAnimateLoop,
   animateRange,
   setAnimateRange,
+  fps,
+  setFps,
+  increment,
+  setIncrement,
+  minAge,
+  maxAge,
   closeModal,
   isShow,
   path,
@@ -53,23 +73,25 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   }
 
   // Animation Settings
-  const minAge = 0
-  const maxAge = 1000
-  const minIncrement = 0
+  const minIncrement = 1
   const maxIncrement = 100
-  const minFps = 0
+  const minFps = 1
   const maxFps = 60
-
-  const [increment, setIncrement] = useState(0)
-  const [fps, setFps] = useState(0)
-  const [animateExact, setAnimateExact] = useState(false)
-  const [animateLoop, setAnimateLoop] = useState(false)
 
   const reverseAnimation = () => {
     const lower = animateRange.upper
     const upper = animateRange.lower
     setAnimateRange({ lower, upper })
   }
+
+  // Hack to get IonRange knobs to show the correct position on component mount
+  useEffect(() => {
+    setTimeout(() => {
+      const old = Object.assign({}, animateRange)
+      setAnimateRange({ lower: 0, upper: 0 })
+      setAnimateRange(old)
+    }, 100)
+  }, [isShow])
 
   return (
     <IonModal isOpen={isShow} animated backdropDismiss={false}>
@@ -192,7 +214,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   dualKnobs={true}
                   min={minAge}
                   max={maxAge}
-                  onIonChange={(e) => setAnimateRange(e.detail.value as any)}
+                  onIonChange={(e) => {
+                    setAnimateRange(e.detail.value as any)
+                  }}
                   value={animateRange}
                 />
               </IonCol>
@@ -293,15 +317,15 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonItem>
                   <IonLabel>Finish animation exactly on end time</IonLabel>
                   <IonCheckbox
-                    onIonChange={(e) => setAnimateExact(e.detail.value)}
-                    value={animateExact}
+                    checked={animateExact}
+                    onIonChange={(e) => setAnimateExact(e.detail.checked)}
                   />
                 </IonItem>
                 <IonItem>
                   <IonLabel>Loop</IonLabel>
                   <IonCheckbox
-                    onIonChange={(e) => setAnimateLoop(e.detail.value)}
-                    value={animateLoop}
+                    checked={animateLoop}
+                    onIonChange={(e) => setAnimateLoop(e.detail.checked)}
                   />
                 </IonItem>
               </IonCol>

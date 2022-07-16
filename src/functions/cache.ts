@@ -1,7 +1,6 @@
 import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
-// TODO: Don't send another request for a URL if we're still waiting on the previous one (create db entry with empty data?)
 
 export class CachingService {
   constructor(private db: SQLiteDBConnection) {}
@@ -9,7 +8,6 @@ export class CachingService {
   // Store request data
   // ttl = time to live (in seconds). Values <= 0 will be ignored (data will live forever)
   cacheRequest(url: string, data: any, ttl?: number): Promise<any> {
-    console.log('Caching request...')
     if (ttl != null && ttl > 0) {
       ttl = new Date().getTime() + ttl * 1000
     } else {
@@ -23,7 +21,6 @@ export class CachingService {
 
   // Try to load cached data
   async getCachedRequest(url: string): Promise<any> {
-    console.log('Getting cached request...')
     const currentTime = new Date().getTime()
     let data
     const ret = await this.db.query('SELECT * FROM cache WHERE url == ?', [url])
