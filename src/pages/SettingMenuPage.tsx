@@ -89,12 +89,14 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
   // Hack to get IonRange knobs to show the correct position on component mount
   useEffect(() => {
-    setTimeout(() => {
-      const old = Object.assign({}, animateRange)
-      setAnimateRange({ lower: 0, upper: 0 })
-      setAnimateRange(old)
-    }, 100)
-  }, [isShow])
+    if (path === 'animation') {
+      setTimeout(() => {
+        const old = Object.assign({}, animateRange)
+        setAnimateRange({ lower: 0, upper: 0 })
+        setAnimateRange(old)
+      }, 100)
+    }
+  }, [path])
 
   // background setting
   const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] = useState(false)
@@ -222,7 +224,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   dualKnobs={true}
                   min={minAge}
                   max={maxAge}
-                  onIonChange={(e) => {
+                  onIonKnobMoveEnd={(e) => {
                     setAnimateRange(e.detail.value as any)
                   }}
                   value={animateRange}
