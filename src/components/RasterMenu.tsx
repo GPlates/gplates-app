@@ -164,14 +164,16 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
         key={'raster-menu-element-' + i}
         className={isSelectedList[i] ? 'selected-opt' : 'unselected-opt'}
         onClick={async (e) => {
-          select(i)
-          setIsLoading(true)
-          addLayer(rasterMaps[i].layer)
-          await delay(500)
-          while (!isViewerLoading()) {
+          if (!isSelectedList[i]) {
+            select(i)
+            setIsLoading(true)
+            addLayer(rasterMaps[i].layer)
             await delay(500)
+            while (!isViewerLoading()) {
+              await delay(500)
+            }
+            setIsLoading(false)
           }
-          setIsLoading(false)
         }}>
         <img src={rasterMaps[i].icon} className={'map-icon'} alt={'global icon'} />
         <IonCardHeader>

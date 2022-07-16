@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import './SettingMenuPage.scss'
 import {
   IonModal,
@@ -7,7 +7,6 @@ import {
   IonTitle,
   IonRippleEffect,
   IonRange,
-  IonToggle,
   IonCheckbox,
   IonSelectOption,
   IonLabel,
@@ -28,6 +27,8 @@ import {
 import { setNumber } from '../functions/input'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
+import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
+import { Viewer } from 'cesium'
 
 interface ContainerProps {
   animateExact: boolean
@@ -46,6 +47,7 @@ interface ContainerProps {
   isShow: boolean
   path: string
   setPath: Dispatch<SetStateAction<string>>
+  viewer: Viewer
 }
 
 // main component for setting menu
@@ -66,6 +68,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   isShow,
   path,
   setPath,
+  viewer
 }) => {
   const titles: { [key: string]: string } = {
     root: 'Settings Menu',
@@ -92,6 +95,28 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
       setAnimateRange(old)
     }, 100)
   }, [isShow])
+
+  // background setting
+  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] = useState(false)
+  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
+  const [isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable] = useState(false)
+  const [color, setColor] = useState({ r: 255, g: 255, b: 255 });
+
+  const subPageRouting = (path: string, name: string) => {
+    return (
+      <IonItem
+      button
+      onClick={() => {
+        setPath(path)
+      }}
+      >
+        {!isPlatform('ios') && (
+          <IonIcon icon={chevronForward} slot={'end'} />
+        )}
+        <IonLabel>{name}</IonLabel>
+      </IonItem>
+    )
+  }
 
   return (
     <IonModal isOpen={isShow} animated backdropDismiss={false}>
@@ -132,30 +157,11 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         classNames={'fade'}
       >
         <IonList className={'settings-list'}>
-          <IonItem
-            button
-            onClick={() => {
-              setPath('animation')
-            }}
-          >
-            {!isPlatform('ios') && (
-              <IonIcon icon={chevronForward} slot={'end'} />
-            )}
-            <IonLabel>Animation Settings</IonLabel>
-          </IonItem>
-          <IonItemDivider>Main Setting Section1</IonItemDivider>
-          <IonItem>
-            <IonLabel>Animation Speed</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonRange min={20} max={80} step={2} />
-          </IonItem>
+          {subPageRouting('animation', 'Animation Settings')}
+          {subPageRouting('backgroundSetting', 'Background Settings')}
 
-          <IonItemDivider>Main Setting Section2</IonItemDivider>
-          <IonItem>
-            <IonLabel>Background Color</IonLabel>
-            <IonToggle />
-          </IonItem>
+
+          <IonItemDivider>Main Setting Section1</IonItemDivider>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>
@@ -192,6 +198,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonItem>
         </IonList>
       </CSSTransition>
+
+      {/* animation settings subpage */}
       <CSSTransition
         in={path === 'animation'}
         timeout={200}
@@ -333,6 +341,22 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonGrid>
         </IonList>
       </CSSTransition>
+
+      {/* background setting subpage */}
+      <CSSTransition
+        in={path === 'backgroundSetting'}
+        timeout={200}
+        unmountOnExit
+        classNames={'fade'}
+      >
+        <BackgroundColorSettings viewer={viewer} backgroundSetting={{
+          isBackgroundSettingEnable, setIsBackgroundSettingEnable,
+          isStarryBackgroundEnable, setIsStarryBackgroundEnable,
+          isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable,
+          color, setColor}
+        }/>
+      </CSSTransition>
+
     </IonModal>
   )
 }

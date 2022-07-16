@@ -31,6 +31,8 @@ import { AboutPage } from './AboutPage'
 import { sqlite } from '../App'
 import { CachingService } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
+import * as Cesium from 'cesium'
+import { StarrySky } from '../components/StarrySky'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -162,11 +164,17 @@ const Main: React.FC = () => {
         homeButton: false,
         navigationHelpButton: false,
         sceneModePicker: false,
+        contextOptions: {
+          webgl: {
+            alpha: true
+          }
+        }
       })
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
       viewer.scene.globe.showGroundAtmosphere = false
       viewer.scene.skyAtmosphere.show = false
+      viewer.scene.backgroundColor = Cesium.Color.BLACK
 
       viewer.scene.globe.tileCacheSize = 1000
 
@@ -206,6 +214,7 @@ const Main: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
+        <StarrySky />
         <div id="cesiumContainer" />
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
@@ -290,6 +299,7 @@ const Main: React.FC = () => {
             isShow={isSettingMenuPageShow}
             path={settingsPath}
             setPath={setSettingsPath}
+            viewer={viewer}
           />
           <RasterMenu
             isShow={isRasterMenuShow}
