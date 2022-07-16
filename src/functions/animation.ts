@@ -50,7 +50,7 @@ export class AnimationService {
     if (!dragging) {
       this.setAge(animateFrame)
     }
-    if (this.viewer.imageryLayers.length > 4) {
+    if (this.viewer.imageryLayers.length > 8) {
       this.viewer.imageryLayers.remove(this.viewer.imageryLayers.get(0), true)
     }
 
