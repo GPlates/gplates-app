@@ -4,8 +4,7 @@
 	"webDir": "build",
 	"bundledWebRuntime": false,
 	"server": {
-		"cleartext": true,
-		"url": "http://localhost:8100"
+		"cleartext": true
 	},
 	"plugins": {
 		"SplashScreen": {
