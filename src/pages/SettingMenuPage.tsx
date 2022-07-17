@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import './SettingMenuPage.scss'
 import {
   IonModal,
@@ -7,7 +7,6 @@ import {
   IonTitle,
   IonRippleEffect,
   IonRange,
-  IonToggle,
   IonCheckbox,
   IonSelectOption,
   IonLabel,
@@ -32,8 +31,18 @@ import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
 import { Viewer } from 'cesium'
 
 interface ContainerProps {
+  animateExact: boolean
+  setAnimateExact: Dispatch<SetStateAction<boolean>>
+  animateLoop: boolean
+  setAnimateLoop: Dispatch<SetStateAction<boolean>>
   animateRange: { lower: number; upper: number }
   setAnimateRange: Dispatch<SetStateAction<{ lower: number; upper: number }>>
+  fps: number
+  setFps: Dispatch<SetStateAction<number>>
+  increment: number
+  setIncrement: Dispatch<SetStateAction<number>>
+  minAge: number
+  maxAge: number
   closeModal: Function
   isShow: boolean
   path: string
@@ -43,8 +52,18 @@ interface ContainerProps {
 
 // main component for setting menu
 export const SettingMenuPage: React.FC<ContainerProps> = ({
+  animateExact,
+  setAnimateExact,
+  animateLoop,
+  setAnimateLoop,
   animateRange,
   setAnimateRange,
+  fps,
+  setFps,
+  increment,
+  setIncrement,
+  minAge,
+  maxAge,
   closeModal,
   isShow,
   path,
@@ -57,29 +76,33 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   }
 
   // Animation Settings
-  const minAge = 0
-  const maxAge = 1000
-  const minIncrement = 0
+  const minIncrement = 1
   const maxIncrement = 100
-  const minFps = 0
+  const minFps = 1
   const maxFps = 60
-
-  const [increment, setIncrement] = useState(0)
-  const [fps, setFps] = useState(0)
-  const [animateExact, setAnimateExact] = useState(false)
-  const [animateLoop, setAnimateLoop] = useState(false)
-
-  // background setting
-  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] = useState(false)
-  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
-  const [isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable] = useState(false)
-  const [color, setColor] = useState({ r: 255, g: 255, b: 255 });
 
   const reverseAnimation = () => {
     const lower = animateRange.upper
     const upper = animateRange.lower
     setAnimateRange({ lower, upper })
   }
+
+  // Hack to get IonRange knobs to show the correct position on component mount
+  useEffect(() => {
+    if (path === 'animation') {
+      setTimeout(() => {
+        const old = Object.assign({}, animateRange)
+        setAnimateRange({ lower: 0, upper: 0 })
+        setAnimateRange(old)
+      }, 100)
+    }
+  }, [path])
+
+  // background setting
+  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] = useState(false)
+  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
+  const [isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable] = useState(false)
+  const [color, setColor] = useState({ r: 255, g: 255, b: 255 });
 
   const subPageRouting = (path: string, name: string) => {
     return (
@@ -141,12 +164,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
 
           <IonItemDivider>Main Setting Section1</IonItemDivider>
-          <IonItem>
-            <IonLabel>Animation Speed</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonRange min={20} max={80} step={2} />
-          </IonItem>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>
@@ -183,6 +200,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonItem>
         </IonList>
       </CSSTransition>
+
+      {/* animation settings subpage */}
       <CSSTransition
         in={path === 'animation'}
         timeout={200}
@@ -205,7 +224,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   dualKnobs={true}
                   min={minAge}
                   max={maxAge}
-                  onIonChange={(e) => setAnimateRange(e.detail.value as any)}
+                  onIonKnobMoveEnd={(e) => {
+                    setAnimateRange(e.detail.value as any)
+                  }}
                   value={animateRange}
                 />
               </IonCol>
@@ -306,15 +327,15 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonItem>
                   <IonLabel>Finish animation exactly on end time</IonLabel>
                   <IonCheckbox
-                    onIonChange={(e) => setAnimateExact(e.detail.value)}
-                    value={animateExact}
+                    checked={animateExact}
+                    onIonChange={(e) => setAnimateExact(e.detail.checked)}
                   />
                 </IonItem>
                 <IonItem>
                   <IonLabel>Loop</IonLabel>
                   <IonCheckbox
-                    onIonChange={(e) => setAnimateLoop(e.detail.value)}
-                    value={animateLoop}
+                    checked={animateLoop}
+                    onIonChange={(e) => setAnimateLoop(e.detail.checked)}
                   />
                 </IonItem>
               </IonCol>
