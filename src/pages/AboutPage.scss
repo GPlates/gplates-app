@@ -1,0 +1,27 @@
+.about-page-icon {
+  margin-top: 1rem;
+  text-align: center;
+  width: 100%;
+
+  img {
+    margin: 0 auto
+  }
+}
+
+.about-page-intro-frame {
+  margin: 0 0.5rem;
+  border-style: solid;
+  border-width: 0.1rem;
+  border-color: var(--ion-color-dark);
+  border-radius: 0.5rem;
+  padding: 0 0.5rem;
+}
+
+.about-page-intro-text {
+  text-align: justify;
+}
+
+.about-page-clickable-info {
+  height: 1rem;
+  margin: 0 0 0.6rem 0;
+}

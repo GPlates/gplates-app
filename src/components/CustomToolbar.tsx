@@ -96,7 +96,7 @@ const CustomToolbar = (props: any) => {
       </IonButton>
       <IonButton className="round-button" id="help-button">
         <IonIcon icon={helpOutline} />
-        <IonPopover trigger="help-button">
+        <IonPopover className="popover" trigger="help-button">
           <IonContent>
             <Swiper
               pagination={pagination}

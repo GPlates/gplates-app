@@ -22,5 +22,13 @@
   {
     "pkg": "@capacitor/status-bar",
     "classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
+  },
+  {
+  "pkg": "@capacitor/share",
+  "classpath": "com.capacitorjs.plugins.share.SharePlugin"
+  },
+  {
+    "pkg": "@capacitor-community/sqlite",
+    "classpath": "com.getcapacitor.community.database.sqlite.CapacitorSQLitePlugin"
   }
 ]
