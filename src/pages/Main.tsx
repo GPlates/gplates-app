@@ -8,7 +8,7 @@ import {
   useIonViewDidEnter,
 } from '@ionic/react'
 
-import { cogOutline, earthOutline, exitOutline } from 'ionicons/icons'
+import { cogOutline, earthOutline, exitOutline, informationOutline } from 'ionicons/icons'
 
 import './Main.scss'
 
@@ -268,7 +268,7 @@ const Main: React.FC = () => {
                 setIsAboutPageShow(true)
               }}
             >
-              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
+              <IonIcon icon={informationOutline} />
             </IonFabButton>
             <IonFabButton>
               <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
