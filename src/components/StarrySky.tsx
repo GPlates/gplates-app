@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import assert from 'assert'
 
-let maxStars = 300;
+let maxStars = 100;
 
 function random(min: number, max: any = null) {
   if (max == null) {
@@ -129,7 +129,12 @@ export const StarrySky: React.FC<ContainerProps> = () => {
         Star.stars[i].draw();
       }
 
-      window.requestAnimationFrame(animation);
+      // try to avoid setTimeout collision with aging animation
+      setTimeout(() => {
+        animation()
+      }, 400)
+
+      // window.requestAnimationFrame(animation);
     }
 
     animation();
