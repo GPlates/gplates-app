@@ -110,7 +110,7 @@ export const StarrySky: React.FC<ContainerProps> = () => {
     ctx2.arc(half, half, half, 0, Math.PI * 2);
     ctx2.fill();
 
-// End cache
+    // End cache
     Star.ctx = ctx
     Star.canvas2 = canvas2
     for (var i = 0; i < maxStars; i++) {
@@ -133,9 +133,9 @@ export const StarrySky: React.FC<ContainerProps> = () => {
     }
 
     animation();
-  })
+  }, [])
 
   return (
-      <canvas id="starrySky" style={{position: 'absolute', zIndex: 0}}></canvas>
+      <canvas id='starrySky' style={{ position: 'absolute', zIndex: 0 }}/>
   )
 }
