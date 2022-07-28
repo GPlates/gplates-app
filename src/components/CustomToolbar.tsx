@@ -10,7 +10,7 @@ import { SceneMode } from 'cesium'
 import { homeOutline, helpOutline } from 'ionicons/icons'
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
-import { Fragment, useState } from 'react'
+import React, { Fragment, useState } from 'react'
 
 // https://stackoverflow.com/a/69736635/15379768
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
