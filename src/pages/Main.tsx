@@ -8,7 +8,12 @@ import {
   useIonViewDidEnter,
 } from '@ionic/react'
 
-import { cogOutline, earthOutline, exitOutline, informationOutline } from 'ionicons/icons'
+import {
+  cogOutline,
+  earthOutline,
+  exitOutline,
+  informationOutline,
+} from 'ionicons/icons'
 
 import './Main.scss'
 
@@ -64,6 +69,10 @@ const Main: React.FC = () => {
   const [isAboutPageShow, setIsAboutPageShow] = useState(false)
   // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
   const [settingsPath, setSettingsPath] = useState('root')
+
+  // starry background setting
+  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
+    useState(false)
 
   // Animation
   animationService = new AnimationService(
@@ -166,9 +175,9 @@ const Main: React.FC = () => {
         sceneModePicker: false,
         contextOptions: {
           webgl: {
-            alpha: true
-          }
-        }
+            alpha: true,
+          },
+        },
       })
       setScene(viewer.scene)
       viewer.scene.fog.enabled = false
@@ -214,7 +223,8 @@ const Main: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <StarrySky />
+        <StarrySky isStarryBackgroundEnable={isStarryBackgroundEnable} />
+
         <div id="cesiumContainer" />
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
@@ -300,6 +310,8 @@ const Main: React.FC = () => {
             path={settingsPath}
             setPath={setSettingsPath}
             viewer={viewer}
+            isStarryBackgroundEnable={isStarryBackgroundEnable}
+            setIsStarryBackgroundEnable={setIsStarryBackgroundEnable}
           />
           <RasterMenu
             isShow={isRasterMenuShow}
