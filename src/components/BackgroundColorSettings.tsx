@@ -1,19 +1,19 @@
 import { IonItem, IonItemDivider, IonLabel, IonToggle } from '@ionic/react'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { RgbColorPicker  } from "react-colorful";
+import { RgbColorPicker } from 'react-colorful'
 import { Viewer } from 'cesium'
 import * as Cesium from 'cesium'
 
 const defaultBackground = () => {
   return new Cesium.SkyBox({
-    sources : {
-      positiveX : 'cesium/Assets/Textures/SkyBox/tycho2t3_80_px.jpg',
-      negativeX : 'cesium/Assets/Textures/SkyBox/tycho2t3_80_mx.jpg',
-      positiveY : 'cesium/Assets/Textures/SkyBox/tycho2t3_80_py.jpg',
-      negativeY : 'cesium/Assets/Textures/SkyBox/tycho2t3_80_my.jpg',
-      positiveZ : 'cesium/Assets/Textures/SkyBox/tycho2t3_80_pz.jpg',
-      negativeZ : 'cesium/Assets/Textures/SkyBox/tycho2t3_80_mz.jpg'
-    }
+    sources: {
+      positiveX: 'cesium/Assets/Textures/SkyBox/tycho2t3_80_px.jpg',
+      negativeX: 'cesium/Assets/Textures/SkyBox/tycho2t3_80_mx.jpg',
+      positiveY: 'cesium/Assets/Textures/SkyBox/tycho2t3_80_py.jpg',
+      negativeY: 'cesium/Assets/Textures/SkyBox/tycho2t3_80_my.jpg',
+      positiveZ: 'cesium/Assets/Textures/SkyBox/tycho2t3_80_pz.jpg',
+      negativeZ: 'cesium/Assets/Textures/SkyBox/tycho2t3_80_mz.jpg',
+    },
   })
 }
 
@@ -22,15 +22,22 @@ interface ContainerProps {
   backgroundSetting: any
 }
 
-export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer, backgroundSetting}) => {
+export const BackgroundColorSettings: React.FC<ContainerProps> = ({
+  viewer,
+  backgroundSetting,
+}) => {
   const isBackgroundSettingEnable = backgroundSetting.isBackgroundSettingEnable
-  const setIsBackgroundSettingEnable = backgroundSetting.setIsBackgroundSettingEnable
+  const setIsBackgroundSettingEnable =
+    backgroundSetting.setIsBackgroundSettingEnable
 
   const isStarryBackgroundEnable = backgroundSetting.isStarryBackgroundEnable
-  const setIsStarryBackgroundEnable = backgroundSetting.setIsStarryBackgroundEnable
+  const setIsStarryBackgroundEnable =
+    backgroundSetting.setIsStarryBackgroundEnable
 
-  const isCustomisedColorBackgroundEnable = backgroundSetting.isCustomisedColorBackgroundEnable
-  const setIsCustomisedColorBackgroundEnable = backgroundSetting.setIsCustomisedColorBackgroundEnable
+  const isCustomisedColorBackgroundEnable =
+    backgroundSetting.isCustomisedColorBackgroundEnable
+  const setIsCustomisedColorBackgroundEnable =
+    backgroundSetting.setIsCustomisedColorBackgroundEnable
 
   const color = backgroundSetting.color
   const setColor = backgroundSetting.setColor
@@ -40,49 +47,69 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer, backg
   }
 
   const changeBackground = () => {
-    if(isBackgroundSettingEnable) {
+    if (isBackgroundSettingEnable) {
       viewer.scene.skyBox = new Cesium.SkyBox({})
       viewer.scene.backgroundColor = Cesium.Color.BLACK
-      if(isStarryBackgroundEnable) {
+      if (isStarryBackgroundEnable) {
         viewer.scene.backgroundColor = Cesium.Color.TRANSPARENT
+      } else if (isCustomisedColorBackgroundEnable) {
+        viewer.scene.backgroundColor = new Cesium.Color(
+          color.r / 255,
+          color.g / 255,
+          color.b / 255
+        )
       }
-      else if(isCustomisedColorBackgroundEnable) {
-        viewer.scene.backgroundColor = new Cesium.Color(color.r/255, color.g/255, color.b/255)
-      }
-    }
-    else {
+    } else {
       setDefaultBackground(viewer)
     }
   }
 
-  useEffect(() => {changeBackground()},
-    [isBackgroundSettingEnable, isStarryBackgroundEnable, isCustomisedColorBackgroundEnable, color]
-  )
+  useEffect(() => {
+    changeBackground()
+  }, [
+    isBackgroundSettingEnable,
+    isStarryBackgroundEnable,
+    isCustomisedColorBackgroundEnable,
+    color,
+  ])
 
   return (
     <div>
       <IonItem>
         <IonLabel>Customized Background</IonLabel>
-        <IonToggle checked={isBackgroundSettingEnable}
-                   onIonChange={(e) => {
-                     setIsBackgroundSettingEnable(!isBackgroundSettingEnable)
-                   }} />
-      </IonItem>
-      <IonItem disabled={!isBackgroundSettingEnable || isStarryBackgroundEnable}>
-        <IonLabel>Single Colour Background</IonLabel>
-        <IonToggle checked={isCustomisedColorBackgroundEnable}
-                   onIonChange={() => {
-                     setIsCustomisedColorBackgroundEnable(!isCustomisedColorBackgroundEnable)
-                   }}
+        <IonToggle
+          checked={isBackgroundSettingEnable}
+          onIonChange={(e) => {
+            setIsBackgroundSettingEnable(!isBackgroundSettingEnable)
+          }}
         />
       </IonItem>
       <IonItem
-        disabled={!isCustomisedColorBackgroundEnable || isStarryBackgroundEnable || !isBackgroundSettingEnable}>
+        disabled={!isBackgroundSettingEnable || isStarryBackgroundEnable}
+      >
+        <IonLabel>Single Colour Background</IonLabel>
+        <IonToggle
+          checked={isCustomisedColorBackgroundEnable}
+          onIonChange={() => {
+            setIsCustomisedColorBackgroundEnable(
+              !isCustomisedColorBackgroundEnable
+            )
+          }}
+        />
+      </IonItem>
+      <IonItem
+        disabled={
+          !isCustomisedColorBackgroundEnable ||
+          isStarryBackgroundEnable ||
+          !isBackgroundSettingEnable
+        }
+      >
         <IonLabel>Color Picker</IonLabel>
-        <RgbColorPicker color={color}
-                        onChange={(newColor) => {
-                          setColor(newColor)
-                        }}
+        <RgbColorPicker
+          color={color}
+          onChange={(newColor) => {
+            setColor(newColor)
+          }}
         />
       </IonItem>
       <IonItem disabled={!isBackgroundSettingEnable}>
@@ -91,7 +118,8 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({viewer, backg
           checked={isStarryBackgroundEnable}
           onIonChange={() => {
             setIsStarryBackgroundEnable(!isStarryBackgroundEnable)
-          }} />
+          }}
+        />
       </IonItem>
     </div>
   )

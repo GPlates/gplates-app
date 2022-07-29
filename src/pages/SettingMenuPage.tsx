@@ -48,6 +48,8 @@ interface ContainerProps {
   path: string
   setPath: Dispatch<SetStateAction<string>>
   viewer: Viewer
+  isStarryBackgroundEnable: boolean
+  setIsStarryBackgroundEnable: Dispatch<SetStateAction<boolean>>
 }
 
 // main component for setting menu
@@ -68,7 +70,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   isShow,
   path,
   setPath,
-  viewer
+  viewer,
+  isStarryBackgroundEnable,
+  setIsStarryBackgroundEnable,
 }) => {
   const titles: { [key: string]: string } = {
     root: 'Settings Menu',
@@ -99,22 +103,25 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   }, [path])
 
   // background setting
-  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] = useState(false)
-  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
-  const [isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable] = useState(false)
-  const [color, setColor] = useState({ r: 255, g: 255, b: 255 });
+  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
+    useState(false)
+  // the isStarryBackgroundEnable and setIsStarryBackgroundEnable are moved to Main.tsx by Michael Chin
+  // const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
+  const [
+    isCustomisedColorBackgroundEnable,
+    setIsCustomisedColorBackgroundEnable,
+  ] = useState(false)
+  const [color, setColor] = useState({ r: 255, g: 255, b: 255 })
 
   const subPageRouting = (path: string, name: string) => {
     return (
       <IonItem
-      button
-      onClick={() => {
-        setPath(path)
-      }}
+        button
+        onClick={() => {
+          setPath(path)
+        }}
       >
-        {!isPlatform('ios') && (
-          <IonIcon icon={chevronForward} slot={'end'} />
-        )}
+        {!isPlatform('ios') && <IonIcon icon={chevronForward} slot={'end'} />}
         <IonLabel>{name}</IonLabel>
       </IonItem>
     )
@@ -161,7 +168,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         <IonList className={'settings-list'}>
           {subPageRouting('animation', 'Animation Settings')}
           {subPageRouting('backgroundSetting', 'Background Settings')}
-
 
           <IonItemDivider>Main Setting Section1</IonItemDivider>
 
@@ -351,14 +357,20 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         unmountOnExit
         classNames={'fade'}
       >
-        <BackgroundColorSettings viewer={viewer} backgroundSetting={{
-          isBackgroundSettingEnable, setIsBackgroundSettingEnable,
-          isStarryBackgroundEnable, setIsStarryBackgroundEnable,
-          isCustomisedColorBackgroundEnable, setIsCustomisedColorBackgroundEnable,
-          color, setColor}
-        }/>
+        <BackgroundColorSettings
+          viewer={viewer}
+          backgroundSetting={{
+            isBackgroundSettingEnable,
+            setIsBackgroundSettingEnable,
+            isStarryBackgroundEnable,
+            setIsStarryBackgroundEnable,
+            isCustomisedColorBackgroundEnable,
+            setIsCustomisedColorBackgroundEnable,
+            color,
+            setColor,
+          }}
+        />
       </CSSTransition>
-
     </IonModal>
   )
 }

@@ -2,12 +2,17 @@ import React, { useState } from 'react'
 import {
   IonCard,
   IonCardHeader,
-  IonCardSubtitle, IonCardTitle,
-  IonIcon
+  IonCardSubtitle,
+  IonCardTitle,
+  IonIcon,
 } from '@ionic/react'
 
 import './RasterMenu.scss'
-import { Credit, GeographicTilingScheme, WebMapTileServiceImageryProvider } from 'cesium'
+import {
+  Credit,
+  GeographicTilingScheme,
+  WebMapTileServiceImageryProvider,
+} from 'cesium'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 
 var gridsetName = 'EPSG:4326'
@@ -33,7 +38,7 @@ var gridNames = [
   'EPSG:4326:18',
   'EPSG:4326:19',
   'EPSG:4326:20',
-  'EPSG:4326:21'
+  'EPSG:4326:21',
 ]
 
 const topography = new WebMapTileServiceImageryProvider({
@@ -46,7 +51,7 @@ const topography = new WebMapTileServiceImageryProvider({
   //minimumLevel: 1,
   maximumLevel: 8,
   tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Coastlines')
+  credit: new Credit('EarthByte Coastlines'),
 })
 
 const geology = new WebMapTileServiceImageryProvider({
@@ -59,7 +64,7 @@ const geology = new WebMapTileServiceImageryProvider({
   //minimumLevel: 1,
   maximumLevel: 8,
   tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Geology')
+  credit: new Credit('EarthByte Geology'),
 })
 
 const agegrid = new WebMapTileServiceImageryProvider({
@@ -72,7 +77,7 @@ const agegrid = new WebMapTileServiceImageryProvider({
   //minimumLevel: 1,
   maximumLevel: 8,
   tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Geology')
+  credit: new Credit('EarthByte Geology'),
 })
 
 const gplates_coastlines = new WebMapTileServiceImageryProvider({
@@ -85,7 +90,7 @@ const gplates_coastlines = new WebMapTileServiceImageryProvider({
   //minimumLevel: 1,
   maximumLevel: 8,
   tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Coastlines')
+  credit: new Credit('EarthByte Coastlines'),
 })
 
 const rasterMaps = [
@@ -93,44 +98,44 @@ const rasterMaps = [
     layer: geology,
     title: 'Geology',
     subTitle: '???',
-    icon: 'assets/raster_menu/geology-256x256.png'
+    icon: 'assets/raster_menu/geology-256x256.png',
   },
   {
     layer: agegrid,
     title: 'Agegrid',
     subTitle: '???',
-    icon: 'assets/raster_menu/agegrid-256x256.png'
+    icon: 'assets/raster_menu/agegrid-256x256.png',
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png'
+    icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png'
+    icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png'
+    icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png'
+    icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
     layer: topography,
     title: 'Topography',
     subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png'
-  }
+    icon: 'assets/raster_menu/topography-256x256.png',
+  },
 ]
 
 interface ContainerProps {
@@ -139,7 +144,6 @@ interface ContainerProps {
   addLayer: Function
   isViewerLoading: Function
 }
-
 
 function initialSelection() {
   let isSelectedList = [true]
@@ -150,10 +154,15 @@ function initialSelection() {
 }
 
 const delay = (ms: number) => {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLayer, isViewerLoading}) => {
+export const RasterMenu: React.FC<ContainerProps> = ({
+  isShow,
+  closeWindow,
+  addLayer,
+  isViewerLoading,
+}) => {
   const [isSelectedList, setIsSelectedList] = useState(initialSelection())
   const [isLoading, setIsLoading] = useState(false)
 
@@ -174,8 +183,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
             }
             setIsLoading(false)
           }
-        }}>
-        <img src={rasterMaps[i].icon} className={'map-icon'} alt={'global icon'} />
+        }}
+      >
+        <img
+          src={rasterMaps[i].icon}
+          className={'map-icon'}
+          alt={'global icon'}
+        />
         <IonCardHeader>
           <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
           <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
@@ -198,13 +212,17 @@ export const RasterMenu: React.FC<ContainerProps> = ({isShow, closeWindow, addLa
 
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
-      <div className={'raster-menu-backdrop'} onClick={() => {
-        closeWindow()
-      }} />
-      <div className={'raster-menu-scroll'}>
-        {optionList}
-      </div>
-      <div className={'raster-menu-loading'} style={{ visibility: isLoading ? 'visible' : 'hidden' }}>
+      <div
+        className={'raster-menu-backdrop'}
+        onClick={() => {
+          closeWindow()
+        }}
+      />
+      <div className={'raster-menu-scroll'}>{optionList}</div>
+      <div
+        className={'raster-menu-loading'}
+        style={{ visibility: isLoading ? 'visible' : 'hidden' }}
+      >
         <p>Loading...</p>
       </div>
       <IonIcon icon={chevronForward} className={'raster-menu-arrow right'} />
