@@ -125,6 +125,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({
       >
         <div
           className="time"
+          id={'timeStamp'} // screenshot need time information, using id to locate element
           onClick={() => {
             setHidden(!hidden)
           }}
