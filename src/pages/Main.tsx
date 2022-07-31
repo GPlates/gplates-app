@@ -40,6 +40,7 @@ import { CachingService } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import * as Cesium from 'cesium'
 import { StarrySky } from '../components/StarrySky'
+import { SocialSharing } from '../components/SocialSharing'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -269,7 +270,11 @@ const Main: React.FC = () => {
             >
               <IonIcon icon={earthOutline} />
             </IonFabButton>
-            <IonFabButton>
+            <IonFabButton
+              onClick={ async () => {
+                await SocialSharing(viewer, isStarryBackgroundEnable)
+              }}
+            >
               <IonIcon icon={exitOutline} />
             </IonFabButton>
             <IonFabButton>
