@@ -271,7 +271,7 @@ const Main: React.FC = () => {
               <IonIcon icon={earthOutline} />
             </IonFabButton>
             <IonFabButton
-              onClick={ async () => {
+              onClick={async () => {
                 await SocialSharing(viewer, isStarryBackgroundEnable)
               }}
             >
