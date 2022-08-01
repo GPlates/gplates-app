@@ -3,8 +3,9 @@ import { Viewer } from 'cesium'
 import html2canvas from 'html2canvas'
 import assert from 'assert'
 import { timeout } from 'workbox-core/_private'
-
-
+import { Media } from '@capacitor-community/media';
+import { isPlatform } from '@ionic/react'
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   let result = null
@@ -70,6 +71,14 @@ const downloadBlob = (blob: Blob) => {
   link.click()
 }
 
+const saveImgToFileSystem = async (img: string, fileName: string) => {
+  return (await Filesystem.writeFile({
+    path: fileName,
+    data: img,
+    directory: Directory.Data,
+  })).uri
+};
+
 const getScreenShot = async (viewer: Viewer, isStarryBackgroundEnable: boolean) => {
   let cesiumBlob = await getCesiumScreenShotBlob(viewer)
   let cesiumDataUrl = URL.createObjectURL(cesiumBlob)
@@ -103,6 +112,20 @@ const getScreenShot = async (viewer: Viewer, isStarryBackgroundEnable: boolean) 
   return result
 }
 
+const saveImage = async (img: string) => {
+  let savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
+
+  let album = (await Media.getAlbums()).albums[0]
+  Media.savePhoto({ path: savedPath, album: isPlatform('ios') ? album.identifier : album.name })
+    .then((value) => {
+      // @ts-ignore
+      targetEle.innerText = 'b1' + value.filePath
+    })
+    .catch((err) => {
+      // @ts-ignore
+      targetEle.innerText = 'b2' + err
+    })
+}
 
 const shareImage = (img: string) => {
  // todo
@@ -110,6 +133,7 @@ const shareImage = (img: string) => {
 
 export const SocialSharing = async (viewer: Viewer, isStarryBackgroundEnable: boolean) => {
   let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
-
+  await saveImage(screenShot)
   shareImage(screenShot)
+
 }
