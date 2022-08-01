@@ -4,7 +4,7 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  IonIcon,
+  IonIcon, useIonLoading
 } from '@ionic/react'
 
 import './RasterMenu.scss'
@@ -164,7 +164,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   isViewerLoading,
 }) => {
   const [isSelectedList, setIsSelectedList] = useState(initialSelection())
-  const [isLoading, setIsLoading] = useState(false)
+  const [present, dismiss] = useIonLoading();
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
@@ -175,13 +175,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         onClick={async (e) => {
           if (!isSelectedList[i]) {
             select(i)
-            setIsLoading(true)
+            present({message: 'Loading...'})
             addLayer(rasterMaps[i].layer)
             await delay(500)
             while (!isViewerLoading()) {
               await delay(500)
             }
-            setIsLoading(false)
+            dismiss()
           }
         }}
       >
@@ -219,12 +219,6 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         }}
       />
       <div className={'raster-menu-scroll'}>{optionList}</div>
-      <div
-        className={'raster-menu-loading'}
-        style={{ visibility: isLoading ? 'visible' : 'hidden' }}
-      >
-        <p>Loading...</p>
-      </div>
       <IonIcon icon={chevronForward} className={'raster-menu-arrow right'} />
       <IonIcon icon={chevronBack} className={'raster-menu-arrow left'} />
     </div>

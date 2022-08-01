@@ -19,7 +19,7 @@ dependencies {
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
-
+    implementation "androidx.legacy:legacy-support-v4:1.0.0"
 }
 
 

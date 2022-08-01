@@ -4,8 +4,11 @@ import html2canvas from 'html2canvas'
 import assert from 'assert'
 import { timeout } from 'workbox-core/_private'
 import { Media } from '@capacitor-community/media';
-import { isPlatform } from '@ionic/react'
+import { getPlatforms, isPlatform } from '@ionic/react'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing';
+import { IonButton, useIonLoading } from '@ionic/react';
+import React from 'react'
 
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   let result = null
@@ -71,6 +74,10 @@ const downloadBlob = (blob: Blob) => {
   link.click()
 }
 
+const dataUrltoBlob = async (url:string) => {
+  return await (await fetch(url)).blob()
+}
+
 const saveImgToFileSystem = async (img: string, fileName: string) => {
   return (await Filesystem.writeFile({
     path: fileName,
@@ -114,26 +121,65 @@ const getScreenShot = async (viewer: Viewer, isStarryBackgroundEnable: boolean) 
 
 const saveImage = async (img: string) => {
   let savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
-
   let album = (await Media.getAlbums()).albums[0]
-  Media.savePhoto({ path: savedPath, album: isPlatform('ios') ? album.identifier : album.name })
-    .then((value) => {
-      // @ts-ignore
-      targetEle.innerText = 'b1' + value.filePath
-    })
-    .catch((err) => {
-      // @ts-ignore
-      targetEle.innerText = 'b2' + err
-    })
+  await Media.savePhoto({ path: savedPath, album: isPlatform('ios') ? album.identifier : album.name })
 }
 
-const shareImage = (img: string) => {
- // todo
+const dataURLtoFile = (dataUrl: string, fileName: string) => {
+  let arr = dataUrl.split(',')
+  // @ts-ignore
+  let mime = arr[0].match(/:(.*?);/)[1]
+  let bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+  while(n--){
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+return new File([u8arr], fileName, {type:mime});
 }
 
-export const SocialSharing = async (viewer: Viewer, isStarryBackgroundEnable: boolean) => {
+
+const shareImageWeb = async (imgDataUrl: string) => {
+  let imgFile = dataURLtoFile(imgDataUrl, 'tempScreenShot.png')
+  if (navigator.canShare && navigator.canShare({files: [imgFile] } )) {
+    await navigator.share({
+      files: [imgFile],
+      title: 'Share Screenshot',
+      text: 'From PLates',
+    })
+      .then((val) => {
+        console.log('Share was successful.')
+      })
+      .catch((error) => {
+        console.log('Sharing failed', error)
+      });
+  } else {
+    console.log(`Your system doesn't support sharing files.`);
+  }
+}
+
+
+const shareImageIosAndAndroid = async (imgDataUrl: string) => {
+  await ShareTool.share('Share Screenshot', 'GPlates Screenshot', imgDataUrl, undefined)
+}
+
+
+export const SocialSharing = async(
+  viewer: Viewer,
+  isStarryBackgroundEnable: boolean,
+  loadingPresent: Function,
+  loadingDismiss: Function
+) => {
+  loadingPresent({ message: "Please Wait..." })
+
   let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
-  await saveImage(screenShot)
-  shareImage(screenShot)
+  console.log(getPlatforms())
+  if (isPlatform('cordova')){
+    await saveImage(screenShot)
+    await shareImageIosAndAndroid(screenShot)
+  }
+  else {
+    // no image saving part for browsers
+    await shareImageWeb(screenShot)
+  }
 
+  loadingDismiss()
 }
