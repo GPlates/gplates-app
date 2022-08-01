@@ -1,8 +1,14 @@
 /* The animation code */
 @keyframes outline-animation {
-  0%  {outline-color: rgba(0, 0, 0, 0);}
-  50%  {outline-color: var(--ion-color-primary);}
-  100% {outline-color: rgba(0, 0, 0, 0);}
+  0% {
+    outline-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    outline-color: var(--ion-color-primary);
+  }
+  100% {
+    outline-color: rgba(0, 0, 0, 0);
+  }
 }
 
 /* The element to apply the animation to */
@@ -15,21 +21,21 @@
 }
 
 .round-button {
-    &::part(native) {
-        padding: 0;
-    }
-    ion-icon {
-        color: var(--ion-color-dark);
-        font-size: 24px;
-    }
-    svg {
-        fill: var(--ion-color-dark);
-    }
-    --background: var(--ion-color-light);
-    --border-radius: 20px;
-    margin: 4px;
-    height: 40px;
-    width: 40px;
+  &::part(native) {
+    padding: 0;
+  }
+  ion-icon {
+    color: var(--ion-color-dark);
+    font-size: 24px;
+  }
+  svg {
+    fill: var(--ion-color-dark);
+  }
+  --background: var(--ion-color-light);
+  --border-radius: 20px;
+  margin: 4px;
+  height: 40px;
+  width: 40px;
 }
 
 .toolbar-top {
@@ -53,6 +59,6 @@
 
 .test {
   ion-icon {
-    color: white
+    color: white;
   }
 }
