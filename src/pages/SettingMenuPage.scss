@@ -1,90 +1,90 @@
 ion-checkbox.single-setting-option {
-    margin-right: 0.75rem;
+  margin-right: 0.75rem;
 }
 
 .fade-enter {
-    opacity: 0;
+  opacity: 0;
 }
 
 .fade-enter-active {
-    opacity: 1;
-    transition: opacity 200ms;
+  opacity: 1;
+  transition: opacity 200ms;
 }
 
 @media screen and (max-width: 796px) {
-    ion-toolbar {
-        padding-top: env(safe-area-inset-top);
-    }
+  ion-toolbar {
+    padding-top: env(safe-area-inset-top);
+  }
 }
 
 /* The animation code */
 @keyframes highlight {
-    0% {
-        outline-color: rgba(0, 0, 0, 0);
-    }
-    50% {
-        outline-color: var(--ion-color-primary);
-    }
-    100% {
-        outline-color: rgba(0, 0, 0, 0);
-    }
+  0% {
+    outline-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    outline-color: var(--ion-color-primary);
+  }
+  100% {
+    outline-color: rgba(0, 0, 0, 0);
+  }
 }
 
 .fade-exit {
-    opacity: 1;
+  opacity: 1;
 }
 
 .fade-exit-active {
-    opacity: 0;
-    transition: opacity 200ms;
+  opacity: 0;
+  transition: opacity 200ms;
 }
 
 .animation-settings {
-    --min-column-width: calc(100vw - 10px);
-    outline: solid 3px rgba(0, 0, 0, 0);
-    outline-offset: -3px;
-    border-radius: 16px;
+  --min-column-width: calc(100vw - 10px);
+  outline: solid 3px rgba(0, 0, 0, 0);
+  outline-offset: -3px;
+  border-radius: 16px;
 
-    ion-col {
-        min-width: min(240px, var(--min-column-width));
-        width: 100% !important;
+  ion-col {
+    min-width: min(240px, var(--min-column-width));
+    width: 100% !important;
+  }
+  ion-input {
+    input {
+      padding-right: 8px !important;
     }
-    ion-input {
-        input {
-            padding-right: 8px !important;
-        }
-        text-align: right;
+    text-align: right;
+  }
+  ion-item::part(native) {
+    padding-left: 8px;
+  }
+  .increment-col {
+    min-width: min(320px, var(--min-column-width));
+  }
+  .reverse-col {
+    ion-button {
+      font-size: 14px;
+      text-transform: revert;
     }
-    ion-item::part(native) {
-        padding-left: 8px;
+    .description {
+      padding: 8px;
     }
-    .increment-col {
-        min-width: min(320px, var(--min-column-width));
-    }
-    .reverse-col {
-        ion-button {
-            font-size: 14px;
-            text-transform: revert;
-        }
-        .description {
-            padding: 8px;
-        }
-        align-items: center;
-        display: flex;
-        flex-wrap: wrap;
-        min-width: min(512px, var(--min-column-width));
-    }
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    min-width: min(512px, var(--min-column-width));
+  }
 }
 
 .settings-list {
-    --toolbar-height: 48px;
-    &.ios {
-        --toolbar-height: 44px;
-    }
-    position: absolute;
-    overflow-y: auto;
-    overflow-x: hidden;
-    top: calc(var(--toolbar-height) + env(safe-area-inset-top));
-    height: calc(100% - (var(--toolbar-height) + env(safe-area-inset-top)));
-    width: 100%;
+  --toolbar-height: 48px;
+  &.ios {
+    --toolbar-height: 44px;
+  }
+  position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden;
+  top: calc(var(--toolbar-height) + env(safe-area-inset-top));
+  height: calc(100% - (var(--toolbar-height) + env(safe-area-inset-top)));
+  width: 100%;
 }

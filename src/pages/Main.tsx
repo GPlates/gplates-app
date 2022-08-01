@@ -6,8 +6,9 @@ import {
   IonFabButton,
   IonFabList,
   IonIcon,
-  IonPage, useIonLoading,
-  useIonViewDidEnter
+  IonPage,
+  useIonLoading,
+  useIonViewDidEnter,
 } from '@ionic/react'
 
 import {
@@ -56,7 +57,7 @@ let cachingService: CachingService
 let viewer: Viewer
 
 const Main: React.FC = () => {
-  const [present, dismiss] = useIonLoading();
+  const [present, dismiss] = useIonLoading()
   const [age, setAge] = useState(0)
   const [animateExact, setAnimateExact] = useState(false)
   const [animateLoop, setAnimateLoop] = useState(false)
@@ -272,8 +273,13 @@ const Main: React.FC = () => {
               <IonIcon icon={earthOutline} />
             </IonFabButton>
             <IonFabButton
-              onClick={ async () => {
-                await SocialSharing(viewer, isStarryBackgroundEnable, present, dismiss)
+              onClick={async () => {
+                await SocialSharing(
+                  viewer,
+                  isStarryBackgroundEnable,
+                  present,
+                  dismiss
+                )
               }}
             >
               <IonIcon icon={exitOutline} />
