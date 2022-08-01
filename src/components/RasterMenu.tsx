@@ -4,7 +4,8 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  IonIcon, useIonLoading
+  IonIcon,
+  useIonLoading,
 } from '@ionic/react'
 
 import './RasterMenu.scss'
@@ -164,7 +165,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   isViewerLoading,
 }) => {
   const [isSelectedList, setIsSelectedList] = useState(initialSelection())
-  const [present, dismiss] = useIonLoading();
+  const [present, dismiss] = useIonLoading()
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
@@ -175,7 +176,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         onClick={async (e) => {
           if (!isSelectedList[i]) {
             select(i)
-            present({message: 'Loading...'})
+            present({ message: 'Loading...' })
             addLayer(rasterMaps[i].layer)
             await delay(500)
             while (!isViewerLoading()) {
