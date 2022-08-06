@@ -9,130 +9,48 @@ import {
 } from '@ionic/react'
 
 import './RasterMenu.scss'
-import {
-  Credit,
-  GeographicTilingScheme,
-  WebMapTileServiceImageryProvider,
-} from 'cesium'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-
-var gridsetName = 'EPSG:4326'
-var gridNames = [
-  'EPSG:4326:0',
-  'EPSG:4326:1',
-  'EPSG:4326:2',
-  'EPSG:4326:3',
-  'EPSG:4326:4',
-  'EPSG:4326:5',
-  'EPSG:4326:6',
-  'EPSG:4326:7',
-  'EPSG:4326:8',
-  'EPSG:4326:9',
-  'EPSG:4326:10',
-  'EPSG:4326:11',
-  'EPSG:4326:12',
-  'EPSG:4326:13',
-  'EPSG:4326:14',
-  'EPSG:4326:15',
-  'EPSG:4326:16',
-  'EPSG:4326:17',
-  'EPSG:4326:18',
-  'EPSG:4326:19',
-  'EPSG:4326:20',
-  'EPSG:4326:21',
-]
-
-const topography = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
-  layer: 'gplates:topography',
-  style: '',
-  format: 'image/png',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Coastlines'),
-})
-
-const geology = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-  layer: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
-  style: '',
-  format: 'image/jpeg',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Geology'),
-})
-
-const agegrid = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
-  layer: 'gplates:agegrid',
-  style: '',
-  format: 'image/jpeg',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Geology'),
-})
-
-const gplates_coastlines = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-  layer: 'gplates:Matthews_etal_GPC_2016_Coastlines_Polyline',
-  style: '',
-  format: 'image/png',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Coastlines'),
-})
+import { rasterData } from '../functions/DataLoader'
 
 const rasterMaps = [
   {
-    layer: geology,
+    layer: rasterData['geology'],
     title: 'Geology',
     subTitle: '???',
     icon: 'assets/raster_menu/geology-256x256.png',
   },
   {
-    layer: agegrid,
+    layer: rasterData['agegrid'],
     title: 'Agegrid',
     subTitle: '???',
     icon: 'assets/raster_menu/agegrid-256x256.png',
   },
   {
-    layer: topography,
+    layer: rasterData['topography'],
     title: 'Topography',
     subTitle: '???',
     icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
-    layer: topography,
+    layer: rasterData['topography'],
     title: 'Topography',
     subTitle: '???',
     icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
-    layer: topography,
+    layer: rasterData['topography'],
     title: 'Topography',
     subTitle: '???',
     icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
-    layer: topography,
+    layer: rasterData['topography'],
     title: 'Topography',
     subTitle: '???',
     icon: 'assets/raster_menu/topography-256x256.png',
   },
   {
-    layer: topography,
+    layer: rasterData['topography'],
     title: 'Topography',
     subTitle: '???',
     icon: 'assets/raster_menu/topography-256x256.png',
@@ -176,13 +94,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         onClick={async (e) => {
           if (!isSelectedList[i]) {
             select(i)
-            present({ message: 'Loading...' })
+            await present({ message: 'Loading...' })
             addLayer(rasterMaps[i].layer)
             await delay(500)
             while (!isViewerLoading()) {
               await delay(500)
             }
-            dismiss()
+            await dismiss()
           }
         }}
       >
