@@ -15,6 +15,7 @@ import {
   cogOutline,
   earthOutline,
   exitOutline,
+  layersOutline,
   informationOutline,
 } from 'ionicons/icons'
 
@@ -42,6 +43,7 @@ import { AnimationService } from '../functions/animation'
 import * as Cesium from 'cesium'
 import { StarrySky } from '../components/StarrySky'
 import { SocialSharing } from '../components/SocialSharing'
+import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -74,10 +76,13 @@ const Main: React.FC = () => {
   const [isAboutPageShow, setIsAboutPageShow] = useState(false)
   // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
   const [settingsPath, setSettingsPath] = useState('root')
-
+  const [isVectorDataLayerMenuShow, setIsVectorDataLayerMenuShow] =
+    useState(false)
   // starry background setting
   const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
     useState(false)
+
+  const [vectorData, setVectorData] = useState({})
 
   // Animation
   animationService = new AnimationService(
@@ -204,7 +209,10 @@ const Main: React.FC = () => {
         tilingScheme: new GeographicTilingScheme(),
         credit: new Credit('EarthByte Coastlines'),
       })
-      viewer.imageryLayers.addImageryProvider(gplates_coastlines)
+      let initialVectorLayer =
+        viewer.imageryLayers.addImageryProvider(gplates_coastlines)
+
+      setVectorData({ coastlines: initialVectorLayer })
     }
   })
 
@@ -219,6 +227,10 @@ const Main: React.FC = () => {
 
   const closeAboutPage = () => {
     setIsAboutPageShow(false)
+  }
+
+  const closeVectorDataLayerMenu = () => {
+    setIsVectorDataLayerMenuShow(false)
   }
 
   const isViewerLoading = () => {
@@ -284,8 +296,12 @@ const Main: React.FC = () => {
             >
               <IonIcon icon={exitOutline} />
             </IonFabButton>
-            <IonFabButton>
-              <IonIcon src={'assets/setting_menu_page/vector_map.svg'} />
+            <IonFabButton
+              onClick={async () => {
+                setIsVectorDataLayerMenuShow(true)
+              }}
+            >
+              <IonIcon icon={layersOutline} />
             </IonFabButton>
             <IonFabButton
               onClick={() => {
@@ -332,10 +348,24 @@ const Main: React.FC = () => {
             closeWindow={closeRasterMenu}
             addLayer={(newLayer: any) => {
               viewer.imageryLayers.addImageryProvider(newLayer)
+              // viewer.imageryLayers.remove()
             }}
             isViewerLoading={isViewerLoading}
           />
           <AboutPage isShow={isAboutPageShow} closeModal={closeAboutPage} />
+          <VectorDataLayerMenu
+            isShow={isVectorDataLayerMenuShow}
+            closeModal={closeVectorDataLayerMenu}
+            checkedVectorData={vectorData}
+            setVectorData={setVectorData}
+            addLayer={(newLayer: WebMapTileServiceImageryProvider) => {
+              return viewer.imageryLayers.addImageryProvider(newLayer)
+            }}
+            removeLayer={(targetLayer: any) => {
+              viewer.imageryLayers.remove(targetLayer)
+            }}
+            isViewerLoading={isViewerLoading}
+          />
         </div>
       </IonContent>
     </IonPage>
