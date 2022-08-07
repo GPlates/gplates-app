@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@awesome-cordova-plugins/app-preferences": "^5.44.0",
+    "@awesome-cordova-plugins/core": "^5.44.0",
     "@awesome-cordova-plugins/social-sharing": "^5.44.0",
     "@capacitor-community/media": "^3.0.0",
     "@capacitor-community/sqlite": "^3.5.1-1",
@@ -21,6 +23,7 @@
     "@ionic/react": "^6.1.4",
     "@ionic/react-router": "^6.1.4",
     "cesium": "^1.93.0",
+    "cordova-plugin-app-preferences": "^0.99.3",
     "cordova-plugin-x-socialsharing": "^6.0.3",
     "html2canvas": "^1.4.1",
     "react": "^18.1.0",
@@ -29,6 +32,7 @@
     "react-router-dom": "^5.3.1",
     "react-sqlite-hook": "^2.1.12",
     "react-transition-group": "^4.4.2",
+    "recoil": "^0.7.4",
     "sass": "^1.51.0",
     "swiper": "^8.1.4",
     "typescript": "^4.6.4",
@@ -110,5 +114,8 @@
   "bundledDependencies": [
     "ionicons/icons"
   ],
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "bundleDependencies": [
+    "ionicons/icons"
+  ]
 }

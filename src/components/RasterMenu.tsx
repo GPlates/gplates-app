@@ -11,6 +11,8 @@ import {
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { rasterData } from '../functions/DataLoader'
+import { useRecoilState } from 'recoil'
+import { isRasterMenuShow } from '../functions/atoms'
 
 const rasterMaps = [
   {
@@ -58,8 +60,6 @@ const rasterMaps = [
 ]
 
 interface ContainerProps {
-  isShow: boolean
-  closeWindow: Function
   addLayer: Function
   isViewerLoading: Function
 }
@@ -77,12 +77,11 @@ const delay = (ms: number) => {
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
-  isShow,
-  closeWindow,
   addLayer,
   isViewerLoading,
 }) => {
   const [isSelectedList, setIsSelectedList] = useState(initialSelection())
+  const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
   const [present, dismiss] = useIonLoading()
 
   let optionList = []
@@ -134,7 +133,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       <div
         className={'raster-menu-backdrop'}
         onClick={() => {
-          closeWindow()
+          setIsShow(false)
         }}
       />
       <div className={'raster-menu-scroll'}>{optionList}</div>

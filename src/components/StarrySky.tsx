@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react'
 import assert from 'assert'
+import { useRecoilState } from 'recoil'
+import { backgroundIsStarry } from '../functions/atoms'
 
 let maxStars = 300
 
@@ -78,14 +80,12 @@ class Star {
   }
 }
 
-interface ContainerProps {
-  isStarryBackgroundEnable: boolean
-}
+interface ContainerProps {}
 
-export const StarrySky: React.FC<ContainerProps> = ({
-  isStarryBackgroundEnable,
-}) => {
+export const StarrySky: React.FC<ContainerProps> = () => {
   Star.maxStars = maxStars
+
+  const [isStarryBackgroundEnable, _] = useRecoilState(backgroundIsStarry)
 
   useEffect(() => {
     if (!isStarryBackgroundEnable) return () => {} // if not enabled, do nothing and return

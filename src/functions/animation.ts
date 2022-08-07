@@ -1,6 +1,7 @@
 import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
-import { Dispatch, SetStateAction } from 'react'
+import { SetterOrUpdater } from 'recoil'
+import { GEOSRV_URL, LIMIT_LOWER, LIMIT_UPPER } from './atoms'
 
 let animateFrame = 0
 let animateNext = false
@@ -11,22 +12,18 @@ let dragging = false
 export class AnimationService {
   constructor(
     public cachingService: CachingService,
-    public viewer: Viewer,
-    public age: number,
-    public setAge: Dispatch<SetStateAction<number>>,
+    public setAge: SetterOrUpdater<number>,
     public exact: boolean,
-    public setExact: Dispatch<SetStateAction<boolean>>,
+    public setExact: SetterOrUpdater<boolean>,
     public fps: number,
     public increment: number,
-    public limitLower: number,
-    public limitUpper: number,
     public loop: boolean,
-    public setLoop: Dispatch<SetStateAction<boolean>>,
+    public setLoop: SetterOrUpdater<boolean>,
     public playing: boolean,
-    public _setPlaying: Dispatch<SetStateAction<boolean>>,
+    public _setPlaying: SetterOrUpdater<boolean>,
     public range: { lower: number; upper: number },
-    public setRange: Dispatch<SetStateAction<{ lower: number; upper: number }>>,
-    public URL: string
+    public setRange: SetterOrUpdater<{ lower: number; upper: number }>,
+    public viewer: Viewer
   ) {}
 
   drawFrame = async (url: string, force = false) => {
@@ -94,22 +91,22 @@ export class AnimationService {
 
   onAgeSliderChange = (value: number) => {
     animateFrame = value
-    this.drawFrame(this.URL, true)
+    this.drawFrame(GEOSRV_URL, true)
   }
 
   resetPlayHead = () => {
     this.setPlaying(false)
     animateFrame = this.range.lower
-    this.drawFrame(this.URL, true)
+    this.drawFrame(GEOSRV_URL, true)
   }
 
   movePlayHead = (value: number) => {
     this.setPlaying(false)
     animateFrame = Math.min(
-      Math.max(animateFrame + value, this.limitLower),
-      this.limitUpper
+      Math.max(animateFrame + value, LIMIT_LOWER),
+      LIMIT_UPPER
     )
-    this.drawFrame(this.URL, true)
+    this.drawFrame(GEOSRV_URL, true)
   }
 
   setDragging = (value: boolean) => {
@@ -148,7 +145,7 @@ export class AnimationService {
         animateFrame = this.range.lower
       }
 
-      this.scheduleFrame(this.URL)
+      this.scheduleFrame(GEOSRV_URL)
     } else {
       clearTimeout(animateTimeout)
     }

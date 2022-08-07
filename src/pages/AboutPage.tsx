@@ -13,10 +13,9 @@ import './AboutPage.scss'
 import { Browser } from '@capacitor/browser'
 
 import { Share } from '@capacitor/share'
-interface ContainerProps {
-  isShow: boolean
-  closeModal: Function
-}
+import { useRecoilState } from 'recoil'
+import { isAboutPageShow } from '../functions/atoms'
+interface ContainerProps {}
 
 const sentEmail = async (email: string) => {
   await Share.share({
@@ -25,7 +24,9 @@ const sentEmail = async (email: string) => {
   })
 }
 
-export const AboutPage: React.FC<ContainerProps> = ({ isShow, closeModal }) => {
+export const AboutPage: React.FC<ContainerProps> = () => {
+  const [isShow, setIsShow] = useRecoilState(isAboutPageShow)
+
   return (
     <IonModal isOpen={isShow} animated backdropDismiss={false}>
       <IonToolbar>
@@ -33,7 +34,7 @@ export const AboutPage: React.FC<ContainerProps> = ({ isShow, closeModal }) => {
         <IonButtons slot={'end'}>
           <IonButton
             onClick={() => {
-              closeModal()
+              setIsShow(false)
             }}
             color={'secondary'}
           >

@@ -13,12 +13,12 @@ import {
 } from '@ionic/react'
 import { vectorData } from '../functions/DataLoader'
 import React from 'react'
-import { WebMapTileServiceImageryProvider } from 'cesium'
 import { timeout } from 'workbox-core/_private'
+import { useRecoilState } from 'recoil'
+import { isVectorMenuShow } from '../functions/atoms'
+import { WebMapTileServiceImageryProvider } from 'cesium'
 
 interface ContainerProps {
-  isShow: boolean
-  closeModal: Function
   checkedVectorData: { [key: string]: WebMapTileServiceImageryProvider }
   setVectorData: Function
   addLayer: Function
@@ -27,14 +27,13 @@ interface ContainerProps {
 }
 
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
-  isShow,
-  closeModal,
   checkedVectorData,
   setVectorData,
   addLayer,
   removeLayer,
   isViewerLoading,
 }) => {
+  const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const [present, dismiss] = useIonLoading()
 
   const waitUntilLoaded = async () => {
@@ -76,7 +75,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
               await present({ message: 'Please Wait...' })
               await waitUntilLoaded()
               await dismiss()
-              closeModal()
+              setIsShow(false)
             }}
             color={'secondary'}
           >

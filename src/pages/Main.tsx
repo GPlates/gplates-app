@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   IonContent,
@@ -27,12 +27,10 @@ import {
   GeographicTilingScheme,
   Ion,
   Rectangle,
-  Scene,
   Viewer,
   WebMapTileServiceImageryProvider,
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
-import { useEffect, useState } from 'react'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
@@ -44,15 +42,24 @@ import * as Cesium from 'cesium'
 import { StarrySky } from '../components/StarrySky'
 import { SocialSharing } from '../components/SocialSharing'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  age,
+  animateExact,
+  animateFps,
+  animateIncrement,
+  animateLoop,
+  animatePlaying,
+  animateRange,
+  backgroundIsStarry,
+  isAboutPageShow,
+  isRasterMenuShow,
+  isVectorMenuShow,
+  isSettingsMenuShow,
+} from '../functions/atoms'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
-
-// TODO: Dynamically assign these variables based on selected raster
-const URL =
-  'https://geosrv.earthbyte.org/geoserver/Lithodat/wms?service=WMS&version=1.1.0&request=GetMap&layers=Lithodat%3Acontinental_polygons_{count}Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=image%2Fpng%3B%20mode%3D8bit'
-const LIMIT_UPPER = 410
-const LIMIT_LOWER = 0
 
 let animationService: AnimationService
 let cachingService: CachingService
@@ -60,55 +67,46 @@ let viewer: Viewer
 
 const Main: React.FC = () => {
   const [present, dismiss] = useIonLoading()
-  const [age, setAge] = useState(0)
-  const [animateExact, setAnimateExact] = useState(false)
-  const [animateLoop, setAnimateLoop] = useState(false)
-  const [animateRange, setAnimateRange] = useState({
-    lower: LIMIT_LOWER,
-    upper: LIMIT_UPPER,
-  })
-  const [fps, setFps] = useState(10)
-  const [increment, setIncrement] = useState(1)
-  const [playing, _setPlaying] = useState(false)
-  const [scene, setScene] = useState<Scene>()
-  const [isSettingMenuPageShow, setIsSettingMenuPageShow] = useState(false)
-  const [isRasterMenuShow, setIsRasterMenuPageShow] = useState(false)
-  const [isAboutPageShow, setIsAboutPageShow] = useState(false)
-  // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
-  const [settingsPath, setSettingsPath] = useState('root')
-  const [isVectorDataLayerMenuShow, setIsVectorDataLayerMenuShow] =
-    useState(false)
-  // starry background setting
-  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
-    useState(false)
 
   const [vectorData, setVectorData] = useState({})
 
+  const setIsAboutPageShow = useSetRecoilState(isAboutPageShow)
+  const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
+  const [isSettingMenuPageShow, setMenuPageShow] =
+    useRecoilState(isSettingsMenuShow)
+  const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
+
   // Animation
+  const setAge = useSetRecoilState(age)
+  const [exact, setExact] = useRecoilState(animateExact)
+  const fps = useRecoilValue(animateFps)
+  const increment = useRecoilValue(animateIncrement)
+  const [loop, setLoop] = useRecoilState(animateLoop)
+  const [playing, _setPlaying] = useRecoilState(animatePlaying)
+  const [range, setRange] = useRecoilState(animateRange)
+
   animationService = new AnimationService(
     cachingService,
-    viewer,
-    age,
     setAge,
-    animateExact,
-    setAnimateExact,
+    exact,
+    setExact,
     fps,
     increment,
-    LIMIT_LOWER,
-    LIMIT_UPPER,
-    animateLoop,
-    setAnimateLoop,
+    loop,
+    setLoop,
     playing,
     _setPlaying,
-    animateRange,
-    setAnimateRange,
-    URL
+    range,
+    setRange,
+    viewer
   )
   useEffect(() => {
     if (isSettingMenuPageShow) {
       animationService.setPlaying(false)
     }
   })
+
+  const isStarryBackgroundEnable = useRecoilValue(backgroundIsStarry)
 
   useIonViewDidEnter(async () => {
     // Initialize SQLite connection
@@ -171,6 +169,10 @@ const Main: React.FC = () => {
       credit: new Credit('EarthByte Geology'),
     })
 
+    // if (document.getElementsByClassName('cesium-viewer').length === 0) {
+    //   viewer = new Viewer('cesiumContainer')
+    // }
+
     if (document.getElementsByClassName('cesium-viewer').length === 0) {
       viewer = new Viewer('cesiumContainer', {
         baseLayerPicker: false,
@@ -189,7 +191,6 @@ const Main: React.FC = () => {
           },
         },
       })
-      setScene(viewer.scene)
       viewer.scene.fog.enabled = false
       viewer.scene.globe.showGroundAtmosphere = false
       viewer.scene.skyAtmosphere.show = false
@@ -216,23 +217,6 @@ const Main: React.FC = () => {
     }
   })
 
-  const closeSettingMenuPage = () => {
-    setIsSettingMenuPageShow(false)
-    setSettingsPath('root')
-  }
-
-  const closeRasterMenu = () => {
-    setIsRasterMenuPageShow(false)
-  }
-
-  const closeAboutPage = () => {
-    setIsAboutPageShow(false)
-  }
-
-  const closeVectorDataLayerMenu = () => {
-    setIsVectorDataLayerMenuShow(false)
-  }
-
   const isViewerLoading = () => {
     return viewer.scene.globe.tilesLoaded
   }
@@ -240,18 +224,14 @@ const Main: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <StarrySky isStarryBackgroundEnable={isStarryBackgroundEnable} />
+        <StarrySky />
 
         <div id="cesiumContainer" />
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
           <AgeSlider
-            buttons={<CustomToolbar scene={scene} />}
+            buttons={<CustomToolbar scene={viewer?.scene} />}
             animationService={animationService}
-            minAge={LIMIT_LOWER}
-            maxAge={LIMIT_UPPER}
-            setMenuState={setIsSettingMenuPageShow}
-            setMenuPath={setSettingsPath}
           />
         </div>
         <IonFab
@@ -261,7 +241,7 @@ const Main: React.FC = () => {
         >
           <IonFabButton
             onClick={() => {
-              closeRasterMenu()
+              setRasterMenuPageShow(false)
             }}
           >
             <IonIcon
@@ -272,14 +252,14 @@ const Main: React.FC = () => {
           <IonFabList side="end">
             <IonFabButton
               onClick={() => {
-                setIsSettingMenuPageShow(true)
+                setMenuPageShow(true)
               }}
             >
               <IonIcon icon={cogOutline} />
             </IonFabButton>
             <IonFabButton
               onClick={() => {
-                setIsRasterMenuPageShow(true)
+                setRasterMenuPageShow(true)
               }}
             >
               <IonIcon icon={earthOutline} />
@@ -322,40 +302,16 @@ const Main: React.FC = () => {
           </IonFabList>
         </IonFab>
         <div>
-          <SettingMenuPage
-            animateExact={animateExact}
-            setAnimateExact={setAnimateExact}
-            animateLoop={animateLoop}
-            setAnimateLoop={setAnimateLoop}
-            animateRange={animateRange}
-            setAnimateRange={setAnimateRange}
-            fps={fps}
-            setFps={setFps}
-            increment={increment}
-            setIncrement={setIncrement}
-            minAge={LIMIT_LOWER}
-            maxAge={LIMIT_UPPER}
-            closeModal={closeSettingMenuPage}
-            isShow={isSettingMenuPageShow}
-            path={settingsPath}
-            setPath={setSettingsPath}
-            viewer={viewer}
-            isStarryBackgroundEnable={isStarryBackgroundEnable}
-            setIsStarryBackgroundEnable={setIsStarryBackgroundEnable}
-          />
+          <SettingMenuPage viewer={viewer} />
           <RasterMenu
-            isShow={isRasterMenuShow}
-            closeWindow={closeRasterMenu}
             addLayer={(newLayer: any) => {
               viewer.imageryLayers.addImageryProvider(newLayer)
               // viewer.imageryLayers.remove()
             }}
             isViewerLoading={isViewerLoading}
           />
-          <AboutPage isShow={isAboutPageShow} closeModal={closeAboutPage} />
+          <AboutPage />
           <VectorDataLayerMenu
-            isShow={isVectorDataLayerMenuShow}
-            closeModal={closeVectorDataLayerMenu}
             checkedVectorData={vectorData}
             setVectorData={setVectorData}
             addLayer={(newLayer: WebMapTileServiceImageryProvider) => {

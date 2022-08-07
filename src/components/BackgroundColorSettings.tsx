@@ -1,8 +1,14 @@
-import { IonItem, IonItemDivider, IonLabel, IonToggle } from '@ionic/react'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { IonItem, IonLabel, IonToggle } from '@ionic/react'
+import React, { useEffect } from 'react'
 import { RgbColorPicker } from 'react-colorful'
 import { Viewer } from 'cesium'
 import * as Cesium from 'cesium'
+import { useRecoilState } from 'recoil'
+import {
+  backgroundColor,
+  backgroundIsCustom,
+  backgroundIsStarry,
+} from '../functions/atoms'
 
 const defaultBackground = () => {
   return new Cesium.SkyBox({
@@ -19,28 +25,22 @@ const defaultBackground = () => {
 
 interface ContainerProps {
   viewer: Viewer
-  backgroundSetting: any
+  isBackgroundSettingEnable: any
+  setIsBackgroundSettingEnable: any
 }
 
 export const BackgroundColorSettings: React.FC<ContainerProps> = ({
   viewer,
-  backgroundSetting,
+  isBackgroundSettingEnable,
+  setIsBackgroundSettingEnable,
 }) => {
-  const isBackgroundSettingEnable = backgroundSetting.isBackgroundSettingEnable
-  const setIsBackgroundSettingEnable =
-    backgroundSetting.setIsBackgroundSettingEnable
-
-  const isStarryBackgroundEnable = backgroundSetting.isStarryBackgroundEnable
-  const setIsStarryBackgroundEnable =
-    backgroundSetting.setIsStarryBackgroundEnable
-
-  const isCustomisedColorBackgroundEnable =
-    backgroundSetting.isCustomisedColorBackgroundEnable
-  const setIsCustomisedColorBackgroundEnable =
-    backgroundSetting.setIsCustomisedColorBackgroundEnable
-
-  const color = backgroundSetting.color
-  const setColor = backgroundSetting.setColor
+  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
+    useRecoilState(backgroundIsStarry)
+  const [
+    isCustomisedColorBackgroundEnable,
+    setIsCustomisedColorBackgroundEnable,
+  ] = useRecoilState(backgroundIsCustom)
+  const [color, setColor] = useRecoilState(backgroundColor)
 
   const setDefaultBackground = (viewer: Viewer) => {
     viewer.scene.skyBox = defaultBackground()

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './SettingMenuPage.scss'
 import {
   IonModal,
@@ -29,75 +29,56 @@ import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
 import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
 import { Viewer } from 'cesium'
+import { useRecoilState } from 'recoil'
+import {
+  animateExact,
+  animateFps,
+  animateIncrement,
+  animateLoop,
+  animateRange,
+  isSettingsMenuShow,
+  settingsPath,
+} from '../functions/atoms'
+import { LIMIT_LOWER, LIMIT_UPPER } from '../functions/atoms'
 
 interface ContainerProps {
-  animateExact: boolean
-  setAnimateExact: Dispatch<SetStateAction<boolean>>
-  animateLoop: boolean
-  setAnimateLoop: Dispatch<SetStateAction<boolean>>
-  animateRange: { lower: number; upper: number }
-  setAnimateRange: Dispatch<SetStateAction<{ lower: number; upper: number }>>
-  fps: number
-  setFps: Dispatch<SetStateAction<number>>
-  increment: number
-  setIncrement: Dispatch<SetStateAction<number>>
-  minAge: number
-  maxAge: number
-  closeModal: Function
-  isShow: boolean
-  path: string
-  setPath: Dispatch<SetStateAction<string>>
   viewer: Viewer
-  isStarryBackgroundEnable: boolean
-  setIsStarryBackgroundEnable: Dispatch<SetStateAction<boolean>>
 }
 
 // main component for setting menu
-export const SettingMenuPage: React.FC<ContainerProps> = ({
-  animateExact,
-  setAnimateExact,
-  animateLoop,
-  setAnimateLoop,
-  animateRange,
-  setAnimateRange,
-  fps,
-  setFps,
-  increment,
-  setIncrement,
-  minAge,
-  maxAge,
-  closeModal,
-  isShow,
-  path,
-  setPath,
-  viewer,
-  isStarryBackgroundEnable,
-  setIsStarryBackgroundEnable,
-}) => {
+export const SettingMenuPage: React.FC<ContainerProps> = ({ viewer }) => {
   const titles: { [key: string]: string } = {
     root: 'Settings Menu',
     animation: 'Animation Settings',
   }
 
-  // Animation Settings
+  const [exact, setExact] = useRecoilState(animateExact)
+  const [fps, setFps] = useRecoilState(animateFps)
+  const [increment, setIncrement] = useRecoilState(animateIncrement)
+  const [loop, setLoop] = useRecoilState(animateLoop)
+  const [path, setPath] = useRecoilState(settingsPath)
+  const [range, setRange] = useRecoilState(animateRange)
+  const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
+
+  // Animation constants
   const minIncrement = 1
   const maxIncrement = 100
   const minFps = 1
   const maxFps = 60
 
   const reverseAnimation = () => {
-    const lower = animateRange.upper
-    const upper = animateRange.lower
-    setAnimateRange({ lower, upper })
+    const lower = range.upper
+    const upper = range.lower
+    setRange({ lower, upper })
   }
 
   // Hack to get IonRange knobs to show the correct position on component mount
   useEffect(() => {
     if (path === 'animation') {
       setTimeout(() => {
-        const old = Object.assign({}, animateRange)
-        setAnimateRange({ lower: 0, upper: 0 })
-        setAnimateRange(old)
+        const old = Object.assign({}, range)
+        setRange({ lower: 0, upper: 0 })
+        setRange(old)
       }, 100)
     }
   }, [path])
@@ -105,13 +86,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   // background setting
   const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
     useState(false)
-  // the isStarryBackgroundEnable and setIsStarryBackgroundEnable are moved to Main.tsx by Michael Chin
-  // const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] = useState(false)
-  const [
-    isCustomisedColorBackgroundEnable,
-    setIsCustomisedColorBackgroundEnable,
-  ] = useState(false)
-  const [color, setColor] = useState({ r: 255, g: 255, b: 255 })
 
   const subPageRouting = (path: string, name: string) => {
     return (
@@ -147,7 +121,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         <IonButtons slot={'end'}>
           <IonButton
             onClick={() => {
-              closeModal()
+              setIsShow(false)
+              setPath('root')
             }}
             color={'secondary'}
           >
@@ -228,12 +203,12 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonRange
                   dir="rtl"
                   dualKnobs={true}
-                  min={minAge}
-                  max={maxAge}
+                  min={LIMIT_LOWER}
+                  max={LIMIT_UPPER}
                   onIonKnobMoveEnd={(e) => {
-                    setAnimateRange(e.detail.value as any)
+                    setRange(e.detail.value as any)
                   }}
-                  value={animateRange}
+                  value={range}
                 />
               </IonCol>
             </IonRow>
@@ -243,15 +218,15 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   <IonLabel>Animate from:</IonLabel>
                   <IonInput
                     inputMode="numeric"
-                    min={minAge}
-                    max={maxAge}
+                    min={LIMIT_LOWER}
+                    max={LIMIT_UPPER}
                     onIonChange={(e) =>
-                      setAnimateRange({
+                      setRange({
                         lower: Number(e.detail.value) || 0,
-                        upper: animateRange.upper,
+                        upper: range.upper,
                       } as any)
                     }
-                    value={animateRange.lower}
+                    value={range.lower}
                   />
                   Ma
                 </IonItem>
@@ -261,15 +236,15 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   <IonLabel>to:</IonLabel>
                   <IonInput
                     inputMode="numeric"
-                    min={minAge}
-                    max={maxAge}
+                    min={LIMIT_LOWER}
+                    max={LIMIT_UPPER}
                     onIonChange={(e) =>
-                      setAnimateRange({
-                        lower: animateRange.lower,
+                      setRange({
+                        lower: range.lower,
                         upper: Number(e.detail.value) || 0,
                       } as any)
                     }
-                    value={animateRange.upper}
+                    value={range.upper}
                   />
                   Ma
                 </IonItem>
@@ -333,15 +308,15 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonItem>
                   <IonLabel>Finish animation exactly on end time</IonLabel>
                   <IonCheckbox
-                    checked={animateExact}
-                    onIonChange={(e) => setAnimateExact(e.detail.checked)}
+                    checked={exact}
+                    onIonChange={(e) => setExact(e.detail.checked)}
                   />
                 </IonItem>
                 <IonItem>
                   <IonLabel>Loop</IonLabel>
                   <IonCheckbox
-                    checked={animateLoop}
-                    onIonChange={(e) => setAnimateLoop(e.detail.checked)}
+                    checked={loop}
+                    onIonChange={(e) => setLoop(e.detail.checked)}
                   />
                 </IonItem>
               </IonCol>
@@ -359,16 +334,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
       >
         <BackgroundColorSettings
           viewer={viewer}
-          backgroundSetting={{
-            isBackgroundSettingEnable,
-            setIsBackgroundSettingEnable,
-            isStarryBackgroundEnable,
-            setIsStarryBackgroundEnable,
-            isCustomisedColorBackgroundEnable,
-            setIsCustomisedColorBackgroundEnable,
-            color,
-            setColor,
-          }}
+          isBackgroundSettingEnable={isBackgroundSettingEnable}
+          setIsBackgroundSettingEnable={setIsBackgroundSettingEnable}
         />
       </CSSTransition>
     </IonModal>

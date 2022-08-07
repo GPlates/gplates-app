@@ -5,9 +5,8 @@ import assert from 'assert'
 import { timeout } from 'workbox-core/_private'
 import { Media } from '@capacitor-community/media'
 import { getPlatforms, isPlatform } from '@ionic/react'
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
+import { Filesystem, Directory } from '@capacitor/filesystem'
 import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
-import { IonButton, useIonLoading } from '@ionic/react'
 import React from 'react'
 
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
