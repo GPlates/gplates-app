@@ -23,6 +23,7 @@ import '@ionic/react/css/display.css'
 
 /* Theme variables */
 import './theme/variables.css'
+import { RecoilRoot } from 'recoil'
 
 // Singleton SQLite Hook
 export let sqlite: SQLiteHook
@@ -37,7 +38,9 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
           <Route exact path="/main">
-            <Main />
+            <RecoilRoot>
+              <Main />
+            </RecoilRoot>
           </Route>
           <Route exact path="/">
             <Redirect to="/main" />

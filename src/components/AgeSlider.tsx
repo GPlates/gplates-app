@@ -17,27 +17,28 @@ import {
   playForwardOutline,
   timeOutline,
 } from 'ionicons/icons'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { useState } from 'react'
 import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
+import { LIMIT_LOWER, LIMIT_UPPER } from '../functions/atoms'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  age,
+  animatePlaying,
+  isSettingsMenuShow,
+  settingsPath,
+} from '../functions/atoms'
 
 interface AgeSliderProps {
   buttons: any
   animationService: AnimationService
-  minAge: number
-  maxAge: number
-  setMenuPath: Dispatch<SetStateAction<string>>
-  setMenuState: Dispatch<SetStateAction<boolean>>
 }
 
-const AgeSlider: React.FC<AgeSliderProps> = ({
-  buttons,
-  animationService,
-  minAge,
-  maxAge,
-  setMenuPath,
-  setMenuState,
-}) => {
+const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
+  const [_age, setAge] = useRecoilState(age)
+  const playing = useRecoilValue(animatePlaying)
+  const setMenuPath = useSetRecoilState(settingsPath)
+  const setMenuState = useSetRecoilState(isSettingsMenuShow)
   const [hidden, setHidden] = useState(true)
 
   const openMenu = () => {
@@ -52,12 +53,12 @@ const AgeSlider: React.FC<AgeSliderProps> = ({
           <IonLabel>Time:</IonLabel>
           <IonInput
             inputMode="numeric"
-            min={minAge}
-            max={maxAge}
+            min={LIMIT_LOWER}
+            max={LIMIT_UPPER}
             onIonChange={(e) =>
-              setNumber(animationService.setAge, e.detail.value, minAge, maxAge)
+              setNumber(setAge, e.detail.value, LIMIT_LOWER, LIMIT_UPPER)
             }
-            value={animationService.age}
+            value={_age}
           />
           Ma
         </IonItem>
@@ -65,14 +66,10 @@ const AgeSlider: React.FC<AgeSliderProps> = ({
           <div>
             <IonButton
               fill="clear"
-              onClick={() =>
-                animationService.setPlaying(!animationService.playing)
-              }
+              onClick={() => animationService.setPlaying(!playing)}
               size="default"
             >
-              <IonIcon
-                icon={animationService.playing ? pauseOutline : playOutline}
-              />
+              <IonIcon icon={playing ? pauseOutline : playOutline} />
             </IonButton>
             <IonButton
               fill="clear"
@@ -111,12 +108,10 @@ const AgeSlider: React.FC<AgeSliderProps> = ({
               animationService.setDragging(false)
               animationService.onAgeSliderChange(e.detail.value as number)
             }}
-            min={minAge}
-            max={maxAge}
-            onIonChange={(e) =>
-              animationService.setAge(e.detail.value as number)
-            }
-            value={animationService.age}
+            min={LIMIT_LOWER}
+            max={LIMIT_UPPER}
+            onIonChange={(e) => setAge(e.detail.value as number)}
+            value={_age}
           />
         </IonItem>
       </div>
@@ -130,7 +125,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({
             setHidden(!hidden)
           }}
         >
-          {animationService.age} Ma
+          {_age} Ma
         </div>
         <div>
           {buttons}
