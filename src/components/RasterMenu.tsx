@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   IonCard,
   IonCardHeader,
@@ -10,66 +10,15 @@ import {
 
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import { rasterData } from '../functions/DataLoader'
 import { useRecoilState } from 'recoil'
-import { isRasterMenuShow } from '../functions/atoms'
-
-const rasterMaps = [
-  {
-    layer: rasterData['geology'],
-    title: 'Geology',
-    subTitle: '???',
-    icon: 'assets/raster_menu/geology-256x256.png',
-  },
-  {
-    layer: rasterData['agegrid'],
-    title: 'Agegrid',
-    subTitle: '???',
-    icon: 'assets/raster_menu/agegrid-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-]
+import { isRasterMenuShow, rasterMapState } from '../functions/atoms'
+import { getRasterMap } from '../functions/rasterMap'
+import { RasterCfg } from '../functions/types'
+import { viewer } from '../pages/Main'
 
 interface ContainerProps {
   addLayer: Function
   isViewerLoading: Function
-}
-
-function initialSelection() {
-  let isSelectedList = [true]
-  for (let i = 1; i < rasterMaps.length; i++) {
-    isSelectedList.push(false)
-  }
-  return isSelectedList
 }
 
 const delay = (ms: number) => {
@@ -80,9 +29,32 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   addLayer,
   isViewerLoading,
 }) => {
-  const [isSelectedList, setIsSelectedList] = useState(initialSelection())
+  const [isSelectedList, setIsSelectedList] = useState([] as boolean[])
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
+  const [rasterMaps, setRasterMaps] = useState([] as RasterCfg[])
+  //LOOK HERE!
+  //use useRecoilState here will cause strange "assign readonly" error at "addLayer(rasterMaps[i].layer)"
+  //const [rasterMaps, setRasterMaps] = useRecoilState(rasterMapState)
   const [present, dismiss] = useIonLoading()
+
+  useEffect(() => {
+    //TODO: save in localstorage
+    getRasterMap((rasters: RasterCfg[]) => {
+      setRasterMaps(rasters)
+      let isSelectedList = [true]
+      for (let i = 1; i < rasterMaps.length; i++) {
+        isSelectedList.push(false)
+      }
+      setIsSelectedList(isSelectedList)
+    })
+  }, []) //use [] to simulate componentDidMount
+
+  for (let n = 0; n < isSelectedList.length; n++) {
+    if (isSelectedList[n]) {
+      viewer.imageryLayers.addImageryProvider(rasterMaps[n].layer)
+      break
+    }
+  }
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
