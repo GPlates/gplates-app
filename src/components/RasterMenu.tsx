@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   IonCard,
   IonCardHeader,
@@ -10,49 +10,14 @@ import {
 
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import {
-  rasterData,
-  createCesiumImageryProvider,
-} from '../functions/DataLoader'
-import { RasterCfg } from '../functions/types'
 import { useRecoilState } from 'recoil'
 import { isRasterMenuShow, rasterMapState } from '../functions/atoms'
-import { viewer } from '../pages/Main'
-
-const failSafeRasterMaps = [
-  {
-    layer: rasterData['geology'],
-    title: 'Geology',
-    subTitle: 'present day',
-    icon: 'assets/raster_menu/geology-256x256.png',
-  },
-  {
-    layer: rasterData['agegrid'],
-    title: 'Agegrid',
-    subTitle: 'present day',
-    icon: 'assets/raster_menu/agegrid-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: 'present day',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-]
-
-let rasterMaps = failSafeRasterMaps
+import { getRasterMap } from '../functions/rasterMap'
+import { RasterCfg } from '../functions/types'
 
 interface ContainerProps {
   addLayer: Function
   isViewerLoading: Function
-}
-
-function initialSelection(rasterMaps: RasterCfg[]) {
-  let isSelectedList = [true]
-  for (let i = 1; i < rasterMaps.length; i++) {
-    isSelectedList.push(false)
-  }
-  return isSelectedList
 }
 
 const delay = (ms: number) => {
@@ -63,12 +28,25 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   addLayer,
   isViewerLoading,
 }) => {
+  const [isSelectedList, setIsSelectedList] = useState([] as boolean[])
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
+  const [rasterMaps, setRasterMaps] = useState([] as RasterCfg[])
+  //LOOK HERE!
+  //use useRecoilState here will cause strange "assign readonly" error at "addLayer(rasterMaps[i].layer)"
   //const [rasterMaps, setRasterMaps] = useRecoilState(rasterMapState)
-  const [isSelectedList, setIsSelectedList] = useState(
-    initialSelection(rasterMaps) //fix me
-  )
   const [present, dismiss] = useIonLoading()
+
+  useEffect(() => {
+    //TODO: save in localstorage
+    getRasterMap((rasters: RasterCfg[]) => {
+      setRasterMaps(rasters)
+      let isSelectedList = [true]
+      for (let i = 1; i < rasterMaps.length; i++) {
+        isSelectedList.push(false)
+      }
+      setIsSelectedList(isSelectedList)
+    })
+  }, []) //use [] to simulate componentDidMount
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
@@ -80,9 +58,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           if (!isSelectedList[i]) {
             select(i)
             await present({ message: 'Loading...' })
-            //addLayer(rasterMaps[i].layer)
-            //addLayer(rasterData['geology'])
-            viewer.imageryLayers.addImageryProvider(rasterData['geology'])
+            addLayer(rasterMaps[i].layer)
             await delay(500)
             while (!isViewerLoading()) {
               await delay(500)

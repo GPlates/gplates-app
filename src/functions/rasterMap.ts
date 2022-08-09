@@ -3,9 +3,6 @@ import {
   rasterData,
   createCesiumImageryProvider,
 } from '../functions/DataLoader'
-import { useSetRecoilState } from 'recoil'
-import { rasterMapState } from '../functions/atoms'
-import { viewer } from '../pages/Main'
 
 export const failSafeRasterMaps = [
   {
@@ -28,7 +25,35 @@ export const failSafeRasterMaps = [
   },
 ]
 
-export const getRasterMap = (setRasterMaps: any) => {
+//async version. (NOT IN USE FOR NOW)
+export const getRasters = async () => {
+  try {
+    let rasterMap: RasterCfg[] = []
+    let res = await fetch('http://localhost:18000/mobile/get_rasters')
+    let json_data = await res.json()
+
+    //console.log(json_data)
+    for (let key in json_data) {
+      let o = {
+        layer: createCesiumImageryProvider(
+          json_data[key].url,
+          json_data[key].layer
+        ),
+        title: json_data[key].title,
+        subTitle: json_data[key].subTitle,
+        icon: 'data:image/png;base64, ' + json_data[key].icon,
+      }
+      rasterMap.push(o)
+    }
+    console.log(rasterMap)
+    return rasterMap
+  } catch (err) {
+    return failSafeRasterMaps
+  }
+}
+
+//load rasters from gplates web service
+export const getRasterMap = (callback: any) => {
   //try localstorage first TODO
   //and then try the gplates web service server
   fetch('http://localhost:18000/mobile/get_rasters')
@@ -48,7 +73,11 @@ export const getRasterMap = (setRasterMaps: any) => {
         }
         rasterList.push(o)
       }
-      console.log(rasterList)
-      setRasterMaps(rasterList)
+      //console.log(rasterList)
+      callback(rasterList)
+    })
+    .catch((error) => {
+      console.log(error)
+      callback(failSafeRasterMaps)
     })
 }
