@@ -91,3 +91,20 @@ const gplates_coastlines = new WebMapTileServiceImageryProvider({
 export const vectorData: { [key: string]: WebMapTileServiceImageryProvider } = {
   coastlines: gplates_coastlines,
 }
+
+export const createCesiumImageryProvider = (
+  url_str: string,
+  layer_name: string
+) =>
+  new WebMapTileServiceImageryProvider({
+    url: url_str,
+    layer: layer_name,
+    style: '',
+    format: 'image/png',
+    tileMatrixSetID: gridsetName,
+    tileMatrixLabels: gridNames,
+    //minimumLevel: 1,
+    maximumLevel: 8,
+    tilingScheme: new GeographicTilingScheme(),
+    credit: new Credit('EarthByte, The University of Sydney'),
+  })

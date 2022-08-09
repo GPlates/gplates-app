@@ -56,14 +56,16 @@ import {
   isRasterMenuShow,
   isVectorMenuShow,
   isSettingsMenuShow,
+  rasterMapState,
 } from '../functions/atoms'
+import { getRasterMap } from '../functions/rasterMap'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
 
 let animationService: AnimationService
 let cachingService: CachingService
-let viewer: Viewer
+export let viewer: Viewer
 
 const Main: React.FC = () => {
   const [present, dismiss] = useIonLoading()
@@ -84,6 +86,9 @@ const Main: React.FC = () => {
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
+
+  const setRasterMaps = useSetRecoilState(rasterMapState)
+  getRasterMap(setRasterMaps)
 
   animationService = new AnimationService(
     cachingService,
