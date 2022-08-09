@@ -14,6 +14,7 @@ import { useRecoilState } from 'recoil'
 import { isRasterMenuShow, rasterMapState } from '../functions/atoms'
 import { getRasterMap } from '../functions/rasterMap'
 import { RasterCfg } from '../functions/types'
+import { viewer } from '../pages/Main'
 
 interface ContainerProps {
   addLayer: Function
@@ -47,6 +48,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       setIsSelectedList(isSelectedList)
     })
   }, []) //use [] to simulate componentDidMount
+
+  for (let n = 0; n < isSelectedList.length; n++) {
+    if (isSelectedList[n]) {
+      viewer.imageryLayers.addImageryProvider(rasterMaps[n].layer)
+      break
+    }
+  }
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {

@@ -1,5 +1,6 @@
 import { atom } from 'recoil'
 import { RasterCfg } from './types'
+
 import { failSafeRasterMaps } from './rasterMap'
 
 // TODO: Dynamically assign these variables based on selected raster

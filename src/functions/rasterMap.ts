@@ -29,7 +29,7 @@ export const failSafeRasterMaps = [
 export const getRasters = async () => {
   try {
     let rasterMap: RasterCfg[] = []
-    let res = await fetch('http://localhost:18000/mobile/get_rasters')
+    let res = await fetch('https://gws.gplates.org/mobile/get_rasters')
     let json_data = await res.json()
 
     //console.log(json_data)
@@ -56,7 +56,7 @@ export const getRasters = async () => {
 export const getRasterMap = (callback: any) => {
   //try localstorage first TODO
   //and then try the gplates web service server
-  fetch('http://localhost:18000/mobile/get_rasters')
+  fetch('https://gws.gplates.org/mobile/get_rasters')
     .then((response) => response.json())
     .then((json_data) => {
       //console.log(json_data)

@@ -38,7 +38,6 @@ import { AboutPage } from './AboutPage'
 import { sqlite } from '../App'
 import { CachingService } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
-import * as Cesium from 'cesium'
 import { StarrySky } from '../components/StarrySky'
 import { SocialSharing } from '../components/SocialSharing'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
@@ -56,15 +55,17 @@ import {
   isRasterMenuShow,
   isVectorMenuShow,
   isSettingsMenuShow,
-  rasterMapState,
 } from '../functions/atoms'
-import { getRasterMap } from '../functions/rasterMap'
+import { initCesiumViewer } from '../functions/cesiumViewer'
+import { gplates_coastlines } from '../functions/DataLoader'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
 
 let animationService: AnimationService
 let cachingService: CachingService
+
+//singleton cersium viewer
 export let viewer: Viewer
 
 const Main: React.FC = () => {
@@ -87,9 +88,6 @@ const Main: React.FC = () => {
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
 
-  const setRasterMaps = useSetRecoilState(rasterMapState)
-  getRasterMap(setRasterMaps)
-
   animationService = new AnimationService(
     cachingService,
     setAge,
@@ -111,6 +109,13 @@ const Main: React.FC = () => {
     }
   })
 
+  //use [] to make this useEffect similar to componentDidMount
+  useEffect(() => {
+    if (document.getElementsByClassName('cesium-viewer').length === 0) {
+      viewer = initCesiumViewer()
+    }
+  }, [])
+
   const isStarryBackgroundEnable = useRecoilValue(backgroundIsStarry)
 
   useIonViewDidEnter(async () => {
@@ -131,95 +136,13 @@ const Main: React.FC = () => {
       153.7,
       -10.4
     )
-
-    var gridsetName = 'EPSG:4326'
-    var gridNames = [
-      'EPSG:4326:0',
-      'EPSG:4326:1',
-      'EPSG:4326:2',
-      'EPSG:4326:3',
-      'EPSG:4326:4',
-      'EPSG:4326:5',
-      'EPSG:4326:6',
-      'EPSG:4326:7',
-      'EPSG:4326:8',
-      'EPSG:4326:9',
-      'EPSG:4326:10',
-      'EPSG:4326:11',
-      'EPSG:4326:12',
-      'EPSG:4326:13',
-      'EPSG:4326:14',
-      'EPSG:4326:15',
-      'EPSG:4326:16',
-      'EPSG:4326:17',
-      'EPSG:4326:18',
-      'EPSG:4326:19',
-      'EPSG:4326:20',
-      'EPSG:4326:21',
-    ]
-    const style = ''
-    const format = 'image/jpeg'
-    const layerName = 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref'
-
-    const gplates_wmts = new WebMapTileServiceImageryProvider({
-      url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-      layer: layerName,
-      style: style,
-      format: format,
-      tileMatrixSetID: gridsetName,
-      tileMatrixLabels: gridNames,
-      //minimumLevel: 1,
-      maximumLevel: 8,
-      tilingScheme: new GeographicTilingScheme(),
-      credit: new Credit('EarthByte Geology'),
-    })
-
-    // if (document.getElementsByClassName('cesium-viewer').length === 0) {
-    //   viewer = new Viewer('cesiumContainer')
-    // }
-
     if (document.getElementsByClassName('cesium-viewer').length === 0) {
-      viewer = new Viewer('cesiumContainer', {
-        baseLayerPicker: false,
-        imageryProvider: gplates_wmts,
-        animation: false,
-        creditContainer: 'credit',
-        timeline: false,
-        fullscreenButton: false,
-        geocoder: false,
-        homeButton: false,
-        navigationHelpButton: false,
-        sceneModePicker: false,
-        contextOptions: {
-          webgl: {
-            alpha: true,
-          },
-        },
-      })
-      viewer.scene.fog.enabled = false
-      viewer.scene.globe.showGroundAtmosphere = false
-      viewer.scene.skyAtmosphere.show = false
-      viewer.scene.backgroundColor = Cesium.Color.BLACK
-
-      viewer.scene.globe.tileCacheSize = 1000
-
-      const gplates_coastlines = new WebMapTileServiceImageryProvider({
-        url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-        layer: 'gplates:Matthews_etal_GPC_2016_Coastlines_Polyline',
-        style: '',
-        format: 'image/png',
-        tileMatrixSetID: gridsetName,
-        tileMatrixLabels: gridNames,
-        //minimumLevel: 1,
-        maximumLevel: 8,
-        tilingScheme: new GeographicTilingScheme(),
-        credit: new Credit('EarthByte Coastlines'),
-      })
-      let initialVectorLayer =
-        viewer.imageryLayers.addImageryProvider(gplates_coastlines)
-
-      setVectorData({ coastlines: initialVectorLayer })
+      viewer = initCesiumViewer()
     }
+    //maybe we don't need the initial value here
+    let initialVectorLayer =
+      viewer.imageryLayers.addImageryProvider(gplates_coastlines)
+    setVectorData({ coastlines: initialVectorLayer })
   })
 
   const isViewerLoading = () => {

@@ -75,7 +75,7 @@ export const rasterData: { [key: string]: WebMapTileServiceImageryProvider } = {
   agegrid: agegrid,
 }
 
-const gplates_coastlines = new WebMapTileServiceImageryProvider({
+export const gplates_coastlines = new WebMapTileServiceImageryProvider({
   url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
   layer: 'gplates:Matthews_etal_GPC_2016_Coastlines_Polyline',
   style: '',

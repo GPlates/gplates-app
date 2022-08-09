@@ -12,11 +12,13 @@ import {
   useIonLoading,
 } from '@ionic/react'
 import { vectorData } from '../functions/DataLoader'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { timeout } from 'workbox-core/_private'
 import { useRecoilState } from 'recoil'
 import { isVectorMenuShow } from '../functions/atoms'
 import { WebMapTileServiceImageryProvider } from 'cesium'
+import { viewer } from '../pages/Main'
+import { gplates_coastlines } from '../functions/DataLoader'
 
 interface ContainerProps {
   checkedVectorData: { [key: string]: WebMapTileServiceImageryProvider }
