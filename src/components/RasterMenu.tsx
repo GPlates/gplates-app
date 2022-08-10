@@ -11,13 +11,15 @@ import {
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { useRecoilState } from 'recoil'
-import { isRasterMenuShow, rasterMapState } from '../functions/atoms'
+import { isRasterMenuShow } from '../functions/atoms'
 import { getRasterMap } from '../functions/rasterMap'
 import { RasterCfg } from '../functions/types'
 import { viewer } from '../pages/Main'
+import { WebMapTileServiceImageryProvider } from 'cesium'
 
 interface ContainerProps {
-  addLayer: Function
+  currentLayer: any
+  setCurrentLayer: Function
   isViewerLoading: Function
 }
 
@@ -26,7 +28,8 @@ const delay = (ms: number) => {
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
-  addLayer,
+  currentLayer,
+  setCurrentLayer,
   isViewerLoading,
 }) => {
   const [isSelectedList, setIsSelectedList] = useState([] as boolean[])
@@ -37,24 +40,22 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //const [rasterMaps, setRasterMaps] = useRecoilState(rasterMapState)
   const [present, dismiss] = useIonLoading()
 
+  const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
+    const newLayer = viewer.imageryLayers.addImageryProvider(provider, 1)
+    if (currentLayer != null) {
+      viewer.imageryLayers.remove(currentLayer)
+    }
+    setCurrentLayer(newLayer)
+  }
+
   useEffect(() => {
     //TODO: save in localstorage
     getRasterMap((rasters: RasterCfg[]) => {
       setRasterMaps(rasters)
-      let isSelectedList = [true]
-      for (let i = 1; i < rasterMaps.length; i++) {
-        isSelectedList.push(false)
-      }
-      setIsSelectedList(isSelectedList)
+      select(0)
+      switchLayer(rasters[0].layer)
     })
   }, []) //use [] to simulate componentDidMount
-
-  for (let n = 0; n < isSelectedList.length; n++) {
-    if (isSelectedList[n]) {
-      viewer.imageryLayers.addImageryProvider(rasterMaps[n].layer)
-      break
-    }
-  }
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
@@ -66,7 +67,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           if (!isSelectedList[i]) {
             select(i)
             await present({ message: 'Loading...' })
-            addLayer(rasterMaps[i].layer)
+            switchLayer(rasterMaps[i].layer)
             await delay(500)
             while (!isViewerLoading()) {
               await delay(500)
@@ -97,7 +98,6 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     }
     temp[index] = true
     setIsSelectedList(temp)
-    console.log(isSelectedList)
   }
 
   return (

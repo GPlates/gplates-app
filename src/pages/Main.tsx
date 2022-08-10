@@ -72,7 +72,7 @@ const Main: React.FC = () => {
   const [present, dismiss] = useIonLoading()
 
   const [vectorData, setVectorData] = useState({})
-
+  const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
   const setIsAboutPageShow = useSetRecoilState(isAboutPageShow)
   const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
   const [isSettingMenuPageShow, setMenuPageShow] =
@@ -232,10 +232,8 @@ const Main: React.FC = () => {
         <div>
           <SettingMenuPage viewer={viewer} />
           <RasterMenu
-            addLayer={(newLayer: any) => {
-              viewer.imageryLayers.addImageryProvider(newLayer)
-              // viewer.imageryLayers.remove()
-            }}
+            currentLayer={rasterMenuCurrentLayer}
+            setCurrentLayer={setRasterMenuCurrentLayer}
             isViewerLoading={isViewerLoading}
           />
           <AboutPage />
