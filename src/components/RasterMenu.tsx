@@ -12,8 +12,7 @@ import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { useRecoilState } from 'recoil'
 import { isRasterMenuShow } from '../functions/atoms'
-import { getRasterMap } from '../functions/rasterMap'
-import { RasterCfg } from '../functions/types'
+import rasterMaps from '../functions/rasterMaps'
 import { viewer } from '../pages/Main'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 
@@ -21,6 +20,7 @@ interface ContainerProps {
   currentLayer: any
   setCurrentLayer: Function
   isViewerLoading: Function
+  isCesiumViewerReady: boolean
 }
 
 const delay = (ms: number) => {
@@ -31,13 +31,11 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   currentLayer,
   setCurrentLayer,
   isViewerLoading,
+  isCesiumViewerReady,
 }) => {
   const [isSelectedList, setIsSelectedList] = useState([] as boolean[])
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
-  const [rasterMaps, setRasterMaps] = useState([] as RasterCfg[])
-  //LOOK HERE!
-  //use useRecoilState here will cause strange "assign readonly" error at "addLayer(rasterMaps[i].layer)"
-  //const [rasterMaps, setRasterMaps] = useRecoilState(rasterMapState)
+
   const [present, dismiss] = useIonLoading()
 
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
@@ -49,13 +47,8 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   }
 
   useEffect(() => {
-    //TODO: save in localstorage
-    getRasterMap((rasters: RasterCfg[]) => {
-      setRasterMaps(rasters)
-      select(0)
-      switchLayer(rasters[0].layer)
-    })
-  }, []) //use [] to simulate componentDidMount
+    select(0)
+  }, [isCesiumViewerReady]) //initial selection
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {

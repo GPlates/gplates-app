@@ -3,4 +3,5 @@ export type RasterCfg = {
   title: string
   subTitle: string
   icon: string
+  model?: string
 }
