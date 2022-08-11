@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import { SplashScreen } from '@capacitor/splash-screen'
 import {
   IonContent,
   IonFab,
@@ -17,6 +17,7 @@ import {
   exitOutline,
   layersOutline,
   informationOutline,
+  shareSocialOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -58,6 +59,7 @@ import {
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import { gplates_coastlines } from '../functions/DataLoader'
+import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -88,6 +90,9 @@ const Main: React.FC = () => {
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
 
+  const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
+  const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
+
   animationService = new AnimationService(
     cachingService,
     setAge,
@@ -103,6 +108,7 @@ const Main: React.FC = () => {
     setRange,
     viewer
   )
+
   useEffect(() => {
     if (isSettingMenuPageShow) {
       animationService.setPlaying(false)
@@ -111,9 +117,20 @@ const Main: React.FC = () => {
 
   //use [] to make this useEffect similar to componentDidMount
   useEffect(() => {
-    if (document.getElementsByClassName('cesium-viewer').length === 0) {
-      viewer = initCesiumViewer()
-    }
+    //load the raster maps from gplates server or localstorage
+    loadRasterMaps(() => {
+      setIsRasterMapsLoaded(true)
+      if (document.getElementsByClassName('cesium-viewer').length === 0) {
+        viewer = initCesiumViewer(rasterMaps[0].layer)
+        setIsCesiumViewerReady(true)
+        SplashScreen.hide()
+
+        //maybe we don't need the initial value here
+        let initialVectorLayer =
+          viewer.imageryLayers.addImageryProvider(gplates_coastlines)
+        setVectorData({ coastlines: initialVectorLayer })
+      }
+    })
   }, [])
 
   const isStarryBackgroundEnable = useRecoilValue(backgroundIsStarry)
@@ -136,13 +153,6 @@ const Main: React.FC = () => {
       153.7,
       -10.4
     )
-    if (document.getElementsByClassName('cesium-viewer').length === 0) {
-      viewer = initCesiumViewer()
-    }
-    //maybe we don't need the initial value here
-    let initialVectorLayer =
-      viewer.imageryLayers.addImageryProvider(gplates_coastlines)
-    setVectorData({ coastlines: initialVectorLayer })
   })
 
   const isViewerLoading = () => {
@@ -202,7 +212,7 @@ const Main: React.FC = () => {
                 )
               }}
             >
-              <IonIcon icon={exitOutline} />
+              <IonIcon icon={shareSocialOutline}></IonIcon>
             </IonFabButton>
             <IonFabButton
               onClick={async () => {
@@ -235,6 +245,7 @@ const Main: React.FC = () => {
             currentLayer={rasterMenuCurrentLayer}
             setCurrentLayer={setRasterMenuCurrentLayer}
             isViewerLoading={isViewerLoading}
+            isCesiumViewerReady={isCesiumViewerReady}
           />
           <AboutPage />
           <VectorDataLayerMenu

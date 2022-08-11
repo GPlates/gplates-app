@@ -1,9 +1,9 @@
-import { Color, Viewer } from 'cesium'
+import { Color, Viewer, ImageryProvider } from 'cesium'
 
-export const initCesiumViewer = () => {
+export const initCesiumViewer = (provider: ImageryProvider) => {
   let viewer: Viewer = new Viewer('cesiumContainer', {
     baseLayerPicker: false,
-    //imageryProvider: gplates_wmts,
+    imageryProvider: provider,
     animation: false,
     creditContainer: 'credit',
     timeline: false,

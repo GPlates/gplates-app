@@ -1,7 +1,7 @@
 import { atom } from 'recoil'
 import { RasterCfg } from './types'
 
-import { failSafeRasterMaps } from './rasterMap'
+import { failSafeRasterMaps } from './rasterMaps'
 
 // TODO: Dynamically assign these variables based on selected raster
 export const GEOSRV_URL =
