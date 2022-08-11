@@ -17,6 +17,7 @@ import {
   exitOutline,
   layersOutline,
   informationOutline,
+  shareSocialOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -211,7 +212,7 @@ const Main: React.FC = () => {
                 )
               }}
             >
-              <IonIcon icon={exitOutline} />
+              <IonIcon icon={shareSocialOutline}></IonIcon>
             </IonFabButton>
             <IonFabButton
               onClick={async () => {
