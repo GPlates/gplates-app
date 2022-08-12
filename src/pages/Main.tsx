@@ -208,7 +208,6 @@ const Main: React.FC = () => {
             <IonFabButton
               onClick={async () => {
                 await SocialSharing(
-                  isStarryBackgroundEnable,
                   present,
                   dismiss,
                   presentToast,

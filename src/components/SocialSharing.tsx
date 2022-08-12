@@ -5,7 +5,7 @@ import assert from 'assert'
 import { Media } from '@capacitor-community/media'
 import { isPlatform } from '@ionic/react'
 import { Filesystem, Directory } from '@capacitor/filesystem'
-import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
+//import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
 import { Share } from '@capacitor/share'
 import { cesiumViewer } from '../pages/Main'
 
@@ -34,6 +34,7 @@ const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   return result
 }
 
+/*
 //
 //
 const coincideTwoPic = async (
@@ -94,7 +95,7 @@ const downloadBlob = (blob: Blob) => {
 const dataUrltoBlob = async (url: string) => {
   return await (await fetch(url)).blob()
 }
-
+*/
 //
 //
 const saveImgToFileSystem = async (img: string, fileName: string) => {
@@ -108,6 +109,7 @@ const saveImgToFileSystem = async (img: string, fileName: string) => {
   ).uri
 }
 
+/*
 //
 //
 const getScreenShot = async (
@@ -117,7 +119,7 @@ const getScreenShot = async (
   let cesiumBlob = await getCesiumScreenShotBlob(viewer)
   let cesiumDataUrl = URL.createObjectURL(cesiumBlob)
 
-  const starrySkyCanvas = document.getElementById('starrySky')
+  const starrySkyCanvas = document.getElementById('starry-sky')
   let result = ''
   if (isStarryBackgroundEnable) {
     // @ts-ignore
@@ -155,7 +157,7 @@ const getScreenShot = async (
 
   return result
 }
-
+*/
 //
 //
 const saveImage = async (img: string) => {
@@ -214,6 +216,7 @@ const dataURLtoFile = (dataUrl: string, fileName: string) => {
   return new File([u8arr], fileName, { type: mime })
 }
 
+/*
 //
 //
 const shareImageWeb = async (imgDataUrl: string) => {
@@ -246,41 +249,67 @@ const shareImageIosAndAndroid = async (imgDataUrl: string) => {
     undefined
   )
 }
-
+*/
 //
 //
-const getScreenShot_ = async () => {
+const getScreenShot = async () => {
   //get cesium viewer screenshot
   let cesiumBlob = await getCesiumScreenShotBlob(cesiumViewer)
-  let pic1 = URL.createObjectURL(cesiumBlob)
+  let cesiumImageURL = URL.createObjectURL(cesiumBlob)
 
-  let bgImg = new Image()
-  bgImg.src = pic1
-  bgImg.crossOrigin = 'Anonymous'
-  while (!bgImg.complete) {
+  let cesiumImage = new Image()
+  cesiumImage.src = cesiumImageURL
+  cesiumImage.crossOrigin = 'Anonymous'
+  while (!cesiumImage.complete) {
+    await timeout(100)
+  }
+
+  //get starry sky background
+  const starrySkyCanvas = document.getElementById(
+    'starry-sky'
+  ) as HTMLCanvasElement
+
+  let starBackgroundScreenShot = ''
+  let drawStarrySky = false
+  if (starrySkyCanvas) {
+    const computedStyle = window.getComputedStyle(starrySkyCanvas)
+    //starry-sky is visible
+    if (computedStyle.getPropertyValue('display') != 'none') {
+      drawStarrySky = true
+      starBackgroundScreenShot = starrySkyCanvas.toDataURL('image/png', 1.0)
+    }
+  }
+
+  //starry sky image
+  let starrySkyImage = new Image()
+  starrySkyImage.src = starBackgroundScreenShot
+  starrySkyImage.crossOrigin = 'Anonymous'
+  while (!starrySkyImage.complete) {
     await timeout(100)
   }
 
   let canvas = document.createElement('canvas')
   //let width = cesiumViewer.canvas.width
   //let height = cesiumViewer.canvas.height
-  let width = bgImg.width
-  let height = bgImg.height
-
-  canvas.width = width
-  canvas.height = height
+  canvas.width = Math.max(cesiumImage.width, starrySkyImage.width)
+  canvas.height = Math.max(cesiumImage.height, starrySkyImage.height)
 
   let context = canvas.getContext('2d')
   assert(context != null)
-  context.rect(0, 0, width, height)
+  context.rect(0, 0, canvas.width, canvas.height)
 
-  let config = {
-    dx: 0,
-    dy: 0,
-    dw: canvas.width,
-    dh: canvas.height,
+  //draw StarrySky background
+  if (drawStarrySky) {
+    context.drawImage(
+      starrySkyImage,
+      0,
+      0,
+      starrySkyImage.width,
+      starrySkyImage.height
+    )
   }
-  context.drawImage(bgImg, config.dx, config.dy, config.dw, config.dh)
+  //draw cesium image
+  context.drawImage(cesiumImage, 0, 0, cesiumImage.width, cesiumImage.height)
 
   //overlay the time widget
   const timeStampScreenShot = document.getElementById('timeStamp')
@@ -310,7 +339,6 @@ const getScreenShot_ = async () => {
 
 //take screenshot and share it
 export const SocialSharing = async (
-  isStarryBackgroundEnable: boolean,
   loadingPresent: Function,
   loadingDismiss: Function,
   presentToast: Function,
@@ -321,10 +349,10 @@ export const SocialSharing = async (
   //console.log(canShare)
   if (canShare.value) {
     try {
-      loadingPresent({ message: 'Preparing screenshot to share...' })
+      loadingPresent({ message: 'Taking screenshot...' })
       //let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
-      let screenShot = await getScreenShot_()
-      console.log(screenShot)
+      let screenShot = await getScreenShot()
+      //console.log(screenShot)
       let filepath = await saveImage(screenShot)
       await Share.share({
         title: 'GPlates App Screenshot',
