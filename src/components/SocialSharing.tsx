@@ -7,8 +7,6 @@ import { Media } from '@capacitor-community/media'
 import { getPlatforms, isPlatform, useIonToast } from '@ionic/react'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
-import React from 'react'
-import { Browser } from '@capacitor/browser'
 import { Share } from '@capacitor/share'
 
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
@@ -149,6 +147,7 @@ const saveImage = async (img: string) => {
   savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
   const albumName = 'GPlates App'
   let albums = await Media.getAlbums()
+  //console.log(albums)
   if (isPlatform('ios')) {
     let albumID =
       (await Media.getAlbums()).albums.find((a) => a.name === albumName)
@@ -226,6 +225,7 @@ const shareImageIosAndAndroid = async (imgDataUrl: string) => {
   )
 }
 
+//take screenshot and share it
 export const SocialSharing = async (
   viewer: Viewer,
   isStarryBackgroundEnable: boolean,
@@ -236,10 +236,10 @@ export const SocialSharing = async (
 ) => {
   let isFail = false
   let canShare = await Share.canShare()
-  console.log(canShare)
+  //console.log(canShare)
   if (canShare.value) {
     try {
-      loadingPresent({ message: 'Please Wait...' })
+      loadingPresent({ message: 'Preparing screenshot to share...' })
       let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
       await saveImage(screenShot)
       await Share.share({
@@ -249,6 +249,7 @@ export const SocialSharing = async (
       })
       loadingDismiss()
     } catch (error) {
+      console.log(error)
       loadingDismiss()
       isFail = true
     }
@@ -258,8 +259,9 @@ export const SocialSharing = async (
   if (isFail) {
     await presentToast({
       buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
-      duration: 3000,
-      message: 'Unable to share screenshot.',
+      duration: 5000,
+      message:
+        'Unable to share screenshot. Not implement on web or failed to create screenshot.',
       onDidDismiss: () => {},
     })
   }
