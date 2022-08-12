@@ -13,7 +13,7 @@ import { chevronBack, chevronForward } from 'ionicons/icons'
 import { useRecoilState } from 'recoil'
 import { isRasterMenuShow } from '../functions/atoms'
 import rasterMaps from '../functions/rasterMaps'
-import { viewer } from '../pages/Main'
+import { cesiumViewer } from '../pages/Main'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 
 interface ContainerProps {
@@ -39,9 +39,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const [present, dismiss] = useIonLoading()
 
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
-    const newLayer = viewer.imageryLayers.addImageryProvider(provider, 1)
+    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider, 1)
     if (currentLayer != null) {
-      viewer.imageryLayers.remove(currentLayer)
+      cesiumViewer.imageryLayers.remove(currentLayer)
     }
     setCurrentLayer(newLayer)
   }

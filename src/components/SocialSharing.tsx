@@ -2,13 +2,19 @@ import * as Cesium from 'cesium'
 import { Viewer } from 'cesium'
 import html2canvas from 'html2canvas'
 import assert from 'assert'
-import { timeout } from 'workbox-core/_private'
 import { Media } from '@capacitor-community/media'
-import { getPlatforms, isPlatform, useIonToast } from '@ionic/react'
+import { isPlatform } from '@ionic/react'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
 import { Share } from '@capacitor/share'
+import { cesiumViewer } from '../pages/Main'
 
+const timeout = async (time: number) => {
+  await new Promise((resolve) => setTimeout(resolve, time))
+}
+
+//
+// get screenshot blob from cesium canvas
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   let result = null
   const scene = viewer.scene
@@ -23,13 +29,13 @@ const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   scene.postRender.addEventListener(screenshot)
   viewer.render()
 
-  while (result === null) {
-    await timeout(500)
-  }
+  while (result === null) await timeout(200)
 
   return result
 }
 
+//
+//
 const coincideTwoPic = async (
   pic1: string,
   pic1Config = {},
@@ -74,6 +80,7 @@ const coincideTwoPic = async (
   return canvas.toDataURL('image/png')
 }
 
+//
 // for test purpose
 const downloadBlob = (blob: Blob) => {
   let link = document.createElement('a')
@@ -82,10 +89,14 @@ const downloadBlob = (blob: Blob) => {
   link.click()
 }
 
+//
+//
 const dataUrltoBlob = async (url: string) => {
   return await (await fetch(url)).blob()
 }
 
+//
+//
 const saveImgToFileSystem = async (img: string, fileName: string) => {
   await Filesystem.requestPermissions()
   return (
@@ -97,6 +108,8 @@ const saveImgToFileSystem = async (img: string, fileName: string) => {
   ).uri
 }
 
+//
+//
 const getScreenShot = async (
   viewer: Viewer,
   isStarryBackgroundEnable: boolean
@@ -142,11 +155,13 @@ const getScreenShot = async (
 
   return result
 }
-let savedPath: string
+
+//
+//
 const saveImage = async (img: string) => {
-  savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
+  let savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
   const albumName = 'GPlates App'
-  let albums = await Media.getAlbums()
+  //let albums = await Media.getAlbums()
   //console.log(albums)
   if (isPlatform('ios')) {
     let albumID =
@@ -181,8 +196,11 @@ const saveImage = async (img: string) => {
       album: albumName,
     })
   }
+  return savedPath
 }
 
+//
+//
 const dataURLtoFile = (dataUrl: string, fileName: string) => {
   let arr = dataUrl.split(',')
   // @ts-ignore
@@ -196,6 +214,8 @@ const dataURLtoFile = (dataUrl: string, fileName: string) => {
   return new File([u8arr], fileName, { type: mime })
 }
 
+//
+//
 const shareImageWeb = async (imgDataUrl: string) => {
   let imgFile = dataURLtoFile(imgDataUrl, 'tempScreenShot.png')
   if (navigator.canShare && navigator.canShare({ files: [imgFile] })) {
@@ -216,6 +236,8 @@ const shareImageWeb = async (imgDataUrl: string) => {
   }
 }
 
+//
+//
 const shareImageIosAndAndroid = async (imgDataUrl: string) => {
   await ShareTool.share(
     'Share Screenshot',
@@ -225,9 +247,45 @@ const shareImageIosAndAndroid = async (imgDataUrl: string) => {
   )
 }
 
+//
+//
+const getScreenShot_ = async () => {
+  //get cesium viewer screenshot
+  let cesiumBlob = await getCesiumScreenShotBlob(cesiumViewer)
+  let pic1 = URL.createObjectURL(cesiumBlob)
+
+  let bgImg = new Image()
+  bgImg.src = pic1
+  bgImg.crossOrigin = 'Anonymous'
+  while (!bgImg.complete) {
+    await timeout(100)
+  }
+
+  let canvas = document.createElement('canvas')
+  //let width = cesiumViewer.canvas.width
+  //let height = cesiumViewer.canvas.height
+  let width = bgImg.width
+  let height = bgImg.height
+
+  canvas.width = width
+  canvas.height = height
+
+  let context = canvas.getContext('2d')
+  assert(context != null)
+  context.rect(0, 0, width, height)
+
+  let config = {
+    dx: 0,
+    dy: 0,
+    dw: canvas.width,
+    dh: canvas.height,
+  }
+  context.drawImage(bgImg, config.dx, config.dy, config.dw, config.dh)
+  return canvas.toDataURL('image/png')
+}
+
 //take screenshot and share it
 export const SocialSharing = async (
-  viewer: Viewer,
   isStarryBackgroundEnable: boolean,
   loadingPresent: Function,
   loadingDismiss: Function,
@@ -240,18 +298,22 @@ export const SocialSharing = async (
   if (canShare.value) {
     try {
       loadingPresent({ message: 'Preparing screenshot to share...' })
-      let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
-      await saveImage(screenShot)
+      //let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
+      let screenShot = await getScreenShot_()
+      console.log(screenShot)
+      let filepath = await saveImage(screenShot)
       await Share.share({
         title: 'GPlates App Screenshot',
         text: 'I would like to share an awesome GPlates App screenshot',
-        url: savedPath,
+        url: filepath,
       })
       loadingDismiss()
-    } catch (error) {
+    } catch (error: any) {
       console.log(error)
       loadingDismiss()
-      isFail = true
+      if (error.message != 'Share canceled') {
+        isFail = true
+      }
     }
   } else {
     isFail = true

@@ -69,7 +69,7 @@ let animationService: AnimationService
 let cachingService: CachingService
 
 //singleton cersium viewer
-export let viewer: Viewer
+export let cesiumViewer: Viewer
 
 const Main: React.FC = () => {
   const [present, dismiss] = useIonLoading()
@@ -109,7 +109,7 @@ const Main: React.FC = () => {
     _setPlaying,
     range,
     setRange,
-    viewer
+    cesiumViewer
   )
 
   useEffect(() => {
@@ -124,13 +124,13 @@ const Main: React.FC = () => {
     loadRasterMaps(() => {
       setIsRasterMapsLoaded(true)
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
-        viewer = initCesiumViewer(rasterMaps[0].layer)
+        cesiumViewer = initCesiumViewer(rasterMaps[0].layer)
         setIsCesiumViewerReady(true)
         SplashScreen.hide()
 
         //maybe we don't need the initial value here
         let initialVectorLayer =
-          viewer.imageryLayers.addImageryProvider(gplates_coastlines)
+          cesiumViewer.imageryLayers.addImageryProvider(gplates_coastlines)
         setVectorData({ coastlines: initialVectorLayer })
       }
     })
@@ -159,7 +159,7 @@ const Main: React.FC = () => {
   })
 
   const isViewerLoading = () => {
-    return viewer.scene.globe.tilesLoaded
+    return cesiumViewer.scene.globe.tilesLoaded
   }
 
   return (
@@ -171,7 +171,7 @@ const Main: React.FC = () => {
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
           <AgeSlider
-            buttons={<CustomToolbar scene={viewer?.scene} />}
+            buttons={<CustomToolbar scene={cesiumViewer?.scene} />}
             animationService={animationService}
           />
         </div>
@@ -208,7 +208,6 @@ const Main: React.FC = () => {
             <IonFabButton
               onClick={async () => {
                 await SocialSharing(
-                  viewer,
                   isStarryBackgroundEnable,
                   present,
                   dismiss,
@@ -245,7 +244,7 @@ const Main: React.FC = () => {
           </IonFabList>
         </IonFab>
         <div>
-          <SettingMenuPage viewer={viewer} />
+          <SettingMenuPage viewer={cesiumViewer} />
           <RasterMenu
             currentLayer={rasterMenuCurrentLayer}
             setCurrentLayer={setRasterMenuCurrentLayer}
@@ -257,10 +256,10 @@ const Main: React.FC = () => {
             checkedVectorData={vectorData}
             setVectorData={setVectorData}
             addLayer={(newLayer: WebMapTileServiceImageryProvider) => {
-              return viewer.imageryLayers.addImageryProvider(newLayer)
+              return cesiumViewer.imageryLayers.addImageryProvider(newLayer)
             }}
             removeLayer={(targetLayer: any) => {
-              viewer.imageryLayers.remove(targetLayer)
+              cesiumViewer.imageryLayers.remove(targetLayer)
             }}
             isViewerLoading={isViewerLoading}
           />
