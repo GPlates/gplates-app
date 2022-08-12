@@ -281,6 +281,30 @@ const getScreenShot_ = async () => {
     dh: canvas.height,
   }
   context.drawImage(bgImg, config.dx, config.dy, config.dw, config.dh)
+
+  //overlay the time widget
+  const timeStampScreenShot = document.getElementById('timeStamp')
+  if (timeStampScreenShot != null) {
+    let test = window.getComputedStyle(timeStampScreenShot)
+    let dx = parseFloat(test.padding.slice(0, -2))
+    let dy = dx
+    let dw = parseFloat(test.width.slice(0, -2))
+    let dh = parseFloat(test.height.slice(0, -2))
+
+    let time_canvas = await html2canvas(timeStampScreenShot, {
+      backgroundColor: null,
+    })
+    let time_canvas_dataurl = time_canvas.toDataURL('image/png', 1.0)
+
+    let timeImage = new Image()
+    timeImage.src = time_canvas_dataurl
+    timeImage.crossOrigin = 'Anonymous'
+    while (!timeImage.complete) {
+      await timeout(100)
+    }
+    context.drawImage(timeImage, dx, dy, dw, dh)
+  }
+
   return canvas.toDataURL('image/png')
 }
 
