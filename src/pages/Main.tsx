@@ -19,6 +19,7 @@ import {
   layersOutline,
   informationOutline,
   shareSocialOutline,
+  helpOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -232,13 +233,13 @@ const Main: React.FC = () => {
               <IonIcon icon={informationOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
+              <IonIcon icon={helpOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
+              <IonIcon icon={helpOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
+              <IonIcon icon={helpOutline} />
             </IonFabButton>
           </IonFabList>
         </IonFab>

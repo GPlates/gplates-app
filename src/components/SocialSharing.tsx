@@ -3,7 +3,7 @@ import { Viewer } from 'cesium'
 import html2canvas from 'html2canvas'
 import assert from 'assert'
 import { Media } from '@capacitor-community/media'
-import { isPlatform } from '@ionic/react'
+import { isPlatform, getPlatforms } from '@ionic/react'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 //import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
 import { Share } from '@capacitor/share'
@@ -345,9 +345,11 @@ export const SocialSharing = async (
   dismissToast: Function
 ) => {
   let isFail = false
-  let canShare = await Share.canShare()
+  let canShare: boolean = (await Share.canShare()).value
   //console.log(canShare)
-  if (canShare.value) {
+  //console.log(getPlatforms())
+  if (getPlatforms().includes('desktop')) canShare = false
+  if (canShare) {
     try {
       loadingPresent({ message: 'Taking screenshot...' })
       //let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
