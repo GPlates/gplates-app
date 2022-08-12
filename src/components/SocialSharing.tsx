@@ -2,13 +2,19 @@ import * as Cesium from 'cesium'
 import { Viewer } from 'cesium'
 import html2canvas from 'html2canvas'
 import assert from 'assert'
-import { timeout } from 'workbox-core/_private'
 import { Media } from '@capacitor-community/media'
-import { getPlatforms, isPlatform } from '@ionic/react'
+import { isPlatform, getPlatforms } from '@ionic/react'
 import { Filesystem, Directory } from '@capacitor/filesystem'
-import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
-import React from 'react'
+//import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
+import { Share } from '@capacitor/share'
+import { cesiumViewer } from '../pages/Main'
 
+const timeout = async (time: number) => {
+  await new Promise((resolve) => setTimeout(resolve, time))
+}
+
+//
+// get screenshot blob from cesium canvas
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   let result = null
   const scene = viewer.scene
@@ -23,13 +29,14 @@ const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   scene.postRender.addEventListener(screenshot)
   viewer.render()
 
-  while (result === null) {
-    await timeout(500)
-  }
+  while (result === null) await timeout(200)
 
   return result
 }
 
+/*
+//
+//
 const coincideTwoPic = async (
   pic1: string,
   pic1Config = {},
@@ -69,11 +76,12 @@ const coincideTwoPic = async (
     await timeout(500)
   }
   config = { dx: 0, dy: 0, dw: canvas.width, dh: canvas.height, ...pic2Config }
-  context.drawImage(img, config.dx, config.dy, config.dw, config.dh)
+  //context.drawImage(img, config.dx, config.dy, config.dw, config.dh)
 
   return canvas.toDataURL('image/png')
 }
 
+//
 // for test purpose
 const downloadBlob = (blob: Blob) => {
   let link = document.createElement('a')
@@ -82,20 +90,28 @@ const downloadBlob = (blob: Blob) => {
   link.click()
 }
 
+//
+//
 const dataUrltoBlob = async (url: string) => {
   return await (await fetch(url)).blob()
 }
-
+*/
+//
+//
 const saveImgToFileSystem = async (img: string, fileName: string) => {
+  await Filesystem.requestPermissions()
   return (
     await Filesystem.writeFile({
       path: fileName,
       data: img,
-      directory: Directory.Data,
+      directory: Directory.Cache,
     })
   ).uri
 }
 
+/*
+//
+//
 const getScreenShot = async (
   viewer: Viewer,
   isStarryBackgroundEnable: boolean
@@ -103,7 +119,7 @@ const getScreenShot = async (
   let cesiumBlob = await getCesiumScreenShotBlob(viewer)
   let cesiumDataUrl = URL.createObjectURL(cesiumBlob)
 
-  const starrySkyCanvas = document.getElementById('starrySky')
+  const starrySkyCanvas = document.getElementById('starry-sky')
   let result = ''
   if (isStarryBackgroundEnable) {
     // @ts-ignore
@@ -141,16 +157,52 @@ const getScreenShot = async (
 
   return result
 }
-
+*/
+//
+//
 const saveImage = async (img: string) => {
   let savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
-  let album = (await Media.getAlbums()).albums[0]
-  await Media.savePhoto({
-    path: savedPath,
-    album: isPlatform('ios') ? album.identifier : album.name,
-  })
+  const albumName = 'GPlates App'
+  //let albums = await Media.getAlbums()
+  //console.log(albums)
+  if (isPlatform('ios')) {
+    let albumID =
+      (await Media.getAlbums()).albums.find((a) => a.name === albumName)
+        ?.identifier || null
+
+    if (albumID === null) {
+      // no 'GPlates App' album, create one
+      await Media.createAlbum({ name: albumName })
+      await Media.savePhoto({
+        path: savedPath,
+        album: (
+          await Media.getAlbums()
+        ).albums.find((a) => a.name === albumName)?.identifier,
+      })
+    } else {
+      await Media.savePhoto({
+        path: savedPath,
+        album: albumID,
+      })
+    }
+  } else if (isPlatform('android')) {
+    if (
+      (await Media.getAlbums()).albums.find((a) => a.name === albumName) ===
+      undefined
+    ) {
+      // no 'GPlates App' album, create one
+      await Media.createAlbum({ name: albumName })
+    }
+    await Media.savePhoto({
+      path: savedPath,
+      album: albumName,
+    })
+  }
+  return savedPath
 }
 
+//
+//
 const dataURLtoFile = (dataUrl: string, fileName: string) => {
   let arr = dataUrl.split(',')
   // @ts-ignore
@@ -164,6 +216,9 @@ const dataURLtoFile = (dataUrl: string, fileName: string) => {
   return new File([u8arr], fileName, { type: mime })
 }
 
+/*
+//
+//
 const shareImageWeb = async (imgDataUrl: string) => {
   let imgFile = dataURLtoFile(imgDataUrl, 'tempScreenShot.png')
   if (navigator.canShare && navigator.canShare({ files: [imgFile] })) {
@@ -184,6 +239,8 @@ const shareImageWeb = async (imgDataUrl: string) => {
   }
 }
 
+//
+//
 const shareImageIosAndAndroid = async (imgDataUrl: string) => {
   await ShareTool.share(
     'Share Screenshot',
@@ -192,16 +249,140 @@ const shareImageIosAndAndroid = async (imgDataUrl: string) => {
     undefined
   )
 }
+*/
+//
+//
+const getScreenShot = async () => {
+  //get cesium viewer screenshot
+  let cesiumBlob = await getCesiumScreenShotBlob(cesiumViewer)
+  let cesiumImageURL = URL.createObjectURL(cesiumBlob)
 
+  let cesiumImage = new Image()
+  cesiumImage.src = cesiumImageURL
+  cesiumImage.crossOrigin = 'Anonymous'
+  while (!cesiumImage.complete) {
+    await timeout(100)
+  }
+
+  //get starry sky background
+  const starrySkyCanvas = document.getElementById(
+    'starry-sky'
+  ) as HTMLCanvasElement
+
+  let starBackgroundScreenShot = ''
+  let drawStarrySky = false
+  if (starrySkyCanvas) {
+    const computedStyle = window.getComputedStyle(starrySkyCanvas)
+    //starry-sky is visible
+    if (computedStyle.getPropertyValue('display') != 'none') {
+      drawStarrySky = true
+      starBackgroundScreenShot = starrySkyCanvas.toDataURL('image/png', 1.0)
+    }
+  }
+
+  //starry sky image
+  let starrySkyImage = new Image()
+  starrySkyImage.src = starBackgroundScreenShot
+  starrySkyImage.crossOrigin = 'Anonymous'
+  while (!starrySkyImage.complete) {
+    await timeout(100)
+  }
+
+  let canvas = document.createElement('canvas')
+  //let width = cesiumViewer.canvas.width
+  //let height = cesiumViewer.canvas.height
+  canvas.width = Math.max(cesiumImage.width, starrySkyImage.width)
+  canvas.height = Math.max(cesiumImage.height, starrySkyImage.height)
+
+  let context = canvas.getContext('2d')
+  assert(context != null)
+  context.rect(0, 0, canvas.width, canvas.height)
+
+  //draw StarrySky background
+  if (drawStarrySky) {
+    context.drawImage(
+      starrySkyImage,
+      0,
+      0,
+      starrySkyImage.width,
+      starrySkyImage.height
+    )
+  }
+  //draw cesium image
+  context.drawImage(cesiumImage, 0, 0, cesiumImage.width, cesiumImage.height)
+
+  //overlay the time widget
+  const timeStampScreenShot = document.getElementById('timeStamp')
+  if (timeStampScreenShot != null) {
+    let test = window.getComputedStyle(timeStampScreenShot)
+    let dx = parseFloat(test.padding.slice(0, -2))
+    let dy = dx
+    let dw = parseFloat(test.width.slice(0, -2))
+    let dh = parseFloat(test.height.slice(0, -2))
+
+    let time_canvas = await html2canvas(timeStampScreenShot, {
+      backgroundColor: null,
+    })
+    let time_canvas_dataurl = time_canvas.toDataURL('image/png', 1.0)
+
+    let timeImage = new Image()
+    timeImage.src = time_canvas_dataurl
+    timeImage.crossOrigin = 'Anonymous'
+    while (!timeImage.complete) {
+      await timeout(100)
+    }
+    context.drawImage(timeImage, dx, dy, dw, dh)
+  }
+
+  return canvas.toDataURL('image/png')
+}
+
+//take screenshot and share it
 export const SocialSharing = async (
-  viewer: Viewer,
-  isStarryBackgroundEnable: boolean,
   loadingPresent: Function,
-  loadingDismiss: Function
+  loadingDismiss: Function,
+  presentToast: Function,
+  dismissToast: Function
 ) => {
-  loadingPresent({ message: 'Please Wait...' })
+  let isFail = false
+  let canShare: boolean = (await Share.canShare()).value
+  //console.log(canShare)
+  //console.log(getPlatforms())
+  if (getPlatforms().includes('desktop')) canShare = false
+  if (canShare) {
+    try {
+      loadingPresent({ message: 'Taking screenshot...' })
+      //let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
+      let screenShot = await getScreenShot()
+      //console.log(screenShot)
+      let filepath = await saveImage(screenShot)
+      await Share.share({
+        title: 'GPlates App Screenshot',
+        text: 'I would like to share an awesome GPlates App screenshot',
+        url: filepath,
+      })
+      loadingDismiss()
+    } catch (error: any) {
+      console.log(error)
+      loadingDismiss()
+      if (error.message != 'Share canceled') {
+        isFail = true
+      }
+    }
+  } else {
+    isFail = true
+  }
+  if (isFail) {
+    await presentToast({
+      buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+      duration: 5000,
+      message:
+        'Unable to share screenshot. Not implement on web or failed to create screenshot.',
+      onDidDismiss: () => {},
+    })
+  }
 
-  let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
+  /*
   console.log(getPlatforms())
   if (isPlatform('cordova')) {
     await saveImage(screenShot)
@@ -209,7 +390,5 @@ export const SocialSharing = async (
   } else {
     // no image saving part for browsers
     await shareImageWeb(screenShot)
-  }
-
-  loadingDismiss()
+  }*/
 }

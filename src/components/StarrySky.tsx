@@ -91,7 +91,7 @@ export const StarrySky: React.FC<ContainerProps> = () => {
     if (!isStarryBackgroundEnable) return () => {} // if not enabled, do nothing and return
 
     let canvas: HTMLCanvasElement = document.getElementById(
-      'starrySky'
+      'starry-sky'
     ) as HTMLCanvasElement
     assert(canvas != null)
     let ctx = canvas.getContext('2d')
@@ -155,5 +155,14 @@ export const StarrySky: React.FC<ContainerProps> = () => {
     }
   }, [isStarryBackgroundEnable]) //end of useEffect
 
-  return <canvas id="starrySky" style={{ position: 'absolute', zIndex: 0 }} />
+  return (
+    <canvas
+      id="starry-sky"
+      style={{
+        position: 'absolute',
+        zIndex: 0,
+        display: isStarryBackgroundEnable ? '' : 'none',
+      }}
+    />
+  )
 }
