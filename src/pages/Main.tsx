@@ -9,6 +9,7 @@ import {
   IonPage,
   useIonLoading,
   useIonViewDidEnter,
+  useIonToast,
 } from '@ionic/react'
 
 import {
@@ -92,6 +93,8 @@ const Main: React.FC = () => {
 
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
+
+  const [presentToast, dismissToast] = useIonToast()
 
   animationService = new AnimationService(
     cachingService,
@@ -208,7 +211,9 @@ const Main: React.FC = () => {
                   viewer,
                   isStarryBackgroundEnable,
                   present,
-                  dismiss
+                  dismiss,
+                  presentToast,
+                  dismissToast
                 )
               }}
             >

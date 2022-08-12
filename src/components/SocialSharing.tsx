@@ -4,10 +4,12 @@ import html2canvas from 'html2canvas'
 import assert from 'assert'
 import { timeout } from 'workbox-core/_private'
 import { Media } from '@capacitor-community/media'
-import { getPlatforms, isPlatform } from '@ionic/react'
+import { getPlatforms, isPlatform, useIonToast } from '@ionic/react'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
 import React from 'react'
+import { Browser } from '@capacitor/browser'
+import { Share } from '@capacitor/share'
 
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   let result = null
@@ -69,7 +71,7 @@ const coincideTwoPic = async (
     await timeout(500)
   }
   config = { dx: 0, dy: 0, dw: canvas.width, dh: canvas.height, ...pic2Config }
-  context.drawImage(img, config.dx, config.dy, config.dw, config.dh)
+  //context.drawImage(img, config.dx, config.dy, config.dw, config.dh)
 
   return canvas.toDataURL('image/png')
 }
@@ -87,11 +89,12 @@ const dataUrltoBlob = async (url: string) => {
 }
 
 const saveImgToFileSystem = async (img: string, fileName: string) => {
+  await Filesystem.requestPermissions()
   return (
     await Filesystem.writeFile({
       path: fileName,
       data: img,
-      directory: Directory.Data,
+      directory: Directory.Cache,
     })
   ).uri
 }
@@ -141,14 +144,44 @@ const getScreenShot = async (
 
   return result
 }
-
+let savedPath: string
 const saveImage = async (img: string) => {
-  let savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
-  let album = (await Media.getAlbums()).albums[0]
-  await Media.savePhoto({
-    path: savedPath,
-    album: isPlatform('ios') ? album.identifier : album.name,
-  })
+  savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
+  const albumName = 'GPlates App'
+  let albums = await Media.getAlbums()
+  if (isPlatform('ios')) {
+    let albumID =
+      (await Media.getAlbums()).albums.find((a) => a.name === albumName)
+        ?.identifier || null
+
+    if (albumID === null) {
+      // no 'GPlates App' album, create one
+      await Media.createAlbum({ name: albumName })
+      await Media.savePhoto({
+        path: savedPath,
+        album: (
+          await Media.getAlbums()
+        ).albums.find((a) => a.name === albumName)?.identifier,
+      })
+    } else {
+      await Media.savePhoto({
+        path: savedPath,
+        album: albumID,
+      })
+    }
+  } else if (isPlatform('android')) {
+    if (
+      (await Media.getAlbums()).albums.find((a) => a.name === albumName) ===
+      undefined
+    ) {
+      // no 'GPlates App' album, create one
+      await Media.createAlbum({ name: albumName })
+    }
+    await Media.savePhoto({
+      path: savedPath,
+      album: albumName,
+    })
+  }
 }
 
 const dataURLtoFile = (dataUrl: string, fileName: string) => {
@@ -197,11 +230,41 @@ export const SocialSharing = async (
   viewer: Viewer,
   isStarryBackgroundEnable: boolean,
   loadingPresent: Function,
-  loadingDismiss: Function
+  loadingDismiss: Function,
+  presentToast: Function,
+  dismissToast: Function
 ) => {
-  loadingPresent({ message: 'Please Wait...' })
+  let isFail = false
+  let canShare = await Share.canShare()
+  console.log(canShare)
+  if (canShare.value) {
+    try {
+      loadingPresent({ message: 'Please Wait...' })
+      let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
+      await saveImage(screenShot)
+      await Share.share({
+        title: 'GPlates App Screenshot',
+        text: 'I would like to share an awesome GPlates App screenshot',
+        url: savedPath,
+      })
+      loadingDismiss()
+    } catch (error) {
+      loadingDismiss()
+      isFail = true
+    }
+  } else {
+    isFail = true
+  }
+  if (isFail) {
+    await presentToast({
+      buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+      duration: 3000,
+      message: 'Unable to share screenshot.',
+      onDidDismiss: () => {},
+    })
+  }
 
-  let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
+  /*
   console.log(getPlatforms())
   if (isPlatform('cordova')) {
     await saveImage(screenShot)
@@ -209,7 +272,5 @@ export const SocialSharing = async (
   } else {
     // no image saving part for browsers
     await shareImageWeb(screenShot)
-  }
-
-  loadingDismiss()
+  }*/
 }
