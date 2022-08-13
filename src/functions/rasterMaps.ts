@@ -7,18 +7,21 @@ export const failSafeRasterMaps = [
     title: 'Geology',
     subTitle: 'present day',
     icon: 'assets/raster_menu/geology-256x256.png',
+    model: 'MULLER2019',
   },
   {
     layer: rasterData['agegrid'],
     title: 'Agegrid',
     subTitle: 'present day',
     icon: 'assets/raster_menu/agegrid-256x256.png',
+    model: 'SETON2012',
   },
   {
     layer: rasterData['topography'],
     title: 'Topography',
     subTitle: 'present day',
     icon: 'assets/raster_menu/topography-256x256.png',
+    model: 'MERDITH2021',
   },
 ]
 
