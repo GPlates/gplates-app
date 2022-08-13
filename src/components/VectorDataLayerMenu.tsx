@@ -17,7 +17,7 @@ import { timeout } from 'workbox-core/_private'
 import { useRecoilState } from 'recoil'
 import { isVectorMenuShow } from '../functions/atoms'
 import { WebMapTileServiceImageryProvider } from 'cesium'
-import { viewer } from '../pages/Main'
+import { cesiumViewer } from '../pages/Main'
 import { gplates_coastlines } from '../functions/DataLoader'
 
 interface ContainerProps {
