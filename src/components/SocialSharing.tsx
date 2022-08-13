@@ -8,10 +8,7 @@ import { Filesystem, Directory } from '@capacitor/filesystem'
 //import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
 import { Share } from '@capacitor/share'
 import { cesiumViewer } from '../pages/Main'
-
-const timeout = async (time: number) => {
-  await new Promise((resolve) => setTimeout(resolve, time))
-}
+import { timeout } from '../functions/util'
 
 //
 // get screenshot blob from cesium canvas

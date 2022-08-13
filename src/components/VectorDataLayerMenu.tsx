@@ -16,7 +16,7 @@ import {
   vectorData,
 } from '../functions/DataLoader'
 import React, { useEffect, useState } from 'react'
-import { timeout } from 'workbox-core/_private'
+import { timeout } from '../functions/util'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   currentRasterMapIndexState,
