@@ -11,7 +11,10 @@ import {
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { useRecoilState } from 'recoil'
-import { isRasterMenuShow } from '../functions/atoms'
+import {
+  currentRasterMapIndexState,
+  isRasterMenuShow,
+} from '../functions/atoms'
 import rasterMaps from '../functions/rasterMaps'
 import { cesiumViewer } from '../pages/Main'
 import { WebMapTileServiceImageryProvider } from 'cesium'
@@ -33,7 +36,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   isViewerLoading,
   isCesiumViewerReady,
 }) => {
-  const [isSelectedList, setIsSelectedList] = useState([] as boolean[])
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
 
   const [present, dismiss] = useIonLoading()
@@ -55,9 +60,11 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     optionList.push(
       <IonCard
         key={'raster-menu-element-' + i}
-        className={isSelectedList[i] ? 'selected-opt' : 'unselected-opt'}
+        className={
+          currentRasterMapIndex === i ? 'selected-opt' : 'unselected-opt'
+        }
         onClick={async (e) => {
-          if (!isSelectedList[i]) {
+          if (currentRasterMapIndex !== i) {
             select(i)
             await present({ message: 'Loading...' })
             switchLayer(rasterMaps[i].layer)
@@ -85,12 +92,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   // select the target one and unselect rest all
   const select = (index: number) => {
-    let temp = [...isSelectedList]
-    for (let i = 0; i < isSelectedList.length; i++) {
-      temp[i] = false
-    }
-    temp[index] = true
-    setIsSelectedList(temp)
+    setCurrentRasterMapIndex(index)
   }
 
   return (

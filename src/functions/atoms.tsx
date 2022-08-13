@@ -53,6 +53,10 @@ export const rasterMapState = atom<RasterCfg[]>({
   key: 'rasterMapState',
   default: failSafeRasterMaps,
 })
+export const currentRasterMapIndexState = atom({
+  key: 'currentRasterMapIndexState',
+  default: 0,
+})
 
 // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
 export const settingsPath = atom({ key: 'settingsPath', default: 'root' })
