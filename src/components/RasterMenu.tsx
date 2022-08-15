@@ -18,16 +18,13 @@ import {
 import rasterMaps from '../functions/rasterMaps'
 import { cesiumViewer } from '../pages/Main'
 import { WebMapTileServiceImageryProvider } from 'cesium'
+import { timeout } from '../functions/util'
 
 interface ContainerProps {
   currentLayer: any
   setCurrentLayer: Function
   isViewerLoading: Function
   isCesiumViewerReady: boolean
-}
-
-const delay = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
@@ -68,9 +65,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
             select(i)
             await present({ message: 'Loading...' })
             switchLayer(rasterMaps[i].layer)
-            await delay(500)
+            await timeout(500)
             while (!isViewerLoading()) {
-              await delay(500)
+              await timeout(500)
             }
             await dismiss()
           }
