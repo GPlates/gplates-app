@@ -15,7 +15,6 @@ import {
 import {
   cogOutline,
   earthOutline,
-  exitOutline,
   layersOutline,
   informationOutline,
   shareSocialOutline,
@@ -26,8 +25,6 @@ import './Main.scss'
 
 import {
   Camera,
-  Credit,
-  GeographicTilingScheme,
   Ion,
   Rectangle,
   Viewer,
@@ -127,13 +124,17 @@ const Main: React.FC = () => {
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
         cesiumViewer = initCesiumViewer(rasterMaps[0].layer)
         setIsCesiumViewerReady(true)
-        SplashScreen.hide()
 
         //maybe we don't need the initial value here
         let initialVectorLayer =
           cesiumViewer.imageryLayers.addImageryProvider(gplates_coastlines)
         setVectorData({ coastlines: initialVectorLayer })
       }
+    })
+
+    // Load settings
+    document.addEventListener('deviceready', () => {
+      SplashScreen.hide()
     })
   }, [])
 
