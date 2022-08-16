@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import { SplashScreen } from '@capacitor/splash-screen'
 import {
   IonContent,
   IonFab,
@@ -9,6 +9,7 @@ import {
   IonPage,
   useIonLoading,
   useIonViewDidEnter,
+  useIonToast,
 } from '@ionic/react'
 
 import {
@@ -17,6 +18,8 @@ import {
   exitOutline,
   layersOutline,
   informationOutline,
+  shareSocialOutline,
+  helpOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -38,7 +41,6 @@ import { AboutPage } from './AboutPage'
 import { sqlite } from '../App'
 import { CachingService } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
-import * as Cesium from 'cesium'
 import { StarrySky } from '../components/StarrySky'
 import { SocialSharing } from '../components/SocialSharing'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
@@ -57,19 +59,24 @@ import {
   isVectorMenuShow,
   isSettingsMenuShow,
 } from '../functions/atoms'
+import { initCesiumViewer } from '../functions/cesiumViewer'
+import { gplates_coastlines } from '../functions/DataLoader'
+import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
 
 let animationService: AnimationService
 let cachingService: CachingService
-let viewer: Viewer
+
+//singleton cersium viewer
+export let cesiumViewer: Viewer
 
 const Main: React.FC = () => {
   const [present, dismiss] = useIonLoading()
 
   const [vectorData, setVectorData] = useState({})
-
+  const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
   const setIsAboutPageShow = useSetRecoilState(isAboutPageShow)
   const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
   const [isSettingMenuPageShow, setMenuPageShow] =
@@ -85,6 +92,11 @@ const Main: React.FC = () => {
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
 
+  const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
+  const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
+
+  const [presentToast, dismissToast] = useIonToast()
+
   animationService = new AnimationService(
     cachingService,
     setAge,
@@ -98,13 +110,32 @@ const Main: React.FC = () => {
     _setPlaying,
     range,
     setRange,
-    viewer
+    cesiumViewer
   )
+
   useEffect(() => {
     if (isSettingMenuPageShow) {
       animationService.setPlaying(false)
     }
   })
+
+  //use [] to make this useEffect similar to componentDidMount
+  useEffect(() => {
+    //load the raster maps from gplates server or localstorage
+    loadRasterMaps(() => {
+      setIsRasterMapsLoaded(true)
+      if (document.getElementsByClassName('cesium-viewer').length === 0) {
+        cesiumViewer = initCesiumViewer(rasterMaps[0].layer)
+        setIsCesiumViewerReady(true)
+        SplashScreen.hide()
+
+        //maybe we don't need the initial value here
+        let initialVectorLayer =
+          cesiumViewer.imageryLayers.addImageryProvider(gplates_coastlines)
+        setVectorData({ coastlines: initialVectorLayer })
+      }
+    })
+  }, [])
 
   const isStarryBackgroundEnable = useRecoilValue(backgroundIsStarry)
 
@@ -126,99 +157,10 @@ const Main: React.FC = () => {
       153.7,
       -10.4
     )
-
-    var gridsetName = 'EPSG:4326'
-    var gridNames = [
-      'EPSG:4326:0',
-      'EPSG:4326:1',
-      'EPSG:4326:2',
-      'EPSG:4326:3',
-      'EPSG:4326:4',
-      'EPSG:4326:5',
-      'EPSG:4326:6',
-      'EPSG:4326:7',
-      'EPSG:4326:8',
-      'EPSG:4326:9',
-      'EPSG:4326:10',
-      'EPSG:4326:11',
-      'EPSG:4326:12',
-      'EPSG:4326:13',
-      'EPSG:4326:14',
-      'EPSG:4326:15',
-      'EPSG:4326:16',
-      'EPSG:4326:17',
-      'EPSG:4326:18',
-      'EPSG:4326:19',
-      'EPSG:4326:20',
-      'EPSG:4326:21',
-    ]
-    const style = ''
-    const format = 'image/jpeg'
-    const layerName = 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref'
-
-    const gplates_wmts = new WebMapTileServiceImageryProvider({
-      url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-      layer: layerName,
-      style: style,
-      format: format,
-      tileMatrixSetID: gridsetName,
-      tileMatrixLabels: gridNames,
-      //minimumLevel: 1,
-      maximumLevel: 8,
-      tilingScheme: new GeographicTilingScheme(),
-      credit: new Credit('EarthByte Geology'),
-    })
-
-    // if (document.getElementsByClassName('cesium-viewer').length === 0) {
-    //   viewer = new Viewer('cesiumContainer')
-    // }
-
-    if (document.getElementsByClassName('cesium-viewer').length === 0) {
-      viewer = new Viewer('cesiumContainer', {
-        baseLayerPicker: false,
-        imageryProvider: gplates_wmts,
-        animation: false,
-        creditContainer: 'credit',
-        timeline: false,
-        fullscreenButton: false,
-        geocoder: false,
-        homeButton: false,
-        navigationHelpButton: false,
-        sceneModePicker: false,
-        contextOptions: {
-          webgl: {
-            alpha: true,
-          },
-        },
-      })
-      viewer.scene.fog.enabled = false
-      viewer.scene.globe.showGroundAtmosphere = false
-      viewer.scene.skyAtmosphere.show = false
-      viewer.scene.backgroundColor = Cesium.Color.BLACK
-
-      viewer.scene.globe.tileCacheSize = 1000
-
-      const gplates_coastlines = new WebMapTileServiceImageryProvider({
-        url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-        layer: 'gplates:Matthews_etal_GPC_2016_Coastlines_Polyline',
-        style: '',
-        format: 'image/png',
-        tileMatrixSetID: gridsetName,
-        tileMatrixLabels: gridNames,
-        //minimumLevel: 1,
-        maximumLevel: 8,
-        tilingScheme: new GeographicTilingScheme(),
-        credit: new Credit('EarthByte Coastlines'),
-      })
-      let initialVectorLayer =
-        viewer.imageryLayers.addImageryProvider(gplates_coastlines)
-
-      setVectorData({ coastlines: initialVectorLayer })
-    }
   })
 
   const isViewerLoading = () => {
-    return viewer.scene.globe.tilesLoaded
+    return cesiumViewer.scene.globe.tilesLoaded
   }
 
   return (
@@ -230,7 +172,7 @@ const Main: React.FC = () => {
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
           <AgeSlider
-            buttons={<CustomToolbar scene={viewer?.scene} />}
+            buttons={<CustomToolbar scene={cesiumViewer?.scene} />}
             animationService={animationService}
           />
         </div>
@@ -267,14 +209,14 @@ const Main: React.FC = () => {
             <IonFabButton
               onClick={async () => {
                 await SocialSharing(
-                  viewer,
-                  isStarryBackgroundEnable,
                   present,
-                  dismiss
+                  dismiss,
+                  presentToast,
+                  dismissToast
                 )
               }}
             >
-              <IonIcon icon={exitOutline} />
+              <IonIcon icon={shareSocialOutline}></IonIcon>
             </IonFabButton>
             <IonFabButton
               onClick={async () => {
@@ -291,34 +233,33 @@ const Main: React.FC = () => {
               <IonIcon icon={informationOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
+              <IonIcon icon={helpOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
+              <IonIcon icon={helpOutline} />
             </IonFabButton>
             <IonFabButton>
-              <IonIcon src={'assets/setting_menu_page/question_icon.svg'} />
+              <IonIcon icon={helpOutline} />
             </IonFabButton>
           </IonFabList>
         </IonFab>
         <div>
-          <SettingMenuPage viewer={viewer} />
+          <SettingMenuPage viewer={cesiumViewer} />
           <RasterMenu
-            addLayer={(newLayer: any) => {
-              viewer.imageryLayers.addImageryProvider(newLayer)
-              // viewer.imageryLayers.remove()
-            }}
+            currentLayer={rasterMenuCurrentLayer}
+            setCurrentLayer={setRasterMenuCurrentLayer}
             isViewerLoading={isViewerLoading}
+            isCesiumViewerReady={isCesiumViewerReady}
           />
           <AboutPage />
           <VectorDataLayerMenu
             checkedVectorData={vectorData}
             setVectorData={setVectorData}
             addLayer={(newLayer: WebMapTileServiceImageryProvider) => {
-              return viewer.imageryLayers.addImageryProvider(newLayer)
+              return cesiumViewer.imageryLayers.addImageryProvider(newLayer)
             }}
             removeLayer={(targetLayer: any) => {
-              viewer.imageryLayers.remove(targetLayer)
+              cesiumViewer.imageryLayers.remove(targetLayer)
             }}
             isViewerLoading={isViewerLoading}
           />

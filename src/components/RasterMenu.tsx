@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   IonCard,
   IonCardHeader,
@@ -10,94 +10,64 @@ import {
 
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import { rasterData } from '../functions/DataLoader'
 import { useRecoilState } from 'recoil'
-import { isRasterMenuShow } from '../functions/atoms'
-
-const rasterMaps = [
-  {
-    layer: rasterData['geology'],
-    title: 'Geology',
-    subTitle: '???',
-    icon: 'assets/raster_menu/geology-256x256.png',
-  },
-  {
-    layer: rasterData['agegrid'],
-    title: 'Agegrid',
-    subTitle: '???',
-    icon: 'assets/raster_menu/agegrid-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-  {
-    layer: rasterData['topography'],
-    title: 'Topography',
-    subTitle: '???',
-    icon: 'assets/raster_menu/topography-256x256.png',
-  },
-]
+import {
+  currentRasterMapIndexState,
+  isRasterMenuShow,
+} from '../functions/atoms'
+import rasterMaps from '../functions/rasterMaps'
+import { cesiumViewer } from '../pages/Main'
+import { WebMapTileServiceImageryProvider } from 'cesium'
+import { timeout } from '../functions/util'
 
 interface ContainerProps {
-  addLayer: Function
+  currentLayer: any
+  setCurrentLayer: Function
   isViewerLoading: Function
-}
-
-function initialSelection() {
-  let isSelectedList = [true]
-  for (let i = 1; i < rasterMaps.length; i++) {
-    isSelectedList.push(false)
-  }
-  return isSelectedList
-}
-
-const delay = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  isCesiumViewerReady: boolean
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
-  addLayer,
+  currentLayer,
+  setCurrentLayer,
   isViewerLoading,
+  isCesiumViewerReady,
 }) => {
-  const [isSelectedList, setIsSelectedList] = useState(initialSelection())
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
+
   const [present, dismiss] = useIonLoading()
+
+  const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
+    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider, 1)
+    if (currentLayer != null) {
+      cesiumViewer.imageryLayers.remove(currentLayer)
+    }
+    setCurrentLayer(newLayer)
+  }
+
+  useEffect(() => {
+    select(0)
+  }, [isCesiumViewerReady]) //initial selection
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
     optionList.push(
       <IonCard
         key={'raster-menu-element-' + i}
-        className={isSelectedList[i] ? 'selected-opt' : 'unselected-opt'}
+        className={
+          currentRasterMapIndex === i ? 'selected-opt' : 'unselected-opt'
+        }
         onClick={async (e) => {
-          if (!isSelectedList[i]) {
+          if (currentRasterMapIndex !== i) {
             select(i)
             await present({ message: 'Loading...' })
-            addLayer(rasterMaps[i].layer)
-            await delay(500)
+            switchLayer(rasterMaps[i].layer)
+            await timeout(500)
             while (!isViewerLoading()) {
-              await delay(500)
+              await timeout(500)
             }
             await dismiss()
           }
@@ -119,13 +89,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   // select the target one and unselect rest all
   const select = (index: number) => {
-    let temp = [...isSelectedList]
-    for (let i = 0; i < isSelectedList.length; i++) {
-      temp[i] = false
-    }
-    temp[index] = true
-    setIsSelectedList(temp)
-    console.log(isSelectedList)
+    setCurrentRasterMapIndex(index)
   }
 
   return (

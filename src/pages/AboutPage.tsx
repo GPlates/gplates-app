@@ -8,21 +8,11 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
-
 import './AboutPage.scss'
 import { Browser } from '@capacitor/browser'
-
-import { Share } from '@capacitor/share'
 import { useRecoilState } from 'recoil'
 import { isAboutPageShow } from '../functions/atoms'
 interface ContainerProps {}
-
-const sentEmail = async (email: string) => {
-  await Share.share({
-    title: email,
-    text: email,
-  })
-}
 
 export const AboutPage: React.FC<ContainerProps> = () => {
   const [isShow, setIsShow] = useRecoilState(isAboutPageShow)

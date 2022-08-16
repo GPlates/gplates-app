@@ -1,4 +1,7 @@
 import { atom } from 'recoil'
+import { RasterCfg } from './types'
+
+import { failSafeRasterMaps } from './rasterMaps'
 
 // TODO: Dynamically assign these variables based on selected raster
 export const GEOSRV_URL =
@@ -45,6 +48,14 @@ export const isSettingsMenuShow = atom({
 export const isVectorMenuShow = atom({
   key: 'isVectorMenuShow',
   default: false,
+})
+export const rasterMapState = atom<RasterCfg[]>({
+  key: 'rasterMapState',
+  default: failSafeRasterMaps,
+})
+export const currentRasterMapIndexState = atom({
+  key: 'currentRasterMapIndexState',
+  default: 0,
 })
 
 // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
