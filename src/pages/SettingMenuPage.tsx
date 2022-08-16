@@ -40,6 +40,7 @@ import {
   settingsPath,
 } from '../functions/atoms'
 import { LIMIT_LOWER, LIMIT_UPPER } from '../functions/atoms'
+import { AppPreferences } from '@awesome-cordova-plugins/app-preferences'
 
 interface ContainerProps {
   viewer: Viewer
@@ -71,6 +72,21 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({ viewer }) => {
     const upper = range.lower
     setRange({ lower, upper })
   }
+
+  // Save settings on each change
+  useEffect(() => {
+    if (isShow && path === 'animation') {
+      const settings = {
+        exact,
+        fps,
+        increment,
+        loop,
+        range,
+      }
+      console.log(settings)
+      AppPreferences.store('settings', 'animation', settings)
+    }
+  }, [exact, fps, increment, loop, range])
 
   // Hack to get IonRange knobs to show the correct position on component mount
   useEffect(() => {

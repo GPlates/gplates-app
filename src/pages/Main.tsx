@@ -59,6 +59,7 @@ import {
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import { gplates_coastlines } from '../functions/DataLoader'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
+import { AppPreferences } from '@awesome-cordova-plugins/app-preferences'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -83,8 +84,8 @@ const Main: React.FC = () => {
   // Animation
   const setAge = useSetRecoilState(age)
   const [exact, setExact] = useRecoilState(animateExact)
-  const fps = useRecoilValue(animateFps)
-  const increment = useRecoilValue(animateIncrement)
+  const [fps, setFps] = useRecoilState(animateFps)
+  const [increment, setIncrement] = useRecoilState(animateIncrement)
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
@@ -135,6 +136,13 @@ const Main: React.FC = () => {
     // Load settings
     document.addEventListener('deviceready', () => {
       SplashScreen.hide()
+      AppPreferences.fetch('settings', 'animation').then((res) => {
+        setExact(res.exact)
+        setFps(res.fps)
+        setIncrement(res.increment)
+        setLoop(res.loop)
+        setRange(res.range)
+      })
     })
   }, [])
 
