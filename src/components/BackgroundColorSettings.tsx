@@ -8,8 +8,8 @@ import {
   backgroundIsEnabled,
   backgroundIsStarry,
 } from '../functions/atoms'
-import { AppPreferences } from '@awesome-cordova-plugins/app-preferences'
 import { BackgroundService } from '../functions/background'
+import { Preferences } from '@capacitor/preferences'
 
 interface ContainerProps {
   backgroundService: BackgroundService
@@ -37,7 +37,10 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
       isCustomisedColorBackgroundEnable,
       color,
     }
-    AppPreferences.store('settings', 'background', settings)
+    Preferences.set({
+      key: 'backgroundSettings',
+      value: JSON.stringify(settings),
+    })
   }, [
     isBackgroundSettingEnable,
     isStarryBackgroundEnable,

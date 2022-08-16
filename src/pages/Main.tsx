@@ -62,8 +62,8 @@ import {
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import { gplates_coastlines } from '../functions/DataLoader'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
-import { AppPreferences } from '@awesome-cordova-plugins/app-preferences'
 import { BackgroundService } from '../functions/background'
+import { Preferences } from '@capacitor/preferences'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -150,34 +150,34 @@ const Main: React.FC = () => {
         setIsCesiumViewerReady(true)
 
         // Load settings
-        document.addEventListener('deviceready', () => {
-          AppPreferences.fetch('settings', 'animation').then((res) => {
-            if (res) {
-              setExact(res.exact)
-              setFps(res.fps)
-              setIncrement(res.increment)
-              setLoop(res.loop)
-              setRange(res.range)
-            }
-          })
-          AppPreferences.fetch('settings', 'background').then((res) => {
-            if (res) {
-              setIsBackgroundSettingEnable(res.isBackgroundSettingEnable)
-              setIsStarryBackgroundEnable(res.isStarryBackgroundEnable)
-              setIsCustomisedColorBackgroundEnable(
-                res.isCustomisedColorBackgroundEnable
-              )
-              setColor(res.color)
-              setTimeout(() => {
-                backgroundService.changeBackground()
-                SplashScreen.hide()
-              }, 200)
-            } else {
-              setTimeout(() => {
-                SplashScreen.hide()
-              }, 200)
-            }
-          })
+        Preferences.get({ key: 'animationSettings' }).then((res) => {
+          if (res?.value) {
+            const settings = JSON.parse(res.value)
+            setExact(settings.exact)
+            setFps(settings.fps)
+            setIncrement(settings.increment)
+            setLoop(settings.loop)
+            setRange(settings.range)
+          }
+        })
+        Preferences.get({ key: 'backgroundSettings' }).then((res) => {
+          if (res?.value) {
+            const settings = JSON.parse(res.value)
+            setIsBackgroundSettingEnable(settings.isBackgroundSettingEnable)
+            setIsStarryBackgroundEnable(settings.isStarryBackgroundEnable)
+            setIsCustomisedColorBackgroundEnable(
+              settings.isCustomisedColorBackgroundEnable
+            )
+            setColor(settings.color)
+            setTimeout(() => {
+              backgroundService.changeBackground()
+              SplashScreen.hide()
+            }, 200)
+          } else {
+            setTimeout(() => {
+              SplashScreen.hide()
+            }, 200)
+          }
         })
 
         //maybe we don't need the initial value here

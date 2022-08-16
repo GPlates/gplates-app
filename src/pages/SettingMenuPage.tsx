@@ -39,8 +39,8 @@ import {
   settingsPath,
 } from '../functions/atoms'
 import { LIMIT_LOWER, LIMIT_UPPER } from '../functions/atoms'
-import { AppPreferences } from '@awesome-cordova-plugins/app-preferences'
 import { BackgroundService } from '../functions/background'
+import { Preferences } from '@capacitor/preferences'
 
 interface ContainerProps {
   backgroundService: BackgroundService
@@ -85,7 +85,10 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         loop,
         range,
       }
-      AppPreferences.store('settings', 'animation', settings)
+      Preferences.set({
+        key: 'animationSettings',
+        value: JSON.stringify(settings),
+      })
     }
   }, [exact, fps, increment, loop, range])
 
