@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import './SettingMenuPage.scss'
 import {
   IonModal,
@@ -28,7 +28,6 @@ import { setNumber } from '../functions/input'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
 import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
-import { Viewer } from 'cesium'
 import { useRecoilState } from 'recoil'
 import {
   animateExact,
@@ -40,13 +39,17 @@ import {
   settingsPath,
 } from '../functions/atoms'
 import { LIMIT_LOWER, LIMIT_UPPER } from '../functions/atoms'
+import { BackgroundService } from '../functions/background'
+import { Preferences } from '@capacitor/preferences'
 
 interface ContainerProps {
-  viewer: Viewer
+  backgroundService: BackgroundService
 }
 
 // main component for setting menu
-export const SettingMenuPage: React.FC<ContainerProps> = ({ viewer }) => {
+export const SettingMenuPage: React.FC<ContainerProps> = ({
+  backgroundService,
+}) => {
   const titles: { [key: string]: string } = {
     root: 'Settings Menu',
     animation: 'Animation Settings',
@@ -72,6 +75,23 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({ viewer }) => {
     setRange({ lower, upper })
   }
 
+  // Save settings on each change
+  useEffect(() => {
+    if (isShow && path === 'animation') {
+      const settings = {
+        exact,
+        fps,
+        increment,
+        loop,
+        range,
+      }
+      Preferences.set({
+        key: 'animationSettings',
+        value: JSON.stringify(settings),
+      })
+    }
+  }, [exact, fps, increment, loop, range])
+
   // Hack to get IonRange knobs to show the correct position on component mount
   useEffect(() => {
     if (path === 'animation') {
@@ -82,10 +102,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({ viewer }) => {
       }, 100)
     }
   }, [path])
-
-  // background setting
-  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
-    useState(false)
 
   const subPageRouting = (path: string, name: string) => {
     return (
@@ -332,11 +348,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({ viewer }) => {
         unmountOnExit
         classNames={'fade'}
       >
-        <BackgroundColorSettings
-          viewer={viewer}
-          isBackgroundSettingEnable={isBackgroundSettingEnable}
-          setIsBackgroundSettingEnable={setIsBackgroundSettingEnable}
-        />
+        <BackgroundColorSettings backgroundService={backgroundService} />
       </CSSTransition>
     </IonModal>
   )

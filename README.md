@@ -33,6 +33,8 @@ or
 
 ## Deploy on Android device
 
+- `ionic build --prod`
+- `npx cap sync`
 - `npx cap open android`
 - choose your device and click the "run" button in Android Studio
 

@@ -23,9 +23,14 @@ export const animateRange = atom({
   },
 })
 
+export const backgroundService = atom({ key: 'backgroundService' })
 export const backgroundColor = atom({
   key: 'backgroundColor',
   default: { r: 255, g: 255, b: 255 },
+})
+export const backgroundIsEnabled = atom({
+  key: 'backgroundIsEnabled',
+  default: false,
 })
 export const backgroundIsStarry = atom({
   key: 'backgroundIsStarry',

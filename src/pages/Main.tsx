@@ -15,7 +15,6 @@ import {
 import {
   cogOutline,
   earthOutline,
-  exitOutline,
   layersOutline,
   informationOutline,
   shareSocialOutline,
@@ -26,8 +25,6 @@ import './Main.scss'
 
 import {
   Camera,
-  Credit,
-  GeographicTilingScheme,
   Ion,
   Rectangle,
   Viewer,
@@ -44,7 +41,7 @@ import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
 import { SocialSharing } from '../components/SocialSharing'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import {
   age,
   animateExact,
@@ -58,15 +55,21 @@ import {
   isRasterMenuShow,
   isVectorMenuShow,
   isSettingsMenuShow,
+  backgroundIsEnabled,
+  backgroundIsCustom,
+  backgroundColor,
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import { gplates_coastlines } from '../functions/DataLoader'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
+import { BackgroundService } from '../functions/background'
+import { Preferences } from '@capacitor/preferences'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
 
 let animationService: AnimationService
+let backgroundService: BackgroundService
 let cachingService: CachingService
 
 //singleton cersium viewer
@@ -86,11 +89,22 @@ const Main: React.FC = () => {
   // Animation
   const setAge = useSetRecoilState(age)
   const [exact, setExact] = useRecoilState(animateExact)
-  const fps = useRecoilValue(animateFps)
-  const increment = useRecoilValue(animateIncrement)
+  const [fps, setFps] = useRecoilState(animateFps)
+  const [increment, setIncrement] = useRecoilState(animateIncrement)
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
+
+  // Background
+  const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
+    useRecoilState(backgroundIsEnabled)
+  const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
+    useRecoilState(backgroundIsStarry)
+  const [
+    isCustomisedColorBackgroundEnable,
+    setIsCustomisedColorBackgroundEnable,
+  ] = useRecoilState(backgroundIsCustom)
+  const [color, setColor] = useRecoilState(backgroundColor)
 
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
@@ -112,6 +126,13 @@ const Main: React.FC = () => {
     setRange,
     cesiumViewer
   )
+  backgroundService = new BackgroundService(
+    isBackgroundSettingEnable,
+    isStarryBackgroundEnable,
+    isCustomisedColorBackgroundEnable,
+    color,
+    cesiumViewer
+  )
 
   useEffect(() => {
     if (isSettingMenuPageShow) {
@@ -127,7 +148,37 @@ const Main: React.FC = () => {
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
         cesiumViewer = initCesiumViewer(rasterMaps[0].layer)
         setIsCesiumViewerReady(true)
-        SplashScreen.hide()
+
+        // Load settings
+        Preferences.get({ key: 'animationSettings' }).then((res) => {
+          if (res?.value) {
+            const settings = JSON.parse(res.value)
+            setExact(settings.exact)
+            setFps(settings.fps)
+            setIncrement(settings.increment)
+            setLoop(settings.loop)
+            setRange(settings.range)
+          }
+        })
+        Preferences.get({ key: 'backgroundSettings' }).then((res) => {
+          if (res?.value) {
+            const settings = JSON.parse(res.value)
+            setIsBackgroundSettingEnable(settings.isBackgroundSettingEnable)
+            setIsStarryBackgroundEnable(settings.isStarryBackgroundEnable)
+            setIsCustomisedColorBackgroundEnable(
+              settings.isCustomisedColorBackgroundEnable
+            )
+            setColor(settings.color)
+            setTimeout(() => {
+              backgroundService.changeBackground()
+              SplashScreen.hide()
+            }, 200)
+          } else {
+            setTimeout(() => {
+              SplashScreen.hide()
+            }, 200)
+          }
+        })
 
         //maybe we don't need the initial value here
         let initialVectorLayer =
@@ -136,8 +187,6 @@ const Main: React.FC = () => {
       }
     })
   }, [])
-
-  const isStarryBackgroundEnable = useRecoilValue(backgroundIsStarry)
 
   useIonViewDidEnter(async () => {
     // Initialize SQLite connection
@@ -244,7 +293,7 @@ const Main: React.FC = () => {
           </IonFabList>
         </IonFab>
         <div>
-          <SettingMenuPage viewer={cesiumViewer} />
+          <SettingMenuPage backgroundService={backgroundService} />
           <RasterMenu
             currentLayer={rasterMenuCurrentLayer}
             setCurrentLayer={setRasterMenuCurrentLayer}
