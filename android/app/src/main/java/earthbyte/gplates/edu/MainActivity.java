@@ -37,9 +37,6 @@ public class MainActivity extends BridgeActivity {
                 // setStyle("DARK");
                 break;
         }
-        // We want status & navigation bar to remain dark (because it looks better)
-        setBackgroundColor();
-        setStyle("DARK");
     }
 
     // Update webview theme

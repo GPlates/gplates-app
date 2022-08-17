@@ -41,7 +41,13 @@ export const backgroundIsCustom = atom({
   default: false,
 })
 
+export const appDarkMode = atom({ key: 'appDarkMode', default: 'auto' })
+
 export const isAboutPageShow = atom({ key: 'isAboutPageShow', default: false })
+export const isAgeSliderShown = atom({
+  key: 'isAgeSliderShown',
+  default: false,
+})
 export const isRasterMenuShow = atom({
   key: 'isRasterMenuShow',
   default: false,

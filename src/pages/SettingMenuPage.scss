@@ -2,6 +2,19 @@ ion-checkbox.single-setting-option {
   margin-right: 0.75rem;
 }
 
+ion-list.md {
+  padding-top: 0;
+  margin-top: 8px;
+}
+
+ion-toolbar {
+  --background: none;
+}
+
+ion-modal::part(content), ion-list, ion-item-divider, ion-item::part(native) {
+  transition: background 150ms;
+}
+
 .fade-enter {
   opacity: 0;
 }
@@ -67,6 +80,7 @@ ion-checkbox.single-setting-option {
       text-transform: revert;
     }
     .description {
+      color: var(--ion-text-color);
       padding: 8px;
     }
     align-items: center;

@@ -58,12 +58,14 @@ import {
   backgroundIsEnabled,
   backgroundIsCustom,
   backgroundColor,
+  appDarkMode,
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import { gplates_coastlines } from '../functions/DataLoader'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
+import { setDarkMode } from '../functions/darkMode'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -88,6 +90,7 @@ const Main: React.FC = () => {
 
   // Animation
   const setAge = useSetRecoilState(age)
+  const _setDarkMode = useSetRecoilState(appDarkMode)
   const [exact, setExact] = useRecoilState(animateExact)
   const [fps, setFps] = useRecoilState(animateFps)
   const [increment, setIncrement] = useRecoilState(animateIncrement)
@@ -158,6 +161,15 @@ const Main: React.FC = () => {
             setIncrement(settings.increment)
             setLoop(settings.loop)
             setRange(settings.range)
+          }
+        })
+        Preferences.get({ key: 'appSettings' }).then((res) => {
+          if (res?.value) {
+            const settings = JSON.parse(res.value)
+            _setDarkMode(settings.darkMode)
+            setDarkMode(settings.darkMode)
+          } else {
+            setDarkMode()
           }
         })
         Preferences.get({ key: 'backgroundSettings' }).then((res) => {
