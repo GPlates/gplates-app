@@ -1,46 +1,52 @@
 import React, { useEffect } from 'react'
 import './SettingMenuPage.scss'
 import {
-  IonModal,
   IonButton,
-  IonToolbar,
-  IonTitle,
-  IonRippleEffect,
-  IonRange,
-  IonCheckbox,
-  IonSelectOption,
-  IonLabel,
-  IonSelect,
-  IonList,
-  IonItemDivider,
-  IonItem,
-  IonRadioGroup,
-  IonRadio,
   IonButtons,
-  IonInput,
-  IonGrid,
-  IonRow,
+  IonCheckbox,
   IonCol,
+  IonGrid,
   IonIcon,
+  IonInput,
+  IonItem,
+  IonItemDivider,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonRadio,
+  IonRadioGroup,
+  IonRange,
+  IonRippleEffect,
+  IonRow,
+  IonSegment,
+  IonSegmentButton,
+  IonSelect,
+  IonSelectOption,
+  IonTitle,
+  IonToolbar,
   isPlatform,
 } from '@ionic/react'
 import { setNumber } from '../functions/input'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
 import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   animateExact,
   animateFps,
   animateIncrement,
   animateLoop,
   animateRange,
+  appDarkMode,
+  isAgeSliderShown,
   isSettingsMenuShow,
+  LIMIT_LOWER,
+  LIMIT_UPPER,
   settingsPath,
 } from '../functions/atoms'
-import { LIMIT_LOWER, LIMIT_UPPER } from '../functions/atoms'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
+import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 
 interface ContainerProps {
   backgroundService: BackgroundService
@@ -55,6 +61,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     animation: 'Animation Settings',
   }
 
+  const [darkMode, _setDarkMode] = useRecoilState(appDarkMode)
   const [exact, setExact] = useRecoilState(animateExact)
   const [fps, setFps] = useRecoilState(animateFps)
   const [increment, setIncrement] = useRecoilState(animateIncrement)
@@ -62,6 +69,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [path, setPath] = useRecoilState(settingsPath)
   const [range, setRange] = useRecoilState(animateRange)
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
+  const isSliderShow = useRecoilValue(isAgeSliderShown)
 
   // Animation constants
   const minIncrement = 1
@@ -75,7 +83,31 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     setRange({ lower, upper })
   }
 
+  useEffect(() => {
+    if (isShow) {
+      setStatusBarTheme(darkMode)
+    } else if (isSliderShow) {
+      setStatusBarTheme(darkMode)
+    } else {
+      setStatusBarTheme('dark')
+    }
+  }, [isShow])
+
   // Save settings on each change
+  useEffect(() => {
+    if (isShow && path === 'root') {
+      setDarkMode(darkMode)
+      setStatusBarTheme(darkMode)
+      const settings = {
+        darkMode,
+      }
+      Preferences.set({
+        key: 'appSettings',
+        value: JSON.stringify(settings),
+      })
+    }
+  }, [darkMode])
+
   useEffect(() => {
     if (isShow && path === 'animation') {
       const settings = {
@@ -160,7 +192,23 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           {subPageRouting('animation', 'Animation Settings')}
           {subPageRouting('backgroundSetting', 'Background Settings')}
 
-          <IonItemDivider>Main Setting Section1</IonItemDivider>
+          <IonItemDivider>App Theme</IonItemDivider>
+          <IonItem>
+            <IonSegment
+              onIonChange={(e) => _setDarkMode(e.detail.value!)}
+              value={darkMode}
+            >
+              <IonSegmentButton value="auto">
+                <IonLabel>Auto</IonLabel>
+              </IonSegmentButton>
+              <IonSegmentButton value="light">
+                <IonLabel>Light</IonLabel>
+              </IonSegmentButton>
+              <IonSegmentButton value="dark">
+                <IonLabel>Dark</IonLabel>
+              </IonSegmentButton>
+            </IonSegment>
+          </IonItem>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>
           <IonItem>

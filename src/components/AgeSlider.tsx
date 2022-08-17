@@ -17,10 +17,15 @@ import {
   playForwardOutline,
   timeOutline,
 } from 'ionicons/icons'
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
-import { LIMIT_LOWER, LIMIT_UPPER } from '../functions/atoms'
+import {
+  appDarkMode,
+  isAgeSliderShown,
+  LIMIT_LOWER,
+  LIMIT_UPPER,
+} from '../functions/atoms'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   age,
@@ -28,6 +33,11 @@ import {
   isSettingsMenuShow,
   settingsPath,
 } from '../functions/atoms'
+import {
+  matchDarkMode,
+  setStatusBarTheme,
+  statusBarListener,
+} from '../functions/darkMode'
 
 interface AgeSliderProps {
   buttons: any
@@ -36,19 +46,30 @@ interface AgeSliderProps {
 
 const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const [_age, setAge] = useRecoilState(age)
+  const darkMode = useRecoilValue(appDarkMode)
   const playing = useRecoilValue(animatePlaying)
   const setMenuPath = useSetRecoilState(settingsPath)
   const setMenuState = useSetRecoilState(isSettingsMenuShow)
-  const [hidden, setHidden] = useState(true)
+  const [shown, setShown] = useRecoilState(isAgeSliderShown)
 
   const openMenu = () => {
     setMenuPath('animation')
     setMenuState(true)
   }
 
+  useEffect(() => {
+    if (shown) {
+      setStatusBarTheme(darkMode)
+    } else {
+      setStatusBarTheme('dark')
+      // Remove listener so status bar stays dark (Android) or light (iOS)
+      matchDarkMode.removeEventListener('change', statusBarListener)
+    }
+  }, [shown])
+
   return (
     <div>
-      <div className={hidden ? 'container hidden' : 'container'}>
+      <div className={shown ? 'container' : 'container hidden'}>
         <IonItem className="time-input" lines="none">
           <IonLabel>Time:</IonLabel>
           <IonInput
@@ -115,14 +136,12 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
           />
         </IonItem>
       </div>
-      <div
-        className={hidden ? 'buttons container hidden' : 'buttons container'}
-      >
+      <div className={shown ? 'buttons container' : 'buttons container hidden'}>
         <div
           className="time"
           id={'timeStamp'} // screenshot need time information, using id to locate element
           onClick={() => {
-            setHidden(!hidden)
+            setShown(!shown)
           }}
         >
           {_age} Ma
@@ -132,11 +151,11 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
           <IonButton
             className="round-button show-button"
             onClick={() => {
-              setHidden(!hidden)
+              setShown(!shown)
             }}
             size="default"
           >
-            <IonIcon icon={hidden ? timeOutline : chevronUpCircleOutline} />
+            <IonIcon icon={shown ? chevronUpCircleOutline : timeOutline} />
           </IonButton>
         </div>
       </div>
