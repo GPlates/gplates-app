@@ -61,7 +61,6 @@ import {
   appDarkMode,
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
-import { gplates_coastlines } from '../functions/DataLoader'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
@@ -207,11 +206,6 @@ const Main: React.FC = () => {
             }, 200)
           }
         })
-
-        //maybe we don't need the initial value here
-        let initialVectorLayer =
-          cesiumViewer.imageryLayers.addImageryProvider(gplates_coastlines)
-        setVectorData({ coastlines: initialVectorLayer })
       }
     })
   }, [])

@@ -14,7 +14,7 @@ import {
 import {
   createCesiumImageryProvider,
   vectorData,
-} from '../functions/DataLoader'
+} from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { timeout } from '../functions/util'
 import { useRecoilState, useRecoilValue } from 'recoil'

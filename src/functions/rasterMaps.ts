@@ -1,5 +1,5 @@
 import { RasterCfg } from './types'
-import { rasterData, createCesiumImageryProvider } from './DataLoader'
+import { rasterData, createCesiumImageryProvider } from './dataLoader'
 import { serverURL } from './settings'
 
 export const failSafeRasterMaps = [
