@@ -11,7 +11,10 @@ ion-toolbar {
   --background: none;
 }
 
-ion-modal::part(content), ion-list, ion-item-divider, ion-item::part(native) {
+ion-modal::part(content),
+ion-list,
+ion-item-divider,
+ion-item::part(native) {
   transition: background 150ms;
 }
 
@@ -101,4 +104,13 @@ ion-modal::part(content), ion-list, ion-item-divider, ion-item::part(native) {
   top: calc(var(--toolbar-height) + env(safe-area-inset-top));
   height: calc(100% - (var(--toolbar-height) + env(safe-area-inset-top)));
   width: 100%;
+}
+
+.server-url-label {
+  min-width: 30% !important;
+  max-width: 30% !important;
+}
+
+.server-url-input {
+  text-align: right;
 }

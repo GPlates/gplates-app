@@ -94,12 +94,13 @@ export const vectorData: { [key: string]: WebMapTileServiceImageryProvider } = {
 
 export const createCesiumImageryProvider = (
   url_str: string,
-  layer_name: string
+  layer_name: string,
+  style_name = ''
 ) =>
   new WebMapTileServiceImageryProvider({
     url: url_str,
     layer: layer_name,
-    style: '',
+    style: style_name,
     format: 'image/png',
     tileMatrixSetID: gridsetName,
     tileMatrixLabels: gridNames,

@@ -66,6 +66,7 @@ import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode } from '../functions/darkMode'
+import { serverURL } from '../functions/settings'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -146,11 +147,26 @@ const Main: React.FC = () => {
   //use [] to make this useEffect similar to componentDidMount
   useEffect(() => {
     //load the raster maps from gplates server or localstorage
-    loadRasterMaps(() => {
-      setIsRasterMapsLoaded(true)
+    loadRasterMaps((networkFail: boolean) => {
+      //if the network is not working
+      if (networkFail) {
+        presentToast({
+          buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+          duration: 5000,
+          message:
+            'Failed to load raster maps from server(' +
+            serverURL +
+            '). Check your server URL setting.',
+          onDidDismiss: () => {},
+        })
+      }
+
+      setIsRasterMapsLoaded(true) //notify the raster maps have been loaded.
+
+      //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
         cesiumViewer = initCesiumViewer(rasterMaps[0].layer)
-        setIsCesiumViewerReady(true)
+        setIsCesiumViewerReady(true) //notify the Ceium view is ready
 
         // Load settings
         Preferences.get({ key: 'animationSettings' }).then((res) => {
