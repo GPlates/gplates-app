@@ -47,6 +47,7 @@ import {
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
+import { serverURL, setServerURL } from '../functions/settings'
 
 interface ContainerProps {
   backgroundService: BackgroundService
@@ -208,6 +209,18 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonLabel>Dark</IonLabel>
               </IonSegmentButton>
             </IonSegment>
+          </IonItem>
+
+          <IonItemDivider>Server Setting</IonItemDivider>
+          <IonItem>
+            <IonLabel class="server-url-label">Server URL: </IonLabel>
+            <IonInput
+              class="server-url-input"
+              value={serverURL}
+              onIonChange={(e) => {
+                if (e.detail.value) setServerURL(e.detail.value)
+              }}
+            />
           </IonItem>
 
           <IonItemDivider>Main Setting Section3</IonItemDivider>

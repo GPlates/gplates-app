@@ -1,9 +1,13 @@
 import { RasterCfg } from './types'
-import { rasterData, createCesiumImageryProvider } from './DataLoader'
+import { rasterData, createCesiumImageryProvider } from './dataLoader'
+import { serverURL } from './settings'
 
 export const failSafeRasterMaps = [
   {
     layer: rasterData['geology'],
+    url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
+    layerName: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
+    style: '',
     title: 'Geology',
     subTitle: 'present day',
     icon: 'assets/raster_menu/geology-256x256.png',
@@ -11,6 +15,9 @@ export const failSafeRasterMaps = [
   },
   {
     layer: rasterData['agegrid'],
+    url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
+    layerName: 'gplates:agegrid',
+    style: '',
     title: 'Agegrid',
     subTitle: 'present day',
     icon: 'assets/raster_menu/agegrid-256x256.png',
@@ -18,6 +25,9 @@ export const failSafeRasterMaps = [
   },
   {
     layer: rasterData['topography'],
+    url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
+    layerName: 'gplates:topography',
+    style: '',
     title: 'Topography',
     subTitle: 'present day',
     icon: 'assets/raster_menu/topography-256x256.png',
@@ -65,7 +75,7 @@ export const loadRasterMaps = (callback: Function) => {
   while (rasterMaps.length) {
     rasterMaps.pop()
   } //empty the list and then reload
-  fetch('https://gws.gplates.org/mobile/get_rasters')
+  fetch(serverURL.replace(/\/+$/, '') + '/mobile/get_rasters')
     .then((response) => response.json())
     .then((json_data) => {
       //console.log(json_data)
@@ -73,7 +83,8 @@ export const loadRasterMaps = (callback: Function) => {
         let o: RasterCfg = {
           layer: createCesiumImageryProvider(
             json_data[key].url,
-            json_data[key].layer
+            json_data[key].layer,
+            json_data[key].style
           ),
           title: json_data[key].title,
           subTitle: json_data[key].subTitle,
@@ -82,13 +93,20 @@ export const loadRasterMaps = (callback: Function) => {
         }
         rasterMaps.push(o)
       }
-      callback()
+      callback(false) //network fail=false
     })
     .catch((error) => {
       console.log(error)
-      for (const o of failSafeRasterMaps) {
+      for (const m of failSafeRasterMaps) {
+        let o: RasterCfg = {
+          layer: createCesiumImageryProvider(m.url, m.layerName, m.style),
+          title: m.title,
+          subTitle: m.subTitle,
+          icon: m.icon,
+          model: m.model,
+        }
         rasterMaps.push(o)
       }
-      callback()
+      callback(true) //network fail=true
     })
 }

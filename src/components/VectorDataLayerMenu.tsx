@@ -14,7 +14,7 @@ import {
 import {
   createCesiumImageryProvider,
   vectorData,
-} from '../functions/DataLoader'
+} from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { timeout } from '../functions/util'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -60,7 +60,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
     for (let key in response) {
       vecDataMap[key] = createCesiumImageryProvider(
         response[key].url,
-        response[key].layer
+        response[key].layer,
+        response[key].style
       )
     }
     return vecDataMap
