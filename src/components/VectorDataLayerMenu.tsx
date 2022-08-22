@@ -25,6 +25,7 @@ import {
 } from '../functions/atoms'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import rasterMaps from '../functions/rasterMaps'
+import { serverURL } from '../functions/settings'
 
 interface ContainerProps {
   checkedVectorData: { [key: string]: WebMapTileServiceImageryProvider }
@@ -51,7 +52,9 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
   const getVecInfoByRaster = async (rasterModel: String) => {
     let response = await (
       await fetch(
-        'https://gws.gplates.org/mobile/get_vector_layers?model=' + rasterModel
+        serverURL.replace(/\/+$/, '') +
+          '/mobile/get_vector_layers?model=' +
+          rasterModel
       )
     ).json()
     let vecDataMap: {
