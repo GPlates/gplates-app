@@ -15,7 +15,7 @@ import {
   currentRasterMapIndexState,
   isRasterMenuShow,
 } from '../functions/atoms'
-import rasterMaps from '../functions/rasterMaps'
+import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
 import { cesiumViewer } from '../pages/Main'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import { timeout } from '../functions/util'
@@ -41,11 +41,18 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const [present, dismiss] = useIonLoading()
 
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
-    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider, 1)
-    if (currentLayer != null) {
-      cesiumViewer.imageryLayers.remove(currentLayer)
-    }
+    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
+    //if (currentLayer != null) {
+    //cesiumViewer.imageryLayers.remove(currentLayer)
+    //}
     setCurrentLayer(newLayer)
+    // we don't remove the old layer immediately.
+    // the "remove" is very fast to complete, but the "add" is slow.
+    // if we remove the old layer immediately, user will see something underneath.
+    // sometimes, we don't want to show user that.
+    if (cesiumViewer.imageryLayers.length > 8) {
+      cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
+    }
   }
 
   useEffect(() => {
@@ -89,7 +96,8 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   // select the target one and unselect rest all
   const select = (index: number) => {
-    setCurrentRasterMapIndex(index)
+    setCurrentRasterMapIndex(index) // does this index really need to be a "State"
+    setCurrentRasterIndex(index) // for those who do not need the index as a "State"
   }
 
   return (

@@ -6,6 +6,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
   {
     layer: rasterData['geology'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
+    wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
     layerName: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
     style: '',
     title: 'Geology',
@@ -18,6 +19,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
   {
     layer: rasterData['agegrid'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
+    wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
     layerName: 'gplates:agegrid',
     style: '',
     title: 'Agegrid',
@@ -30,6 +32,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
   {
     layer: rasterData['topography'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
+    wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
     layerName: 'gplates:topography',
     style: '',
     title: 'Topography',
@@ -44,6 +47,15 @@ export const failSafeRasterMaps: RasterCfg[] = [
 //TODO: save in localstorage
 const rasterMaps: RasterCfg[] = []
 export default rasterMaps
+export let currentRasterIndex: number = 0
+
+export const setCurrentRasterIndex = (idx: number) => {
+  if (rasterMaps.length > idx) {
+    currentRasterIndex = idx
+  } else {
+    console.log('Error: setCurrentRasterIndex() try to set an invalid index')
+  }
+}
 
 //async version. (NOT IN USE FOR NOW)
 //keep the code here, may be useful in the future
@@ -109,6 +121,7 @@ export const loadRasterMaps = (callback: Function) => {
           ),
           layerName: jsonData[key].layerName,
           url: jsonData[key].url,
+          wmsUrl: jsonData[key].wmsUrl,
           style: jsonData[key].style,
           title: jsonData[key].title,
           subTitle: jsonData[key].subTitle,
@@ -132,6 +145,7 @@ export const loadRasterMaps = (callback: Function) => {
           ),
           layerName: m.layerName,
           url: m.url,
+          wmsUrl: m.wmsUrl,
           style: m.style,
           title: m.title,
           subTitle: m.subTitle,
