@@ -2,6 +2,8 @@ import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
 import { GEOSRV_URL, LIMIT_LOWER, LIMIT_UPPER } from './atoms'
+import rasterMaps, { currentRasterIndex } from './rasterMaps'
+import { RasterCfg } from './types'
 
 let animateFrame = 0
 let animateNext = false
@@ -32,7 +34,7 @@ export class AnimationService {
     try {
       const provider = new SingleTileImageryProvider({
         url: await this.cachingService?.getCachedRequest(
-          url.replace('{count}', String(animateFrame))
+          url.replace('{{time}}', String(animateFrame))
         ),
       })
       // Disallow old frames from being printed when manually changing age
@@ -91,13 +93,13 @@ export class AnimationService {
 
   onAgeSliderChange = (value: number) => {
     animateFrame = value
-    this.drawFrame(GEOSRV_URL, true)
+    this.drawFrame(this.getCurrentRasterAnimationURL(), true)
   }
 
   resetPlayHead = () => {
     this.setPlaying(false)
     animateFrame = this.range.lower
-    this.drawFrame(GEOSRV_URL, true)
+    this.drawFrame(this.getCurrentRasterAnimationURL(), true)
   }
 
   movePlayHead = (value: number) => {
@@ -106,7 +108,7 @@ export class AnimationService {
       Math.max(animateFrame + value, LIMIT_LOWER),
       LIMIT_UPPER
     )
-    this.drawFrame(GEOSRV_URL, true)
+    this.drawFrame(this.getCurrentRasterAnimationURL(), true)
   }
 
   setDragging = (value: boolean) => {
@@ -145,9 +147,27 @@ export class AnimationService {
         animateFrame = this.range.lower
       }
 
-      this.scheduleFrame(GEOSRV_URL)
+      this.scheduleFrame(this.getCurrentRasterAnimationURL())
     } else {
       clearTimeout(animateTimeout)
     }
+  }
+
+  //
+  // return the low-resolution map url for the current selected raster
+  // TODO: do the similar thing for vector layers(overlays)
+  //
+  getCurrentRasterAnimationURL = () => {
+    let currentRaster: RasterCfg = rasterMaps[currentRasterIndex]
+    // can get LIMIT_LOWER and LIMIT_UPPER like this for the current raster
+    //let LIMIT_LOWER = currentRaster.endTime
+    //let LIMIT_UPPER = currentRaster.startTime
+    return (
+      currentRaster.wmsUrl +
+      '?service=WMS&version=1.1.0&request=GetMap&layers=' +
+      currentRaster.layerName +
+      '&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384' +
+      '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
+    )
   }
 }
