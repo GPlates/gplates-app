@@ -14,7 +14,7 @@ import {
 import {
   createCesiumImageryProvider,
   vectorData,
-} from '../functions/DataLoader'
+} from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { timeout } from '../functions/util'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -25,6 +25,7 @@ import {
 } from '../functions/atoms'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import rasterMaps from '../functions/rasterMaps'
+import { serverURL } from '../functions/settings'
 
 interface ContainerProps {
   checkedVectorData: { [key: string]: WebMapTileServiceImageryProvider }
@@ -51,7 +52,9 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
   const getVecInfoByRaster = async (rasterModel: String) => {
     let response = await (
       await fetch(
-        'https://gws.gplates.org/mobile/get_vector_layers?model=' + rasterModel
+        serverURL.replace(/\/+$/, '') +
+          '/mobile/get_vector_layers?model=' +
+          rasterModel
       )
     ).json()
     let vecDataMap: {
@@ -60,7 +63,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
     for (let key in response) {
       vecDataMap[key] = createCesiumImageryProvider(
         response[key].url,
-        response[key].layer
+        response[key].layer,
+        response[key].style
       )
     }
     return vecDataMap

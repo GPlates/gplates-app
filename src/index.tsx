@@ -43,7 +43,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       const jeepEl = document.createElement('jeep-sqlite')
       document.body.appendChild(jeepEl)
       await customElements.whenDefined('jeep-sqlite')
-      await sqlite.initWebStore()
+      const jeepSqliteEl = document.querySelector('jeep-sqlite')
+      if (jeepSqliteEl != null) {
+        await sqlite.initWebStore()
+      }
     }
     const ret = await sqlite.checkConnectionsConsistency()
     const isConn = (await sqlite.isConnection('db_main')).result
