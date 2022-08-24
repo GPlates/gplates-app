@@ -18,7 +18,7 @@ import {
   layersOutline,
   informationOutline,
   shareSocialOutline,
-  helpOutline,
+  statsChartOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -59,6 +59,7 @@ import {
   backgroundIsCustom,
   backgroundColor,
   appDarkMode,
+  isGraphPanelShowState,
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -66,6 +67,7 @@ import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode } from '../functions/darkMode'
 import { serverURL } from '../functions/settings'
+import { GraphPanel } from '../components/GraphPanel'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -87,6 +89,9 @@ const Main: React.FC = () => {
   const [isSettingMenuPageShow, setMenuPageShow] =
     useRecoilState(isSettingsMenuShow)
   const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
+  const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
+    isGraphPanelShowState
+  )
 
   // Animation
   const setAge = useSetRecoilState(age)
@@ -303,14 +308,12 @@ const Main: React.FC = () => {
             >
               <IonIcon icon={informationOutline} />
             </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={helpOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={helpOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={helpOutline} />
+            <IonFabButton
+              onClick={() => {
+                setIsGraphPanelShow(!isGraphPanelShow)
+              }}
+            >
+              <IonIcon icon={statsChartOutline} />
             </IonFabButton>
           </IonFabList>
         </IonFab>
@@ -334,6 +337,7 @@ const Main: React.FC = () => {
             }}
             isViewerLoading={isViewerLoading}
           />
+          <GraphPanel />
         </div>
       </IonContent>
     </IonPage>
