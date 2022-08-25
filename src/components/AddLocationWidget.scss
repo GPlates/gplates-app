@@ -16,11 +16,11 @@
 .add-locate-widget {
   position: absolute;
   margin: auto;
-  left: 0;
+  /*left: 0;*/
   right: 0;
   text-align: center;
   bottom: 0;
-  width: 600px;
+  /*width: 600px;*/
   /*background-color: pink;*/
 
   &.hide {
@@ -34,4 +34,9 @@
     transform: translateY(0);
     transition: transform 0.5s;
   }
+}
+.close-button {
+  position: absolute;
+  right: 0;
+  top: 5px;
 }

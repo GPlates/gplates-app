@@ -30,11 +30,6 @@ import {
   Rectangle,
   Viewer,
   WebMapTileServiceImageryProvider,
-  Color,
-  Cartographic,
-  Cartesian3,
-  Cartesian2,
-  Entity,
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
 import { SettingMenuPage } from './SettingMenuPage'
@@ -260,7 +255,10 @@ const Main: React.FC = () => {
             animationService={animationService}
           />
         </div>
-        <AddLocationWidget show={showAddLocationWidget} />
+        <AddLocationWidget
+          show={showAddLocationWidget}
+          setShow={setShowAddLocationWidget}
+        />
         <IonFab
           vertical="bottom"
           horizontal="start"
@@ -327,37 +325,6 @@ const Main: React.FC = () => {
             <IonFabButton
               onClick={() => {
                 setShowAddLocationWidget(!showAddLocationWidget)
-                var pointerEntity: Entity
-                cesiumViewer.camera.changed.addEventListener(function (
-                  percentage
-                ) {
-                  let ray = cesiumViewer.scene.camera.getPickRay(
-                    new Cartesian2(
-                      cesiumViewer.scene.canvas.clientWidth / 2,
-                      cesiumViewer.scene.canvas.clientHeight / 2
-                    )
-                  )
-
-                  if (ray != undefined) {
-                    var p = cesiumViewer.scene.globe.pick(
-                      ray,
-                      cesiumViewer.scene
-                    )
-                    if (pointerEntity)
-                      cesiumViewer.entities.remove(pointerEntity)
-                    pointerEntity = cesiumViewer.entities.add({
-                      name: 'center',
-                      position: p,
-                      point: {
-                        color: Color.BLACK,
-                        pixelSize: 10,
-                        outlineColor: Color.YELLOW,
-                        outlineWidth: 3,
-                        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                      },
-                    })
-                  }
-                })
               }}
             >
               <IonIcon icon={addOutline} />
