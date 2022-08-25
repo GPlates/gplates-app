@@ -4,9 +4,12 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { age, isGraphPanelShowState } from '../functions/atoms'
 import './GraphPanel.css'
 import { EChartsType } from 'echarts'
+import { getPlatforms } from '@ionic/react'
+import assert from 'assert'
+import { XAXisComponentOption } from 'echarts/types/dist/option'
 
 type EChartsOption = echarts.EChartsOption
-let MU_CHART: EChartsType
+let MY_CHART: EChartsType
 let OPTION: EChartsOption
 let X_VALS
 let Y_VALS
@@ -37,8 +40,8 @@ async function getData() {
 interface ContainerProps {}
 
 export const GraphPanel: React.FC<ContainerProps> = () => {
-  const [isShow, setIsShow] = useRecoilState(isGraphPanelShowState)
-  const _age = useRecoilValue(age)
+  const isShow = useRecoilValue(isGraphPanelShowState)
+  const [_age, setAge] = useRecoilState(age)
   // initialization
   useEffect(() => {
     getData().then(([data_map, data, x_vals, y_vals]) => {
@@ -48,13 +51,34 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       Y_VALS = y_vals
 
       let chartDom = document.getElementById('graphPanel-statistics')!
-      MU_CHART = echarts.init(chartDom)
+      MY_CHART = echarts.init(chartDom)
 
       OPTION = {
         xAxis: {
-          type: 'value',
+          type: 'category',
           data: x_vals,
+          axisPointer: {
+            show: true,
+            snap: true,
+            value: _age,
+            handle: {
+              show: true,
+            },
+            label: {
+              show: true,
+              margin: 3,
+              formatter: (params) => {
+                let num_age = _age
+                if (typeof params.value === 'string') {
+                  num_age = parseInt(params.value)
+                  setAge(num_age)
+                }
+                return num_age + 'Ma : ' + DATA_MAP[num_age]
+              },
+            },
+          },
         },
+
         yAxis: {
           type: 'value',
         },
@@ -63,43 +87,36 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
             data: data,
             type: 'line',
             symbol: 'none',
-            markLine: {
-              data: [
-                {
-                  xAxis: _age,
-                },
-              ],
-              animation: false,
-              silent: false,
-              label: {
-                show: true,
-                position: 'end',
-                formatter: _age + 'Ma : ' + DATA_MAP[_age],
-              },
-            },
           },
         ],
       }
-      OPTION && MU_CHART.setOption(OPTION)
+
+      // for pc mode
+      if (getPlatforms().includes('desktop')) {
+        OPTION.tooltip = {
+          triggerOn: 'none',
+        }
+      } else {
+        // for touch device mode
+        // @ts-ignore
+        OPTION.xAxis!.axisPointer.handle.icon = 'none'
+      }
+      OPTION && MY_CHART.setOption(OPTION)
     })
   }, [])
 
   useEffect(() => {
-    console.log(_age)
     if (OPTION == undefined) {
       return
     }
     // @ts-ignore
-    OPTION.series[0].markLine.data[0].xAxis = _age
-    // @ts-ignore
-    OPTION.series[0].markLine.label.formatter = _age + 'Ma : ' + DATA_MAP[_age]
-    MU_CHART.setOption(OPTION)
+    OPTION.xAxis!.axisPointer.value = _age
+    MY_CHART.setOption(OPTION)
   }, [_age])
 
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div id="graphPanel-statistics" className="graph-panel-statistics" />
-      <div id="graphPanel-timeline" className="graph-panel-timeline" />
     </div>
   )
 }
