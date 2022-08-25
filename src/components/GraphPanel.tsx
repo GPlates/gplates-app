@@ -97,6 +97,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
           triggerOn: 'none',
         }
       } else {
+        // for touch device mode
         // @ts-ignore
         OPTION.xAxis!.axisPointer.handle.icon = 'none'
       }
