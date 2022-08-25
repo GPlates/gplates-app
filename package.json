@@ -25,7 +25,6 @@
     "echarts": "^5.3.3",
     "es6-promise-plugin": "^4.2.2",
     "html2canvas": "^1.4.1",
-    "ionic": "^5.4.16",
     "react": "^18.1.0",
     "react-colorful": "^5.5.1",
     "react-dom": "^18.1.0",

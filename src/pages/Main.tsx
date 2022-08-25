@@ -19,6 +19,7 @@ import {
   informationOutline,
   shareSocialOutline,
   statsChartOutline,
+  addOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -29,6 +30,11 @@ import {
   Rectangle,
   Viewer,
   WebMapTileServiceImageryProvider,
+  Color,
+  Cartographic,
+  Cartesian3,
+  Cartesian2,
+  Entity,
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
 import { SettingMenuPage } from './SettingMenuPage'
@@ -68,6 +74,7 @@ import { Preferences } from '@capacitor/preferences'
 import { setDarkMode } from '../functions/darkMode'
 import { serverURL } from '../functions/settings'
 import { GraphPanel } from '../components/GraphPanel'
+import AddLocationWidget from '../components/AddLocationWidget'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -92,6 +99,7 @@ const Main: React.FC = () => {
   const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
     isGraphPanelShowState
   )
+  const [showAddLocationWidget, setShowAddLocationWidget] = useState(false)
 
   // Animation
   const setAge = useSetRecoilState(age)
@@ -252,6 +260,7 @@ const Main: React.FC = () => {
             animationService={animationService}
           />
         </div>
+        <AddLocationWidget show={showAddLocationWidget} />
         <IonFab
           vertical="bottom"
           horizontal="start"
@@ -314,6 +323,44 @@ const Main: React.FC = () => {
               }}
             >
               <IonIcon icon={statsChartOutline} />
+            </IonFabButton>
+            <IonFabButton
+              onClick={() => {
+                setShowAddLocationWidget(!showAddLocationWidget)
+                var pointerEntity: Entity
+                cesiumViewer.camera.changed.addEventListener(function (
+                  percentage
+                ) {
+                  let ray = cesiumViewer.scene.camera.getPickRay(
+                    new Cartesian2(
+                      cesiumViewer.scene.canvas.clientWidth / 2,
+                      cesiumViewer.scene.canvas.clientHeight / 2
+                    )
+                  )
+
+                  if (ray != undefined) {
+                    var p = cesiumViewer.scene.globe.pick(
+                      ray,
+                      cesiumViewer.scene
+                    )
+                    if (pointerEntity)
+                      cesiumViewer.entities.remove(pointerEntity)
+                    pointerEntity = cesiumViewer.entities.add({
+                      name: 'center',
+                      position: p,
+                      point: {
+                        color: Color.BLACK,
+                        pixelSize: 10,
+                        outlineColor: Color.YELLOW,
+                        outlineWidth: 3,
+                        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                      },
+                    })
+                  }
+                })
+              }}
+            >
+              <IonIcon icon={addOutline} />
             </IonFabButton>
           </IonFabList>
         </IonFab>
