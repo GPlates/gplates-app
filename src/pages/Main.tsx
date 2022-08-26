@@ -19,6 +19,7 @@ import {
   informationOutline,
   shareSocialOutline,
   statsChartOutline,
+  addOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -68,6 +69,7 @@ import { Preferences } from '@capacitor/preferences'
 import { setDarkMode } from '../functions/darkMode'
 import { serverURL } from '../functions/settings'
 import { GraphPanel } from '../components/GraphPanel'
+import AddLocationWidget from '../components/AddLocationWidget'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -92,6 +94,7 @@ const Main: React.FC = () => {
   const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
     isGraphPanelShowState
   )
+  const [showAddLocationWidget, setShowAddLocationWidget] = useState(false)
 
   // Animation
   const setAge = useSetRecoilState(age)
@@ -252,6 +255,10 @@ const Main: React.FC = () => {
             animationService={animationService}
           />
         </div>
+        <AddLocationWidget
+          show={showAddLocationWidget}
+          setShow={setShowAddLocationWidget}
+        />
         <IonFab
           vertical="bottom"
           horizontal="start"
@@ -314,6 +321,13 @@ const Main: React.FC = () => {
               }}
             >
               <IonIcon icon={statsChartOutline} />
+            </IonFabButton>
+            <IonFabButton
+              onClick={() => {
+                setShowAddLocationWidget(!showAddLocationWidget)
+              }}
+            >
+              <IonIcon icon={addOutline} />
             </IonFabButton>
           </IonFabList>
         </IonFab>
