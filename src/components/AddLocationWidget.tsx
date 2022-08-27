@@ -154,7 +154,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                   pixelSize: 10,
                   outlineColor: Color.YELLOW,
                   outlineWidth: 3,
-                  disableDepthTestDistance: Number.POSITIVE_INFINITY,
                 },
               })
               locationEntities.push(pe)

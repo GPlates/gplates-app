@@ -98,6 +98,7 @@ export const AboutPage: React.FC<ContainerProps> = () => {
               michael.chin@sydney.edu.au
             </a>
           </p>
+          <br />
         </div>
         <div
           style={{

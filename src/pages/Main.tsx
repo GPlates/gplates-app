@@ -17,9 +17,10 @@ import {
   earthOutline,
   layersOutline,
   informationOutline,
+  informationCircleOutline,
   shareSocialOutline,
   statsChartOutline,
-  addOutline,
+  locateOutline,
 } from 'ionicons/icons'
 
 import './Main.scss'
@@ -313,7 +314,7 @@ const Main: React.FC = () => {
                 setIsAboutPageShow(true)
               }}
             >
-              <IonIcon icon={informationOutline} />
+              <IonIcon icon={informationCircleOutline} />
             </IonFabButton>
             <IonFabButton
               onClick={() => {
@@ -327,7 +328,7 @@ const Main: React.FC = () => {
                 setShowAddLocationWidget(!showAddLocationWidget)
               }}
             >
-              <IonIcon icon={addOutline} />
+              <IonIcon icon={locateOutline} />
             </IonFabButton>
           </IonFabList>
         </IonFab>
