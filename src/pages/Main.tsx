@@ -43,7 +43,7 @@ import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
 import { SocialSharing } from '../components/SocialSharing'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   age,
   animateExact,
@@ -53,15 +53,12 @@ import {
   animatePlaying,
   animateRange,
   backgroundIsStarry,
-  isAboutPageShow,
-  isRasterMenuShow,
-  isVectorMenuShow,
   isSettingsMenuShow,
   backgroundIsEnabled,
   backgroundIsCustom,
   backgroundColor,
   appDarkMode,
-  isGraphPanelShowState,
+  isAddLocationWidgetShowState,
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -71,6 +68,7 @@ import { setDarkMode } from '../functions/darkMode'
 import { serverURL } from '../functions/settings'
 import { GraphPanel } from '../components/GraphPanel'
 import AddLocationWidget from '../components/AddLocationWidget'
+import { ToolMenu } from '../components/ToolMenu'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -83,19 +81,12 @@ let cachingService: CachingService
 export let cesiumViewer: Viewer
 
 const Main: React.FC = () => {
-  const [present, dismiss] = useIonLoading()
-
   const [vectorData, setVectorData] = useState({})
   const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
-  const setIsAboutPageShow = useSetRecoilState(isAboutPageShow)
-  const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
-  const [isSettingMenuPageShow, setMenuPageShow] =
-    useRecoilState(isSettingsMenuShow)
-  const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
-  const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
-    isGraphPanelShowState
+  const isSettingMenuPageShow = useRecoilValue(isSettingsMenuShow)
+  const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
+    isAddLocationWidgetShowState
   )
-  const [showAddLocationWidget, setShowAddLocationWidget] = useState(false)
 
   // Animation
   const setAge = useSetRecoilState(age)
@@ -256,82 +247,12 @@ const Main: React.FC = () => {
             animationService={animationService}
           />
         </div>
+        <ToolMenu />
         <AddLocationWidget
           show={showAddLocationWidget}
           setShow={setShowAddLocationWidget}
         />
-        <IonFab
-          vertical="bottom"
-          horizontal="start"
-          className={'toolbar-bottom'}
-        >
-          <IonFabButton
-            onClick={() => {
-              setRasterMenuPageShow(false)
-            }}
-          >
-            <IonIcon
-              src={'/assets/setting_menu_page/toolbox.svg'}
-              style={{ fontSize: '2rem' }}
-            />
-          </IonFabButton>
-          <IonFabList side="end">
-            <IonFabButton
-              onClick={() => {
-                setMenuPageShow(true)
-              }}
-            >
-              <IonIcon icon={cogOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={() => {
-                setRasterMenuPageShow(true)
-              }}
-            >
-              <IonIcon icon={earthOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={async () => {
-                await SocialSharing(
-                  present,
-                  dismiss,
-                  presentToast,
-                  dismissToast
-                )
-              }}
-            >
-              <IonIcon icon={shareSocialOutline}></IonIcon>
-            </IonFabButton>
-            <IonFabButton
-              onClick={async () => {
-                setIsVectorDataLayerMenuShow(true)
-              }}
-            >
-              <IonIcon icon={layersOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={() => {
-                setIsAboutPageShow(true)
-              }}
-            >
-              <IonIcon icon={informationCircleOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={() => {
-                setIsGraphPanelShow(!isGraphPanelShow)
-              }}
-            >
-              <IonIcon icon={statsChartOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={() => {
-                setShowAddLocationWidget(!showAddLocationWidget)
-              }}
-            >
-              <IonIcon icon={locateOutline} />
-            </IonFabButton>
-          </IonFabList>
-        </IonFab>
+
         <div>
           <SettingMenuPage backgroundService={backgroundService} />
           <RasterMenu
