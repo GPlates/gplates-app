@@ -76,3 +76,8 @@ export const isGraphPanelShowState = atom({
   key: 'isGraphPanelShowState',
   default: false,
 })
+
+export const isAddLocationWidgetShowState = atom({
+  key: 'isAddLocationWidgetShowState',
+  default: false,
+})
