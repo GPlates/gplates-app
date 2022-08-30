@@ -100,15 +100,7 @@ export const AboutPage: React.FC<ContainerProps> = () => {
           </p>
           <br />
         </div>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            fontStyle: 'italic',
-            fontSize: 'small',
-          }}
-        >
+        <div className={'about-page-copyright'}>
           Copyright © 2022 The University of Sydney. All rights reserved.
         </div>
       </IonContent>
