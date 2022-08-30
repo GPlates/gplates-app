@@ -2,26 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { SplashScreen } from '@capacitor/splash-screen'
 import {
   IonContent,
-  IonFab,
-  IonFabButton,
-  IonFabList,
-  IonIcon,
   IonPage,
-  useIonLoading,
   useIonViewDidEnter,
   useIonToast,
 } from '@ionic/react'
-
-import {
-  cogOutline,
-  earthOutline,
-  layersOutline,
-  informationOutline,
-  informationCircleOutline,
-  shareSocialOutline,
-  statsChartOutline,
-  locateOutline,
-} from 'ionicons/icons'
 
 import './Main.scss'
 
@@ -42,7 +26,6 @@ import { sqlite } from '../App'
 import { CachingService } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
-import { SocialSharing } from '../components/SocialSharing'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {

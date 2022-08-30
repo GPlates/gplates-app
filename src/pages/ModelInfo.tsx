@@ -7,6 +7,10 @@ import {
   IonRippleEffect,
   IonTitle,
   IonToolbar,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonNote,
 } from '@ionic/react'
 import './ModelInfo.scss'
 import { Browser } from '@capacitor/browser'
@@ -19,6 +23,19 @@ interface ContainerProps {}
 export const ModelInfo: React.FC<ContainerProps> = () => {
   const [modelInfoShow, setModelInfoShow] = useRecoilState(isModelInfoShowState)
   const [aboutPageShow, setAboutPageShow] = useRecoilState(isAboutPageShow)
+
+  let listMap = {
+    Model: rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].model : '',
+    Raster:
+      rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].layerName : '',
+    End: rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].endTime : '',
+    Start:
+      rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].startTime : '',
+    'WMTS URL': rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].url : '',
+    'WMS URL':
+      rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].wmsUrl : '',
+  }
+
   return (
     <IonModal isOpen={modelInfoShow} animated backdropDismiss={false}>
       <IonToolbar>
@@ -36,14 +53,6 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
         </IonButtons>
       </IonToolbar>
       <IonContent>
-        <div>
-          {rasterMaps.length > 0
-            ? rasterMaps[currentRasterIndex].layerName
-            : ''}
-        </div>
-        <div>
-          {rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].model : ''}
-        </div>
         <div className="open-about-page-button">
           <IonButton
             expand="full"
@@ -57,6 +66,15 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
             <IonRippleEffect />
           </IonButton>
         </div>
+        <IonList>
+          {Object.entries(listMap).map((value) => (
+            <IonItem key={value[0]}>
+              <IonLabel>{value[0]} </IonLabel>
+              <IonNote slot="end">{value[1]}</IonNote>
+            </IonItem>
+          ))}
+        </IonList>
+        <div>TODO: put raster legend here!!!</div>
       </IonContent>
     </IonModal>
   )
