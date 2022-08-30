@@ -50,22 +50,28 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
   const rasterMapInfo = useRecoilValue(rasterMapState)
 
   const getVecInfoByRaster = async (rasterModel: String) => {
-    let response = await (
-      await fetch(
-        serverURL.replace(/\/+$/, '') +
-          '/mobile/get_vector_layers?model=' +
-          rasterModel
-      )
-    ).json()
+    let response = await fetch(
+      serverURL.replace(/\/+$/, '') +
+        '/mobile/get_vector_layers?model=' +
+        rasterModel
+    ).catch((error) => {
+      console.log(error) //handle the promise rejection
+    })
+
     let vecDataMap: {
       [key: string]: WebMapTileServiceImageryProvider
     } = {}
-    for (let key in response) {
-      vecDataMap[key] = createCesiumImageryProvider(
-        response[key].url,
-        response[key].layer,
-        response[key].style
-      )
+
+    if (response) {
+      let responseJson = await response.json()
+
+      for (let key in responseJson) {
+        vecDataMap[key] = createCesiumImageryProvider(
+          responseJson[key].url,
+          responseJson[key].layer,
+          responseJson[key].style
+        )
+      }
     }
     return vecDataMap
   }

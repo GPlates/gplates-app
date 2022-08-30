@@ -12,6 +12,8 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 
 ## Run the app in the simulators
 
+You need Java 11 and Android studio 2021.2.1 or newer.
+
 **Important: You need to export the correct JAVA_HOME and ANDROID_SDK_ROOT in set-env.sh**
 
 The following steps worked on my Macbook Pro.
@@ -57,6 +59,7 @@ Or
 - On your ios device, go to "Settings > General > Device Management" to trust the developer
 
 ### CocoaPods on macs
+
 CocoaPods is required to create the 'ios/App/Pods' folder, and the XCode build will fail without this.
 
 You can try `sudo gem install cocoapods` to install [CocoaPods](https://cocoapods.org) on your Mac. However, this [**does not**](https://github.com/CocoaPods/CocoaPods/issues/11056) work on an M1 chip.
