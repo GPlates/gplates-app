@@ -75,6 +75,12 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
           ))}
         </IonList>
         <div>TODO: put raster legend here!!!</div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
       </IonContent>
     </IonModal>
   )
