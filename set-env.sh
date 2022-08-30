@@ -3,7 +3,7 @@
 # how-to-use "source ./set-env.sh" or ". ./set-env.sh"
 
 # set the correct JAVA_HOME and ANDROID_SDK_ROOT for your computer
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_311.jdk/Contents/Home/
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
 export ANDROID_SDK_ROOT=/Users/mchin/Library/Android/sdk
 
 export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools/
