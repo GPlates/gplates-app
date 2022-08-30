@@ -12,6 +12,7 @@ import './AboutPage.scss'
 import { Browser } from '@capacitor/browser'
 import { useRecoilState } from 'recoil'
 import { isAboutPageShow } from '../functions/atoms'
+
 interface ContainerProps {}
 
 export const AboutPage: React.FC<ContainerProps> = () => {
@@ -50,6 +51,14 @@ export const AboutPage: React.FC<ContainerProps> = () => {
               }}
             >
               GPlates
+            </a>
+            ,&nbsp;the&nbsp;
+            <a
+              onClick={async () => {
+                await Browser.open({ url: 'https://gwsdoc.gplates.org' })
+              }}
+            >
+              GPlates Web Service
             </a>
             &nbsp;and the&nbsp;
             <a

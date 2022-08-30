@@ -25,6 +25,7 @@ import {
   isRasterMenuShow,
   isSettingsMenuShow,
   isVectorMenuShow,
+  isModelInfoShowState,
 } from '../functions/atoms'
 
 export const ToolMenu = () => {
@@ -38,10 +39,10 @@ export const ToolMenu = () => {
   const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
     isGraphPanelShowState
   )
-
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
     isAddLocationWidgetShowState
   )
+  const setShowModelInfo = useSetRecoilState(isModelInfoShowState)
 
   const toolMenuList: any[] = [
     <IonFabButton
@@ -79,7 +80,7 @@ export const ToolMenu = () => {
     <IonFabButton
       key={'tool-menu-button' + 4}
       onClick={() => {
-        setIsAboutPageShow(true)
+        setShowModelInfo(true)
       }}
     >
       <IonIcon icon={informationCircleOutline} />
@@ -95,7 +96,6 @@ export const ToolMenu = () => {
     <IonFabButton
       key={'tool-menu-button' + 6}
       onClick={() => {
-        console.log(showAddLocationWidget)
         setShowAddLocationWidget(!showAddLocationWidget)
       }}
     >
