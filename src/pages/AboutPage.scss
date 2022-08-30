@@ -15,6 +15,7 @@
   //border-color: var(--ion-color-dark);
   //border-radius: 0.5rem;
   padding: 0 0.5rem;
+  margin-bottom: 40px;
 }
 
 .about-page-intro-text {
@@ -25,4 +26,12 @@
 .about-page-clickable-info {
   height: 1rem;
   margin: 0 0 0.6rem 0;
+}
+
+.about-page-copyright {
+  position: absolute;
+  bottom: 20px;
+  right: 5px;
+  font-style: italic;
+  font-size: small;
 }
