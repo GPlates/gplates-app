@@ -81,3 +81,8 @@ export const isAddLocationWidgetShowState = atom({
   key: 'isAddLocationWidgetShowState',
   default: false,
 })
+
+export const isModelInfoShowState = atom({
+  key: 'isModelInfoShowState',
+  default: false,
+})

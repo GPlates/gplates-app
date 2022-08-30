@@ -37,6 +37,7 @@ import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
+import { ModelInfo } from './ModelInfo'
 import { sqlite } from '../App'
 import { CachingService } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
@@ -262,6 +263,7 @@ const Main: React.FC = () => {
             isCesiumViewerReady={isCesiumViewerReady}
           />
           <AboutPage />
+          <ModelInfo />
           <VectorDataLayerMenu
             checkedVectorData={vectorData}
             setVectorData={setVectorData}
