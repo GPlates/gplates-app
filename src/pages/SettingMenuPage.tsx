@@ -223,9 +223,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             />
           </IonItem>
 
-          <IonItemDivider>Main Setting Section3</IonItemDivider>
+          <IonItemDivider>Graticules</IonItemDivider>
           <IonItem>
-            <IonLabel>Enable Something</IonLabel>
+            <IonLabel>Show Graticules</IonLabel>
             <IonCheckbox class={'single-setting-option'} />
           </IonItem>
 
