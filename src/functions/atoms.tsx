@@ -4,8 +4,6 @@ import { RasterCfg } from './types'
 import { failSafeRasterMaps } from './rasterMaps'
 
 // TODO: Dynamically assign these variables based on selected raster
-export const GEOSRV_URL =
-  'https://geosrv.earthbyte.org/geoserver/Lithodat/wms?service=WMS&version=1.1.0&request=GetMap&layers=Lithodat%3Acontinental_polygons_{count}Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=image%2Fpng%3B%20mode%3D8bit'
 export const LIMIT_UPPER = 410
 export const LIMIT_LOWER = 0
 

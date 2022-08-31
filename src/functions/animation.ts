@@ -1,7 +1,7 @@
 import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
-import { GEOSRV_URL, LIMIT_LOWER, LIMIT_UPPER } from './atoms'
+import { LIMIT_LOWER, LIMIT_UPPER } from './atoms'
 import rasterMaps, { currentRasterIndex } from './rasterMaps'
 import { RasterCfg } from './types'
 
@@ -105,8 +105,8 @@ export class AnimationService {
   movePlayHead = (value: number) => {
     this.setPlaying(false)
     animateFrame = Math.min(
-      Math.max(animateFrame + value, LIMIT_LOWER),
-      LIMIT_UPPER
+      Math.max(animateFrame + value, rasterMaps[currentRasterIndex].endTime),
+      rasterMaps[currentRasterIndex].startTime
     )
     this.drawFrame(this.getCurrentRasterAnimationURL(), true)
   }
@@ -158,14 +158,10 @@ export class AnimationService {
   // TODO: do the similar thing for vector layers(overlays)
   //
   getCurrentRasterAnimationURL = () => {
-    let currentRaster: RasterCfg = rasterMaps[currentRasterIndex]
-    // can get LIMIT_LOWER and LIMIT_UPPER like this for the current raster
-    //let LIMIT_LOWER = currentRaster.endTime
-    //let LIMIT_UPPER = currentRaster.startTime
     return (
-      currentRaster.wmsUrl +
+      rasterMaps[currentRasterIndex].wmsUrl +
       '?service=WMS&version=1.1.0&request=GetMap&layers=' +
-      currentRaster.layerName +
+      rasterMaps[currentRasterIndex].layerName +
       '&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384' +
       '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
     )

@@ -85,7 +85,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     if (cameraMoveEndtRemoveCallback) cameraMoveEndtRemoveCallback()
   }
   return (
-    <div>
+    <div className="location-container">
       <div className={`locate-indicator ${show ? '' : 'hide'}`}>
         <IonIcon icon={locateOutline} />
       </div>
