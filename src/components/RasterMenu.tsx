@@ -10,10 +10,12 @@ import {
 
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import {
   currentRasterMapIndexState,
   isRasterMenuShow,
+  age,
+  animateRange,
 } from '../functions/atoms'
 import rasterMaps from '../functions/rasterMaps'
 import { cesiumViewer } from '../pages/Main'
@@ -37,15 +39,23 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     currentRasterMapIndexState
   )
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
-
+  const setAge = useSetRecoilState(age)
+  const [range, setRange] = useRecoilState(animateRange)
   const [present, dismiss] = useIonLoading()
 
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
-    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider, 1)
-    if (currentLayer != null) {
-      cesiumViewer.imageryLayers.remove(currentLayer)
-    }
+    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
+    //if (currentLayer != null) {
+    //cesiumViewer.imageryLayers.remove(currentLayer)
+    //}
     setCurrentLayer(newLayer)
+    // we don't remove the old layer immediately.
+    // the "remove" is very fast to complete, but the "add" is slow.
+    // if we remove the old layer immediately, user will see something underneath.
+    // sometimes, we don't want to show user that.
+    if (cesiumViewer.imageryLayers.length > 8) {
+      cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
+    }
   }
 
   useEffect(() => {
@@ -65,9 +75,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
             select(i)
             await present({ message: 'Loading...' })
             switchLayer(rasterMaps[i].layer)
-            await timeout(500)
+            await timeout(200)
             while (!isViewerLoading()) {
-              await timeout(500)
+              await timeout(200)
             }
             await dismiss()
           }
@@ -90,6 +100,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   // select the target one and unselect rest all
   const select = (index: number) => {
     setCurrentRasterMapIndex(index)
+    setAge(0)
+    if (rasterMaps.length > 0) {
+      setRange({
+        lower: rasterMaps[index].endTime,
+        upper: rasterMaps[index].startTime,
+      })
+    }
   }
 
   return (

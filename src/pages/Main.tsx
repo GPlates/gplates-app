@@ -2,24 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { SplashScreen } from '@capacitor/splash-screen'
 import {
   IonContent,
-  IonFab,
-  IonFabButton,
-  IonFabList,
-  IonIcon,
   IonPage,
-  useIonLoading,
   useIonViewDidEnter,
   useIonToast,
 } from '@ionic/react'
-
-import {
-  cogOutline,
-  earthOutline,
-  layersOutline,
-  informationOutline,
-  shareSocialOutline,
-  helpOutline,
-} from 'ionicons/icons'
 
 import './Main.scss'
 
@@ -35,13 +21,13 @@ import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
+import { ModelInfo } from './ModelInfo'
 import { sqlite } from '../App'
 import { CachingService } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
-import { SocialSharing } from '../components/SocialSharing'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   age,
   animateExact,
@@ -51,14 +37,13 @@ import {
   animatePlaying,
   animateRange,
   backgroundIsStarry,
-  isAboutPageShow,
-  isRasterMenuShow,
-  isVectorMenuShow,
   isSettingsMenuShow,
   backgroundIsEnabled,
   backgroundIsCustom,
   backgroundColor,
   appDarkMode,
+  isAddLocationWidgetShowState,
+  currentRasterMapIndexState,
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -66,6 +51,9 @@ import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode } from '../functions/darkMode'
 import { serverURL } from '../functions/settings'
+import { GraphPanel } from '../components/GraphPanel'
+import AddLocationWidget from '../components/AddLocationWidget'
+import { ToolMenu } from '../components/ToolMenu'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -78,15 +66,12 @@ let cachingService: CachingService
 export let cesiumViewer: Viewer
 
 const Main: React.FC = () => {
-  const [present, dismiss] = useIonLoading()
-
   const [vectorData, setVectorData] = useState({})
   const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
-  const setIsAboutPageShow = useSetRecoilState(isAboutPageShow)
-  const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
-  const [isSettingMenuPageShow, setMenuPageShow] =
-    useRecoilState(isSettingsMenuShow)
-  const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
+  const isSettingMenuPageShow = useRecoilValue(isSettingsMenuShow)
+  const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
+    isAddLocationWidgetShowState
+  )
 
   // Animation
   const setAge = useSetRecoilState(age)
@@ -111,7 +96,9 @@ const Main: React.FC = () => {
 
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
-
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
   const [presentToast, dismissToast] = useIonToast()
 
   animationService = new AnimationService(
@@ -127,7 +114,8 @@ const Main: React.FC = () => {
     _setPlaying,
     range,
     setRange,
-    cesiumViewer
+    cesiumViewer,
+    currentRasterMapIndex
   )
   backgroundService = new BackgroundService(
     isBackgroundSettingEnable,
@@ -247,73 +235,12 @@ const Main: React.FC = () => {
             animationService={animationService}
           />
         </div>
-        <IonFab
-          vertical="bottom"
-          horizontal="start"
-          className={'toolbar-bottom'}
-        >
-          <IonFabButton
-            onClick={() => {
-              setRasterMenuPageShow(false)
-            }}
-          >
-            <IonIcon
-              src={'/assets/setting_menu_page/toolbox.svg'}
-              style={{ fontSize: '2rem' }}
-            />
-          </IonFabButton>
-          <IonFabList side="end">
-            <IonFabButton
-              onClick={() => {
-                setMenuPageShow(true)
-              }}
-            >
-              <IonIcon icon={cogOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={() => {
-                setRasterMenuPageShow(true)
-              }}
-            >
-              <IonIcon icon={earthOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={async () => {
-                await SocialSharing(
-                  present,
-                  dismiss,
-                  presentToast,
-                  dismissToast
-                )
-              }}
-            >
-              <IonIcon icon={shareSocialOutline}></IonIcon>
-            </IonFabButton>
-            <IonFabButton
-              onClick={async () => {
-                setIsVectorDataLayerMenuShow(true)
-              }}
-            >
-              <IonIcon icon={layersOutline} />
-            </IonFabButton>
-            <IonFabButton
-              onClick={() => {
-                setIsAboutPageShow(true)
-              }}
-            >
-              <IonIcon icon={informationOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={helpOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={helpOutline} />
-            </IonFabButton>
-            <IonFabButton>
-              <IonIcon icon={helpOutline} />
-            </IonFabButton>
-          </IonFabList>
-        </IonFab>
+        <ToolMenu />
+        <AddLocationWidget
+          show={showAddLocationWidget}
+          setShow={setShowAddLocationWidget}
+        />
+
         <div>
           <SettingMenuPage backgroundService={backgroundService} />
           <RasterMenu
@@ -323,6 +250,7 @@ const Main: React.FC = () => {
             isCesiumViewerReady={isCesiumViewerReady}
           />
           <AboutPage />
+          <ModelInfo />
           <VectorDataLayerMenu
             checkedVectorData={vectorData}
             setVectorData={setVectorData}
@@ -334,6 +262,7 @@ const Main: React.FC = () => {
             }}
             isViewerLoading={isViewerLoading}
           />
+          <GraphPanel />
         </div>
       </IonContent>
     </IonPage>
