@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
   IonCard,
   IonCardHeader,
@@ -107,6 +107,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         upper: rasterMaps[index].startTime,
       })
     }
+    cesiumViewer?.entities.removeById('userLocation')
   }
 
   return (

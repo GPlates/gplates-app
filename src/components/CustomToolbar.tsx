@@ -6,7 +6,7 @@ import {
   IonList,
   IonPopover,
 } from '@ionic/react'
-import { SceneMode } from 'cesium'
+import { Cartesian3, Color, Rectangle, Scene, SceneMode } from 'cesium'
 import { homeOutline, helpOutline } from 'ionicons/icons'
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
@@ -19,30 +19,69 @@ import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
 import 'swiper/swiper.scss' // core Swiper
 import 'swiper/modules/navigation/navigation.scss' // Navigation module
 import 'swiper/modules/pagination/pagination.scss'
-import { Pagination } from 'swiper' // Pagination module
+import { Pagination } from 'swiper'
+import { cesiumViewer } from '../pages/Main'
+import { Geolocation } from '@capacitor/geolocation'
 
-const CustomToolbar = (props: any) => {
+interface ToolbarProps {
+  scene: Scene
+}
+
+const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   const sceneModes = [
     {
       id: SceneMode.SCENE3D,
       name: '3D',
-      onClick: () => props.scene.morphTo3D(),
+      onClick: () => scene.morphTo3D(),
       path: globePath,
     },
     {
       id: SceneMode.SCENE2D,
       name: '2D',
-      onClick: () => props.scene.morphTo2D(),
+      onClick: () => scene.morphTo2D(),
       path: flatMapPath,
     },
     {
       id: SceneMode.COLUMBUS_VIEW,
       name: 'Columbus View',
-      onClick: () => props.scene.morphToColumbusView(),
+      onClick: () => scene.morphToColumbusView(),
       path: columbusViewPath,
     },
   ]
   const [mode, setMode] = useState(sceneModes[0])
+
+  const goHome = async () => {
+    const permissions = await Geolocation.checkPermissions()
+    if (permissions.location !== 'denied') {
+      const location = await Geolocation.getCurrentPosition()
+      const lon = location.coords.longitude
+      const lat = location.coords.latitude
+      cesiumViewer.entities.removeById('userLocation')
+      cesiumViewer.entities.add({
+        id: 'userLocation',
+        name: 'User Location',
+        position: Cartesian3.fromDegrees(lon, lat),
+        point: {
+          color: Color.DODGERBLUE,
+          pixelSize: 10,
+          outlineColor: Color.WHITE,
+          outlineWidth: 3,
+        },
+      })
+      // Rectangle animates nicer than Cartesian3
+      const width = 40.9
+      const height = 33.3
+      const rectangle = Rectangle.fromDegrees(
+        lon - width,
+        lat - height,
+        lon + width,
+        lat + height
+      )
+      scene.camera.flyTo({ destination: rectangle })
+    } else {
+      scene.camera.flyHome()
+    }
+  }
 
   // Swiper page indicator
   const pagination = {
@@ -60,12 +99,7 @@ const CustomToolbar = (props: any) => {
 
   return (
     <Fragment>
-      <IonButton
-        className="round-button"
-        onClick={() => {
-          props.scene.camera.flyHome()
-        }}
-      >
+      <IonButton className="round-button" onClick={goHome}>
         <IonIcon icon={homeOutline} />
       </IonButton>
       <IonButton className="round-button" id="scene-mode-button">
