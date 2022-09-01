@@ -15,8 +15,9 @@ import {
   currentRasterMapIndexState,
   isRasterMenuShow,
   age,
+  animateRange,
 } from '../functions/atoms'
-import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
+import rasterMaps from '../functions/rasterMaps'
 import { cesiumViewer } from '../pages/Main'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import { timeout } from '../functions/util'
@@ -39,6 +40,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   )
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
   const setAge = useSetRecoilState(age)
+  const [range, setRange] = useRecoilState(animateRange)
   const [present, dismiss] = useIonLoading()
 
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
@@ -98,8 +100,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   // select the target one and unselect rest all
   const select = (index: number) => {
     setCurrentRasterMapIndex(index)
-    setCurrentRasterIndex(index)
     setAge(0)
+    if (rasterMaps.length > 0) {
+      setRange({
+        lower: rasterMaps[index].endTime,
+        upper: rasterMaps[index].startTime,
+      })
+    }
   }
 
   return (

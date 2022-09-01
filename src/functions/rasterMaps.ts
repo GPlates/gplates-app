@@ -47,15 +47,6 @@ export const failSafeRasterMaps: RasterCfg[] = [
 //TODO: save in localstorage
 const rasterMaps: RasterCfg[] = []
 export default rasterMaps
-export let currentRasterIndex: number = 0
-
-export const setCurrentRasterIndex = (idx: number) => {
-  if (rasterMaps.length > idx) {
-    currentRasterIndex = idx
-  } else {
-    console.log('Error: setCurrentRasterIndex() try to set an invalid index')
-  }
-}
 
 //async version. (NOT IN USE FOR NOW)
 //keep the code here, may be useful in the future

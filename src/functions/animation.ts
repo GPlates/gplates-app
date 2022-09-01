@@ -1,7 +1,7 @@
 import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
-import rasterMaps, { currentRasterIndex } from './rasterMaps'
+import rasterMaps from './rasterMaps'
 
 let animateFrame = 0
 let animateNext = false
@@ -23,7 +23,8 @@ export class AnimationService {
     public _setPlaying: SetterOrUpdater<boolean>,
     public range: { lower: number; upper: number },
     public setRange: SetterOrUpdater<{ lower: number; upper: number }>,
-    public viewer: Viewer
+    public viewer: Viewer,
+    public currentRasterMapIndex: number
   ) {}
 
   drawFrame = async (url: string, force = false) => {
@@ -63,13 +64,18 @@ export class AnimationService {
 
   // TODO: Cache next image before timeout expires to improve cold animation performance?
   scheduleFrame = (url: string, nextFrame = false) => {
-    const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
+    //const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
+    //console.log(timeToNext)
     animateTimeout = setTimeout(() => {
       if (nextFrame) {
         this.nextFrameNumber()
       }
       this.drawFrame(url)
-    }, Math.max(timeToNext, 0))
+    }, 0)
+    //Invoking setTimeout with a callback, and zero as the second argument will
+    //schedule the callback to be run **asynchronously**, after the shortest possible delay
+    //more thinking is needed about this matter.
+    //}, Math.max(timeToNext, 0))
   }
 
   nextFrameNumber = () => {
@@ -91,6 +97,16 @@ export class AnimationService {
       this.setPlaying(false)
     }
 
+    //make sure the animateFrame(age) does not go out of valid range
+    animateFrame = Math.min(
+      animateFrame,
+      rasterMaps[this.currentRasterMapIndex].startTime
+    )
+    animateFrame = Math.max(
+      animateFrame,
+      rasterMaps[this.currentRasterMapIndex].endTime
+    )
+
     return animateFrame
   }
 
@@ -108,8 +124,11 @@ export class AnimationService {
   movePlayHead = (value: number) => {
     this.setPlaying(false)
     animateFrame = Math.min(
-      Math.max(animateFrame + value, rasterMaps[currentRasterIndex].endTime),
-      rasterMaps[currentRasterIndex].startTime
+      Math.max(
+        animateFrame + value,
+        rasterMaps[this.currentRasterMapIndex].endTime
+      ),
+      rasterMaps[this.currentRasterMapIndex].startTime
     )
     this.drawFrame(this.getCurrentRasterAnimationURL(), true)
   }
@@ -150,6 +169,16 @@ export class AnimationService {
         animateFrame = this.range.lower
       }
 
+      //make sure the animateFrame(age) does not go out of valid range
+      animateFrame = Math.min(
+        animateFrame,
+        rasterMaps[this.currentRasterMapIndex].startTime
+      )
+      animateFrame = Math.max(
+        animateFrame,
+        rasterMaps[this.currentRasterMapIndex].endTime
+      )
+
       this.scheduleFrame(this.getCurrentRasterAnimationURL())
     } else {
       clearTimeout(animateTimeout)
@@ -162,9 +191,9 @@ export class AnimationService {
   //
   getCurrentRasterAnimationURL = () => {
     return (
-      rasterMaps[currentRasterIndex].wmsUrl +
+      rasterMaps[this.currentRasterMapIndex].wmsUrl +
       '?service=WMS&version=1.1.0&request=GetMap&layers=' +
-      rasterMaps[currentRasterIndex].layerName +
+      rasterMaps[this.currentRasterMapIndex].layerName +
       '&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384' +
       '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
     )

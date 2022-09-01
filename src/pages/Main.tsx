@@ -114,7 +114,8 @@ const Main: React.FC = () => {
     _setPlaying,
     range,
     setRange,
-    cesiumViewer
+    cesiumViewer,
+    currentRasterMapIndex
   )
   backgroundService = new BackgroundService(
     isBackgroundSettingEnable,

@@ -32,6 +32,7 @@ import {
   isAgeSliderShown,
   LIMIT_LOWER,
   LIMIT_UPPER,
+  animateRange,
 } from '../functions/atoms'
 import {
   matchDarkMode,
@@ -56,6 +57,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
     currentRasterMapIndexState
   )
+  const [range, setRange] = useRecoilState(animateRange)
 
   const openMenu = () => {
     setMenuPath('animation')
@@ -94,7 +96,6 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
     <div>
       <div className={shown ? 'container' : 'container hidden'}>
         <IonItem className="time-input" lines="none">
-          <IonLabel>Time:</IonLabel>
           <IonInput
             inputMode="numeric"
             min={
@@ -169,17 +170,12 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
               animationService.setDragging(false)
               animationService.onAgeSliderChange(e.detail.value as number)
             }}
-            min={
-              rasterMaps.length > 0
-                ? rasterMaps[currentRasterMapIndex].endTime
-                : LIMIT_LOWER
-            }
-            max={
-              rasterMaps.length > 0
-                ? rasterMaps[currentRasterMapIndex].startTime
-                : LIMIT_UPPER
-            }
-            onIonChange={(e) => setAge(e.detail.value as number)}
+            min={Math.min(range.lower, range.upper)}
+            max={Math.max(range.lower, range.upper)}
+            onIonChange={(e) => {
+              setAge(e.detail.value as number)
+              animationService.onAgeSliderChange(e.detail.value as number)
+            }}
             value={_age}
           />
         </IonItem>
