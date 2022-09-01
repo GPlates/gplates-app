@@ -224,7 +224,7 @@ const Main: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen>
+      <IonContent fullscreen scrollY={false}>
         <StarrySky />
 
         <div id="cesiumContainer" />
