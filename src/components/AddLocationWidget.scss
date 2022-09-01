@@ -1,3 +1,11 @@
+.location-container {
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: auto;
+}
+
 .locate-indicator {
   position: absolute;
   top: 50%;
@@ -14,7 +22,7 @@
 }
 
 .add-locate-widget {
-  position: absolute;
+  /*position: absolute;*/
   margin: auto;
   /*left: 0;*/
   right: 0;

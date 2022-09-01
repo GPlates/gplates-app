@@ -43,11 +43,13 @@ import {
   LIMIT_LOWER,
   LIMIT_UPPER,
   settingsPath,
+  currentRasterMapIndexState,
 } from '../functions/atoms'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 import { serverURL, setServerURL } from '../functions/settings'
+import RasterMaps from '../functions/rasterMaps'
 
 interface ContainerProps {
   backgroundService: BackgroundService
@@ -71,6 +73,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [range, setRange] = useRecoilState(animateRange)
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
   const isSliderShow = useRecoilValue(isAgeSliderShown)
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
 
   // Animation constants
   const minIncrement = 1
@@ -280,8 +285,16 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonRange
                   dir="rtl"
                   dualKnobs={true}
-                  min={LIMIT_LOWER}
-                  max={LIMIT_UPPER}
+                  min={
+                    RasterMaps.length > 0
+                      ? RasterMaps[currentRasterMapIndex].endTime
+                      : LIMIT_LOWER
+                  }
+                  max={
+                    RasterMaps.length > 0
+                      ? RasterMaps[currentRasterMapIndex].startTime
+                      : LIMIT_UPPER
+                  }
                   onIonKnobMoveEnd={(e) => {
                     setRange(e.detail.value as any)
                   }}

@@ -6,6 +6,7 @@ import {
   IonItem,
   IonLabel,
   IonRange,
+  useIonToast,
 } from '@ionic/react'
 import {
   chevronUpCircleOutline,
@@ -20,24 +21,25 @@ import {
 import React, { useEffect } from 'react'
 import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
-import {
-  appDarkMode,
-  isAgeSliderShown,
-  LIMIT_LOWER,
-  LIMIT_UPPER,
-} from '../functions/atoms'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   age,
   animatePlaying,
   isSettingsMenuShow,
   settingsPath,
+  currentRasterMapIndexState,
+  appDarkMode,
+  isAgeSliderShown,
+  LIMIT_LOWER,
+  LIMIT_UPPER,
+  animateRange,
 } from '../functions/atoms'
 import {
   matchDarkMode,
   setStatusBarTheme,
   statusBarListener,
 } from '../functions/darkMode'
+import rasterMaps from '../functions/rasterMaps'
 
 interface AgeSliderProps {
   buttons: any
@@ -51,10 +53,33 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const setMenuPath = useSetRecoilState(settingsPath)
   const setMenuState = useSetRecoilState(isSettingsMenuShow)
   const [shown, setShown] = useRecoilState(isAgeSliderShown)
+  const [presentToast, dismissToast] = useIonToast()
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
+  const [range, setRange] = useRecoilState(animateRange)
 
   const openMenu = () => {
     setMenuPath('animation')
     setMenuState(true)
+  }
+
+  const showAgeSliderWidget = () => {
+    if (
+      rasterMaps[currentRasterMapIndex].endTime === 0 &&
+      rasterMaps[currentRasterMapIndex].startTime === 0
+    ) {
+      setShown(false)
+      presentToast({
+        buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+        duration: 5000,
+        message:
+          'This raster is present-day only. The reconstruction animation is unvailable.',
+        onDidDismiss: () => {},
+      })
+    } else {
+      setShown(!shown)
+    }
   }
 
   useEffect(() => {
@@ -71,13 +96,29 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
     <div>
       <div className={shown ? 'container' : 'container hidden'}>
         <IonItem className="time-input" lines="none">
-          <IonLabel>Time:</IonLabel>
           <IonInput
             inputMode="numeric"
-            min={LIMIT_LOWER}
-            max={LIMIT_UPPER}
+            min={
+              rasterMaps.length > 0
+                ? rasterMaps[currentRasterMapIndex].endTime
+                : LIMIT_LOWER
+            }
+            max={
+              rasterMaps.length > 0
+                ? rasterMaps[currentRasterMapIndex].startTime
+                : LIMIT_UPPER
+            }
             onIonChange={(e) =>
-              setNumber(setAge, e.detail.value, LIMIT_LOWER, LIMIT_UPPER)
+              setNumber(
+                setAge,
+                e.detail.value,
+                rasterMaps.length > 0
+                  ? rasterMaps[currentRasterMapIndex].endTime
+                  : LIMIT_LOWER,
+                rasterMaps.length > 0
+                  ? rasterMaps[currentRasterMapIndex].startTime
+                  : LIMIT_UPPER
+              )
             }
             value={_age}
           />
@@ -129,9 +170,12 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
               animationService.setDragging(false)
               animationService.onAgeSliderChange(e.detail.value as number)
             }}
-            min={LIMIT_LOWER}
-            max={LIMIT_UPPER}
-            onIonChange={(e) => setAge(e.detail.value as number)}
+            min={Math.min(range.lower, range.upper)}
+            max={Math.max(range.lower, range.upper)}
+            onIonChange={(e) => {
+              setAge(e.detail.value as number)
+              animationService.onAgeSliderChange(e.detail.value as number)
+            }}
             value={_age}
           />
         </IonItem>
@@ -140,9 +184,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
         <div
           className="time"
           id={'timeStamp'} // screenshot need time information, using id to locate element
-          onClick={() => {
-            setShown(!shown)
-          }}
+          onClick={() => showAgeSliderWidget()}
         >
           {_age} Ma
         </div>
@@ -150,9 +192,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
           {buttons}
           <IonButton
             className="round-button show-button"
-            onClick={() => {
-              setShown(!shown)
-            }}
+            onClick={() => showAgeSliderWidget()}
             size="default"
           >
             <IonIcon icon={shown ? chevronUpCircleOutline : timeOutline} />
