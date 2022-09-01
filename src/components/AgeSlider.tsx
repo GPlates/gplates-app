@@ -21,25 +21,24 @@ import {
 import React, { useEffect } from 'react'
 import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
-import {
-  appDarkMode,
-  isAgeSliderShown,
-  LIMIT_LOWER,
-  LIMIT_UPPER,
-} from '../functions/atoms'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   age,
   animatePlaying,
   isSettingsMenuShow,
   settingsPath,
+  currentRasterMapIndexState,
+  appDarkMode,
+  isAgeSliderShown,
+  LIMIT_LOWER,
+  LIMIT_UPPER,
 } from '../functions/atoms'
 import {
   matchDarkMode,
   setStatusBarTheme,
   statusBarListener,
 } from '../functions/darkMode'
-import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import rasterMaps from '../functions/rasterMaps'
 
 interface AgeSliderProps {
   buttons: any
@@ -54,6 +53,9 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const setMenuState = useSetRecoilState(isSettingsMenuShow)
   const [shown, setShown] = useRecoilState(isAgeSliderShown)
   const [presentToast, dismissToast] = useIonToast()
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
 
   const openMenu = () => {
     setMenuPath('animation')
@@ -62,8 +64,8 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
 
   const showAgeSliderWidget = () => {
     if (
-      rasterMaps[currentRasterIndex].endTime === 0 &&
-      rasterMaps[currentRasterIndex].startTime === 0
+      rasterMaps[currentRasterMapIndex].endTime === 0 &&
+      rasterMaps[currentRasterMapIndex].startTime === 0
     ) {
       setShown(false)
       presentToast({
@@ -97,12 +99,12 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
             inputMode="numeric"
             min={
               rasterMaps.length > 0
-                ? rasterMaps[currentRasterIndex].endTime
+                ? rasterMaps[currentRasterMapIndex].endTime
                 : LIMIT_LOWER
             }
             max={
               rasterMaps.length > 0
-                ? rasterMaps[currentRasterIndex].startTime
+                ? rasterMaps[currentRasterMapIndex].startTime
                 : LIMIT_UPPER
             }
             onIonChange={(e) =>
@@ -110,10 +112,10 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
                 setAge,
                 e.detail.value,
                 rasterMaps.length > 0
-                  ? rasterMaps[currentRasterIndex].endTime
+                  ? rasterMaps[currentRasterMapIndex].endTime
                   : LIMIT_LOWER,
                 rasterMaps.length > 0
-                  ? rasterMaps[currentRasterIndex].startTime
+                  ? rasterMaps[currentRasterMapIndex].startTime
                   : LIMIT_UPPER
               )
             }
@@ -169,12 +171,12 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
             }}
             min={
               rasterMaps.length > 0
-                ? rasterMaps[currentRasterIndex].endTime
+                ? rasterMaps[currentRasterMapIndex].endTime
                 : LIMIT_LOWER
             }
             max={
               rasterMaps.length > 0
-                ? rasterMaps[currentRasterIndex].startTime
+                ? rasterMaps[currentRasterMapIndex].startTime
                 : LIMIT_UPPER
             }
             onIonChange={(e) => setAge(e.detail.value as number)}

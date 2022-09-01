@@ -43,6 +43,7 @@ import {
   backgroundColor,
   appDarkMode,
   isAddLocationWidgetShowState,
+  currentRasterMapIndexState,
 } from '../functions/atoms'
 import { initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -95,7 +96,9 @@ const Main: React.FC = () => {
 
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
-
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
   const [presentToast, dismissToast] = useIonToast()
 
   animationService = new AnimationService(

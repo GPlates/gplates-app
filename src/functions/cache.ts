@@ -26,16 +26,25 @@ export class CachingService {
     const ret = await this.db.query('SELECT * FROM cache WHERE url == ?', [url])
     const value = ret.values && ret.values[0]
 
+    //if the cache has a success hit.
     if (value && (value.ttl == null || value.ttl >= currentTime)) {
       data = value.data
+      const blob = await (await fetch(data)).blob()
+      return URL.createObjectURL(blob)
     } else {
+      //if cache does not hit, get the data from url and insert into cache
       await this.db.run('DELETE FROM cache WHERE url == ?', [url])
-      data = await this.getBlobAsString(url)
-      await this.cacheRequest(url, data)
+      let blob: Blob = await this.getBlob(url)
+      data = await this.convertBlobToDataURL(blob)
+      //it is possible that the return data is invalid
+      if (data) {
+        await this.cacheRequest(url, data)
+        return URL.createObjectURL(blob)
+      } else {
+        //invalid return data, for example url returns "Could not find layer"
+        return ''
+      }
     }
-
-    const blob = await (await fetch(data)).blob()
-    return URL.createObjectURL(blob)
   }
 
   //  SQLite Capacitor doesn't support blobs, so we have to convert to string (base64)
@@ -52,6 +61,27 @@ export class CachingService {
             return reader.readAsDataURL(blob)
           })
       )
+  }
+
+  //fetch url and return a blob
+  async getBlob(url: string) {
+    let res = await fetch(url)
+    let blob = await res.blob()
+    return blob
+  }
+
+  //convert a blob to data URL
+  convertBlobToDataURL(blob: Blob) {
+    return new Promise((resolve, reject) => {
+      if (blob.type.startsWith('image')) {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      } else {
+        resolve(null)
+      }
+    })
   }
 
   // Remove all cached data & files

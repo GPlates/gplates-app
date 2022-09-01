@@ -94,7 +94,7 @@ export const setCurrentRasterIndex = (idx: number) => {
 function getStartLayerName(layerData: any) {
   let layerName = layerData.layerName
   if (layerData.startTime > layerData.endTime) {
-    layerName = layerName.replace('{{time}}', layerData.startTime.toString())
+    layerName = layerName.replace('{{time}}', layerData.endTime.toString())
   }
   return layerName
 }

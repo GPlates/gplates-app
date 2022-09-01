@@ -30,6 +30,8 @@ import {
 } from 'cesium'
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../pages/Main'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { age } from '../functions/atoms'
 
 let cameraChangedRemoveCallback: any = null
 let cameraMoveStartRemoveCallback: any = null
@@ -54,7 +56,14 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const [lonLatList, setLonLatlist] = useState<[number, number][]>([])
   const [showLocationDetails, setShowLocationDetails] = useState(false)
   const [showLocationIndex, setShowLocationIndex] = useState(0)
+  const paleoAge = useRecoilValue(age)
 
+  //deal with the paleo age change
+  //reconstruct locations
+  useEffect(() => {}, [paleoAge])
+
+  //handle the camera changed event
+  //calculate the coordinates of the center of camera lens
   const cameraHandler = () => {
     let ray = cesiumViewer.scene.camera.getPickRay(
       new Cartesian2(
@@ -84,6 +93,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     if (cameraMoveStartRemoveCallback) cameraMoveStartRemoveCallback()
     if (cameraMoveEndtRemoveCallback) cameraMoveEndtRemoveCallback()
   }
+
   return (
     <div className="location-container">
       <div className={`locate-indicator ${show ? '' : 'hide'}`}>

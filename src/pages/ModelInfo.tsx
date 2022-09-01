@@ -14,26 +14,32 @@ import {
 } from '@ionic/react'
 import './ModelInfo.scss'
 import { Browser } from '@capacitor/browser'
-import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import rasterMaps from '../functions/rasterMaps'
 import { useRecoilState } from 'recoil'
-import { isModelInfoShowState, isAboutPageShow } from '../functions/atoms'
+import {
+  isModelInfoShowState,
+  isAboutPageShow,
+  currentRasterMapIndexState,
+} from '../functions/atoms'
 
 interface ContainerProps {}
 
 export const ModelInfo: React.FC<ContainerProps> = () => {
   const [modelInfoShow, setModelInfoShow] = useRecoilState(isModelInfoShowState)
   const [aboutPageShow, setAboutPageShow] = useRecoilState(isAboutPageShow)
+  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
+    currentRasterMapIndexState
+  )
 
   let listMap = {
-    Model: rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].model : '',
+    Model: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].model : '',
     Raster:
-      rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].layerName : '',
-    End: rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].endTime : '',
+      rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].layerName : '',
+    End: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].endTime : '',
     Start:
-      rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].startTime : '',
-    'WMTS URL': rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].url : '',
-    'WMS URL':
-      rasterMaps.length > 0 ? rasterMaps[currentRasterIndex].wmsUrl : '',
+      rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].startTime : '',
+    WMTS: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].url : '',
+    WMS: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].wmsUrl : '',
   }
 
   return (

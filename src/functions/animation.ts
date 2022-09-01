@@ -1,9 +1,7 @@
 import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
-import { LIMIT_LOWER, LIMIT_UPPER } from './atoms'
 import rasterMaps, { currentRasterIndex } from './rasterMaps'
-import { RasterCfg } from './types'
 
 let animateFrame = 0
 let animateNext = false
@@ -30,18 +28,23 @@ export class AnimationService {
 
   drawFrame = async (url: string, force = false) => {
     animateStartTime = Date.now()
-
+    //console.log('age: ' + String(animateFrame))
     try {
-      const provider = new SingleTileImageryProvider({
-        url: await this.cachingService?.getCachedRequest(
-          url.replace('{{time}}', String(animateFrame))
-        ),
-      })
-      // Disallow old frames from being printed when manually changing age
-      if (animateNext || force) {
-        this.viewer.imageryLayers.addImageryProvider(provider)
+      let dataURL: string = await this.cachingService?.getCachedRequest(
+        url.replace('{{time}}', String(animateFrame))
+      )
+      //only do this when the dataURL is valid
+      if (dataURL.length > 0) {
+        const provider = new SingleTileImageryProvider({
+          url: dataURL,
+        })
+        // Disallow old frames from being printed when manually changing age
+        if (animateNext || force) {
+          this.viewer.imageryLayers.addImageryProvider(provider)
+        }
       }
     } catch (err) {
+      console.log(err)
       return
     }
     // Update age once frame is printed so age and frame display correspond

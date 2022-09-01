@@ -10,10 +10,11 @@ import {
 
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 import {
   currentRasterMapIndexState,
   isRasterMenuShow,
+  age,
 } from '../functions/atoms'
 import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
 import { cesiumViewer } from '../pages/Main'
@@ -37,7 +38,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     currentRasterMapIndexState
   )
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
-
+  const setAge = useSetRecoilState(age)
   const [present, dismiss] = useIonLoading()
 
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
@@ -72,9 +73,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
             select(i)
             await present({ message: 'Loading...' })
             switchLayer(rasterMaps[i].layer)
-            await timeout(500)
+            await timeout(200)
             while (!isViewerLoading()) {
-              await timeout(500)
+              await timeout(200)
             }
             await dismiss()
           }
@@ -96,8 +97,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   // select the target one and unselect rest all
   const select = (index: number) => {
-    setCurrentRasterMapIndex(index) // does this index really need to be a "State"
-    setCurrentRasterIndex(index) // for those who do not need the index as a "State"
+    setCurrentRasterMapIndex(index)
+    setCurrentRasterIndex(index)
+    setAge(0)
   }
 
   return (
