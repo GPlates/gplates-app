@@ -19,6 +19,8 @@ import {
   IonButtons,
   IonTitle,
   IonContent,
+  IonAccordionGroup,
+  IonAccordion,
 } from '@ionic/react'
 import {
   Color,
@@ -103,48 +105,63 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
       <div
         className={show ? 'add-locate-widget show' : 'add-locate-widget hide'}
       >
-        <IonList className="location-list">
-          <IonItemDivider>Location List</IonItemDivider>
-          {lonLatList.map((location, index) => {
-            return (
-              <IonItem key={index}>
-                <IonLabel>Longitude:</IonLabel>
-                <IonInput readonly value={location[0]}></IonInput>
-
-                <IonLabel>Latitude:</IonLabel>
-                <IonInput readonly value={location[1]}></IonInput>
-                <IonButton
-                  color="tertiary"
-                  onClick={() => {
-                    setShowLocationIndex(index)
-                    setShowLocationDetails(true)
-                  }}
-                >
-                  <IonIcon icon={informationOutline} />
-                </IonButton>
-                <IonButton
-                  color="tertiary"
-                  onClick={() => {
-                    let a = [...lonLatList]
-                    a.splice(index, 1)
-                    setLonLatlist(a)
-                    cesiumViewer.entities.remove(locationEntities[index])
-                    locationEntities.splice(index, 1)
-                  }}
-                >
-                  <IonIcon icon={trashOutline} />
-                </IonButton>
+        <div className="location-list-container">
+          <IonAccordionGroup>
+            <IonAccordion value="first">
+              <IonItem slot="header" color="light">
+                <IonLabel>Locations List ({lonLatList.length})</IonLabel>
               </IonItem>
-            )
-          })}
-        </IonList>
+              {lonLatList.map((location, index) => {
+                return (
+                  <div slot="content" key={index}>
+                    <IonItem>
+                      <IonLabel>Longitude:</IonLabel>
+                      <IonInput
+                        readonly
+                        value={location[0].toFixed(4)}
+                      ></IonInput>
+
+                      <IonLabel>Latitude:</IonLabel>
+                      <IonInput
+                        readonly
+                        value={location[1].toFixed(4)}
+                      ></IonInput>
+                      <IonButton
+                        color="tertiary"
+                        onClick={() => {
+                          setShowLocationIndex(index)
+                          setShowLocationDetails(true)
+                        }}
+                      >
+                        <IonIcon icon={informationOutline} />
+                      </IonButton>
+                      <IonButton
+                        color="tertiary"
+                        onClick={() => {
+                          let a = [...lonLatList]
+                          a.splice(index, 1)
+                          setLonLatlist(a)
+                          cesiumViewer.entities.remove(locationEntities[index])
+                          locationEntities.splice(index, 1)
+                        }}
+                      >
+                        <IonIcon icon={trashOutline} />
+                      </IonButton>
+                    </IonItem>
+                  </div>
+                )
+              })}
+            </IonAccordion>
+          </IonAccordionGroup>
+        </div>
+
         <IonItemDivider>Insert Location</IonItemDivider>
         <IonItem>
           <IonLabel>Longitude:</IonLabel>
-          <IonInput type="number" value={lonLat[0]}></IonInput>
+          <IonInput type="number" value={lonLat[0].toFixed(4)}></IonInput>
 
           <IonLabel>Latitude:</IonLabel>
-          <IonInput type="number" value={lonLat[1]}></IonInput>
+          <IonInput type="number" value={lonLat[1].toFixed(4)}></IonInput>
           <IonButton
             id="open-modal"
             color="primary"
@@ -171,18 +188,17 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           >
             Insert
           </IonButton>
+          <IonIcon
+            icon={closeOutline}
+            className="close-button"
+            slot={'end'}
+            color="secondary"
+            size="small"
+            onClick={() => {
+              setShow(false)
+            }}
+          ></IonIcon>
         </IonItem>
-
-        <IonIcon
-          icon={closeOutline}
-          className="close-button"
-          slot={'end'}
-          color="secondary"
-          size="small"
-          onClick={() => {
-            setShow(false)
-          }}
-        ></IonIcon>
       </div>
 
       <IonModal isOpen={showLocationDetails} animated backdropDismiss={false}>
