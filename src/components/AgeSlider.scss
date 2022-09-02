@@ -1,18 +1,18 @@
 $transition: all 150ms;
 
-@media screen and (max-width: 396px) {
+@media screen and (max-width: 328px) {
   .hidden {
     transform: translateY(calc(-154px - env(safe-area-inset-top)));
   }
 }
 
-@media screen and (min-width: 396px) and (max-width: 796px) {
+@media screen and (min-width: 328px) and (max-width: 648px) {
   .hidden {
     transform: translateY(calc(-106px - env(safe-area-inset-top)));
   }
 }
 
-@media screen and (min-width: 796px) {
+@media screen and (min-width: 648px) {
   .hidden {
     transform: translateY(calc(-58px - env(safe-area-inset-top)));
   }
@@ -77,7 +77,7 @@ $transition: all 150ms;
   --inner-padding-end: 8px;
   --ion-safe-area-left: 0;
   flex-grow: 100;
-  width: min(100vw, 400px);
+  width: min(100vw, 320px);
 }
 
 .time {
@@ -100,5 +100,5 @@ $transition: all 150ms;
   --padding-end: 16px;
   --ion-safe-area-right: 0;
   min-height: 48px;
-  width: 168px;
+  width: 100px;
 }
