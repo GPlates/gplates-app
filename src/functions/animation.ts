@@ -2,6 +2,7 @@ import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
 import rasterMaps from './rasterMaps'
+import { reconstructPresentDayLocations } from './presentDayLocations'
 
 let animateFrame = 0
 let animateNext = false
@@ -29,7 +30,6 @@ export class AnimationService {
 
   drawFrame = async (url: string, force = false) => {
     animateStartTime = Date.now()
-    //console.log('age: ' + String(animateFrame))
     try {
       let dataURL: string = await this.cachingService?.getCachedRequest(
         url.replace('{{time}}', String(animateFrame))
@@ -44,6 +44,10 @@ export class AnimationService {
           this.viewer.imageryLayers.addImageryProvider(provider)
         }
       }
+
+      //console.log(`age: ${animateFrame}`)
+      await reconstructPresentDayLocations(animateFrame) //reconstruct locations inserted by user
+      //await timeout(5000)
     } catch (err) {
       console.log(err)
       return
@@ -111,8 +115,10 @@ export class AnimationService {
   }
 
   onAgeSliderChange = (value: number) => {
-    animateFrame = value
-    this.drawFrame(this.getCurrentRasterAnimationURL(), true)
+    if (!this.playing) {
+      animateFrame = value
+      this.drawFrame(this.getCurrentRasterAnimationURL(), true)
+    }
   }
 
   resetPlayHead = () => {
