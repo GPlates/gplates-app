@@ -45,7 +45,7 @@ export class AnimationService {
         }
       }
 
-      //console.log(`age: ${animateFrame}`)
+      console.log(`age: ${animateFrame}`)
       await reconstructPresentDayLocations(animateFrame) //reconstruct locations inserted by user
       //await timeout(5000)
     } catch (err) {

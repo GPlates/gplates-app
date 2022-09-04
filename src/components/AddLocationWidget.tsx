@@ -21,6 +21,7 @@ import {
   IonContent,
   IonAccordionGroup,
   IonAccordion,
+  useIonToast,
 } from '@ionic/react'
 import {
   Color,
@@ -30,6 +31,8 @@ import {
   Math,
   Cartesian3,
   ConstantPositionProperty,
+  SceneMode,
+  Rectangle,
 } from 'cesium'
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../pages/Main'
@@ -103,6 +106,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const [showLocationDetails, setShowLocationDetails] = useState(false)
   const [showLocationIndex, setShowLocationIndex] = useState(0)
   const paleoAge = useRecoilValue(age)
+  const [presentToast, dismissToast] = useIonToast()
 
   //duplicate this dispatch function in another file for external usage
   setSetLonLatListCallback(setLonLatlist)
@@ -182,8 +186,21 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                         <IonButton
                           color="tertiary"
                           onClick={() => {
-                            setShowLocationIndex(index)
-                            setShowLocationDetails(true)
+                            const width = 40.9
+                            const height = 33.3
+                            const rectangle = Rectangle.fromDegrees(
+                              lonLatList[index].lon - width,
+                              lonLatList[index].lat - height,
+                              lonLatList[index].lon + width,
+                              lonLatList[index].lat + height
+                            )
+                            cesiumViewer.scene.camera.flyTo({
+                              destination: rectangle,
+                            })
+                            setTimeout(() => {
+                              setShowLocationIndex(index)
+                              setShowLocationDetails(true)
+                            }, 1000)
                           }}
                         >
                           <IonIcon icon={informationOutline} />
@@ -233,6 +250,17 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               id="open-modal"
               color="primary"
               onClick={() => {
+                if (cesiumViewer.scene.mode != SceneMode.SCENE3D) {
+                  presentToast({
+                    buttons: [
+                      { text: 'Dismiss', handler: () => dismissToast() },
+                    ],
+                    duration: 5000,
+                    message: 'Only work with 3D globe mode!',
+                    onDidDismiss: () => {},
+                  })
+                  return
+                }
                 setLonLatlist(
                   lonLatList.concat([
                     { lon: lonLat.current.lon, lat: lonLat.current.lat },
@@ -279,7 +307,12 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           </IonItem>
         </div>
 
-        <IonModal isOpen={showLocationDetails} animated backdropDismiss={false}>
+        <IonModal
+          isOpen={showLocationDetails}
+          animated
+          backdropDismiss={false}
+          class="location-details"
+        >
           <IonHeader>
             <IonToolbar>
               <IonTitle>Location Details</IonTitle>
