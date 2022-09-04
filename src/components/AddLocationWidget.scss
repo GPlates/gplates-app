@@ -4,6 +4,8 @@
   bottom: 0;
   right: 0;
   height: auto;
+  z-index: 1000;
+  opacity: 0.85;
 }
 
 .locate-indicator {
@@ -43,8 +45,17 @@
     transition: transform 0.5s;
   }
 }
-.close-button {
+/*.close-button {
   position: absolute;
   right: 0;
   top: 5px;
+}*/
+
+.location-list-container {
+  max-height: 300px;
+  overflow: scroll !important;
+}
+
+.location-details {
+  opacity: 0.9;
 }

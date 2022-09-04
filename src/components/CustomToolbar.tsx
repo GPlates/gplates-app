@@ -5,6 +5,7 @@ import {
   IonItem,
   IonList,
   IonPopover,
+  getPlatforms,
 } from '@ionic/react'
 import { Cartesian3, Color, Rectangle, Scene, SceneMode } from 'cesium'
 import { homeOutline, helpOutline } from 'ionicons/icons'
@@ -51,6 +52,12 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   const [mode, setMode] = useState(sceneModes[0])
 
   const goHome = async () => {
+    //when run in a web browser, cannot request geolocation permission
+    if (getPlatforms().includes('desktop')) {
+      scene.camera.flyHome()
+      return
+    }
+
     const permissions = await Geolocation.checkPermissions()
     if (permissions.location !== 'denied') {
       const location = await Geolocation.getCurrentPosition()
