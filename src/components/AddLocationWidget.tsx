@@ -44,6 +44,8 @@ import {
   setSetLonLatListCallback,
   setUpdateLocationEntitiesCallback,
 } from '../functions/presentDayLocations'
+import { serverURL } from '../functions/settings'
+import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
 
 let cameraChangedRemoveCallback: any = null
 let cameraMoveStartRemoveCallback: any = null
@@ -86,6 +88,39 @@ const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
   })*/
 }
 
+const setPresentDayLonLatPid = (
+  age: number,
+  lonLat: React.MutableRefObject<{
+    lon: number
+    lat: number
+  }>
+) => {
+  //reverse recontruct to get present day coords and plate id
+  //even the paleo-age is 0, we still need the plate id
+  console.log('fetch')
+  fetch(
+    serverURL.replace(/\/+$/, '') +
+      `/reconstruct/reconstruct_points/?points=${lonLat.current.lon},${lonLat.current.lat}` +
+      `&time=${age}&model=${rasterMaps[currentRasterIndex].model}&reverse&fc`
+  )
+    .then((response) => response.json())
+    .then((jsonData) => {
+      const coords = jsonData['features'][0]['geometry']['coordinates']
+      console.log(jsonData)
+      setPresentDayLonLatList(
+        presentDayLonLatList.concat([
+          {
+            lon: coords[0],
+            lat: coords[1],
+            pid: jsonData['features'][0]['properties']['pid'],
+          },
+        ])
+      )
+    })
+    .catch((error) => {
+      console.log(error) //handle the promise rejection
+    })
+}
 //
 //
 interface AddLocationWidgetProps {
@@ -158,7 +193,9 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
       <div className={`locate-indicator ${show ? '' : 'hide'}`}>
         <IonIcon icon={locateOutline} />
       </div>
-      <div className="location-container">
+      <div
+        className={show ? 'location-container show' : 'location-container hide'}
+      >
         <div
           className={show ? 'add-locate-widget show' : 'add-locate-widget hide'}
         >
@@ -266,13 +303,10 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                     { lon: lonLat.current.lon, lat: lonLat.current.lat },
                   ])
                 )
+                //get plate id and
                 //save the Present Day coordinates in another file
-                //TODO: check the current paleo-age and reverse recontruct to get present day coords
-                setPresentDayLonLatList(
-                  presentDayLonLatList.concat([
-                    { lon: lonLat.current.lon, lat: lonLat.current.lat },
-                  ])
-                )
+                setPresentDayLonLatPid(paleoAge, lonLat)
+
                 let pe = cesiumViewer.entities.add({
                   name:
                     'Index(' +

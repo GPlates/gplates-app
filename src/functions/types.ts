@@ -11,3 +11,9 @@ export type RasterCfg = {
   endTime: number
   model?: string
 }
+
+export type LonLatPid = {
+  lon: number
+  lat: number
+  pid: number
+}

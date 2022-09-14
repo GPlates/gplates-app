@@ -63,7 +63,9 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
     } = {}
 
     if (response) {
-      let responseJson = await response.json()
+      let responseJson = await response.json().catch((error) => {
+        console.log(error) //handle the promise rejection
+      })
 
       for (let key in responseJson) {
         vecDataMap[key] = createCesiumImageryProvider(

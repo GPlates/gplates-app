@@ -68,18 +68,14 @@ export class AnimationService {
 
   // TODO: Cache next image before timeout expires to improve cold animation performance?
   scheduleFrame = (url: string, nextFrame = false) => {
-    //const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
+    const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
     //console.log(timeToNext)
     animateTimeout = setTimeout(() => {
       if (nextFrame) {
         this.nextFrameNumber()
       }
       this.drawFrame(url)
-    }, 0)
-    //Invoking setTimeout with a callback, and zero as the second argument will
-    //schedule the callback to be run **asynchronously**, after the shortest possible delay
-    //more thinking is needed about this matter.
-    //}, Math.max(timeToNext, 0))
+    }, Math.max(timeToNext, 0)) //due to the event loop, the timeToNext cannot be guaranteed.
   }
 
   nextFrameNumber = () => {
