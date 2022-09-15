@@ -96,8 +96,7 @@ const setPresentDayLonLatPid = (
   }>
 ) => {
   //reverse recontruct to get present day coords and plate id
-  //even the paleo-age is 0, we still need the plate id
-  console.log('fetch')
+  //even when the paleo-age is 0, we still need the plate id
   fetch(
     serverURL.replace(/\/+$/, '') +
       `/reconstruct/reconstruct_points/?points=${lonLat.current.lon},${lonLat.current.lat}` +
