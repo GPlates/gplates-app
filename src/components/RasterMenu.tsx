@@ -20,7 +20,11 @@ import {
 import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
 import { cesiumViewer } from '../pages/Main'
 import { WebMapTileServiceImageryProvider } from 'cesium'
-import { timeout } from '../functions/util'
+import { timeout, timeRange } from '../functions/util'
+import RotationModel, {
+  rotationModels,
+  setCurrentModel,
+} from '../functions/rotationModel'
 
 interface ContainerProps {
   currentLayer: any
@@ -112,6 +116,29 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       })
     }
     cesiumViewer?.entities.removeById('userLocation')
+
+    //find out if the rotation model has been created
+    //if not, create one
+    if (index < rasterMaps.length) {
+      let modelName = rasterMaps[index].model
+      if (modelName) {
+        let m = rotationModels.get(modelName)
+        if (m) {
+          setCurrentModel(m)
+        } else {
+          let nm = new RotationModel(
+            modelName,
+            timeRange(
+              rasterMaps[index].startTime,
+              rasterMaps[index].endTime,
+              rasterMaps[index].step
+            )
+          )
+          rotationModels.set(modelName, nm)
+          setCurrentModel(nm)
+        }
+      }
+    }
   }
 
   return (

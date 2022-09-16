@@ -14,6 +14,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
     icon: 'assets/raster_menu/geology-256x256.png',
     startTime: 0,
     endTime: 0,
+    step: 0,
     model: 'MULLER2019',
   },
   {
@@ -27,6 +28,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
     icon: 'assets/raster_menu/agegrid-256x256.png',
     startTime: 0,
     endTime: 0,
+    step: 0,
     model: 'SETON2012',
   },
   {
@@ -40,6 +42,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
     icon: 'assets/raster_menu/topography-256x256.png',
     startTime: 0,
     endTime: 0,
+    step: 0,
     model: 'MERDITH2021',
   },
 ]
@@ -128,6 +131,7 @@ export const loadRasterMaps = (callback: Function) => {
           icon: 'data:image/png;base64, ' + jsonData[key].icon,
           startTime: jsonData[key].startTime,
           endTime: jsonData[key].endTime,
+          step: jsonData[key].step,
           model: jsonData[key].model,
         }
         rasterMaps.push(o)
@@ -152,6 +156,7 @@ export const loadRasterMaps = (callback: Function) => {
           icon: m.icon,
           startTime: m.startTime,
           endTime: m.endTime,
+          step: m.step,
           model: m.model,
         }
         rasterMaps.push(o)

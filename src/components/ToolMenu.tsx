@@ -126,6 +126,8 @@ export const ToolMenu = () => {
       <IonFabButton
         onClick={() => {
           setRasterMenuPageShow(false)
+          setIsGraphPanelShow(false)
+          setShowAddLocationWidget(false)
         }}
       >
         <IonIcon

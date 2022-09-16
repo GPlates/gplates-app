@@ -9,6 +9,7 @@ export type RasterCfg = {
   icon: string
   startTime: number
   endTime: number
+  step: number
   model?: string
 }
 
