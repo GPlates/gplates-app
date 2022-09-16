@@ -3,6 +3,7 @@ import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
 import rasterMaps from './rasterMaps'
 import { reconstructPresentDayLocations } from './presentDayLocations'
+import { buildAnimationURL } from './util'
 
 let animateFrame = 0
 let animateNext = false
@@ -192,12 +193,9 @@ export class AnimationService {
   // TODO: do the similar thing for vector layers(overlays)
   //
   getCurrentRasterAnimationURL = () => {
-    return (
-      rasterMaps[this.currentRasterMapIndex].wmsUrl +
-      '?service=WMS&version=1.1.0&request=GetMap&layers=' +
-      rasterMaps[this.currentRasterMapIndex].layerName +
-      '&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384' +
-      '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
+    return buildAnimationURL(
+      rasterMaps[this.currentRasterMapIndex].wmsUrl,
+      rasterMaps[this.currentRasterMapIndex].layerName
     )
   }
 }

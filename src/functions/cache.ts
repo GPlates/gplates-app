@@ -2,6 +2,11 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
+export let cachingServant: CachingService
+export const setCachingServant = (s: CachingService) => {
+  cachingServant = s
+}
+
 export class CachingService {
   constructor(private db: SQLiteDBConnection) {}
 
@@ -86,11 +91,28 @@ export class CachingService {
 
   // Remove all cached data & files
   clearCachedData() {
-    return this.db.run(`DELETE FROM cache`)
+    this.db.run(`DELETE FROM cache`)
+  }
+
+  //
+  print() {
+    this.db.query('SELECT * FROM cache').then((data) => console.log(data))
+  }
+
+  // insert the data from URL into cache
+  cacheURL(url: string) {
+    this.getBlob(url)
+      .then((blob) => this.convertBlobToDataURL(blob))
+      .then((data) => this.cacheRequest(url, data, -1))
   }
 
   // Example to remove one cached URL
   invalidateCacheEntry(url: string) {
     return this.db.run('DELETE FROM cache WHERE url == ?', [url])
+  }
+
+  //clean up
+  async cleanup() {
+    await this.db.close()
   }
 }

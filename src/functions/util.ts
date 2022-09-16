@@ -26,13 +26,24 @@ export const timeRange = (begin: number, end: number, step: number) => {
   let ret = []
   let count = 0
   while (big > small) {
-    ret.push(big)
-    big -= step
+    ret.push(small)
+    small += step
     count++
     if (count > 1100) break //safe guard
   }
   //array ends with the exact small number
-  ret.push(small)
+  ret.push(big)
 
   return ret
+}
+
+//
+export const buildAnimationURL = (wmsUrl: string, layerName: string) => {
+  return (
+    wmsUrl +
+    '?service=WMS&version=1.1.0&request=GetMap&layers=' +
+    layerName +
+    '&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384' +
+    '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
+  )
 }

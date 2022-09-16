@@ -30,6 +30,7 @@ export default class RotationModel {
     this.getFiniteRotations()
   }
 
+  //retrieve all Euler pole and angles for all plate ids in a rotation model from the server
   // /rotation/get_euler_pole_and_angle?times=0,50,100&group_by_pid
   getFiniteRotations = () => {
     let times = this.times
@@ -49,20 +50,27 @@ export default class RotationModel {
       })
   }
 
-  //
+  //get Euler pole and angle for a plate id at a time
   getEulerPoleAngle = (pid: number, timeIdx: number) => {
     assert(timeIdx < this.times.length)
     let r = this.finiteRotations.get(String(pid))
     return r ? r[timeIdx] : [0, 90, 0]
   }
 
+  //rotate a location/point according to its plate id to a time
   rotateLonLatPid = (timeIdx: number, lonLatPid: LonLatPid) => {
     let rotations = this.finiteRotations.get(String(lonLatPid.pid))
     let poleAndAngle = rotations ? rotations[timeIdx] : [0, 90, 0]
+    console.log(timeIdx, poleAndAngle)
     return rotate(
       { lat: lonLatPid.lat, lon: lonLatPid.lon }, //location
       { lat: poleAndAngle[1], lon: poleAndAngle[0] }, //pole
       poleAndAngle[2] //angle
     )
+  }
+
+  //
+  getTimeIndex = (time: number) => {
+    return this.times.indexOf(time)
   }
 }
