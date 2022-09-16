@@ -3,6 +3,7 @@ import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
 import rasterMaps from './rasterMaps'
 import { reconstructPresentDayLocations } from './presentDayLocations'
+import { buildAnimationURL } from './util'
 
 let animateFrame = 0
 let animateNext = false
@@ -68,18 +69,14 @@ export class AnimationService {
 
   // TODO: Cache next image before timeout expires to improve cold animation performance?
   scheduleFrame = (url: string, nextFrame = false) => {
-    //const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
+    const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
     //console.log(timeToNext)
     animateTimeout = setTimeout(() => {
       if (nextFrame) {
         this.nextFrameNumber()
       }
       this.drawFrame(url)
-    }, 0)
-    //Invoking setTimeout with a callback, and zero as the second argument will
-    //schedule the callback to be run **asynchronously**, after the shortest possible delay
-    //more thinking is needed about this matter.
-    //}, Math.max(timeToNext, 0))
+    }, Math.max(timeToNext, 0)) //due to the event loop, the timeToNext cannot be guaranteed.
   }
 
   nextFrameNumber = () => {
@@ -196,12 +193,9 @@ export class AnimationService {
   // TODO: do the similar thing for vector layers(overlays)
   //
   getCurrentRasterAnimationURL = () => {
-    return (
-      rasterMaps[this.currentRasterMapIndex].wmsUrl +
-      '?service=WMS&version=1.1.0&request=GetMap&layers=' +
-      rasterMaps[this.currentRasterMapIndex].layerName +
-      '&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384' +
-      '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
+    return buildAnimationURL(
+      rasterMaps[this.currentRasterMapIndex].wmsUrl,
+      rasterMaps[this.currentRasterMapIndex].layerName
     )
   }
 }

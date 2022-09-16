@@ -1,18 +1,22 @@
 import { cesiumViewer } from '../pages/Main'
 import { serverURL } from './settings'
 import rasterMaps, { currentRasterIndex } from './rasterMaps'
+import { LonLatPid } from './types'
+import { rotate } from './quaternions'
+import { currentModel } from './rotationModel'
 
-export let presentDayLonLatList: { lon: number; lat: number }[] = []
+export let presentDayLonLatList: LonLatPid[] = []
 
-export const setPresentDayLonLatList = (
-  newList: { lon: number; lat: number }[]
-) => (presentDayLonLatList = newList)
+export const setPresentDayLonLatList = (newList: LonLatPid[]) =>
+  (presentDayLonLatList = newList)
 
-//for the reconstruction service to upload paleo-coordinates in AddLocationWidget
+//the reconstruction service uses this "setLonLatListCallback" to update paleo-coordinates in AddLocationWidget
 export let setLonLatListCallback: Function
+//the AddLocationWidget uses this "setSetLonLatListCallback" to allow reconstruction service to update paleo-coordinates
 export const setSetLonLatListCallback = (func: Function) =>
   (setLonLatListCallback = func)
 
+//the reconstruction service use this "updateLocationEntitiesCallback" to notify AddLocationWidget to update locations on Cesium globe
 let updateLocationEntitiesCallback: Function
 export const setUpdateLocationEntitiesCallback = (funcs: Function) =>
   (updateLocationEntitiesCallback = funcs)
@@ -26,11 +30,21 @@ export const reconstructPresentDayLocations = async (paleoAge: number) => {
   )
     return
 
-  let coordsStr = ''
-  presentDayLonLatList.forEach((item) => {
-    coordsStr += item.lon.toFixed(4) + ',' + item.lat.toFixed(4) + ','
+  let paleoCoords: { lon: number; lat: number }[] = []
+  presentDayLonLatList.forEach((point) => {
+    let rp = currentModel.rotateLonLatPid(
+      currentModel.getTimeIndex(paleoAge),
+      point
+    )
+    //console.log(rp)
+    paleoCoords.push(rp)
   })
-  coordsStr = coordsStr.slice(0, -1)
+  setLonLatListCallback(paleoCoords) //notify AddLocationWidget
+  updateLocationEntitiesCallback(paleoCoords) //update points on Cesium globe
+  return
+}
+
+/*
   let data = await fetch(
     serverURL +
       `/reconstruct/reconstruct_points/?points=${coordsStr}&time=${paleoAge}&model=` +
@@ -43,7 +57,4 @@ export const reconstructPresentDayLocations = async (paleoAge: number) => {
     paleoCoords.push({ lon: coord[0], lat: coord[1] })
   })
   console.log(`paleoAge:${paleoAge}`)
-  setLonLatListCallback(paleoCoords) //notify AddLocationWidget
-  updateLocationEntitiesCallback(paleoCoords) //update points on Cesium globe
-  return
-}
+  */

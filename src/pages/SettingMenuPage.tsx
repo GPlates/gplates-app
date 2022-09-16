@@ -50,6 +50,8 @@ import { Preferences } from '@capacitor/preferences'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 import { serverURL, setServerURL } from '../functions/settings'
 import RasterMaps from '../functions/rasterMaps'
+import { cachingServant } from '../functions/cache'
+import { buildAnimationURL, timeRange } from '../functions/util'
 
 interface ContainerProps {
   backgroundService: BackgroundService
@@ -232,6 +234,48 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonItem>
             <IonLabel>Show Graticules</IonLabel>
             <IonCheckbox class={'single-setting-option'} />
+          </IonItem>
+
+          <IonItemDivider>Cache</IonItemDivider>
+          <IonItem>
+            <IonButtons style={{ margin: 'auto' }}>
+              <IonButton
+                onClick={() => {
+                  cachingServant.clearCachedData()
+                }}
+                color={'primary'}
+                slot={'start'}
+              >
+                Purge Cache
+                <IonRippleEffect />
+              </IonButton>
+
+              <IonButton
+                onClick={() => {
+                  let url = buildAnimationURL(
+                    RasterMaps[currentRasterMapIndex].wmsUrl,
+                    RasterMaps[currentRasterMapIndex].layerName
+                  )
+                  let times = timeRange(
+                    RasterMaps[currentRasterMapIndex].startTime,
+                    RasterMaps[currentRasterMapIndex].endTime,
+                    RasterMaps[currentRasterMapIndex].step
+                  )
+                  times.slice(0, 10).forEach((time) => {
+                    console.log('caching ' + String(time))
+                    cachingServant.cacheURL(
+                      url.replace('{{time}}', String(time))
+                    )
+                  })
+                  cachingServant.print()
+                }}
+                color={'tertiary'}
+                slot={'end'}
+              >
+                Populate Cache
+                <IonRippleEffect />
+              </IonButton>
+            </IonButtons>
           </IonItem>
 
           <IonItemDivider>Main Setting Section4</IonItemDivider>

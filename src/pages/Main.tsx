@@ -4,6 +4,7 @@ import {
   IonContent,
   IonPage,
   useIonViewDidEnter,
+  useIonViewDidLeave,
   useIonToast,
 } from '@ionic/react'
 
@@ -23,7 +24,7 @@ import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
 import { ModelInfo } from './ModelInfo'
 import { sqlite } from '../App'
-import { CachingService } from '../functions/cache'
+import { CachingService, setCachingServant } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
@@ -208,16 +209,16 @@ const Main: React.FC = () => {
     )
     await db.open()
     cachingService = new CachingService(db)
-
-    // Rough bounding box of Australia
-    Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(
-      112.8,
-      -43.7,
-      153.7,
-      -10.4
-    )
+    setCachingServant(cachingService) //pass the instance into cache.ts for easier acces
   })
 
+  //close the connection which is opened in useIonViewDidEnter
+  useIonViewDidLeave(async () => {
+    await cachingService.cleanup()
+    await sqlite.createConnection('db_main')
+  })
+
+  //todo: this is not working for single tile imagery provider
   const isViewerLoading = () => {
     return cesiumViewer.scene.globe.tilesLoaded
   }

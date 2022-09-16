@@ -9,5 +9,12 @@ export type RasterCfg = {
   icon: string
   startTime: number
   endTime: number
+  step: number
   model?: string
+}
+
+export type LonLatPid = {
+  lon: number
+  lat: number
+  pid: number
 }
