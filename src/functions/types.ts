@@ -18,3 +18,13 @@ export type LonLatPid = {
   lat: number
   pid: number
 }
+
+export type VectorLayerType = {
+  imageryLayer: any
+  layerProvider: any
+  layerName: string
+  url: string
+  wmsUrl: string
+  style: string
+  checked: boolean
+}
