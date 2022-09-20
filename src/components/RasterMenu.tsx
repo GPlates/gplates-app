@@ -25,6 +25,7 @@ import RotationModel, {
   rotationModels,
   setCurrentModel,
 } from '../functions/rotationModel'
+import { cachingServant } from '../functions/cache'
 
 interface ContainerProps {
   currentLayer: any
@@ -120,23 +121,29 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     //find out if the rotation model has been created
     //if not, create one
     if (index < rasterMaps.length) {
-      let modelName = rasterMaps[index].model
+      let currentRaster = rasterMaps[index]
+      let modelName = currentRaster.model
       if (modelName) {
         let m = rotationModels.get(modelName)
         if (m) {
           setCurrentModel(m)
         } else {
-          let nm = new RotationModel(
-            modelName,
-            timeRange(
-              rasterMaps[index].startTime,
-              rasterMaps[index].endTime,
-              rasterMaps[index].step
-            )
+          let times = timeRange(
+            currentRaster.startTime,
+            currentRaster.endTime,
+            currentRaster.step
           )
-          rotationModels.set(modelName, nm)
-          setCurrentModel(nm)
+
+          m = new RotationModel(modelName, times)
+          rotationModels.set(modelName, m)
+          setCurrentModel(m)
         }
+        //cache the raster if not have already done
+        cachingServant.cacheLayer(
+          m,
+          currentRaster.wmsUrl,
+          currentRaster.layerName
+        )
       }
     }
   }

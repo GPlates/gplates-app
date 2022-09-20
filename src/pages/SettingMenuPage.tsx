@@ -25,6 +25,7 @@ import {
   IonTitle,
   IonToolbar,
   isPlatform,
+  useIonAlert,
 } from '@ionic/react'
 import { setNumber } from '../functions/input'
 import { chevronBack, chevronForward } from 'ionicons/icons'
@@ -51,8 +52,22 @@ import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 import { serverURL, setServerURL } from '../functions/settings'
 import RasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
-import { buildAnimationURL, timeRange } from '../functions/util'
+import { rotationModels } from '../functions/rotationModel'
 
+//
+const populateCache = () => {
+  RasterMaps.forEach((raster) => {
+    let modelName = raster.model
+    if (modelName) {
+      let m = rotationModels.get(modelName)
+      if (m) {
+        cachingServant.cacheLayer(m, raster.wmsUrl, raster.layerName)
+      }
+    }
+  })
+}
+
+//
 interface ContainerProps {
   backgroundService: BackgroundService
 }
@@ -78,6 +93,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
     currentRasterMapIndexState
   )
+  const [presentAlert] = useIonAlert()
 
   // Animation constants
   const minIncrement = 1
@@ -220,7 +236,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
           <IonItemDivider>Server Setting</IonItemDivider>
           <IonItem>
-            <IonLabel class="server-url-label">Server URL: </IonLabel>
+            <IonLabel class="server-url-label">Server URL </IonLabel>
             <IonInput
               class="server-url-input"
               value={serverURL}
@@ -237,11 +253,30 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonItem>
 
           <IonItemDivider>Cache</IonItemDivider>
+
+          <IonItem>
+            <IonLabel class="cache-db-label">Cache DB </IonLabel>
+            <IonInput
+              class="cache-db-input"
+              value="TODO"
+              onIonChange={(e) => {
+                if (e.detail.value) console.log(e.detail.value)
+              }}
+            />
+          </IonItem>
           <IonItem>
             <IonButtons style={{ margin: 'auto' }}>
               <IonButton
                 onClick={() => {
                   cachingServant.clearCachedData()
+                  //TODO: https://ionicframework.com/docs/api/alert#buttons
+                  //ask user to confirm or cancel
+                  presentAlert({
+                    header: 'Purge Cache',
+                    subHeader: '',
+                    message: 'Purge request has been submitted!',
+                    buttons: ['OK'],
+                  })
                 }}
                 color={'primary'}
                 slot={'start'}
@@ -252,27 +287,29 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
               <IonButton
                 onClick={() => {
-                  let url = buildAnimationURL(
-                    RasterMaps[currentRasterMapIndex].wmsUrl,
-                    RasterMaps[currentRasterMapIndex].layerName
-                  )
-                  let times = timeRange(
-                    RasterMaps[currentRasterMapIndex].startTime,
-                    RasterMaps[currentRasterMapIndex].endTime,
-                    RasterMaps[currentRasterMapIndex].step
-                  )
-                  times.slice(0, 10).forEach((time) => {
-                    console.log('caching ' + String(time))
-                    cachingServant.cacheURL(
-                      url.replace('{{time}}', String(time))
-                    )
+                  populateCache()
+
+                  presentAlert({
+                    header: 'Populate Cache',
+                    subHeader: '',
+                    message: 'Populate request has been submitted!',
+                    buttons: ['OK'],
                   })
-                  cachingServant.print()
                 }}
                 color={'tertiary'}
-                slot={'end'}
               >
                 Populate Cache
+                <IonRippleEffect />
+              </IonButton>
+
+              <IonButton
+                onClick={() => {
+                  cachingServant.print()
+                }}
+                color={'secondary'}
+                slot={'end'}
+              >
+                Cache Info
                 <IonRippleEffect />
               </IonButton>
             </IonButtons>

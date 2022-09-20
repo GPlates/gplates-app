@@ -1,9 +1,8 @@
 import { cesiumViewer } from '../pages/Main'
-import { serverURL } from './settings'
-import rasterMaps, { currentRasterIndex } from './rasterMaps'
+import rasterMaps from './rasterMaps'
 import { LonLatPid } from './types'
-import { rotate } from './quaternions'
 import { currentModel } from './rotationModel'
+import store from './storage'
 
 export let presentDayLonLatList: LonLatPid[] = []
 
@@ -41,6 +40,7 @@ export const reconstructPresentDayLocations = async (paleoAge: number) => {
   })
   setLonLatListCallback(paleoCoords) //notify AddLocationWidget
   updateLocationEntitiesCallback(paleoCoords) //update points on Cesium globe
+  console.log(store.get('test'))
   return
 }
 

@@ -1,5 +1,3 @@
-import assert from 'assert'
-
 /*
  *
  */
@@ -10,10 +8,17 @@ export const timeout = async (time: number) => {
 //
 export const timeRange = (begin: number, end: number, step: number) => {
   //I believe Number.EPSILON is good enough in this case
-  assert(Math.abs(step) > Number.EPSILON) //step too small
+  if (Math.abs(step) < Number.EPSILON) {
+    console.log('timeRange warning: the step is 0!')
+    //step too small
+    return []
+  }
   if (step < 0) step = -step //negative step
 
-  if (Math.abs(begin - end) < Number.EPSILON) return [] //begin and end are the same
+  if (Math.abs(begin - end) < Number.EPSILON) {
+    console.log('timeRange warning: begin and end are the same!')
+    return [] //begin and end are the same
+  }
 
   let small, big
   if (begin > end) {
