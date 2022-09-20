@@ -236,7 +236,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
           <IonItemDivider>Server Setting</IonItemDivider>
           <IonItem>
-            <IonLabel class="server-url-label">Server URL: </IonLabel>
+            <IonLabel class="server-url-label">Server URL </IonLabel>
             <IonInput
               class="server-url-input"
               value={serverURL}
@@ -253,6 +253,17 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonItem>
 
           <IonItemDivider>Cache</IonItemDivider>
+
+          <IonItem>
+            <IonLabel class="cache-db-label">Cache DB </IonLabel>
+            <IonInput
+              class="cache-db-input"
+              value="TODO"
+              onIonChange={(e) => {
+                if (e.detail.value) console.log(e.detail.value)
+              }}
+            />
+          </IonItem>
           <IonItem>
             <IonButtons style={{ margin: 'auto' }}>
               <IonButton
