@@ -269,8 +269,6 @@ const Main: React.FC = () => {
           <AboutPage />
           <ModelInfo />
           <VectorDataLayerMenu
-            checkedVectorData={vectorData}
-            setVectorData={setVectorData}
             addLayer={(newLayer: WebMapTileServiceImageryProvider) => {
               return cesiumViewer.imageryLayers.addImageryProvider(newLayer)
             }}

@@ -11,33 +11,28 @@ import {
   IonToolbar,
   useIonLoading,
 } from '@ionic/react'
-import {
-  createCesiumImageryProvider,
-  vectorData,
-} from '../functions/dataLoader'
+import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { timeout } from '../functions/util'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   currentRasterMapIndexState,
   isVectorMenuShow,
-  rasterMapState,
 } from '../functions/atoms'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import rasterMaps from '../functions/rasterMaps'
 import { serverURL } from '../functions/settings'
+import { VectorLayerType } from '../functions/types'
+
+let vectorLayers: VectorLayerType[] = []
 
 interface ContainerProps {
-  checkedVectorData: { [key: string]: WebMapTileServiceImageryProvider }
-  setVectorData: Function
   addLayer: Function
   removeLayer: Function
   isViewerLoading: Function
 }
 
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
-  checkedVectorData,
-  setVectorData,
   addLayer,
   removeLayer,
   isViewerLoading,
@@ -45,10 +40,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const [present, dismiss] = useIonLoading()
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
-  const [checkboxList, setCheckBoxList] = useState(new Map<String, boolean>())
-  const [vecDataProviderMap, setVecDataProviderMap] = useState(vectorData)
-  const rasterMapInfo = useRecoilValue(rasterMapState)
 
+  //
   const getVecInfoByRaster = async (rasterModel: String) => {
     let response = await fetch(
       serverURL.replace(/\/+$/, '') +
@@ -66,66 +59,62 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
       let responseJson = await response.json().catch((error) => {
         console.log(error) //handle the promise rejection
       })
-
+      vectorLayers = []
       for (let key in responseJson) {
-        vecDataMap[key] = createCesiumImageryProvider(
+        let p = createCesiumImageryProvider(
           responseJson[key].url,
           responseJson[key].layer,
           responseJson[key].style
         )
+        vecDataMap[key] = p
+
+        let layer = {
+          imageryLayer: null,
+          layerProvider: p,
+          layerName: key,
+          url: responseJson[key].url,
+          wmsUrl: '',
+          style: responseJson[key].style,
+          checked: false,
+        }
+        console.log('push...' + key)
+        vectorLayers.push(layer) //add the new layer into the vector layer list
       }
     }
     return vecDataMap
   }
 
+  //
   function removeAllVectorLayer() {
-    for (let layer in checkedVectorData) {
-      let curLayer = checkedVectorData[layer]
-      removeLayer(curLayer)
-    }
-    setVectorData({})
+    vectorLayers.forEach((layer) => {
+      removeLayer(layer.imageryLayer)
+    })
+    vectorLayers = []
   }
 
-  function updateVectorDataInformation(
-    checkedFunction: (input: number) => boolean
-  ) {
-    let model
-    if (rasterMaps[currentRasterMapIndex] != undefined) {
-      model = rasterMaps[currentRasterMapIndex].model
-    } else {
-      // default invoking
-      model = rasterMapInfo[currentRasterMapIndex].model
-    }
-    if (model === undefined) {
-      // no model info, no update
-      return
-    }
+  //update the vector layer list when the current raster has changed
+  function updateVectorDataInformation() {
+    //get the current model name. if no avaible, give it a default model
+    let model = rasterMaps[currentRasterMapIndex]?.model ?? 'MERDITH2021'
+
     removeAllVectorLayer()
+
     getVecInfoByRaster(model).then((vecDataMap) => {
-      setVecDataProviderMap(vecDataMap)
-      const tempCheckboxList: Map<string, boolean> = new Map()
-      const vectorDataName = Object.keys(vecDataMap)
-      for (let i = 0; i < vectorDataName.length; i++) {
-        // initially load coastlines vector data for Geology
-        // i == 0 means coastlines for Geology
-        tempCheckboxList.set(vectorDataName[i], checkedFunction(i))
-      }
-      setCheckBoxList(tempCheckboxList)
+      console.log(vecDataMap)
     })
   }
 
   // update to corresponding vector layer when raster map changes
   useEffect(() => {
-    updateVectorDataInformation((idx) => false)
+    updateVectorDataInformation()
   }, [currentRasterMapIndex])
 
   // initializing
   useEffect(() => {
-    updateVectorDataInformation((idx) => {
-      return idx == 0
-    })
+    updateVectorDataInformation()
   }, [])
 
+  //
   const waitUntilLoaded = async () => {
     await timeout(100)
     while (!isViewerLoading()) {
@@ -134,43 +123,40 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
   }
 
   // check or uncheck target vector layer
-  const checkLayer = (name: string, isChecked: boolean) => {
+  const checkLayer = (layer: VectorLayerType, isChecked: boolean) => {
     if (isChecked) {
-      checkedVectorData[name] = addLayer(vecDataProviderMap[name])
-      setVectorData(checkedVectorData)
+      layer.imageryLayer = addLayer(layer.layerProvider)
     } else {
-      removeLayer(checkedVectorData[name])
-      delete checkedVectorData[name]
-      setVectorData(checkedVectorData)
+      removeLayer(layer.imageryLayer)
+      layer.imageryLayer = null
     }
   }
 
+  //
   const onCheckBoxChange = (val: any) => {
-    const name: string = val.detail.value
-    const isChecked = val.detail.checked
-    checkboxList.set(name, isChecked)
-    setCheckBoxList(checkboxList)
-    checkLayer(name, isChecked)
+    let layer = vectorLayers[val.detail.value]
+    layer.checked = val.detail.checked
+    checkLayer(layer, layer.checked)
   }
 
+  //build the checklist
   const generateCheckList = () => {
     let count = 0
     let checkList: JSX.Element[] = []
-    checkboxList.forEach((isChecked, name, map) => {
+    vectorLayers.forEach((layer, index) => {
       checkList.push(
         <IonItem key={count}>
-          <IonLabel>{name}</IonLabel>
+          <IonLabel>{layer.layerName}</IonLabel>
           <IonCheckbox
             slot="end"
-            value={name}
-            checked={isChecked}
+            value={index}
+            checked={layer.checked}
             onIonChange={onCheckBoxChange}
           />
         </IonItem>
       )
       count += 1
     })
-
     return checkList
   }
 
