@@ -1,4 +1,10 @@
 import { SQLiteDBConnection } from '@capacitor-community/sqlite'
+import { SQLiteHook } from 'react-sqlite-hook'
+import { Capacitor } from '@capacitor/core'
+import { Preferences } from '@capacitor/preferences'
+import RotationModel from './rotationModel'
+import { buildAnimationURL, timeRange } from '../functions/util'
+import RasterMaps from '../functions/rasterMaps'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -8,7 +14,11 @@ export const setCachingServant = (s: CachingService) => {
 }
 
 export class CachingService {
-  constructor(private db: SQLiteDBConnection) {}
+  constructor(
+    private db: SQLiteDBConnection,
+    private sqlite: SQLiteHook,
+    private dbName: string
+  ) {}
 
   // Store request data
   // ttl = time to live (in seconds). Values <= 0 will be ignored (data will live forever)
@@ -19,7 +29,8 @@ export class CachingService {
       ttl = undefined
     }
 
-    const command = 'INSERT INTO cache (url, data, ttl) VALUES (?, ?, ?)'
+    const command =
+      'INSERT INTO cache (url, data, ttl) VALUES (?, ?, ?) ON CONFLICT (url) DO NOTHING;'
     const values = [url, data, ttl]
     return this.db.run(command, values)
   }
@@ -43,7 +54,9 @@ export class CachingService {
       data = await this.convertBlobToDataURL(blob)
       //it is possible that the return data is invalid
       if (data) {
-        await this.cacheRequest(url, data)
+        this.cacheRequest(url, data)
+        //TODO: on "web" platform, you need to saveToStore. otherwise the DB is in memory
+        //await sqlite.saveToStore('db_main') //LOOK HERE
         return URL.createObjectURL(blob)
       } else {
         //invalid return data, for example url returns "Could not find layer"
@@ -96,14 +109,25 @@ export class CachingService {
 
   //
   print() {
+    //this.db.getUrl().then((data) => console.log(data))
     this.db.query('SELECT * FROM cache').then((data) => console.log(data))
   }
 
   // insert the data from URL into cache
   cacheURL(url: string) {
-    this.getBlob(url)
-      .then((blob) => this.convertBlobToDataURL(blob))
-      .then((data) => this.cacheRequest(url, data, -1))
+    let exist = this.checkExist(url)
+    if (!exist) {
+      this.getBlob(url)
+        .then((blob) => this.convertBlobToDataURL(blob))
+        .then((data) => {
+          if (data) {
+            //console.log(`insert ${url}`)
+            this.cacheRequest(url, data, -1)
+          } else {
+            console.log('warning cacheURL: the data from this url is empty')
+          }
+        })
+    }
   }
 
   // Example to remove one cached URL
@@ -113,6 +137,31 @@ export class CachingService {
 
   //clean up
   async cleanup() {
+    const platform = Capacitor.getPlatform()
+    //on "web" platform, you need to saveToStore. otherwise the DB is in memory
+    //save to indexedDB on disk
+    if (platform === 'web') {
+      await this.sqlite.saveToStore(this.dbName)
+    }
     await this.db.close()
+    await this.sqlite.closeConnection(this.dbName)
   }
+
+  //
+  cacheLayer(model: RotationModel, wmsUrl: string, layerName: string) {
+    let url = buildAnimationURL(wmsUrl, layerName)
+    model.times.forEach((time) => {
+      //console.log('caching ' + String(time))
+      cachingServant.cacheURL(url.replace('{{time}}', String(time)))
+    })
+  }
+
+  //
+  async checkExist(url: string) {
+    let ret = await this.db.query('SELECT 1 FROM cache WHERE url == ?', [url])
+    //console.log('check exist!')
+    //console.log(ret)
+    return ret.values?.length === 0 ? false : true
+  }
+  //
 }

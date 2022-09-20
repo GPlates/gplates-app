@@ -22,6 +22,7 @@
     "@craco/craco": "^6.4.3",
     "@ionic/react": "^6.1.4",
     "@ionic/react-router": "^6.1.4",
+    "@ionic/storage": "^3.0.6",
     "cesium": "^1.93.0",
     "echarts": "^5.3.3",
     "es6-promise-plugin": "^4.2.2",

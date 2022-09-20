@@ -43,7 +43,7 @@ export default class RotationModel {
       .then((response) => response.json())
       .then((jsonData) => {
         this.finiteRotations = new Map(Object.entries(jsonData))
-        console.log(this.finiteRotations)
+        //console.log(this.finiteRotations)
       })
       .catch((error) => {
         console.log(error)

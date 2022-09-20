@@ -55,6 +55,8 @@ import { serverURL } from '../functions/settings'
 import { GraphPanel } from '../components/GraphPanel'
 import AddLocationWidget from '../components/AddLocationWidget'
 import { ToolMenu } from '../components/ToolMenu'
+import { timeRange } from '../functions/util'
+import RotationModel, { rotationModels } from '../functions/rotationModel'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -196,26 +198,40 @@ const Main: React.FC = () => {
           }
         })
       }
+
+      //create a rotation model for each raster
+      rasterMaps.forEach((raster) => {
+        let modelName = raster.model
+        if (modelName) {
+          let m = rotationModels.get(modelName)
+          if (!m) {
+            let times = [0]
+            if (Math.abs(raster.step) > 0) {
+              times = timeRange(raster.startTime, raster.endTime, raster.step)
+            }
+            m = new RotationModel(modelName, times)
+            rotationModels.set(modelName, m)
+          }
+        }
+      })
+
+      //add more init code here
     })
   }, [])
 
+  //
   useIonViewDidEnter(async () => {
     // Initialize SQLite connection
-    const db = await sqlite.createConnection(
-      'db_main',
-      false,
-      'no-encryption',
-      1
-    )
+    const dbName = 'db_main'
+    const db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
     await db.open()
-    cachingService = new CachingService(db)
+    cachingService = new CachingService(db, sqlite, dbName)
     setCachingServant(cachingService) //pass the instance into cache.ts for easier acces
   })
 
   //close the connection which is opened in useIonViewDidEnter
   useIonViewDidLeave(async () => {
-    await cachingService.cleanup()
-    await sqlite.createConnection('db_main')
+    cachingService.cleanup()
   })
 
   //todo: this is not working for single tile imagery provider

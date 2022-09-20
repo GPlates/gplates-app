@@ -69,6 +69,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     `
 
     await db.execute(query)
+
     await db.close()
     await sqlite.closeConnection('db_main')
 
