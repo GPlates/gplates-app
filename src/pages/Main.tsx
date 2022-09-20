@@ -23,6 +23,7 @@ import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
 import { ModelInfo } from './ModelInfo'
+import { CacheInfo } from './CacheInfo'
 import { sqlite } from '../App'
 import { CachingService, setCachingServant } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
@@ -268,6 +269,7 @@ const Main: React.FC = () => {
           />
           <AboutPage />
           <ModelInfo />
+          <CacheInfo />
           <VectorDataLayerMenu
             addLayer={(newLayer: WebMapTileServiceImageryProvider) => {
               return cesiumViewer.imageryLayers.addImageryProvider(newLayer)

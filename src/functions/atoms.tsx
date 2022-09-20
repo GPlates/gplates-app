@@ -84,3 +84,8 @@ export const isModelInfoShowState = atom({
   key: 'isModelInfoShowState',
   default: false,
 })
+
+export const isCacheInfoShowState = atom({
+  key: 'isCacheInfoShowState',
+  default: false,
+})

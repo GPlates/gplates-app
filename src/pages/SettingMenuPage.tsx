@@ -4,8 +4,6 @@ import {
   IonButton,
   IonButtons,
   IonCheckbox,
-  IonCol,
-  IonGrid,
   IonIcon,
   IonInput,
   IonItem,
@@ -15,9 +13,7 @@ import {
   IonModal,
   IonRadio,
   IonRadioGroup,
-  IonRange,
   IonRippleEffect,
-  IonRow,
   IonSegment,
   IonSegmentButton,
   IonSelect,
@@ -27,24 +23,17 @@ import {
   isPlatform,
   useIonAlert,
 } from '@ionic/react'
-import { setNumber } from '../functions/input'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
 import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { AnimationSettings } from './AnimationSettings'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  animateExact,
-  animateFps,
-  animateIncrement,
-  animateLoop,
-  animateRange,
   appDarkMode,
   isAgeSliderShown,
   isSettingsMenuShow,
-  LIMIT_LOWER,
-  LIMIT_UPPER,
   settingsPath,
-  currentRasterMapIndexState,
+  isCacheInfoShowState,
 } from '../functions/atoms'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
@@ -53,6 +42,13 @@ import { serverURL, setServerURL } from '../functions/settings'
 import RasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
+
+//
+const titles: { [key: string]: string } = {
+  root: 'Settings Menu',
+  animation: 'Animation Settings',
+  backgroundSetting: 'Background Settings',
+}
 
 //
 const populateCache = () => {
@@ -76,36 +72,13 @@ interface ContainerProps {
 export const SettingMenuPage: React.FC<ContainerProps> = ({
   backgroundService,
 }) => {
-  const titles: { [key: string]: string } = {
-    root: 'Settings Menu',
-    animation: 'Animation Settings',
-  }
-
   const [darkMode, _setDarkMode] = useRecoilState(appDarkMode)
-  const [exact, setExact] = useRecoilState(animateExact)
-  const [fps, setFps] = useRecoilState(animateFps)
-  const [increment, setIncrement] = useRecoilState(animateIncrement)
-  const [loop, setLoop] = useRecoilState(animateLoop)
   const [path, setPath] = useRecoilState(settingsPath)
-  const [range, setRange] = useRecoilState(animateRange)
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
   const isSliderShow = useRecoilValue(isAgeSliderShown)
-  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
-    currentRasterMapIndexState
-  )
+  const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
+
   const [presentAlert] = useIonAlert()
-
-  // Animation constants
-  const minIncrement = 1
-  const maxIncrement = 100
-  const minFps = 1
-  const maxFps = 60
-
-  const reverseAnimation = () => {
-    const lower = range.upper
-    const upper = range.lower
-    setRange({ lower, upper })
-  }
 
   useEffect(() => {
     if (isShow) {
@@ -131,33 +104,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
       })
     }
   }, [darkMode])
-
-  useEffect(() => {
-    if (isShow && path === 'animation') {
-      const settings = {
-        exact,
-        fps,
-        increment,
-        loop,
-        range,
-      }
-      Preferences.set({
-        key: 'animationSettings',
-        value: JSON.stringify(settings),
-      })
-    }
-  }, [exact, fps, increment, loop, range])
-
-  // Hack to get IonRange knobs to show the correct position on component mount
-  useEffect(() => {
-    if (path === 'animation') {
-      setTimeout(() => {
-        const old = Object.assign({}, range)
-        setRange({ lower: 0, upper: 0 })
-        setRange(old)
-      }, 100)
-    }
-  }, [path])
 
   const subPageRouting = (path: string, name: string) => {
     return (
@@ -305,6 +251,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
               <IonButton
                 onClick={() => {
                   cachingServant.print()
+                  setCacheInfoShow(true)
                 }}
                 color={'secondary'}
                 slot={'end'}
@@ -352,148 +299,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         unmountOnExit
         classNames={'fade'}
       >
-        <IonList className={'settings-list'}>
-          <IonGrid className="animation-settings">
-            <IonRow>
-              <IonCol>
-                <IonItem lines="none">
-                  <h5>Range</h5>
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonRange
-                  dir="rtl"
-                  dualKnobs={true}
-                  min={
-                    RasterMaps.length > 0
-                      ? RasterMaps[currentRasterMapIndex].endTime
-                      : LIMIT_LOWER
-                  }
-                  max={
-                    RasterMaps.length > 0
-                      ? RasterMaps[currentRasterMapIndex].startTime
-                      : LIMIT_UPPER
-                  }
-                  onIonKnobMoveEnd={(e) => {
-                    setRange(e.detail.value as any)
-                  }}
-                  value={range}
-                />
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonItem>
-                  <IonLabel>Animate from:</IonLabel>
-                  <IonInput
-                    inputMode="numeric"
-                    min={LIMIT_LOWER}
-                    max={LIMIT_UPPER}
-                    onIonChange={(e) =>
-                      setRange({
-                        lower: Number(e.detail.value) || 0,
-                        upper: range.upper,
-                      } as any)
-                    }
-                    value={range.lower}
-                  />
-                  Ma
-                </IonItem>
-              </IonCol>
-              <IonCol>
-                <IonItem>
-                  <IonLabel>to:</IonLabel>
-                  <IonInput
-                    inputMode="numeric"
-                    min={LIMIT_LOWER}
-                    max={LIMIT_UPPER}
-                    onIonChange={(e) =>
-                      setRange({
-                        lower: range.lower,
-                        upper: Number(e.detail.value) || 0,
-                      } as any)
-                    }
-                    value={range.upper}
-                  />
-                  Ma
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol className="increment-col">
-                <IonItem>
-                  <IonLabel>with an increment of:</IonLabel>
-                  <IonInput
-                    inputMode="numeric"
-                    min={minIncrement}
-                    max={maxIncrement}
-                    onIonChange={(e) =>
-                      setNumber(
-                        setIncrement,
-                        e.detail.value,
-                        minIncrement,
-                        maxIncrement
-                      )
-                    }
-                    value={increment}
-                  />
-                  Myr per frame
-                </IonItem>
-              </IonCol>
-              <IonCol className="reverse-col">
-                <IonButton onClick={reverseAnimation} size="small">
-                  Reverse the Animation
-                </IonButton>
-                <div className="description">
-                  by swapping the start and end times
-                </div>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonItem lines="none">
-                  <h5>Options</h5>
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonItem>
-                  <IonLabel>Frames per second:</IonLabel>
-                  <IonInput
-                    inputMode="numeric"
-                    min={minFps}
-                    max={maxFps}
-                    onIonChange={(e) =>
-                      setNumber(setFps, e.detail.value, minFps, maxFps)
-                    }
-                    value={fps}
-                  />
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonItem>
-                  <IonLabel>Finish animation exactly on end time</IonLabel>
-                  <IonCheckbox
-                    checked={exact}
-                    onIonChange={(e) => setExact(e.detail.checked)}
-                  />
-                </IonItem>
-                <IonItem>
-                  <IonLabel>Loop</IonLabel>
-                  <IonCheckbox
-                    checked={loop}
-                    onIonChange={(e) => setLoop(e.detail.checked)}
-                  />
-                </IonItem>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonList>
+        <AnimationSettings />
       </CSSTransition>
 
       {/* background setting subpage */}
