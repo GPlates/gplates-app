@@ -260,6 +260,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
               </IonButton>
 
               <IonButton
+
                 onClick={async () => {
                   //cachingServant.print()
                   await getData()
