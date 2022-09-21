@@ -18,7 +18,7 @@ import {
   WebMapTileServiceImageryProvider,
 } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
-import { SettingMenuPage } from './SettingMenuPage'
+import { SettingMenuPage, populateCache } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
@@ -215,6 +215,8 @@ const Main: React.FC = () => {
           }
         }
       })
+      //start to populate cache
+      populateCache()
 
       //add more init code here
     })
