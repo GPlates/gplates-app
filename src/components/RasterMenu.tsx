@@ -138,12 +138,6 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           rotationModels.set(modelName, m)
           setCurrentModel(m)
         }
-        //cache the raster if not have already done
-        cachingServant.cacheLayer(
-          m,
-          currentRaster.wmsUrl,
-          currentRaster.layerName
-        )
       }
     }
   }

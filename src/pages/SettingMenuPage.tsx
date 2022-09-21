@@ -39,9 +39,10 @@ import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 import { serverURL, setServerURL } from '../functions/settings'
-import RasterMaps from '../functions/rasterMaps'
+import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
+import { getData } from './CacheInfo'
 
 //
 const titles: { [key: string]: string } = {
@@ -51,13 +52,23 @@ const titles: { [key: string]: string } = {
 }
 
 //
-const populateCache = () => {
-  RasterMaps.forEach((raster) => {
+export const populateCache = () => {
+  let count = 0
+  rasterMaps.forEach(async (raster) => {
     let modelName = raster.model
     if (modelName) {
       let m = rotationModels.get(modelName)
       if (m) {
-        cachingServant.cacheLayer(m, raster.wmsUrl, raster.layerName)
+        let rowNum = await cachingServant.getCount(raster.layerName)
+        //check if the layer has been cached.
+        if (rowNum < m.times.length) {
+          setTimeout(
+            () =>
+              cachingServant.cacheLayer(m!, raster.wmsUrl, raster.layerName),
+            count * 1000
+          )
+          count += m.times.length
+        }
       }
     }
   })
@@ -249,8 +260,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
               </IonButton>
 
               <IonButton
-                onClick={() => {
-                  cachingServant.print()
+                onClick={async () => {
+                  //cachingServant.print()
+                  await getData()
                   setCacheInfoShow(true)
                 }}
                 color={'secondary'}

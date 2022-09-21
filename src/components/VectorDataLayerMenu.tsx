@@ -77,7 +77,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
           style: responseJson[key].style,
           checked: false,
         }
-        console.log('push...' + key)
+
         vectorLayers.push(layer) //add the new layer into the vector layer list
       }
     }

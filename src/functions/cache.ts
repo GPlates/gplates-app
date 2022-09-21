@@ -1,10 +1,8 @@
 import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 import { SQLiteHook } from 'react-sqlite-hook'
 import { Capacitor } from '@capacitor/core'
-import { Preferences } from '@capacitor/preferences'
 import RotationModel from './rotationModel'
-import { buildAnimationURL, timeRange } from '../functions/util'
-import RasterMaps from '../functions/rasterMaps'
+import { buildAnimationURL } from '../functions/util'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -114,8 +112,9 @@ export class CachingService {
   }
 
   // insert the data from URL into cache
-  cacheURL(url: string) {
-    let exist = this.checkExist(url)
+  async cacheURL(url: string) {
+    let exist = await this.checkExist(url)
+    //console.log(`exist: ${exist}`)
     if (!exist) {
       this.getBlob(url)
         .then((blob) => this.convertBlobToDataURL(blob))
@@ -126,6 +125,9 @@ export class CachingService {
           } else {
             console.log('warning cacheURL: the data from this url is empty')
           }
+        })
+        .catch((error) => {
+          console.log(error) //handle the promise rejection
         })
     }
   }
@@ -148,12 +150,21 @@ export class CachingService {
   }
 
   //
-  cacheLayer(model: RotationModel, wmsUrl: string, layerName: string) {
-    let url = buildAnimationURL(wmsUrl, layerName)
-    model.times.forEach((time) => {
-      //console.log('caching ' + String(time))
-      cachingServant.cacheURL(url.replace('{{time}}', String(time)))
-    })
+  async cacheLayer(model: RotationModel, wmsUrl: string, layerName: string) {
+    let rowNum = await this.getCount(layerName)
+    //check if the layer has been cached.
+    if (rowNum < model.times.length) {
+      let url = buildAnimationURL(wmsUrl, layerName)
+      let count = 0
+      console.log('caching ' + layerName)
+      model.times.forEach((time) => {
+        //console.log('caching ' + String(time))
+        count += 1
+        setTimeout(() => {
+          cachingServant.cacheURL(url.replace('{{time}}', String(time)))
+        }, count * 1000)
+      })
+    }
   }
 
   //
@@ -162,6 +173,26 @@ export class CachingService {
     //console.log('check exist!')
     //console.log(ret)
     return ret.values?.length === 0 ? false : true
+  }
+
+  //get the number of rows which the URLs contains the "keyword"
+  async getCount(keyword: string = '') {
+    let ret: any
+    if (keyword.length === 0) {
+      ret = await this.db.query('SELECT COUNT(*) as num FROM cache')
+    } else {
+      let idx = keyword.indexOf('{{time}}')
+      ret = await this.db.query(
+        "SELECT COUNT(*) as num FROM cache WHERE url LIKE '%" +
+          keyword.slice(0, idx - 1) +
+          "%'"
+        //"SELECT COUNT(*) as num FROM cache WHERE url LIKE '%paleo-topo-images:paleo-topo-image-{{time}}-Ma%'"
+      )
+    }
+    //console.log(ret)
+    if (ret && ret.values && ret.values.length > 0) {
+      return ret.values[0]['num']
+    } else return 0
   }
   //
 }
