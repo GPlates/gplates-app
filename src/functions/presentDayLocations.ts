@@ -1,4 +1,4 @@
-import { cesiumViewer } from '../pages/Main'
+import { cesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps from './rasterMaps'
 import { LonLatPid } from './types'
 import { currentModel } from './rotationModel'

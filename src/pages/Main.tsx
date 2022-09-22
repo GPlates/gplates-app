@@ -47,7 +47,7 @@ import {
   isAddLocationWidgetShowState,
   currentRasterMapIndexState,
 } from '../functions/atoms'
-import { initCesiumViewer } from '../functions/cesiumViewer'
+import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
@@ -58,6 +58,8 @@ import AddLocationWidget from '../components/AddLocationWidget'
 import { ToolMenu } from '../components/ToolMenu'
 import { timeRange } from '../functions/util'
 import RotationModel, { rotationModels } from '../functions/rotationModel'
+import { init as initDefaultStorage } from '../functions/storage'
+import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -66,11 +68,7 @@ let animationService: AnimationService
 let backgroundService: BackgroundService
 let cachingService: CachingService
 
-//singleton cersium viewer
-export let cesiumViewer: Viewer
-
 const Main: React.FC = () => {
-  const [vectorData, setVectorData] = useState({})
   const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
   const isSettingMenuPageShow = useRecoilValue(isSettingsMenuShow)
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
@@ -156,7 +154,7 @@ const Main: React.FC = () => {
 
       //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
-        cesiumViewer = initCesiumViewer(rasterMaps[0].layer)
+        initCesiumViewer(rasterMaps[0].layer)
         setIsCesiumViewerReady(true) //notify the Ceium view is ready
 
         // Load settings
@@ -198,10 +196,10 @@ const Main: React.FC = () => {
             }, 200)
           }
         })
-      }
+      } //end of init Ceium viewer
 
       //create a rotation model for each raster
-      rasterMaps.forEach((raster) => {
+      rasterMaps.forEach(async (raster) => {
         let modelName = raster.model
         if (modelName) {
           let m = rotationModels.get(modelName)
@@ -210,15 +208,22 @@ const Main: React.FC = () => {
             if (Math.abs(raster.step) > 0) {
               times = timeRange(raster.startTime, raster.endTime, raster.step)
             }
-            m = new RotationModel(modelName, times)
+            await loadVectorLayers(modelName)
+            m = new RotationModel(modelName, times, getVectorLayers(modelName))
+            //console.log(getVectorLayers(modelName))
             rotationModels.set(modelName, m)
           }
         }
       })
-      //start to populate cache
-      populateCache()
+
+      //initialize the default local storage
+      initDefaultStorage()
 
       //add more init code here
+
+      //start to populate cache
+      //keep this the last initialization call
+      //populateCache()
     })
   }, [])
 

@@ -18,7 +18,7 @@ import {
   animateRange,
 } from '../functions/atoms'
 import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
-import { cesiumViewer } from '../pages/Main'
+import { cesiumViewer } from '../functions/cesiumViewer'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import { timeout, timeRange } from '../functions/util'
 import RotationModel, {
@@ -26,6 +26,7 @@ import RotationModel, {
   setCurrentModel,
 } from '../functions/rotationModel'
 import { cachingServant } from '../functions/cache'
+import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 
 interface ContainerProps {
   currentLayer: any
@@ -107,7 +108,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   }
 
   // select the target one and unselect rest all
-  const select = (index: number) => {
+  const select = async (index: number) => {
     setCurrentRasterMapIndex(index)
     setAge(0)
     if (rasterMaps.length > 0) {
@@ -125,19 +126,17 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       let modelName = currentRaster.model
       if (modelName) {
         let m = rotationModels.get(modelName)
-        if (m) {
-          setCurrentModel(m)
-        } else {
+        if (!m) {
           let times = timeRange(
             currentRaster.startTime,
             currentRaster.endTime,
             currentRaster.step
           )
-
-          m = new RotationModel(modelName, times)
+          await loadVectorLayers(modelName)
+          m = new RotationModel(modelName, times, getVectorLayers(modelName))
           rotationModels.set(modelName, m)
-          setCurrentModel(m)
         }
+        setCurrentModel(m)
       }
     }
   }

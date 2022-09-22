@@ -23,6 +23,7 @@ export type VectorLayerType = {
   imageryLayer: any
   layerProvider: any
   layerName: string
+  layer: string
   url: string
   wmsUrl: string
   style: string

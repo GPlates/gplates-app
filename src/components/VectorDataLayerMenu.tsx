@@ -1,3 +1,4 @@
+import { SingleTileImageryProvider, Viewer } from 'cesium'
 import {
   IonButton,
   IonButtons,
@@ -18,11 +19,15 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   currentRasterMapIndexState,
   isVectorMenuShow,
+  age,
 } from '../functions/atoms'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import rasterMaps from '../functions/rasterMaps'
-import { serverURL } from '../functions/settings'
 import { VectorLayerType } from '../functions/types'
+import { getVectorLayers } from '../functions/vectorLayers'
+import { cachingServant } from '../functions/cache'
+import { cesiumViewer } from '../functions/cesiumViewer'
+import { buildAnimationURL } from '../functions/util'
 
 let vectorLayers: VectorLayerType[] = []
 
@@ -40,47 +45,32 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const [present, dismiss] = useIonLoading()
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const rAge = useRecoilValue(age)
 
   //
-  const getVecInfoByRaster = async (rasterModel: String) => {
-    let response = await fetch(
-      serverURL.replace(/\/+$/, '') +
-        '/mobile/get_vector_layers?model=' +
-        rasterModel
-    ).catch((error) => {
-      console.log(error) //handle the promise rejection
-    })
+  const getVecInfoByRaster = async (rasterModel: string) => {
+    let responseJson = getVectorLayers(rasterModel)
+    vectorLayers = []
+    for (let key in responseJson) {
+      let p = createCesiumImageryProvider(
+        responseJson[key].url,
+        responseJson[key].layer.replace('{{time}}', String(rAge)),
+        responseJson[key].style
+      )
 
-    let vecDataMap: {
-      [key: string]: WebMapTileServiceImageryProvider
-    } = {}
-
-    if (response) {
-      let responseJson = await response.json().catch((error) => {
-        console.log(error) //handle the promise rejection
-      })
-      vectorLayers = []
-      for (let key in responseJson) {
-        let p = createCesiumImageryProvider(
-          responseJson[key].url,
-          responseJson[key].layer,
-          responseJson[key].style
-        )
-        vecDataMap[key] = p
-
-        let layer = {
-          imageryLayer: null,
-          layerProvider: p,
-          layerName: key,
-          url: responseJson[key].url,
-          wmsUrl: '',
-          style: responseJson[key].style,
-          checked: false,
-        }
-        vectorLayers.push(layer) //add the new layer into the vector layer list
+      let layer = {
+        imageryLayer: null,
+        layerProvider: p,
+        layerName: key,
+        layer: responseJson[key].layer,
+        url: responseJson[key].url,
+        wmsUrl: responseJson[key].wmsUrl,
+        style: responseJson[key].style,
+        checked: false,
       }
+      vectorLayers.push(layer) //add the new layer into the vector layer list
     }
-    return vecDataMap
+    console.log(vectorLayers)
   }
 
   //
@@ -98,20 +88,22 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
 
     removeAllVectorLayer()
 
-    getVecInfoByRaster(model).then((vecDataMap) => {
-      console.log(vecDataMap)
-    })
+    getVecInfoByRaster(model)
   }
 
   // update to corresponding vector layer when raster map changes
   useEffect(() => {
-    updateVectorDataInformation()
+    vectorLayers = []
   }, [currentRasterMapIndex])
 
   // initializing
   useEffect(() => {
-    updateVectorDataInformation()
+    //updateVectorDataInformation()
   }, [])
+
+  useEffect(() => {
+    updateVectorLayers(rAge)
+  }, [rAge])
 
   //
   const waitUntilLoaded = async () => {
@@ -159,6 +151,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
     return checkList
   }
 
+  if (isShow && vectorLayers.length === 0) updateVectorDataInformation()
+
   return (
     <IonModal isOpen={isShow} animated backdropDismiss={false}>
       <IonToolbar>
@@ -181,4 +175,32 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
       <IonContent>{generateCheckList()}</IonContent>
     </IonModal>
   )
+}
+
+//
+const updateVectorLayers = (rAge: number) => {
+  try {
+    //not working this way
+    //try request multiple layers in one request
+    //the layers need to be in the same workspace
+    /*
+    vectorLayers.forEach(async (layer) => {
+      if (layer.checked) {
+        let url = buildAnimationURL(layer.wmsUrl, layer.layer)
+        let dataURL: string = await cachingServant.getCachedRequest(
+          url.replace('{{time}}', String(rAge)) + '&transparent=true'
+        )
+        console.log(url.replace('{{time}}', String(rAge)))
+        //only do this when the dataURL is valid
+        if (dataURL.length > 0) {
+          const provider = new SingleTileImageryProvider({
+            url: dataURL,
+          })
+          cesiumViewer.imageryLayers.addImageryProvider(provider)
+        }
+      }
+    })*/
+  } catch (err) {
+    console.log(err)
+  }
 }
