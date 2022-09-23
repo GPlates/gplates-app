@@ -29,7 +29,7 @@ export default class RotationModel {
     this.name = name
     this.times = times
     this.vectorLayers = vLayers
-    this.vectorLayers = this.getFiniteRotations()
+    //this.getFiniteRotations()//big performace impact at start up
   }
 
   //retrieve all Euler pole and angles for all plate ids in a rotation model from the server
