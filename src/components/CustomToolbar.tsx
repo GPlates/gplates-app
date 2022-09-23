@@ -21,7 +21,7 @@ import 'swiper/swiper.scss' // core Swiper
 import 'swiper/modules/navigation/navigation.scss' // Navigation module
 import 'swiper/modules/pagination/pagination.scss'
 import { Pagination } from 'swiper'
-import { cesiumViewer } from '../pages/Main'
+import { cesiumViewer } from '../functions/cesiumViewer'
 import { Geolocation } from '@capacitor/geolocation'
 
 interface ToolbarProps {

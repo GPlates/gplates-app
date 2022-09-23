@@ -4,6 +4,7 @@ import { SetterOrUpdater } from 'recoil'
 import rasterMaps from './rasterMaps'
 import { reconstructPresentDayLocations } from './presentDayLocations'
 import { buildAnimationURL } from './util'
+import { currentModel } from './rotationModel'
 
 let animateFrame = 0
 let animateNext = false
@@ -45,10 +46,8 @@ export class AnimationService {
           this.viewer.imageryLayers.addImageryProvider(provider)
         }
       }
-
-      //console.log(`age: ${animateFrame}`)
-      await reconstructPresentDayLocations(animateFrame) //reconstruct locations inserted by user
-      //await timeout(5000)
+      //reconstruct locations inserted by user
+      await reconstructPresentDayLocations(animateFrame)
     } catch (err) {
       console.log(err)
       return

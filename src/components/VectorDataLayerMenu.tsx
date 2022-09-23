@@ -1,3 +1,4 @@
+import { SingleTileImageryProvider, Viewer, ImageryLayer } from 'cesium'
 import {
   IonButton,
   IonButtons,
@@ -9,8 +10,17 @@ import {
   IonRippleEffect,
   IonTitle,
   IonToolbar,
+  IonAccordionGroup,
+  IonAccordion,
   useIonLoading,
+  IonIcon,
 } from '@ionic/react'
+import {
+  locateOutline,
+  trashOutline,
+  informationOutline,
+  closeOutline,
+} from 'ionicons/icons'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { timeout } from '../functions/util'
@@ -18,75 +28,67 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   currentRasterMapIndexState,
   isVectorMenuShow,
+  age,
 } from '../functions/atoms'
-import { WebMapTileServiceImageryProvider } from 'cesium'
 import rasterMaps from '../functions/rasterMaps'
-import { serverURL } from '../functions/settings'
 import { VectorLayerType } from '../functions/types'
+import {
+  getVectorLayers,
+  enableLayer,
+  getEnabledLayers,
+  disableLayer,
+} from '../functions/vectorLayers'
+import { cachingServant } from '../functions/cache'
+import { cesiumViewer } from '../functions/cesiumViewer'
+import { buildAnimationURL } from '../functions/util'
+import './VectorDataLayerMenu.scss'
 
+//only for this GUI component
 let vectorLayers: VectorLayerType[] = []
 
-interface ContainerProps {
-  addLayer: Function
-  removeLayer: Function
-  isViewerLoading: Function
-}
+interface ContainerProps {}
 
-export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
-  addLayer,
-  removeLayer,
-  isViewerLoading,
-}) => {
+export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
-  const [present, dismiss] = useIonLoading()
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const rAge = useRecoilValue(age)
 
   //
-  const getVecInfoByRaster = async (rasterModel: String) => {
-    let response = await fetch(
-      serverURL.replace(/\/+$/, '') +
-        '/mobile/get_vector_layers?model=' +
-        rasterModel
-    ).catch((error) => {
-      console.log(error) //handle the promise rejection
-    })
+  const getVecInfoByRaster = async (rasterModel: string) => {
+    let responseJson = getVectorLayers(rasterModel)
+    vectorLayers = []
+    for (let key in responseJson) {
+      let p = createCesiumImageryProvider(
+        responseJson[key].url,
+        responseJson[key].layer.replace('{{time}}', String(rAge)),
+        responseJson[key].style
+      )
 
-    let vecDataMap: {
-      [key: string]: WebMapTileServiceImageryProvider
-    } = {}
-
-    if (response) {
-      let responseJson = await response.json().catch((error) => {
-        console.log(error) //handle the promise rejection
-      })
-      vectorLayers = []
-      for (let key in responseJson) {
-        let p = createCesiumImageryProvider(
-          responseJson[key].url,
-          responseJson[key].layer,
-          responseJson[key].style
-        )
-        vecDataMap[key] = p
-
-        let layer = {
-          imageryLayer: null,
-          layerProvider: p,
-          layerName: key,
-          url: responseJson[key].url,
-          wmsUrl: '',
-          style: responseJson[key].style,
-          checked: false,
-        }
-        vectorLayers.push(layer) //add the new layer into the vector layer list
+      let layer = {
+        imageryLayer: null as unknown as ImageryLayer,
+        layerProvider: p,
+        layerName: key,
+        layer: responseJson[key].layer,
+        url: responseJson[key].url,
+        wmsUrl: responseJson[key].wmsUrl,
+        style: responseJson[key].style,
+        checked: false,
       }
+      let checkedLayers = getEnabledLayers(currentRasterMapIndex)
+      if (checkedLayers.includes(layer.layerName)) {
+        layer.checked = true
+        layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(p)
+      }
+      vectorLayers.push(layer) //add the new layer into the vector layer list
     }
-    return vecDataMap
+    console.log(vectorLayers)
   }
 
   //
   function removeAllVectorLayer() {
     vectorLayers.forEach((layer) => {
-      removeLayer(layer.imageryLayer)
+      cesiumViewer.imageryLayers.remove(layer.imageryLayer)
+      layer.imageryLayer = null
     })
     vectorLayers = []
   }
@@ -98,87 +100,119 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
 
     removeAllVectorLayer()
 
-    getVecInfoByRaster(model).then((vecDataMap) => {
-      console.log(vecDataMap)
-    })
+    getVecInfoByRaster(model)
   }
 
   // update to corresponding vector layer when raster map changes
   useEffect(() => {
-    updateVectorDataInformation()
+    vectorLayers = []
   }, [currentRasterMapIndex])
 
   // initializing
   useEffect(() => {
-    updateVectorDataInformation()
+    //updateVectorDataInformation()
   }, [])
 
-  //
-  const waitUntilLoaded = async () => {
-    await timeout(100)
-    while (!isViewerLoading()) {
-      await timeout(500)
-    }
-  }
+  useEffect(() => {
+    updateVectorLayers(rAge)
+  }, [rAge])
 
   // check or uncheck target vector layer
   const checkLayer = (layer: VectorLayerType, isChecked: boolean) => {
     if (isChecked) {
-      layer.imageryLayer = addLayer(layer.layerProvider)
+      if (layer.imageryLayer === null) {
+        layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
+          layer.layerProvider
+        )
+      }
+      enableLayer(currentRasterMapIndex, layer.layerName)
     } else {
-      removeLayer(layer.imageryLayer)
-      layer.imageryLayer = null
+      if (layer.imageryLayer) {
+        cesiumViewer.imageryLayers.remove(layer.imageryLayer)
+        layer.imageryLayer = null
+      }
+      disableLayer(currentRasterMapIndex, layer.layerName)
     }
   }
 
   //
   const onCheckBoxChange = (val: any) => {
+    console.log(val)
     let layer = vectorLayers[val.detail.value]
     layer.checked = val.detail.checked
     checkLayer(layer, layer.checked)
   }
 
-  //build the checklist
-  const generateCheckList = () => {
-    let count = 0
-    let checkList: JSX.Element[] = []
-    vectorLayers.forEach((layer, index) => {
-      checkList.push(
-        <IonItem key={count}>
-          <IonLabel>{layer.layerName}</IonLabel>
-          <IonCheckbox
-            slot="end"
-            value={index}
-            checked={layer.checked}
-            onIonChange={onCheckBoxChange}
-          />
-        </IonItem>
-      )
-      count += 1
-    })
-    return checkList
-  }
+  if (isShow && vectorLayers.length === 0) updateVectorDataInformation()
 
   return (
-    <IonModal isOpen={isShow} animated backdropDismiss={false}>
-      <IonToolbar>
-        <IonTitle>Vector Data Layers</IonTitle>
-        <IonButtons slot={'end'}>
-          <IonButton
-            onClick={async () => {
-              await present({ message: 'Please Wait...' })
-              await waitUntilLoaded()
-              await dismiss()
-              setIsShow(false)
-            }}
-            color={'secondary'}
-          >
-            Close
-            <IonRippleEffect />
-          </IonButton>
-        </IonButtons>
-      </IonToolbar>
-      <IonContent>{generateCheckList()}</IonContent>
-    </IonModal>
+    <div
+      className={isShow ? 'overlay-container show' : 'overlay-container hide'}
+    >
+      <div className={isShow ? 'overlay-widget show' : 'overlay-widget hide'}>
+        <IonAccordionGroup value="first">
+          <IonAccordion value="first">
+            <IonItem slot="header" color="light">
+              <IonLabel>Add Overlays</IonLabel>
+            </IonItem>
+            {vectorLayers.map((layer, index) => {
+              return (
+                <div slot="content" key={index}>
+                  <IonItem>
+                    <IonLabel>{layer.layerName}</IonLabel>
+                    <IonCheckbox
+                      slot="end"
+                      value={index}
+                      checked={layer.checked}
+                      onIonChange={onCheckBoxChange}
+                    />
+                  </IonItem>
+                </div>
+              )
+            })}
+          </IonAccordion>
+        </IonAccordionGroup>
+        <IonButton
+          expand="full"
+          className="close-button"
+          slot={'end'}
+          color="tertiary"
+          size="small"
+          onClick={() => {
+            setIsShow(false)
+          }}
+        >
+          Close
+        </IonButton>
+      </div>
+    </div>
   )
+}
+
+//
+const updateVectorLayers = (rAge: number) => {
+  try {
+    //not working this way
+    //try request multiple layers in one request
+    //the layers need to be in the same workspace
+    /*
+    vectorLayers.forEach(async (layer) => {
+      if (layer.checked) {
+        let url = buildAnimationURL(layer.wmsUrl, layer.layer)
+        let dataURL: string = await cachingServant.getCachedRequest(
+          url.replace('{{time}}', String(rAge)) + '&transparent=true'
+        )
+        console.log(url.replace('{{time}}', String(rAge)))
+        //only do this when the dataURL is valid
+        if (dataURL.length > 0) {
+          const provider = new SingleTileImageryProvider({
+            url: dataURL,
+          })
+          cesiumViewer.imageryLayers.addImageryProvider(provider)
+        }
+      }
+    })*/
+  } catch (err) {
+    console.log(err)
+  }
 }

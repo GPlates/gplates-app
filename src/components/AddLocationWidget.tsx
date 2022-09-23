@@ -35,7 +35,7 @@ import {
   Rectangle,
 } from 'cesium'
 import './AddLocationWidget.scss'
-import { cesiumViewer } from '../pages/Main'
+import { cesiumViewer } from '../functions/cesiumViewer'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { age } from '../functions/atoms'
 import {

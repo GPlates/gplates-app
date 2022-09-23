@@ -1,11 +1,9 @@
 import { Storage } from '@ionic/storage'
 
-const store = new Storage()
-store.create().then(async (storage) => {
-  await storage.set('test', { name: 'gplates', id: 123 })
-  const test = await storage.get('test')
-  console.log(test)
-  console.log('ionic storage has been created!')
-})
+let store = new Storage({ name: 'default' })
 
+//remember to init the storage at the startup
+export const init = async () => {
+  await store.create()
+}
 export default store

@@ -7,7 +7,7 @@ import { isPlatform, getPlatforms } from '@ionic/react'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 //import { SocialSharing as ShareTool } from '@awesome-cordova-plugins/social-sharing'
 import { Share } from '@capacitor/share'
-import { cesiumViewer } from '../pages/Main'
+import { cesiumViewer } from '../functions/cesiumViewer'
 import { timeout } from '../functions/util'
 
 //

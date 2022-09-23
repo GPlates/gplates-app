@@ -1,5 +1,8 @@
 import { Color, Viewer, ImageryProvider, Camera, Rectangle } from 'cesium'
 
+//singleton cersium viewer
+export let cesiumViewer: Viewer
+
 export const initCesiumViewer = (provider: ImageryProvider) => {
   let viewer: Viewer = new Viewer('cesiumContainer', {
     baseLayerPicker: false,
@@ -32,6 +35,5 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
     153.7,
     -10.4
   )
-
-  return viewer
+  cesiumViewer = viewer
 }

@@ -22,12 +22,14 @@ export default class RotationModel {
   name: string
   times: number[]
   finiteRotations!: Map<string, any>
+  vectorLayers: any
 
   //
-  constructor(name: string, times: number[]) {
+  constructor(name: string, times: number[], vLayers: any) {
     this.name = name
     this.times = times
-    this.getFiniteRotations()
+    this.vectorLayers = vLayers
+    //this.getFiniteRotations()//big performace impact at start up
   }
 
   //retrieve all Euler pole and angles for all plate ids in a rotation model from the server
