@@ -137,7 +137,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
 
   //
   const onCheckBoxChange = (val: any) => {
-    console.log(val)
+    //console.log(val)
     let layer = vectorLayers[val.detail.value]
     layer.checked = val.detail.checked
     checkLayer(layer, layer.checked)

@@ -135,6 +135,9 @@ const Main: React.FC = () => {
 
   //use [] to make this useEffect similar to componentDidMount
   useEffect(() => {
+    //initialize the default local storage
+    initDefaultStorage()
+
     //load the raster maps from gplates server or localstorage
     loadRasterMaps((networkFail: boolean) => {
       //if the network is not working
@@ -216,15 +219,12 @@ const Main: React.FC = () => {
         }
       })
 
-      //initialize the default local storage
-      initDefaultStorage()
-
       //add more init code here
 
       //start to populate cache
       //keep this the last initialization call
       //populateCache()
-    })
+    }) // end of load raster maps callback
   }, [])
 
   //
