@@ -5,3 +5,12 @@
   z-index: 100;
   opacity: 0.85;
 }
+
+.raster-legend {
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+}
