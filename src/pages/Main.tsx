@@ -277,15 +277,7 @@ const Main: React.FC = () => {
           <AboutPage />
           <ModelInfo />
           <CacheInfo />
-          <VectorDataLayerMenu
-            addLayer={(newLayer: WebMapTileServiceImageryProvider) => {
-              return cesiumViewer.imageryLayers.addImageryProvider(newLayer)
-            }}
-            removeLayer={(targetLayer: any) => {
-              cesiumViewer.imageryLayers.remove(targetLayer)
-            }}
-            isViewerLoading={isViewerLoading}
-          />
+          <VectorDataLayerMenu />
           <GraphPanel />
         </div>
       </IonContent>

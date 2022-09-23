@@ -1,4 +1,4 @@
-import { SingleTileImageryProvider, Viewer } from 'cesium'
+import { SingleTileImageryProvider, Viewer, ImageryLayer } from 'cesium'
 import {
   IonButton,
   IonButtons,
@@ -10,8 +10,17 @@ import {
   IonRippleEffect,
   IonTitle,
   IonToolbar,
+  IonAccordionGroup,
+  IonAccordion,
   useIonLoading,
+  IonIcon,
 } from '@ionic/react'
+import {
+  locateOutline,
+  trashOutline,
+  informationOutline,
+  closeOutline,
+} from 'ionicons/icons'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { timeout } from '../functions/util'
@@ -21,29 +30,26 @@ import {
   isVectorMenuShow,
   age,
 } from '../functions/atoms'
-import { WebMapTileServiceImageryProvider } from 'cesium'
 import rasterMaps from '../functions/rasterMaps'
 import { VectorLayerType } from '../functions/types'
-import { getVectorLayers } from '../functions/vectorLayers'
+import {
+  getVectorLayers,
+  enableLayer,
+  getEnabledLayers,
+  disableLayer,
+} from '../functions/vectorLayers'
 import { cachingServant } from '../functions/cache'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { buildAnimationURL } from '../functions/util'
+import './VectorDataLayerMenu.scss'
 
+//only for this GUI component
 let vectorLayers: VectorLayerType[] = []
 
-interface ContainerProps {
-  addLayer: Function
-  removeLayer: Function
-  isViewerLoading: Function
-}
+interface ContainerProps {}
 
-export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
-  addLayer,
-  removeLayer,
-  isViewerLoading,
-}) => {
+export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
-  const [present, dismiss] = useIonLoading()
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const rAge = useRecoilValue(age)
 
@@ -59,7 +65,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
       )
 
       let layer = {
-        imageryLayer: null,
+        imageryLayer: null as unknown as ImageryLayer,
         layerProvider: p,
         layerName: key,
         layer: responseJson[key].layer,
@@ -67,6 +73,11 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
         wmsUrl: responseJson[key].wmsUrl,
         style: responseJson[key].style,
         checked: false,
+      }
+      let checkedLayers = getEnabledLayers(currentRasterMapIndex)
+      if (checkedLayers.includes(layer.layerName)) {
+        layer.checked = true
+        layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(p)
       }
       vectorLayers.push(layer) //add the new layer into the vector layer list
     }
@@ -76,7 +87,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
   //
   function removeAllVectorLayer() {
     vectorLayers.forEach((layer) => {
-      removeLayer(layer.imageryLayer)
+      cesiumViewer.imageryLayers.remove(layer.imageryLayer)
+      layer.imageryLayer = null
     })
     vectorLayers = []
   }
@@ -105,75 +117,75 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({
     updateVectorLayers(rAge)
   }, [rAge])
 
-  //
-  const waitUntilLoaded = async () => {
-    await timeout(100)
-    while (!isViewerLoading()) {
-      await timeout(500)
-    }
-  }
-
   // check or uncheck target vector layer
   const checkLayer = (layer: VectorLayerType, isChecked: boolean) => {
     if (isChecked) {
-      layer.imageryLayer = addLayer(layer.layerProvider)
+      if (layer.imageryLayer === null) {
+        layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
+          layer.layerProvider
+        )
+      }
+      enableLayer(currentRasterMapIndex, layer.layerName)
     } else {
-      removeLayer(layer.imageryLayer)
-      layer.imageryLayer = null
+      if (layer.imageryLayer) {
+        cesiumViewer.imageryLayers.remove(layer.imageryLayer)
+        layer.imageryLayer = null
+      }
+      disableLayer(currentRasterMapIndex, layer.layerName)
     }
   }
 
   //
   const onCheckBoxChange = (val: any) => {
+    console.log(val)
     let layer = vectorLayers[val.detail.value]
     layer.checked = val.detail.checked
     checkLayer(layer, layer.checked)
   }
 
-  //build the checklist
-  const generateCheckList = () => {
-    let count = 0
-    let checkList: JSX.Element[] = []
-    vectorLayers.forEach((layer, index) => {
-      checkList.push(
-        <IonItem key={count}>
-          <IonLabel>{layer.layerName}</IonLabel>
-          <IonCheckbox
-            slot="end"
-            value={index}
-            checked={layer.checked}
-            onIonChange={onCheckBoxChange}
-          />
-        </IonItem>
-      )
-      count += 1
-    })
-    return checkList
-  }
-
   if (isShow && vectorLayers.length === 0) updateVectorDataInformation()
 
   return (
-    <IonModal isOpen={isShow} animated backdropDismiss={false}>
-      <IonToolbar>
-        <IonTitle>Vector Data Layers</IonTitle>
-        <IonButtons slot={'end'}>
-          <IonButton
-            onClick={async () => {
-              await present({ message: 'Please Wait...' })
-              await waitUntilLoaded()
-              await dismiss()
-              setIsShow(false)
-            }}
-            color={'secondary'}
-          >
-            Close
-            <IonRippleEffect />
-          </IonButton>
-        </IonButtons>
-      </IonToolbar>
-      <IonContent>{generateCheckList()}</IonContent>
-    </IonModal>
+    <div
+      className={isShow ? 'overlay-container show' : 'overlay-container hide'}
+    >
+      <div className={isShow ? 'overlay-widget show' : 'overlay-widget hide'}>
+        <IonAccordionGroup value="first">
+          <IonAccordion value="first">
+            <IonItem slot="header" color="light">
+              <IonLabel>Add Overlays</IonLabel>
+            </IonItem>
+            {vectorLayers.map((layer, index) => {
+              return (
+                <div slot="content" key={index}>
+                  <IonItem>
+                    <IonLabel>{layer.layerName}</IonLabel>
+                    <IonCheckbox
+                      slot="end"
+                      value={index}
+                      checked={layer.checked}
+                      onIonChange={onCheckBoxChange}
+                    />
+                  </IonItem>
+                </div>
+              )
+            })}
+          </IonAccordion>
+        </IonAccordionGroup>
+        <IonButton
+          expand="full"
+          className="close-button"
+          slot={'end'}
+          color="tertiary"
+          size="small"
+          onClick={() => {
+            setIsShow(false)
+          }}
+        >
+          Close
+        </IonButton>
+      </div>
+    </div>
   )
 }
 
