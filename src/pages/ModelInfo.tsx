@@ -15,6 +15,7 @@ import {
 import './ModelInfo.scss'
 import { Browser } from '@capacitor/browser'
 import rasterMaps from '../functions/rasterMaps'
+import { serverURL } from '../functions/settings'
 import { useRecoilState } from 'recoil'
 import {
   isModelInfoShowState,
@@ -31,15 +32,15 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
     currentRasterMapIndexState
   )
 
+  let currentRaster = rasterMaps[currentRasterMapIndex]
+  let rasterID = rasterMaps.length > 0 ? currentRaster.id : ''
   let listMap = {
-    Model: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].model : '',
-    Raster:
-      rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].layerName : '',
-    End: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].endTime : '',
-    Start:
-      rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].startTime : '',
-    WMTS: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].url : '',
-    WMS: rasterMaps.length > 0 ? rasterMaps[currentRasterMapIndex].wmsUrl : '',
+    Model: rasterMaps.length > 0 ? currentRaster.model : '',
+    Raster: rasterMaps.length > 0 ? currentRaster.layerName : '',
+    End: rasterMaps.length > 0 ? currentRaster.endTime : '',
+    Start: rasterMaps.length > 0 ? currentRaster.startTime : '',
+    WMTS: rasterMaps.length > 0 ? currentRaster.url : '',
+    WMS: rasterMaps.length > 0 ? currentRaster.wmsUrl : '',
   }
 
   return (
@@ -80,7 +81,9 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
             </IonItem>
           ))}
         </IonList>
-        <div>TODO: put raster legend here!!!</div>
+        <div className="raster-legend">
+          <img src={serverURL + '/static/app-legend/' + rasterID + '.png'} />
+        </div>
         <br />
         <br />
         <br />

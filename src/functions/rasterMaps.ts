@@ -1,9 +1,11 @@
 import { RasterCfg } from './types'
 import { rasterData, createCesiumImageryProvider } from './dataLoader'
 import { serverURL } from './settings'
+import { getDefaultStore } from './storage'
 
 export const failSafeRasterMaps: RasterCfg[] = [
   {
+    id: 'geology',
     layer: rasterData['geology'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
@@ -18,6 +20,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
     model: 'MULLER2019',
   },
   {
+    id: 'agegrid',
     layer: rasterData['agegrid'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
@@ -32,6 +35,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
     model: 'SETON2012',
   },
   {
+    id: 'topography',
     layer: rasterData['topography'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
@@ -47,7 +51,6 @@ export const failSafeRasterMaps: RasterCfg[] = [
   },
 ]
 
-//TODO: save in localstorage
 const rasterMaps: RasterCfg[] = []
 export default rasterMaps
 export let currentRasterIndex: number = 0
@@ -56,7 +59,10 @@ export const setCurrentRasterIndex = (idx: number) => {
   if (rasterMaps.length > idx) {
     currentRasterIndex = idx
   } else {
-    console.log('Error: setCurrentRasterIndex() try to set an invalid index')
+    console.log(
+      'Warning: setCurrentRasterIndex() try to set an invalid index.' +
+        `(${rasterMaps.length}:${idx})`
+    )
   }
 }
 
@@ -106,61 +112,71 @@ function getStartLayerName(layerData: any) {
 //load rasters from gplates web service
 //
 export const loadRasterMaps = (callback: Function) => {
-  //try localstorage first TODO
-  //and then try the gplates web service server
-  while (rasterMaps.length) {
-    rasterMaps.pop()
-  } //empty the list and then reload
   fetch(serverURL.replace(/\/+$/, '') + '/mobile/get_rasters')
     .then((response) => response.json())
     .then((jsonData) => {
       //console.log(json_data)
-      for (let key in jsonData) {
-        let o: RasterCfg = {
-          layer: createCesiumImageryProvider(
-            jsonData[key].url,
-            getStartLayerName(jsonData[key]),
-            jsonData[key].style
-          ),
-          layerName: jsonData[key].layerName,
-          url: jsonData[key].url,
-          wmsUrl: jsonData[key].wmsUrl,
-          style: jsonData[key].style,
-          title: jsonData[key].title,
-          subTitle: jsonData[key].subTitle,
-          icon: 'data:image/png;base64, ' + jsonData[key].icon,
-          startTime: jsonData[key].startTime,
-          endTime: jsonData[key].endTime,
-          step: jsonData[key].step,
-          model: jsonData[key].model,
-        }
-        rasterMaps.push(o)
-      }
+      rasterMaps.length = 0
+      //rasterMaps.splice(0, rasterMaps.length)
+      rasterMaps.push(...convertJsonToRasterMaps(jsonData))
       callback(false) //network fail=false
+      //save the data to local storage
+      getDefaultStore()
+        .then((store) => {
+          store.set('rasters', jsonData)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     })
-    .catch((error) => {
+    .catch(async (error) => {
       console.log(error)
-      for (const m of failSafeRasterMaps) {
-        let o: RasterCfg = {
-          layer: createCesiumImageryProvider(
-            m.url,
-            getStartLayerName(m),
-            m.style
-          ),
-          layerName: m.layerName,
-          url: m.url,
-          wmsUrl: m.wmsUrl,
-          style: m.style,
-          title: m.title,
-          subTitle: m.subTitle,
-          icon: m.icon,
-          startTime: m.startTime,
-          endTime: m.endTime,
-          step: m.step,
-          model: m.model,
+      //network failed, not try local storage
+      try {
+        let store = await getDefaultStore()
+        let localData = await store.get('rasters')
+        console.log('localData')
+        console.log(localData)
+        if (localData) {
+          rasterMaps.push(...convertJsonToRasterMaps(localData))
+        } else {
+          rasterMaps.push(...convertJsonToRasterMaps(failSafeRasterMaps))
         }
-        rasterMaps.push(o)
+      } catch (err) {
+        console.log(err)
       }
       callback(true) //network fail=true
     })
+}
+
+//
+const convertJsonToRasterMaps = (jsonData: any) => {
+  let maps = []
+  for (let key in jsonData) {
+    let iconStr: string = jsonData[key].icon
+    if (!iconStr.startsWith('assets')) {
+      iconStr = 'data:image/png;base64, ' + iconStr
+    }
+    let o: RasterCfg = {
+      id: key,
+      layer: createCesiumImageryProvider(
+        jsonData[key].url,
+        getStartLayerName(jsonData[key]),
+        jsonData[key].style
+      ),
+      layerName: jsonData[key].layerName,
+      url: jsonData[key].url,
+      wmsUrl: jsonData[key].wmsUrl,
+      style: jsonData[key].style,
+      title: jsonData[key].title,
+      subTitle: jsonData[key].subTitle,
+      icon: iconStr,
+      startTime: jsonData[key].startTime,
+      endTime: jsonData[key].endTime,
+      step: jsonData[key].step,
+      model: jsonData[key].model,
+    }
+    maps.push(o)
+  }
+  return maps
 }

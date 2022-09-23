@@ -1,4 +1,5 @@
 export type RasterCfg = {
+  id: string
   layer: any
   layerName: string
   url: string

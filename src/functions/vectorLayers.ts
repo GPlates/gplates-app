@@ -12,8 +12,9 @@ export let enabledLayers: Map<number, string[]> = new Map<number, string[]>()
 //
 export const getVectorLayerStore = async () => {
   if (store === null) {
-    store = new Storage({ name: 'vector-layers' })
-    await store.create()
+    let store_ = new Storage({ name: 'vector-layers' })
+    await store_.create()
+    store = store_
   }
   return store
 }
