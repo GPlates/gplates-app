@@ -10,15 +10,9 @@ import {
 
 import './Main.scss'
 
-import {
-  Camera,
-  Ion,
-  Rectangle,
-  Viewer,
-  WebMapTileServiceImageryProvider,
-} from 'cesium'
+import { Ion } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
-import { SettingMenuPage, populateCache } from './SettingMenuPage'
+import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
@@ -46,6 +40,7 @@ import {
   appDarkMode,
   isAddLocationWidgetShowState,
   currentRasterMapIndexState,
+  networkDownloadOnCellular,
 } from '../functions/atoms'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -77,13 +72,16 @@ const Main: React.FC = () => {
 
   // Animation
   const setAge = useSetRecoilState(age)
-  const _setDarkMode = useSetRecoilState(appDarkMode)
   const [exact, setExact] = useRecoilState(animateExact)
   const [fps, setFps] = useRecoilState(animateFps)
   const [increment, setIncrement] = useRecoilState(animateIncrement)
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
+
+  // App
+  const _setDarkMode = useSetRecoilState(appDarkMode)
+  const setDownloadOnCellular = useSetRecoilState(networkDownloadOnCellular)
 
   // Background
   const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
@@ -98,9 +96,7 @@ const Main: React.FC = () => {
 
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
-  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
-    currentRasterMapIndexState
-  )
+  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const [presentToast, dismissToast] = useIonToast()
 
   animationService = new AnimationService(
@@ -176,6 +172,7 @@ const Main: React.FC = () => {
             const settings = JSON.parse(res.value)
             _setDarkMode(settings.darkMode)
             setDarkMode(settings.darkMode)
+            setDownloadOnCellular(settings.downloadOnCellular)
           } else {
             setDarkMode()
           }

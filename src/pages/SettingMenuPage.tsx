@@ -34,12 +34,13 @@ import {
   isSettingsMenuShow,
   settingsPath,
   isCacheInfoShowState,
+  networkDownloadOnCellular,
 } from '../functions/atoms'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 import { serverURL, setServerURL } from '../functions/settings'
-import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import rasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
 import { getData } from './CacheInfo'
@@ -84,6 +85,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   backgroundService,
 }) => {
   const [darkMode, _setDarkMode] = useRecoilState(appDarkMode)
+  const [downloadOnCellular, setDownloadOnCellular] = useRecoilState(
+    networkDownloadOnCellular
+  )
   const [path, setPath] = useRecoilState(settingsPath)
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
   const isSliderShow = useRecoilValue(isAgeSliderShown)
@@ -108,13 +112,14 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
       setStatusBarTheme(darkMode)
       const settings = {
         darkMode,
+        downloadOnCellular,
       }
       Preferences.set({
         key: 'appSettings',
         value: JSON.stringify(settings),
       })
     }
-  }, [darkMode])
+  }, [darkMode, downloadOnCellular])
 
   const subPageRouting = (path: string, name: string) => {
     return (
@@ -189,6 +194,16 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonLabel>Dark</IonLabel>
               </IonSegmentButton>
             </IonSegment>
+          </IonItem>
+
+          <IonItemDivider>Network Settings</IonItemDivider>
+          <IonItem>
+            <IonLabel>Download on Mobile Data</IonLabel>
+            <IonCheckbox
+              class={'single-setting-option'}
+              checked={downloadOnCellular}
+              onIonChange={(e) => setDownloadOnCellular(e.detail.checked)}
+            />
           </IonItem>
 
           <IonItemDivider>Server Setting</IonItemDivider>
