@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { SplashScreen } from '@capacitor/splash-screen'
 import {
   IonContent,
@@ -102,6 +102,10 @@ const Main: React.FC = () => {
   const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
     currentRasterMapIndexState
   )
+  const [isOffline, setIsOffline] = useState(false)
+  //we don't show message if the app is online at startup
+  const isStartupOnline = useRef(true)
+
   const [presentToast, dismissToast] = useIonToast()
 
   animationService = new AnimationService(
@@ -134,10 +138,34 @@ const Main: React.FC = () => {
     }
   })
 
+  useEffect(() => {
+    if (isOffline) {
+      presentToast({
+        buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+        duration: 15000,
+        message: 'Network is unavailable',
+        onDidDismiss: () => {},
+      })
+    } else {
+      if (!isStartupOnline.current) {
+        presentToast({
+          buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+          duration: 5000,
+          message: 'Back online',
+          onDidDismiss: () => {},
+        })
+      }
+    }
+    isStartupOnline.current = false
+  }, [isOffline])
+
   //use [] to make this useEffect similar to componentDidMount
   useEffect(() => {
     //initialize the default local storage
     initDefaultStorage()
+
+    //
+    networkMonitor(setIsOffline)
 
     //load the raster maps from gplates server or localstorage
     loadRasterMaps((networkFail: boolean) => {
@@ -285,6 +313,16 @@ const Main: React.FC = () => {
       </IonContent>
     </IonPage>
   )
+}
+
+const networkMonitor = (setIsOffline: any) => {
+  setInterval(() => {
+    if (!globalThis.navigator.onLine) {
+      setIsOffline(true)
+    } else {
+      setIsOffline(false)
+    }
+  }, 3 * 1000)
 }
 
 export default Main
