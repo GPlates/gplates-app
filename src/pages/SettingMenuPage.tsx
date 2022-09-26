@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './SettingMenuPage.scss'
 import {
   IonButton,
@@ -40,6 +40,7 @@ import rasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
 import { getData } from './CacheInfo'
+import { showGraticule, hideGraticule } from '../functions/graticule'
 
 //
 const titles: { [key: string]: string } = {
@@ -88,6 +89,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
   const isSliderShow = useRecoilValue(isAgeSliderShown)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
+  const [isShowGraticule, setIsShowGraticule] = useState(false)
 
   const [presentAlert] = useIonAlert()
 
@@ -228,7 +230,20 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonItemDivider>Graticules</IonItemDivider>
           <IonItem>
             <IonLabel>Show Graticules</IonLabel>
-            <IonCheckbox class={'single-setting-option'} />
+            <IonCheckbox
+              class={'single-setting-option'}
+              checked={isShowGraticule}
+              onIonChange={(e) => {
+                //console.log(e.detail.checked)
+                if (e.detail.checked) {
+                  showGraticule()
+                  setIsShowGraticule(true)
+                } else {
+                  hideGraticule()
+                  setIsShowGraticule(false)
+                }
+              }}
+            />
           </IonItem>
 
           <IonItemDivider>Cache</IonItemDivider>

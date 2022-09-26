@@ -27,6 +27,7 @@ import RotationModel, {
 } from '../functions/rotationModel'
 import { cachingServant } from '../functions/cache'
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
+import { createCesiumImageryProvider } from '../functions/dataLoader'
 
 interface ContainerProps {
   currentLayer: any
@@ -84,7 +85,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           if (currentRasterMapIndex !== i) {
             select(i)
             await present({ message: 'Loading...' })
-            switchLayer(rasterMaps[i].layer)
+            switchLayer(createCesiumImageryProvider(rasterMaps[i]))
             await timeout(200)
             while (!isViewerLoading()) {
               await timeout(200)
