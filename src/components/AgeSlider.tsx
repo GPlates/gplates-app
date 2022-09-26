@@ -4,7 +4,6 @@ import {
   IonIcon,
   IonInput,
   IonItem,
-  IonLabel,
   IonRange,
   useIonToast,
 } from '@ionic/react'
@@ -33,6 +32,7 @@ import {
   LIMIT_LOWER,
   LIMIT_UPPER,
   animateRange,
+  animateIncrement,
 } from '../functions/atoms'
 import {
   matchDarkMode,
@@ -49,15 +49,14 @@ interface AgeSliderProps {
 const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const [_age, setAge] = useRecoilState(age)
   const darkMode = useRecoilValue(appDarkMode)
+  const increment = useRecoilValue(animateIncrement)
   const playing = useRecoilValue(animatePlaying)
   const setMenuPath = useSetRecoilState(settingsPath)
   const setMenuState = useSetRecoilState(isSettingsMenuShow)
   const [shown, setShown] = useRecoilState(isAgeSliderShown)
   const [presentToast, dismissToast] = useIonToast()
-  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
-    currentRasterMapIndexState
-  )
-  const [range, setRange] = useRecoilState(animateRange)
+  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const range = useRecoilValue(animateRange)
 
   const openMenu = () => {
     setMenuPath('animation')
@@ -142,14 +141,14 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
             </IonButton>
             <IonButton
               fill="clear"
-              onClick={() => animationService.movePlayHead(-1)}
+              onClick={() => animationService.movePlayHead(increment)}
               size="default"
             >
               <IonIcon icon={playBackOutline} />
             </IonButton>
             <IonButton
               fill="clear"
-              onClick={() => animationService.movePlayHead(1)}
+              onClick={() => animationService.movePlayHead(-increment)}
               size="default"
             >
               <IonIcon icon={playForwardOutline} />
