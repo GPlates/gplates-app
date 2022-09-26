@@ -12,7 +12,7 @@ import {
   cogOutline,
   pauseOutline,
   playOutline,
-  playSkipBackOutline,
+  playSkipForwardOutline,
   playBackOutline,
   playForwardOutline,
   timeOutline,
@@ -134,13 +134,6 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
             </IonButton>
             <IonButton
               fill="clear"
-              onClick={() => animationService.resetPlayHead()}
-              size="default"
-            >
-              <IonIcon icon={playSkipBackOutline} />
-            </IonButton>
-            <IonButton
-              fill="clear"
               onClick={() => animationService.movePlayHead(increment)}
               size="default"
             >
@@ -152,6 +145,13 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
               size="default"
             >
               <IonIcon icon={playForwardOutline} />
+            </IonButton>
+            <IonButton
+              fill="clear"
+              onClick={() => animationService.resetPlayHead()}
+              size="default"
+            >
+              <IonIcon icon={playSkipForwardOutline} />
             </IonButton>
             <IonButton fill="clear" onClick={openMenu} size="default">
               <IonIcon icon={cogOutline} />
