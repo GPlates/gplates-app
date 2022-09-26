@@ -8,7 +8,6 @@ import {
   useIonToast,
   useIonAlert,
 } from '@ionic/react'
-import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 
 import './Main.scss'
 
@@ -65,8 +64,6 @@ Ion.defaultAccessToken =
 let animationService: AnimationService
 let backgroundService: BackgroundService
 let cachingService: CachingService
-let db: SQLiteDBConnection
-const dbName = 'db_main'
 
 const Main: React.FC = () => {
   const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
@@ -132,13 +129,6 @@ const Main: React.FC = () => {
     isCustomisedColorBackgroundEnable,
     color,
     cesiumViewer
-  )
-  cachingService = new CachingService(
-    db,
-    sqlite,
-    dbName,
-    ionAlert,
-    setDownloadOnCellular
   )
 
   useEffect(() => {
@@ -275,8 +265,16 @@ const Main: React.FC = () => {
   //
   useIonViewDidEnter(async () => {
     // Initialize SQLite connection
-    db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
+    const dbName = 'db_main'
+    const db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
     await db.open()
+    cachingService = new CachingService(
+      db,
+      sqlite,
+      dbName,
+      ionAlert,
+      setDownloadOnCellular
+    )
     setCachingServant(cachingService) //pass the instance into cache.ts for easier access
   })
 
