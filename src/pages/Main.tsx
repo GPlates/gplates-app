@@ -6,6 +6,7 @@ import {
   useIonViewDidEnter,
   useIonViewDidLeave,
   useIonToast,
+  useIonAlert,
 } from '@ionic/react'
 
 import './Main.scss'
@@ -55,6 +56,7 @@ import { timeRange } from '../functions/util'
 import RotationModel, { rotationModels } from '../functions/rotationModel'
 import { init as initDefaultStorage } from '../functions/storage'
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
+import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -62,13 +64,16 @@ Ion.defaultAccessToken =
 let animationService: AnimationService
 let backgroundService: BackgroundService
 let cachingService: CachingService
+let db: SQLiteDBConnection
+const dbName = 'db_main'
 
 const Main: React.FC = () => {
   const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
-  const isSettingMenuPageShow = useRecoilValue(isSettingsMenuShow)
+  const isSettingsShown = useRecoilValue(isSettingsMenuShow)
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
     isAddLocationWidgetShowState
   )
+  const ionAlert = useIonAlert()
 
   // Animation
   const setAge = useSetRecoilState(age)
@@ -122,9 +127,16 @@ const Main: React.FC = () => {
     color,
     cesiumViewer
   )
+  cachingService = new CachingService(
+    db,
+    sqlite,
+    dbName,
+    ionAlert,
+    setDownloadOnCellular
+  )
 
   useEffect(() => {
-    if (isSettingMenuPageShow) {
+    if (isSettingsShown) {
       animationService.setPlaying(false)
     }
   })
@@ -172,7 +184,6 @@ const Main: React.FC = () => {
             const settings = JSON.parse(res.value)
             _setDarkMode(settings.darkMode)
             setDarkMode(settings.darkMode)
-            setDownloadOnCellular(settings.downloadOnCellular)
           } else {
             setDarkMode()
           }
@@ -194,6 +205,12 @@ const Main: React.FC = () => {
             setTimeout(() => {
               SplashScreen.hide()
             }, 200)
+          }
+        })
+        Preferences.get({ key: 'networkSettings' }).then((res) => {
+          if (res?.value) {
+            const settings = JSON.parse(res.value)
+            setDownloadOnCellular(settings.downloadOnCellular)
           }
         })
       } //end of init Ceium viewer
@@ -227,16 +244,14 @@ const Main: React.FC = () => {
   //
   useIonViewDidEnter(async () => {
     // Initialize SQLite connection
-    const dbName = 'db_main'
-    const db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
+    db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
     await db.open()
-    cachingService = new CachingService(db, sqlite, dbName)
-    setCachingServant(cachingService) //pass the instance into cache.ts for easier acces
+    setCachingServant(cachingService) //pass the instance into cache.ts for easier access
   })
 
   //close the connection which is opened in useIonViewDidEnter
   useIonViewDidLeave(async () => {
-    cachingService.cleanup()
+    await cachingService.cleanup()
   })
 
   //todo: this is not working for single tile imagery provider

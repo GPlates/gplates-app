@@ -108,14 +108,25 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
       setStatusBarTheme(darkMode)
       const settings = {
         darkMode,
-        downloadOnCellular,
       }
       Preferences.set({
         key: 'appSettings',
         value: JSON.stringify(settings),
       })
     }
-  }, [darkMode, downloadOnCellular])
+  }, [darkMode])
+
+  useEffect(() => {
+    if (isShow && path === 'root') {
+      const settings = {
+        downloadOnCellular,
+      }
+      Preferences.set({
+        key: 'networkSettings',
+        value: JSON.stringify(settings),
+      })
+    }
+  })
 
   const subPageRouting = (path: string, name: string) => {
     return (

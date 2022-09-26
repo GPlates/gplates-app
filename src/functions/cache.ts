@@ -2,7 +2,11 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 import { SQLiteHook } from 'react-sqlite-hook'
 import { Capacitor } from '@capacitor/core'
 import RotationModel from './rotationModel'
-import { buildAnimationURL } from '../functions/util'
+import { buildAnimationURL } from './util'
+import { canDownload, presentDataAlert } from './network'
+import { UseIonAlertResult } from '@ionic/react'
+import { SetterOrUpdater } from 'recoil'
+import { Preferences } from '@capacitor/preferences'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -15,8 +19,12 @@ export class CachingService {
   constructor(
     private db: SQLiteDBConnection,
     private sqlite: SQLiteHook,
-    private dbName: string
+    private dbName: string,
+    private ionAlert: UseIonAlertResult,
+    private setDownloadOnCellular: SetterOrUpdater<boolean>
   ) {}
+
+  hasPresented = false
 
   // Store request data
   // ttl = time to live (in seconds). Values <= 0 will be ignored (data will live forever)
@@ -48,10 +56,10 @@ export class CachingService {
     } else {
       //if cache does not hit, get the data from url and insert into cache
       await this.db.run('DELETE FROM cache WHERE url == ?', [url])
-      let blob: Blob = await this.getBlob(url)
+      const blob: Blob | undefined = await this.getBlob(url)
       data = await this.convertBlobToDataURL(blob)
       //it is possible that the return data is invalid
-      if (data) {
+      if (blob && data) {
         this.cacheRequest(url, data)
         //TODO: on "web" platform, you need to saveToStore. otherwise the DB is in memory
         //await sqlite.saveToStore('db_main') //LOOK HERE
@@ -81,23 +89,35 @@ export class CachingService {
 
   //fetch url and return a blob
   async getBlob(url: string) {
-    let res = await fetch(url)
-    let blob = await res.blob()
-    return blob
+    // TODO: Get from recoil store
+    const downloadOnCellular = await Preferences.get({
+      key: 'networkSettings',
+    }).then((res) => {
+      if (res?.value) return JSON.parse(res.value).downloadOnCellular
+    })
+    if (await canDownload(downloadOnCellular)) {
+      let res = await fetch(url)
+      return await res.blob()
+    } else if (!this.hasPresented) {
+      await presentDataAlert(this.ionAlert, this.setDownloadOnCellular)
+      return
+    }
   }
 
   //convert a blob to data URL
-  convertBlobToDataURL(blob: Blob) {
-    return new Promise((resolve, reject) => {
-      if (blob.type.startsWith('image')) {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result)
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-      } else {
-        resolve(null)
-      }
-    })
+  convertBlobToDataURL(blob?: Blob) {
+    if (blob) {
+      return new Promise((resolve, reject) => {
+        if (blob.type.startsWith('image')) {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result)
+          reader.onerror = reject
+          reader.readAsDataURL(blob)
+        } else {
+          resolve(null)
+        }
+      })
+    }
   }
 
   // Remove all cached data & files
