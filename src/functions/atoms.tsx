@@ -41,6 +41,11 @@ export const backgroundIsCustom = atom({
 
 export const appDarkMode = atom({ key: 'appDarkMode', default: 'auto' })
 
+export const networkDownloadOnCellular = atom({
+  key: 'downloadOnCellular',
+  default: false,
+})
+
 export const isAboutPageShow = atom({ key: 'isAboutPageShow', default: false })
 export const isAgeSliderShown = atom({
   key: 'isAgeSliderShown',

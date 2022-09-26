@@ -11,13 +11,9 @@ import {
   IonLabel,
   IonList,
   IonModal,
-  IonRadio,
-  IonRadioGroup,
   IonRippleEffect,
   IonSegment,
   IonSegmentButton,
-  IonSelect,
-  IonSelectOption,
   IonTitle,
   IonToolbar,
   isPlatform,
@@ -34,12 +30,13 @@ import {
   isSettingsMenuShow,
   settingsPath,
   isCacheInfoShowState,
+  networkDownloadOnCellular,
 } from '../functions/atoms'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 import { serverURL, setServerURL } from '../functions/settings'
-import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import rasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
 import { getData } from './CacheInfo'
@@ -85,6 +82,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   backgroundService,
 }) => {
   const [darkMode, _setDarkMode] = useRecoilState(appDarkMode)
+  const [downloadOnCellular, setDownloadOnCellular] = useRecoilState(
+    networkDownloadOnCellular
+  )
   const [path, setPath] = useRecoilState(settingsPath)
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
   const isSliderShow = useRecoilValue(isAgeSliderShown)
@@ -117,6 +117,18 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
       })
     }
   }, [darkMode])
+
+  useEffect(() => {
+    if (isShow && path === 'root') {
+      const settings = {
+        downloadOnCellular,
+      }
+      Preferences.set({
+        key: 'networkSettings',
+        value: JSON.stringify(settings),
+      })
+    }
+  })
 
   const subPageRouting = (path: string, name: string) => {
     return (
@@ -191,6 +203,16 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonLabel>Dark</IonLabel>
               </IonSegmentButton>
             </IonSegment>
+          </IonItem>
+
+          <IonItemDivider>Network Settings</IonItemDivider>
+          <IonItem>
+            <IonLabel>Download on Mobile Data</IonLabel>
+            <IonCheckbox
+              class={'single-setting-option'}
+              checked={downloadOnCellular}
+              onIonChange={(e) => setDownloadOnCellular(e.detail.checked)}
+            />
           </IonItem>
 
           <IonItemDivider>Server Setting</IonItemDivider>
@@ -287,34 +309,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonRippleEffect />
               </IonButton>
             </IonButtons>
-          </IonItem>
-
-          <IonItemDivider>Main Setting Section4</IonItemDivider>
-          <IonItem>
-            <IonLabel>Some Segmentation</IonLabel>
-            <IonRadioGroup>
-              <IonItem>
-                <IonItem>
-                  <IonLabel>1</IonLabel>
-                  <IonRadio slot="end" value="1" />
-                </IonItem>
-                <IonItem>
-                  <IonLabel>2</IonLabel>
-                  <IonRadio slot="end" value="2" />
-                </IonItem>
-              </IonItem>
-            </IonRadioGroup>
-          </IonItem>
-
-          <IonItemDivider>Main Setting Section5</IonItemDivider>
-          <IonItem>
-            <IonLabel>Select Something</IonLabel>
-            <IonSelect>
-              <IonSelectOption value="1">1</IonSelectOption>
-              <IonSelectOption value="2">2</IonSelectOption>
-              <IonSelectOption value="3">3</IonSelectOption>
-              <IonSelectOption value="4">4</IonSelectOption>
-            </IonSelect>
           </IonItem>
         </IonList>
       </CSSTransition>

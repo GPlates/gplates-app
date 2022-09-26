@@ -4,7 +4,6 @@ import { SetterOrUpdater } from 'recoil'
 import rasterMaps from './rasterMaps'
 import { reconstructPresentDayLocations } from './presentDayLocations'
 import { buildAnimationURL } from './util'
-import { currentModel } from './rotationModel'
 
 let animateFrame = 0
 let animateNext = false
@@ -33,9 +32,12 @@ export class AnimationService {
   drawFrame = async (url: string, force = false) => {
     animateStartTime = Date.now()
     try {
-      let dataURL: string = await this.cachingService?.getCachedRequest(
+      const dataURL: string = await this.cachingService?.getCachedRequest(
         url.replace('{{time}}', String(animateFrame))
       )
+      if (!dataURL) {
+        return this.setPlaying(false)
+      }
       //only do this when the dataURL is valid
       if (dataURL.length > 0) {
         const provider = new SingleTileImageryProvider({

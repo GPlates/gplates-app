@@ -6,19 +6,15 @@ import {
   useIonViewDidEnter,
   useIonViewDidLeave,
   useIonToast,
+  useIonAlert,
 } from '@ionic/react'
+import { SQLiteDBConnection } from '@capacitor-community/sqlite'
 
 import './Main.scss'
 
-import {
-  Camera,
-  Ion,
-  Rectangle,
-  Viewer,
-  WebMapTileServiceImageryProvider,
-} from 'cesium'
+import { Ion } from 'cesium'
 import CustomToolbar from '../components/CustomToolbar'
-import { SettingMenuPage, populateCache } from './SettingMenuPage'
+import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
 import { AboutPage } from './AboutPage'
@@ -46,6 +42,7 @@ import {
   appDarkMode,
   isAddLocationWidgetShowState,
   currentRasterMapIndexState,
+  networkDownloadOnCellular,
 } from '../functions/atoms'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -68,23 +65,29 @@ Ion.defaultAccessToken =
 let animationService: AnimationService
 let backgroundService: BackgroundService
 let cachingService: CachingService
+let db: SQLiteDBConnection
+const dbName = 'db_main'
 
 const Main: React.FC = () => {
   const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
-  const isSettingMenuPageShow = useRecoilValue(isSettingsMenuShow)
+  const isSettingsShown = useRecoilValue(isSettingsMenuShow)
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
     isAddLocationWidgetShowState
   )
+  const ionAlert = useIonAlert()
 
   // Animation
   const setAge = useSetRecoilState(age)
-  const _setDarkMode = useSetRecoilState(appDarkMode)
   const [exact, setExact] = useRecoilState(animateExact)
   const [fps, setFps] = useRecoilState(animateFps)
   const [increment, setIncrement] = useRecoilState(animateIncrement)
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [playing, _setPlaying] = useRecoilState(animatePlaying)
   const [range, setRange] = useRecoilState(animateRange)
+
+  // App
+  const _setDarkMode = useSetRecoilState(appDarkMode)
+  const setDownloadOnCellular = useSetRecoilState(networkDownloadOnCellular)
 
   // Background
   const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
@@ -99,9 +102,8 @@ const Main: React.FC = () => {
 
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
-  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
-    currentRasterMapIndexState
-  )
+
+  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const [isOffline, setIsOffline] = useState(false)
   //we don't show message if the app is online at startup
   const isStartupOnline = useRef(true)
@@ -131,9 +133,16 @@ const Main: React.FC = () => {
     color,
     cesiumViewer
   )
+  cachingService = new CachingService(
+    db,
+    sqlite,
+    dbName,
+    ionAlert,
+    setDownloadOnCellular
+  )
 
   useEffect(() => {
-    if (isSettingMenuPageShow) {
+    if (isSettingsShown) {
       animationService.setPlaying(false)
     }
   })
@@ -229,6 +238,12 @@ const Main: React.FC = () => {
             }, 200)
           }
         })
+        Preferences.get({ key: 'networkSettings' }).then((res) => {
+          if (res?.value) {
+            const settings = JSON.parse(res.value)
+            setDownloadOnCellular(settings.downloadOnCellular)
+          }
+        })
       } //end of init Ceium viewer
 
       //create a rotation model for each raster
@@ -260,16 +275,14 @@ const Main: React.FC = () => {
   //
   useIonViewDidEnter(async () => {
     // Initialize SQLite connection
-    const dbName = 'db_main'
-    const db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
+    db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
     await db.open()
-    cachingService = new CachingService(db, sqlite, dbName)
-    setCachingServant(cachingService) //pass the instance into cache.ts for easier acces
+    setCachingServant(cachingService) //pass the instance into cache.ts for easier access
   })
 
   //close the connection which is opened in useIonViewDidEnter
   useIonViewDidLeave(async () => {
-    cachingService.cleanup()
+    await cachingService.cleanup()
   })
 
   //todo: this is not working for single tile imagery provider
