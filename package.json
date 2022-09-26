@@ -15,6 +15,7 @@
     "@capacitor/haptics": "^4.0.0",
     "@capacitor/ios": "^4.0.0",
     "@capacitor/keyboard": "^4.0.0",
+    "@capacitor/network": "^4.0.1",
     "@capacitor/preferences": "^4.0.1",
     "@capacitor/share": "^4.0.0",
     "@capacitor/splash-screen": "^4.0.0",
