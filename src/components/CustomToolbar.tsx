@@ -28,6 +28,9 @@ interface ToolbarProps {
   scene: Scene
 }
 
+let lat: number
+let lon: number
+
 const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   const sceneModes = [
     {
@@ -58,11 +61,17 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
       return
     }
 
-    const permissions = await Geolocation.checkPermissions()
-    if (permissions.location !== 'denied') {
-      const location = await Geolocation.getCurrentPosition()
-      const lon = location.coords.longitude
-      const lat = location.coords.latitude
+    if (!lat && !lon) {
+      const permissions = await Geolocation.checkPermissions()
+      if (permissions.location !== 'denied') {
+        const location = await Geolocation.getCurrentPosition()
+        // Only get location once to speed up home button response
+        lon = location.coords.longitude
+        lat = location.coords.latitude
+      }
+    }
+
+    if (lat && lon) {
       cesiumViewer.entities.removeById('userLocation')
       cesiumViewer.entities.add({
         id: 'userLocation',
