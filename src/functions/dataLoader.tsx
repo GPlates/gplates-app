@@ -1,8 +1,8 @@
-import {
-  Credit,
-  GeographicTilingScheme,
-  WebMapTileServiceImageryProvider,
-} from 'cesium'
+import * as Cesium from 'cesium'
+import { buildAnimationURL } from './util'
+import { RasterCfg } from './types'
+import { cachingServant } from './cache'
+import { cesiumViewer } from './cesiumViewer'
 
 var gridsetName = 'EPSG:4326'
 var gridNames = [
@@ -30,82 +30,44 @@ var gridNames = [
   'EPSG:4326:21',
 ]
 
-const topography = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
-  layer: 'gplates:topography',
-  style: '',
-  format: 'image/png',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Coastlines'),
-})
-
-const geology = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-  layer: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
-  style: '',
-  format: 'image/jpeg',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Geology'),
-})
-
-const agegrid = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
-  layer: 'gplates:agegrid',
-  style: '',
-  format: 'image/jpeg',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Geology'),
-})
-
-export const rasterData: { [key: string]: WebMapTileServiceImageryProvider } = {
-  topography: topography,
-  geology: geology,
-  agegrid: agegrid,
-}
-
-export const gplates_coastlines = new WebMapTileServiceImageryProvider({
-  url: 'https://geosrv.earthbyte.org//geoserver/gwc/service/wmts',
-  layer: 'gplates:Matthews_etal_GPC_2016_Coastlines_Polyline',
-  style: '',
-  format: 'image/png',
-  tileMatrixSetID: gridsetName,
-  tileMatrixLabels: gridNames,
-  //minimumLevel: 1,
-  maximumLevel: 8,
-  tilingScheme: new GeographicTilingScheme(),
-  credit: new Credit('EarthByte Coastlines'),
-})
-
-export const vectorData: { [key: string]: WebMapTileServiceImageryProvider } = {
-  coastlines: gplates_coastlines,
-}
-
-export const createCesiumImageryProvider = (
-  url_str: string,
-  layer_name: string,
-  style_name = ''
-) =>
-  new WebMapTileServiceImageryProvider({
+export const createCesiumImageryProvider = (raster: RasterCfg, time = 0) => {
+  let url_str = raster.url
+  let layer_name = raster.layerName
+  let style_name = raster.style
+  let provider = new Cesium.WebMapTileServiceImageryProvider({
     url: url_str,
-    layer: layer_name,
+    layer: layer_name.replace('{{time}}', String(time)),
     style: style_name,
     format: 'image/png',
     tileMatrixSetID: gridsetName,
     tileMatrixLabels: gridNames,
     //minimumLevel: 1,
     maximumLevel: 8,
-    tilingScheme: new GeographicTilingScheme(),
-    credit: new Credit('EarthByte, The University of Sydney'),
+    tilingScheme: new Cesium.GeographicTilingScheme(),
+    credit: new Cesium.Credit('EarthByte, The University of Sydney'),
   })
+  const handler = (providerError: any) => {
+    console.log(providerError)
+    cesiumViewer.imageryLayers.removeAll()
+    //console.log(url_str, layer_name, style_name)
+    let url_ = buildAnimationURL(raster.wmsUrl, layer_name)
+    cachingServant
+      .getCachedRequest(url_.replace('{{time}}', String(time)))
+      .then((dataURL) => {
+        const provider = new Cesium.SingleTileImageryProvider({
+          url: dataURL,
+        })
+        cesiumViewer.imageryLayers.addImageryProvider(provider)
+      })
+      .catch((err) => {
+        console.log('Error: createCesiumImageryProvider error handler')
+        console.log(err)
+      })
+  }
+  provider.errorEvent.addEventListener(handler)
+
+  //cache the low resolution image
+  let url = buildAnimationURL(raster.wmsUrl, layer_name)
+  cachingServant?.cacheURL(url.replace('{{time}}', String(time)))
+  return provider
+}

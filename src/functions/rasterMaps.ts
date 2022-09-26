@@ -1,12 +1,11 @@
 import { RasterCfg } from './types'
-import { rasterData, createCesiumImageryProvider } from './dataLoader'
+import { createCesiumImageryProvider } from './dataLoader'
 import { serverURL } from './settings'
 import { getDefaultStore } from './storage'
 
 export const failSafeRasterMaps: RasterCfg[] = [
   {
     id: 'geology',
-    layer: rasterData['geology'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
     layerName: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
@@ -21,7 +20,6 @@ export const failSafeRasterMaps: RasterCfg[] = [
   },
   {
     id: 'agegrid',
-    layer: rasterData['agegrid'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
     layerName: 'gplates:agegrid',
@@ -36,7 +34,6 @@ export const failSafeRasterMaps: RasterCfg[] = [
   },
   {
     id: 'topography',
-    layer: rasterData['topography'],
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
     layerName: 'gplates:topography',
@@ -159,11 +156,6 @@ const convertJsonToRasterMaps = (jsonData: any) => {
     }
     let o: RasterCfg = {
       id: key,
-      layer: createCesiumImageryProvider(
-        jsonData[key].url,
-        getStartLayerName(jsonData[key]),
-        jsonData[key].style
-      ),
       layerName: jsonData[key].layerName,
       url: jsonData[key].url,
       wmsUrl: jsonData[key].wmsUrl,

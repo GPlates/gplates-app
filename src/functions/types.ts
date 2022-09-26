@@ -1,6 +1,6 @@
 export type RasterCfg = {
   id: string
-  layer: any
+  //layer: any
   layerName: string
   url: string
   wmsUrl: string

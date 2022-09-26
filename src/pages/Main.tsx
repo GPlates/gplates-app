@@ -60,6 +60,7 @@ import { timeRange } from '../functions/util'
 import RotationModel, { rotationModels } from '../functions/rotationModel'
 import { init as initDefaultStorage } from '../functions/storage'
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
+import { createCesiumImageryProvider } from '../functions/dataLoader'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -157,7 +158,8 @@ const Main: React.FC = () => {
 
       //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
-        initCesiumViewer(rasterMaps[0].layer)
+        initCesiumViewer(createCesiumImageryProvider(rasterMaps[0]))
+
         setIsCesiumViewerReady(true) //notify the Ceium view is ready
 
         // Load settings
