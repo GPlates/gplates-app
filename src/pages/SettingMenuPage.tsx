@@ -11,13 +11,9 @@ import {
   IonLabel,
   IonList,
   IonModal,
-  IonRadio,
-  IonRadioGroup,
   IonRippleEffect,
   IonSegment,
   IonSegmentButton,
-  IonSelect,
-  IonSelectOption,
   IonTitle,
   IonToolbar,
   isPlatform,
@@ -287,34 +283,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonRippleEffect />
               </IonButton>
             </IonButtons>
-          </IonItem>
-
-          <IonItemDivider>Main Setting Section4</IonItemDivider>
-          <IonItem>
-            <IonLabel>Some Segmentation</IonLabel>
-            <IonRadioGroup>
-              <IonItem>
-                <IonItem>
-                  <IonLabel>1</IonLabel>
-                  <IonRadio slot="end" value="1" />
-                </IonItem>
-                <IonItem>
-                  <IonLabel>2</IonLabel>
-                  <IonRadio slot="end" value="2" />
-                </IonItem>
-              </IonItem>
-            </IonRadioGroup>
-          </IonItem>
-
-          <IonItemDivider>Main Setting Section5</IonItemDivider>
-          <IonItem>
-            <IonLabel>Select Something</IonLabel>
-            <IonSelect>
-              <IonSelectOption value="1">1</IonSelectOption>
-              <IonSelectOption value="2">2</IonSelectOption>
-              <IonSelectOption value="3">3</IonSelectOption>
-              <IonSelectOption value="4">4</IonSelectOption>
-            </IonSelect>
           </IonItem>
         </IonList>
       </CSSTransition>
