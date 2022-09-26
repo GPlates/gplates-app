@@ -58,11 +58,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     let responseJson = getVectorLayers(rasterModel)
     vectorLayers = []
     for (let key in responseJson) {
-      let p = createCesiumImageryProvider(
-        responseJson[key].url,
-        responseJson[key].layer.replace('{{time}}', String(rAge)),
-        responseJson[key].style
-      )
+      let p = createCesiumImageryProvider(responseJson[key], rAge)
 
       let layer = {
         imageryLayer: null as unknown as ImageryLayer,

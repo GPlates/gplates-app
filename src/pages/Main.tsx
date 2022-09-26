@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { SplashScreen } from '@capacitor/splash-screen'
 import {
   IonContent,
@@ -60,6 +60,7 @@ import { timeRange } from '../functions/util'
 import RotationModel, { rotationModels } from '../functions/rotationModel'
 import { init as initDefaultStorage } from '../functions/storage'
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
+import { createCesiumImageryProvider } from '../functions/dataLoader'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -101,6 +102,10 @@ const Main: React.FC = () => {
   const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
     currentRasterMapIndexState
   )
+  const [isOffline, setIsOffline] = useState(false)
+  //we don't show message if the app is online at startup
+  const isStartupOnline = useRef(true)
+
   const [presentToast, dismissToast] = useIonToast()
 
   animationService = new AnimationService(
@@ -133,10 +138,34 @@ const Main: React.FC = () => {
     }
   })
 
+  useEffect(() => {
+    if (isOffline) {
+      presentToast({
+        buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+        duration: 15000,
+        message: 'Network is unavailable',
+        onDidDismiss: () => {},
+      })
+    } else {
+      if (!isStartupOnline.current) {
+        presentToast({
+          buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+          duration: 5000,
+          message: 'Back online',
+          onDidDismiss: () => {},
+        })
+      }
+    }
+    isStartupOnline.current = false
+  }, [isOffline])
+
   //use [] to make this useEffect similar to componentDidMount
   useEffect(() => {
     //initialize the default local storage
     initDefaultStorage()
+
+    //
+    networkMonitor(setIsOffline)
 
     //load the raster maps from gplates server or localstorage
     loadRasterMaps((networkFail: boolean) => {
@@ -157,7 +186,8 @@ const Main: React.FC = () => {
 
       //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
-        initCesiumViewer(rasterMaps[0].layer)
+        initCesiumViewer(createCesiumImageryProvider(rasterMaps[0]))
+
         setIsCesiumViewerReady(true) //notify the Ceium view is ready
 
         // Load settings
@@ -283,6 +313,16 @@ const Main: React.FC = () => {
       </IonContent>
     </IonPage>
   )
+}
+
+const networkMonitor = (setIsOffline: any) => {
+  setInterval(() => {
+    if (!globalThis.navigator.onLine) {
+      setIsOffline(true)
+    } else {
+      setIsOffline(false)
+    }
+  }, 3 * 1000)
 }
 
 export default Main
