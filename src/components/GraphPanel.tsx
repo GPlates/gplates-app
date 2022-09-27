@@ -2,11 +2,9 @@ import * as echarts from 'echarts'
 import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { age, isGraphPanelShowState } from '../functions/atoms'
-import './GraphPanel.css'
+import './GraphPanel.scss'
 import { EChartsType } from 'echarts'
 import { getPlatforms } from '@ionic/react'
-import assert from 'assert'
-import { XAXisComponentOption } from 'echarts/types/dist/option'
 
 type EChartsOption = echarts.EChartsOption
 let MY_CHART: EChartsType
