@@ -53,6 +53,10 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       let chartDom = document.getElementById('graphPanel-statistics')!
       MY_CHART = echarts.init(chartDom)
 
+      globalThis.addEventListener('resize', function () {
+        MY_CHART.resize()
+      })
+
       OPTION = {
         xAxis: {
           type: 'category',
@@ -63,6 +67,9 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
             value: _age,
             handle: {
               show: true,
+              size: 20,
+              margin: 35,
+              color: 'white',
             },
             label: {
               show: true,
@@ -71,7 +78,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
                 let num_age = _age
                 if (typeof params.value === 'string') {
                   num_age = parseInt(params.value)
-                  setAge(num_age)
+                  //setAge(num_age)//need to think about this more
                 }
                 return num_age + 'Ma : ' + DATA_MAP[num_age]
               },
