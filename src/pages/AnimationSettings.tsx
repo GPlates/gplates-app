@@ -213,6 +213,14 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                   onIonChange={(e) => setLoop(e.detail.checked)}
                 />
               </IonItem>
+              <IonItem>
+                <IonLabel>Reconstruct Overlays</IonLabel>
+                <IonCheckbox
+                  class={'reconstruct-overlays'}
+                  checked={false}
+                  onIonChange={(e) => console.log(e.detail.checked)}
+                />
+              </IonItem>
             </IonCol>
           </IonRow>
         </IonGrid>
