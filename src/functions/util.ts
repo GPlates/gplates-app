@@ -54,7 +54,7 @@ export const buildAnimationURL = (wmsUrl: string, layerName: string) => {
     wmsUrl +
     '?service=WMS&version=1.1.0&request=GetMap&layers=' +
     layerName_ +
-    '&bbox=-180.0,-90.0,180.0,90.0&width=768&height=384' +
+    '&bbox=-180.0,-90.0,180.0,90.0&width=1200&height=600' +
     '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
   )
 }

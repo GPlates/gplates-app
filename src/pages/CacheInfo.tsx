@@ -54,6 +54,10 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
         </IonButtons>
       </IonToolbar>
       <IonContent>
+        <IonItem>
+          <IonLabel class="cache-db-label">Cache DB </IonLabel>
+          <IonNote slot="end">DB name goes here</IonNote>
+        </IonItem>
         <IonList>
           {Array.from(cacheStatsList).map((value) => (
             <IonItem key={value[0]}>
