@@ -10,6 +10,7 @@ import {
   IonList,
   IonRange,
   IonRow,
+  IonToggle,
 } from '@ionic/react'
 import { Preferences } from '@capacitor/preferences'
 import { setNumber } from '../functions/input'
@@ -201,21 +202,21 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
             <IonCol>
               <IonItem>
                 <IonLabel>Finish animation exactly on end time</IonLabel>
-                <IonCheckbox
+                <IonToggle
                   checked={exact}
                   onIonChange={(e) => setExact(e.detail.checked)}
                 />
               </IonItem>
               <IonItem>
                 <IonLabel>Loop</IonLabel>
-                <IonCheckbox
+                <IonToggle
                   checked={loop}
                   onIonChange={(e) => setLoop(e.detail.checked)}
                 />
               </IonItem>
               <IonItem>
-                <IonLabel>Reconstruct Overlays</IonLabel>
-                <IonCheckbox
+                <IonLabel>Animate Overlays</IonLabel>
+                <IonToggle
                   class={'reconstruct-overlays'}
                   checked={false}
                   onIonChange={(e) => console.log(e.detail.checked)}

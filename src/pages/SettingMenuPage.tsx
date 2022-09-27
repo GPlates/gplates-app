@@ -18,6 +18,7 @@ import {
   IonToolbar,
   isPlatform,
   useIonAlert,
+  IonToggle,
 } from '@ionic/react'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { CSSTransition } from 'react-transition-group'
@@ -208,7 +209,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonItemDivider>Network Settings</IonItemDivider>
           <IonItem>
             <IonLabel>Download on Mobile Data</IonLabel>
-            <IonCheckbox
+            <IonToggle
               class={'single-setting-option'}
               checked={downloadOnCellular}
               onIonChange={(e) => setDownloadOnCellular(e.detail.checked)}
@@ -230,7 +231,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonItemDivider>Graticules</IonItemDivider>
           <IonItem>
             <IonLabel>Show Graticules</IonLabel>
-            <IonCheckbox
+            <IonToggle
               class={'single-setting-option'}
               checked={isShowGraticule}
               onIonChange={(e) => {
@@ -247,17 +248,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonItem>
 
           <IonItemDivider>Cache</IonItemDivider>
-
-          <IonItem>
-            <IonLabel class="cache-db-label">Cache DB </IonLabel>
-            <IonInput
-              class="cache-db-input"
-              value="TODO"
-              onIonChange={(e) => {
-                if (e.detail.value) console.log(e.detail.value)
-              }}
-            />
-          </IonItem>
           <IonItem>
             <IonButtons style={{ margin: 'auto' }}>
               <IonButton
