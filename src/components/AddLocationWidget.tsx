@@ -105,7 +105,7 @@ const setPresentDayLonLatPid = (
     .then((response) => response.json())
     .then((jsonData) => {
       const coords = jsonData['features'][0]['geometry']['coordinates']
-      console.log(jsonData)
+      //console.log(jsonData)
       setPresentDayLonLatList(
         presentDayLonLatList.concat([
           {

@@ -28,6 +28,11 @@ export const reconstructPresentDayLocations = async (paleoAge: number) => {
   )
     return
 
+  // fetch finite rotation for plate IDs
+  currentModel.fetchFiniteRotations(
+    presentDayLonLatList.map((lll) => String(lll.pid))
+  )
+
   let paleoCoords: { lon: number; lat: number }[] = []
   presentDayLonLatList.forEach((point) => {
     let rp = currentModel.rotateLonLatPid(
