@@ -6,7 +6,7 @@ $card-top-margin: 0.5rem;
 $card-bottom-margin: 0.5rem;
 $card-header-vertical-padding: 0.5rem;
 $selected-bar-height: 0rem;
-$header-height: 3.5rem;
+$header-height: 4.5rem;
 $title-font-size: 1rem;
 $subtitle-font-size: 0.8rem;
 $arrow-size: 2rem;
@@ -17,9 +17,7 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
 
 .raster-menu-scroll {
   text-align: center;
-  white-space: nowrap;
-  overflow-x: scroll;
-  overflow-y: hidden;
+  white-space: break-spaces;
   position: absolute;
   bottom: $raster-menu-bottom;
   width: 100%;
@@ -31,7 +29,8 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
     display: inline-block;
     background-color: rgba(0, 0, 0, 0);
     box-shadow: 0 0;
-    margin: 0.5rem 0.8rem 0;
+    margin-top: 0.5rem;
+    width: 7rem
   }
 
   ion-card-header {
@@ -104,21 +103,6 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
     padding: 40vh 0;
     font-size: 2rem;
   }
-}
-
-.raster-menu-arrow {
-  font-size: $arrow-size;
-  position: absolute;
-  opacity: 1;
-  bottom: $chevron-vertical-position;
-}
-
-.right {
-  right: 0.5rem;
-}
-
-.left {
-  left: 0.5rem;
 }
 
 @media (prefers-color-scheme: light) {
