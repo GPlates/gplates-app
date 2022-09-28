@@ -42,6 +42,7 @@ import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
 import { getData } from './CacheInfo'
 import { showGraticule, hideGraticule } from '../functions/graticule'
+import { useHistory } from 'react-router'
 
 //
 const titles: { [key: string]: string } = {
@@ -93,6 +94,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [isShowGraticule, setIsShowGraticule] = useState(false)
 
   const [presentAlert] = useIonAlert()
+
+  const history = useHistory()
 
   useEffect(() => {
     if (isShow) {
@@ -299,6 +302,23 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 <IonRippleEffect />
               </IonButton>
             </IonButtons>
+          </IonItem>
+
+          <IonItemDivider>Tutorial</IonItemDivider>
+
+          <IonItem
+            button
+            onClick={() => {
+              Preferences.remove({ key: 'hasFinishedTutorial' }).then(() => {
+                history.replace('/tutorial')
+                setIsShow(false)
+              })
+            }}
+          >
+            {!isPlatform('ios') && (
+              <IonIcon icon={chevronForward} slot={'end'} />
+            )}
+            <IonLabel>Relaunch Tutorial</IonLabel>
           </IonItem>
         </IonList>
       </CSSTransition>

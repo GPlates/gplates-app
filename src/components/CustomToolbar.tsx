@@ -64,10 +64,14 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     if (!lat && !lon) {
       const permissions = await Geolocation.checkPermissions()
       if (permissions.location !== 'denied') {
-        const location = await Geolocation.getCurrentPosition()
-        // Only get location once to speed up home button response
-        lon = location.coords.longitude
-        lat = location.coords.latitude
+        try {
+          const location = await Geolocation.getCurrentPosition()
+          // Only get location once to speed up home button response
+          lon = location.coords.longitude
+          lat = location.coords.latitude
+        } catch (err) {
+          console.log(err)
+        }
       }
     }
 
@@ -151,7 +155,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
             <Swiper
               pagination={pagination}
               modules={[Pagination]}
-              className="swiper"
+              className="help-swiper"
             >
               <SwiperSlide>
                 <div className="help">

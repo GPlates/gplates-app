@@ -1,0 +1,96 @@
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 200ms;
+}
+
+.tutorial-swiper {
+  .swiper-pagination-bullet-active {
+    background: white !important;
+  }
+
+  .swiper-wrapper {
+    height: 100vh;
+  }
+
+  .swiper-slide {
+    h1 {
+      margin-top: 40px;
+    }
+
+    h3 {
+      margin-top: 32px;
+    }
+
+    img {
+      max-height: 60vh;
+      max-width: min(100%, 512px);
+    }
+
+    height: 100%;
+    width: 100%;
+
+    color: white;
+    text-align: center;
+    font-size: 18px;
+
+    /* Center slide text vertically */
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  background: rgb(14,14,15);
+  transition: background 250ms;
+}
+
+.slide1 {
+  background: rgb(20, 99, 167);
+}
+
+.slide2 {
+  background: rgb(17, 107, 173);
+}
+
+.slide3 {
+  background: rgb(14,115,178);
+}
+
+.slide4 {
+  background: rgb(11,124,184);
+}
+
+.slide5 {
+  background: rgb(8,132,190);
+}
+
+.slide6 {
+  background: rgb(5, 140, 196);
+}
+
+.slide7 {
+  background: rgb(2,148,202);
+}
+
+.white-button {
+  --border-color: white;
+  --color: white;
+}
+
+.nav-button {
+  &.prev {
+    left: 16px;
+  }
+  &.next {
+    right: 16px;
+  }
+
+  bottom: 24px;
+  color: white;
+  position: fixed;
+  z-index: 1;
+}
