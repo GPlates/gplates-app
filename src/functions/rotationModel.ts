@@ -70,7 +70,7 @@ export default class RotationModel {
       }
     })
     if (pids_.length === 0) {
-      console.log('no need to fetch data from server!')
+      //console.log('DEBUG: no need to fetch data from server!')
       return
     }
 
@@ -97,7 +97,7 @@ export default class RotationModel {
           ...Array.from(this.finiteRotations.entries()),
           ...Array.from(Object.entries(jsonData)),
         ])
-        console.log(this.finiteRotations)
+        //console.log(this.finiteRotations)
       })
       .catch((error) => {
         console.log(error)

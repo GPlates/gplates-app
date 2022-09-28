@@ -9,24 +9,24 @@ export const setPresentDayLonLatList = (newList: LonLatPid[]) =>
   (presentDayLonLatList = newList)
 
 //the reconstruction service uses this "setLonLatListCallback" to update paleo-coordinates in AddLocationWidget
-export let setLonLatListCallback: Function
+//export let setLonLatListCallback: Function
 //the AddLocationWidget uses this "setSetLonLatListCallback" to allow reconstruction service to update paleo-coordinates
-export const setSetLonLatListCallback = (func: Function) =>
-  (setLonLatListCallback = func)
+//export const setSetLonLatListCallback = (func: Function) =>
+//  (setLonLatListCallback = func)
 
 //the reconstruction service use this "updateLocationEntitiesCallback" to notify AddLocationWidget to update locations on Cesium globe
-let updateLocationEntitiesCallback: Function
-export const setUpdateLocationEntitiesCallback = (funcs: Function) =>
-  (updateLocationEntitiesCallback = funcs)
+//let updateLocationEntitiesCallback: Function
+//export const setUpdateLocationEntitiesCallback = (funcs: Function) =>
+//  (updateLocationEntitiesCallback = funcs)
 
 //reconstruct present-day locations
-export const reconstructPresentDayLocations = async (paleoAge: number) => {
+export const reconstructPresentDayLocations = (paleoAge: number) => {
   if (
     rasterMaps.length === 0 ||
     presentDayLonLatList.length === 0 ||
     typeof cesiumViewer === 'undefined'
   )
-    return
+    return []
 
   // fetch finite rotation for plate IDs
   currentModel.fetchFiniteRotations(
@@ -42,10 +42,10 @@ export const reconstructPresentDayLocations = async (paleoAge: number) => {
     //console.log(rp)
     paleoCoords.push(rp)
   })
-  setLonLatListCallback(paleoCoords) //notify AddLocationWidget
-  updateLocationEntitiesCallback(paleoCoords) //update points on Cesium globe
+  //setLonLatListCallback(paleoCoords) //notify AddLocationWidget
+  //updateLocationEntitiesCallback(paleoCoords) //update points on Cesium globe
 
-  return
+  return paleoCoords
 }
 
 /*
