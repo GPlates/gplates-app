@@ -30,6 +30,7 @@ const Tutorial: React.FC = () => {
         history.replace('/main')
       } else {
         setShow(true)
+        SplashScreen.hide()
       }
     })
   }, [])
