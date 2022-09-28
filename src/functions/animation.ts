@@ -49,7 +49,7 @@ export class AnimationService {
         }
       }
       //reconstruct locations inserted by user
-      await reconstructPresentDayLocations(animateFrame)
+      //await reconstructPresentDayLocations(animateFrame)
     } catch (err) {
       console.log(err)
       return
