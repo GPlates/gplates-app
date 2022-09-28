@@ -41,18 +41,20 @@
   fill: var(--ion-color-dark);
 }
 
-.swiper-pagination {
-  .swiper-pagination-bullet {
-    background: var(--ion-color-primary);
-    border-radius: 4px;
-    font-size: 14px;
-    height: auto;
-    padding: 8px;
-    text-align: center;
-    transition: all 150ms;
-    width: auto;
-  }
+.help-swiper {
+  .swiper-pagination {
+    .swiper-pagination-bullet {
+      background: var(--ion-color-primary);
+      border-radius: 4px;
+      font-size: 14px;
+      height: auto;
+      padding: 8px;
+      text-align: center;
+      transition: all 150ms;
+      width: auto;
+    }
 
-  bottom: unset !important;
-  top: 8px;
+    bottom: unset !important;
+    top: 8px;
+  }
 }

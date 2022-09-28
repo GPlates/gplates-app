@@ -151,7 +151,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
             <Swiper
               pagination={pagination}
               modules={[Pagination]}
-              className="swiper"
+              className="help-swiper"
             >
               <SwiperSlide>
                 <div className="help">
