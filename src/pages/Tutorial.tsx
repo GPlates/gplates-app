@@ -11,7 +11,7 @@ import { useHistory } from 'react-router'
 
 const Tutorial: React.FC = () => {
   const [index, setIndex] = useState(0)
-  const [show, setShow] = useState(true)
+  const [show, setShow] = useState(false)
   const [swiper, setSwiper] = useState<Types.Swiper>()
   const history = useHistory()
 
