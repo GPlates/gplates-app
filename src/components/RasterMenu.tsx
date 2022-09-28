@@ -10,7 +10,7 @@ import {
 
 import './RasterMenu.scss'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { SetterOrUpdater, useRecoilState, useSetRecoilState } from 'recoil'
 import {
   currentRasterMapIndexState,
   isRasterMenuShow,
@@ -25,7 +25,6 @@ import RotationModel, {
   rotationModels,
   setCurrentModel,
 } from '../functions/rotationModel'
-import { cachingServant } from '../functions/cache'
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 
@@ -34,6 +33,7 @@ interface ContainerProps {
   setCurrentLayer: Function
   isViewerLoading: Function
   isCesiumViewerReady: boolean
+  setAgeSliderShown: SetterOrUpdater<boolean>
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
@@ -41,6 +41,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   setCurrentLayer,
   isViewerLoading,
   isCesiumViewerReady,
+  setAgeSliderShown,
 }) => {
   const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
     currentRasterMapIndexState
@@ -113,10 +114,15 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     setCurrentRasterMapIndex(index)
     setAge(0)
     if (rasterMaps.length > 0) {
+      const endTime = rasterMaps[index].endTime
+      const startTime = rasterMaps[index].startTime
       setRange({
-        lower: rasterMaps[index].endTime,
-        upper: rasterMaps[index].startTime,
+        lower: endTime,
+        upper: startTime,
       })
+      if (endTime === 0 && startTime === 0) {
+        setAgeSliderShown(false)
+      }
     }
     cesiumViewer?.entities.removeById('userLocation')
 

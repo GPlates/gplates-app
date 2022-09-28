@@ -42,6 +42,7 @@ import {
   isAddLocationWidgetShowState,
   currentRasterMapIndexState,
   networkDownloadOnCellular,
+  isAgeSliderShown,
 } from '../functions/atoms'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -97,6 +98,8 @@ const Main: React.FC = () => {
   ] = useRecoilState(backgroundIsCustom)
   const [color, setColor] = useRecoilState(backgroundColor)
 
+  // Raster
+  const setAgeSliderShown = useSetRecoilState(isAgeSliderShown)
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
 
@@ -314,6 +317,7 @@ const Main: React.FC = () => {
             setCurrentLayer={setRasterMenuCurrentLayer}
             isViewerLoading={isViewerLoading}
             isCesiumViewerReady={isCesiumViewerReady}
+            setAgeSliderShown={setAgeSliderShown}
           />
           <AboutPage />
           <ModelInfo />
