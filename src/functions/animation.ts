@@ -2,8 +2,9 @@ import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
 import rasterMaps from './rasterMaps'
-import { reconstructPresentDayLocations } from './presentDayLocations'
+import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { buildAnimationURL } from './util'
+import { currentModel } from './rotationModel'
 
 let animateFrame = 0
 let animateNext = false
@@ -33,7 +34,7 @@ export class AnimationService {
     animateStartTime = Date.now()
     try {
       const dataURL: string = await this.cachingService?.getCachedRequest(
-        url.replace('{{time}}', String(animateFrame))
+        url.replaceAll('{{time}}', String(animateFrame))
       )
       if (!dataURL) {
         return this.setPlaying(false)
@@ -194,9 +195,15 @@ export class AnimationService {
   // TODO: do the similar thing for vector layers(overlays)
   //
   getCurrentRasterAnimationURL = () => {
+    let overlays: string[] = []
+    let enabledLayers = getEnabledLayers(this.currentRasterMapIndex)
+    enabledLayers.forEach((layer) => {
+      overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
+    })
     return buildAnimationURL(
       rasterMaps[this.currentRasterMapIndex].wmsUrl,
-      rasterMaps[this.currentRasterMapIndex].layerName
+      rasterMaps[this.currentRasterMapIndex].layerName,
+      overlays
     )
   }
 }

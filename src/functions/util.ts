@@ -43,12 +43,23 @@ export const timeRange = (begin: number, end: number, step: number) => {
 }
 
 //
-export const buildAnimationURL = (wmsUrl: string, layerName: string) => {
+export const buildAnimationURL = (
+  wmsUrl: string,
+  layerName: string,
+  overlays: string[] = []
+) => {
   //experimental code to reconstruct overlays
   let layerName_ = layerName
-  if (layerName.startsWith('paleo-age-grids')) {
-    layerName_ += ',paleo-age-grids:Matthews_etal_GPC_2016_Coastlines_Polyline'
+  let [workspaceName, _] = layerName.split(':')
+  if (workspaceName === 'MULLER2019') {
+    overlays.forEach((overlay: string) => {
+      let [wsn, _] = overlay.split(':')
+      if (wsn === workspaceName) {
+        layerName_ += ',' + overlay
+      }
+    })
   }
+  console.log(layerName_)
 
   return (
     wmsUrl +
