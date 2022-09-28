@@ -320,7 +320,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             button
             onClick={() => {
               Preferences.remove({ key: 'hasFinishedTutorial' }).then(() => {
-                history.push('/tutorial')
+                history.replace('/tutorial')
                 setIsShow(false)
               })
             }}
