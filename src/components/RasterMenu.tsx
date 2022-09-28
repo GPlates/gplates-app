@@ -4,12 +4,13 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  IonIcon,
   useIonLoading,
 } from '@ionic/react'
 
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { FreeMode, Navigation } from 'swiper'
+
 import './RasterMenu.scss'
-import { chevronBack, chevronForward } from 'ionicons/icons'
 import { SetterOrUpdater, useRecoilState, useSetRecoilState } from 'recoil'
 import {
   currentRasterMapIndexState,
@@ -77,35 +78,37 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
     optionList.push(
-      <IonCard
-        key={'raster-menu-element-' + i}
-        className={
-          currentRasterMapIndex === i ? 'selected-opt' : 'unselected-opt'
-        }
-        onClick={async (e) => {
-          if (currentRasterMapIndex !== i) {
-            select(i)
-            await present({ message: 'Loading...' })
-            switchLayer(createCesiumImageryProvider(rasterMaps[i]))
-            await timeout(200)
-            while (!isViewerLoading()) {
-              await timeout(200)
-            }
-            await dismiss()
+      <SwiperSlide style={{ width: 'auto' }} key={i}>
+        <IonCard
+          key={'raster-menu-element-' + i}
+          className={
+            currentRasterMapIndex === i ? 'selected-opt' : 'unselected-opt'
           }
-        }}
-      >
-        <img
-          src={rasterMaps[i].icon}
-          className={'map-icon'}
-          alt={'global icon'}
-        />
-        <IonCardHeader>
-          <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
-          <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
-        </IonCardHeader>
-        <div />
-      </IonCard>
+          onClick={async (e) => {
+            if (currentRasterMapIndex !== i) {
+              select(i)
+              await present({ message: 'Loading...' })
+              switchLayer(createCesiumImageryProvider(rasterMaps[i]))
+              await timeout(200)
+              while (!isViewerLoading()) {
+                await timeout(200)
+              }
+              await dismiss()
+            }
+          }}
+        >
+          <img
+            src={rasterMaps[i].icon}
+            className={'map-icon'}
+            alt={'global icon'}
+          />
+          <IonCardHeader>
+            <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
+            <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
+          </IonCardHeader>
+          <div />
+        </IonCard>
+      </SwiperSlide>
     )
   }
 
@@ -147,7 +150,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       }
     }
   }
-
+  let winWidth = screen.width
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div
@@ -156,9 +159,16 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           setIsShow(false)
         }}
       />
-      <div className={'raster-menu-scroll'}>{optionList}</div>
-      <IonIcon icon={chevronForward} className={'raster-menu-arrow right'} />
-      <IonIcon icon={chevronBack} className={'raster-menu-arrow left'} />
+      <Swiper
+        slidesPerView={'auto'}
+        spaceBetween={30}
+        navigation={true}
+        freeMode={true}
+        modules={[FreeMode, Navigation]}
+        className="raster-menu-scroll"
+      >
+        {optionList}
+      </Swiper>
     </div>
   )
 }

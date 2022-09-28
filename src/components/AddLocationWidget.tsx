@@ -41,11 +41,12 @@ import { age } from '../functions/atoms'
 import {
   presentDayLonLatList,
   setPresentDayLonLatList,
-  setSetLonLatListCallback,
-  setUpdateLocationEntitiesCallback,
+  //setSetLonLatListCallback,
+  //setUpdateLocationEntitiesCallback,
 } from '../functions/presentDayLocations'
 import { serverURL } from '../functions/settings'
 import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import { reconstructPresentDayLocations } from '../functions/presentDayLocations'
 
 let cameraChangedRemoveCallback: any = null
 let cameraMoveStartRemoveCallback: any = null
@@ -105,7 +106,7 @@ const setPresentDayLonLatPid = (
     .then((response) => response.json())
     .then((jsonData) => {
       const coords = jsonData['features'][0]['geometry']['coordinates']
-      console.log(jsonData)
+      //console.log(jsonData)
       setPresentDayLonLatList(
         presentDayLonLatList.concat([
           {
@@ -142,11 +143,19 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const paleoAge = useRecoilValue(age)
   const [presentToast, dismissToast] = useIonToast()
 
+  useEffect(() => {
+    const paleoCoords = reconstructPresentDayLocations(paleoAge)
+    if (paleoCoords) {
+      setLonLatlist(paleoCoords)
+      updateLocationEntities(paleoCoords)
+    }
+  }, [paleoAge])
+
   //duplicate this dispatch function in another file for external usage
-  setSetLonLatListCallback(setLonLatlist)
+  //setSetLonLatListCallback(setLonLatlist)
 
   //the callback function to update points on Cesium globe
-  setUpdateLocationEntitiesCallback(updateLocationEntities)
+  //setUpdateLocationEntitiesCallback(updateLocationEntities)
 
   //handle the camera changed event
   //calculate the coordinates of the center of camera lens

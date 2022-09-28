@@ -1,8 +1,17 @@
+$panel-height: 30vh;
+
 .graph-panel-statistics {
   position: absolute;
   bottom: 0;
-  height: 30vh;
+  height:$panel-height;
   min-height: 300px;
   background-color: rgba(0, 0, 0, 0.85);
   width: 100vw;
+}
+
+.graph-panel-list {
+  position: absolute;
+  bottom: max(30vh, 300px);
+  width: 100vw;
+  opacity: 0.85;
 }

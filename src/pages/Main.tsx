@@ -166,7 +166,7 @@ const Main: React.FC = () => {
     //initialize the default local storage
     initDefaultStorage()
 
-    //
+    //initalize the network monitor, report network outage
     networkMonitor(setIsOffline)
 
     //load the raster maps from gplates server or localstorage
@@ -184,13 +184,15 @@ const Main: React.FC = () => {
         })
       }
 
+      console.log('DEBUG: raster maps loaded!')
       setIsRasterMapsLoaded(true) //notify the raster maps have been loaded.
 
       //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
         initCesiumViewer(createCesiumImageryProvider(rasterMaps[0]))
 
-        setIsCesiumViewerReady(true) //notify the Ceium view is ready
+        setIsCesiumViewerReady(true) //notify the Ceium viewer is ready
+        console.log('DEBUG: Ceium viewer is ready!')
 
         // Load settings
         Preferences.get({ key: 'animationSettings' }).then((res) => {
@@ -256,6 +258,7 @@ const Main: React.FC = () => {
           }
         }
       })
+      console.log('DEBUG: rotation models have been created!')
 
       //add more init code here
 

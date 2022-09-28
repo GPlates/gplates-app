@@ -46,60 +46,73 @@ export const ToolMenu = () => {
 
   const toolMenuList: any[] = [
     <IonFabButton
-      key={'tool-menu-button' + 0}
-      onClick={() => {
-        setMenuPageShow(true)
-      }}
-    >
-      <IonIcon icon={cogOutline} />
-    </IonFabButton>,
-    <IonFabButton
+      title="Choose Rasters"
       key={'tool-menu-button' + 1}
       onClick={() => {
         setRasterMenuPageShow(true)
       }}
     >
-      <IonIcon icon={earthOutline} />
+      <IonIcon style={{ pointerEvents: 'none' }} icon={earthOutline} />
     </IonFabButton>,
     <IonFabButton
+      title="Settings"
+      key={'tool-menu-button' + 0}
+      onClick={() => {
+        setMenuPageShow(true)
+      }}
+    >
+      <IonIcon style={{ pointerEvents: 'none' }} icon={cogOutline} />
+    </IonFabButton>,
+    <IonFabButton
+      title="Share Screenshot"
       key={'tool-menu-button' + 2}
       onClick={async () => {
         await SocialSharing(present, dismiss, presentToast, dismissToast)
       }}
     >
-      <IonIcon icon={shareSocialOutline}></IonIcon>
+      <IonIcon
+        style={{ pointerEvents: 'none' }}
+        icon={shareSocialOutline}
+      ></IonIcon>
     </IonFabButton>,
     <IonFabButton
+      title="Add Layers"
       key={'tool-menu-button' + 3}
       onClick={async () => {
         setIsVectorDataLayerMenuShow(true)
       }}
     >
-      <IonIcon icon={layersOutline} />
+      <IonIcon style={{ pointerEvents: 'none' }} icon={layersOutline} />
     </IonFabButton>,
     <IonFabButton
+      title="Model Info"
       key={'tool-menu-button' + 4}
       onClick={() => {
         setShowModelInfo(true)
       }}
     >
-      <IonIcon icon={informationCircleOutline} />
+      <IonIcon
+        style={{ pointerEvents: 'none' }}
+        icon={informationCircleOutline}
+      />
     </IonFabButton>,
     <IonFabButton
+      title="Show Graphs"
       key={'tool-menu-button' + 5}
       onClick={() => {
         setIsGraphPanelShow(!isGraphPanelShow)
       }}
     >
-      <IonIcon icon={statsChartOutline} />
+      <IonIcon style={{ pointerEvents: 'none' }} icon={statsChartOutline} />
     </IonFabButton>,
     <IonFabButton
+      title="Add Locations"
       key={'tool-menu-button' + 6}
       onClick={() => {
         setShowAddLocationWidget(!showAddLocationWidget)
       }}
     >
-      <IonIcon icon={locateOutline} />
+      <IonIcon style={{ pointerEvents: 'none' }} icon={locateOutline} />
     </IonFabButton>,
   ]
 
