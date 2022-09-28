@@ -181,7 +181,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div id="graphPanel-statistics" className="graph-panel-statistics" />
-      <IonAccordionGroup className="graph-panel-list">
+      <IonAccordionGroup className="graph-panel-list" hidden={!isShow}>
         <IonAccordion value="first">
           <IonItem slot="header">
             <IonLabel>Graph List</IonLabel>
