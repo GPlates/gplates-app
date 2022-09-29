@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   IonCard,
   IonCardHeader,
@@ -8,7 +8,7 @@ import {
 } from '@ionic/react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { FreeMode, Navigation } from 'swiper'
+import SwiperType, { FreeMode, Navigation } from 'swiper'
 
 import './RasterMenu.scss'
 import { SetterOrUpdater, useRecoilState, useSetRecoilState } from 'recoil'
@@ -50,6 +50,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
   const setAge = useSetRecoilState(age)
   const [range, setRange] = useRecoilState(animateRange)
+  const [swiper, setSwiper] = useState<SwiperType>()
   const [present, dismiss] = useIonLoading()
 
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
@@ -69,6 +70,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   useEffect(() => {
     select(0)
+    swiper?.slideTo(rasterMaps.length / 2)
   }, [isCesiumViewerReady]) //initial selection
 
   useEffect(() => {
@@ -151,6 +153,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     }
   }
   let winWidth = screen.width
+
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div
@@ -163,9 +166,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         slidesPerView={'auto'}
         spaceBetween={30}
         navigation={true}
+        centeredSlides={true}
+        initialSlide={0}
+        watchOverflow={true}
         freeMode={true}
         modules={[FreeMode, Navigation]}
         className="raster-menu-scroll"
+        onSwiper={(swiper) => setSwiper(swiper)}
       >
         {optionList}
       </Swiper>
