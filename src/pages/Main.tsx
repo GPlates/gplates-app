@@ -189,7 +189,11 @@ const Main: React.FC = () => {
 
       //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
-        initCesiumViewer(createCesiumImageryProvider(rasterMaps[0]))
+        initCesiumViewer(
+          createCesiumImageryProvider(
+            rasterMaps[Math.floor(rasterMaps.length / 2)]
+          )
+        )
 
         setIsCesiumViewerReady(true) //notify the Ceium viewer is ready
         console.log('DEBUG: Ceium viewer is ready!')

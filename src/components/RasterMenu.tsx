@@ -69,8 +69,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   }
 
   useEffect(() => {
-    select(0)
-    swiper?.slideTo(rasterMaps.length / 2)
+    let middle = Math.floor(rasterMaps.length / 2)
+    select(middle)
+    swiper?.slideTo(middle)
   }, [isCesiumViewerReady]) //initial selection
 
   useEffect(() => {
