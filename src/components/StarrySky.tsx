@@ -3,7 +3,9 @@ import assert from 'assert'
 import { useRecoilState } from 'recoil'
 import { backgroundIsStarry } from '../functions/atoms'
 
-let maxStars = 300
+let w = window.innerWidth
+let h = window.innerHeight
+let maxStars = Math.log2(w * h) * 10
 
 function random(min: number, max: any = null) {
   if (max == null) {
@@ -32,37 +34,52 @@ class Star {
   static ctx: CanvasRenderingContext2D
   static canvas2: HTMLCanvasElement
   static maxStars: number
-  orbitRadius
+  directionX
+  directionY
   radius
-  orbitX
-  orbitY
+  posX
+  posY
   timePassed
   speed
   alpha
+  key
 
   constructor() {
     let w = window.innerWidth
     let h = window.innerHeight
-    this.orbitRadius = random(maxOrbit(w, h))
-    this.radius = random(60, this.orbitRadius) / 12
-    this.orbitX = w / 2
-    this.orbitY = h / 2
+    this.directionX = random(-1, 1)
+    this.directionY = random(-1, 1)
+    this.radius = random(5, 30)
+    this.posX = random(0, w)
+    this.posY = random(0, h)
     this.timePassed = random(0, maxStars)
-    this.speed = random(this.orbitRadius) / 500000
-    // this.speed = 0;
+    this.speed = random(1, 500) / 10000
     this.alpha = random(2, 10) / 10
 
     if (Star.count < Star.maxStars) {
+      this.key = Star.count
       Star.count++
       Star.stars.push(this)
     }
   }
 
   draw(): void {
-    var x = Math.sin(this.timePassed) * this.orbitRadius + this.orbitX,
-      y = Math.cos(this.timePassed) * this.orbitRadius + this.orbitY,
-      twinkle = random(200)
+    let w = window.innerWidth
+    let h = window.innerHeight
+    this.posX = this.speed * this.directionX + this.posX
+    this.posY = this.speed * this.directionY + this.posY
 
+    if (this.posX > w + this.radius) {
+      this.posX = -this.radius
+    } else if (this.posX < -this.radius) {
+      this.posX = w + this.radius
+    }
+    if (this.posY > h + this.radius) {
+      this.posY = -this.radius
+    } else if (this.posY < -this.radius) {
+      this.posY = h + this.radius
+    }
+    let twinkle = random(200)
     if (twinkle === 1 && this.alpha > 0) {
       this.alpha -= 0.05
     } else if (twinkle === 2 && this.alpha < 1) {
@@ -71,8 +88,8 @@ class Star {
     Star.ctx.globalAlpha = this.alpha
     Star.ctx.drawImage(
       Star.canvas2,
-      x - this.radius / 2,
-      y - this.radius / 2,
+      this.posX,
+      this.posY,
       this.radius,
       this.radius
     )
@@ -96,8 +113,9 @@ export const StarrySky: React.FC<ContainerProps> = () => {
     assert(canvas != null)
     let ctx = canvas.getContext('2d')
     assert(ctx != null)
-    let w = window.outerWidth
-    let h = window.outerHeight
+    let w = window.innerWidth
+    let h = window.innerHeight
+    console.log('w and h: ' + w + ' ' + h)
     canvas.height = h
     canvas.width = w
 
@@ -122,7 +140,7 @@ export const StarrySky: React.FC<ContainerProps> = () => {
 
     Star.ctx = ctx
     Star.canvas2 = canvas2
-    for (var i = 0; i < maxStars; i++) {
+    for (let i = 0; i < maxStars; i++) {
       new Star()
     }
 
