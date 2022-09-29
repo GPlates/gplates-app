@@ -14,6 +14,7 @@ import {
   useIonLoading,
 } from '@ionic/react'
 import rasterMaps from '../functions/rasterMaps'
+import { timeout } from '../functions/util'
 
 type EChartsOption = echarts.EChartsOption
 let MY_CHART: EChartsType
@@ -23,17 +24,19 @@ let Y_VALS
 let DATA
 let DATA_MAP: string[]
 
-// test dummy data
-const urlList = [
-  'https://gws.gplates.org/mobile/get_scotese_etal_2021_global_temp',
-  'https://gws.gplates.org/mobile/get_scotese_etal_2021_global_temp',
-  'https://gws.gplates.org/mobile/get_scotese_etal_2021_global_temp',
-]
+const getGraphList = async () => {
+  const graphList = []
+  let data: any = await fetch('https://gws.gplates.org/mobile/get_graphs')
+  let data_map = await data.json()
+  for (let key in data_map) {
+    graphList.push([key, data_map[key]])
+  }
+  return graphList
+}
 
 async function getData(url: string) {
   let data: any = await fetch(url)
   let data_map = await data.json()
-
   let x_vals: number[] = []
   let y_vals: number[] = []
   for (let key in data_map) {
@@ -57,9 +60,15 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const rasterMapAnimateRange = useRecoilValue(animateRange)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [present, dismiss] = useIonLoading()
+  const [graphList, setGraphList] = useState([] as string[][])
+  const loadGraph = async (instantCurGraphIdx?: number) => {
+    let curIdx = curGraphIdx
+    if (instantCurGraphIdx != undefined) curIdx = instantCurGraphIdx
 
-  const loadGraph = async () => {
-    await getData(urlList[curGraphIdx]).then(
+    // waiting for graph list loading finish
+    while (graphList == undefined) await timeout(200)
+
+    await getData(graphList[curIdx][1]).then(
       ([data_map, data, x_vals, y_vals]) => {
         DATA_MAP = data_map
         DATA = data.slice(
@@ -76,6 +85,10 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         )
 
         let chartDom = document.getElementById('graphPanel-statistics')!
+
+        if (MY_CHART != null) {
+          MY_CHART.dispose()
+        }
         MY_CHART = echarts.init(chartDom)
 
         globalThis.addEventListener('resize', function () {
@@ -83,6 +96,13 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         })
 
         OPTION = {
+          title: [
+            {
+              left: 'center',
+              top: '5%',
+              text: graphList[curIdx][0],
+            },
+          ],
           xAxis: {
             type: 'category',
             data: X_VALS,
@@ -139,9 +159,17 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   }
   // initialization
   useEffect(() => {
-    loadGraph().catch((err) => {
-      console.log(err)
-    })
+    if (graphList.length === 0) {
+      getGraphList()
+        .then((res) => {
+          setGraphList(res)
+        })
+        .catch((err) => {})
+    }
+  }, [])
+
+  useEffect(() => {
+    loadGraph().catch((err) => {})
   }, [rasterMapAnimateRange])
 
   useEffect(() => {
@@ -154,14 +182,14 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   }, [_age])
 
   let optionList = []
-  for (let i = 0; i < urlList.length; i++) {
+  for (let i = 0; i < graphList.length; i++) {
     optionList.push(
       <IonItem
         key={i}
         onClick={async () => {
           await present({ message: 'Loading...' })
           setCurGraphIdx(i)
-          await loadGraph()
+          await loadGraph(i)
           await dismiss()
         }}
       >
@@ -172,7 +200,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
               : {}
           }
         >
-          Graph {i}
+          {graphList[i][0]}
         </IonLabel>
       </IonItem>
     )
