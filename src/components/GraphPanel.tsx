@@ -14,7 +14,8 @@ import {
   useIonLoading,
 } from '@ionic/react'
 import rasterMaps from '../functions/rasterMaps'
-import { timeout } from '../functions/util'
+import { requestDataByUrl, timeout } from '../functions/util'
+import { getDefaultStore } from '../functions/storage'
 
 type EChartsOption = echarts.EChartsOption
 let MY_CHART: EChartsType
@@ -25,9 +26,10 @@ let DATA
 let DATA_MAP: string[]
 
 const getGraphList = async () => {
+  let data_map: any = await requestDataByUrl(
+    'https://gws.gplates.org/mobile/get_graphs'
+  )
   const graphList = []
-  let data: any = await fetch('https://gws.gplates.org/mobile/get_graphs')
-  let data_map = await data.json()
   for (let key in data_map) {
     graphList.push([key, data_map[key]])
   }
@@ -35,8 +37,7 @@ const getGraphList = async () => {
 }
 
 async function getData(url: string) {
-  let data: any = await fetch(url)
-  let data_map = await data.json()
+  let data_map: any = await requestDataByUrl(url)
   let x_vals: number[] = []
   let y_vals: number[] = []
   for (let key in data_map) {
@@ -44,7 +45,7 @@ async function getData(url: string) {
     y_vals.push(data_map[key])
   }
 
-  data = []
+  let data = []
   for (let i = 0; i < x_vals.length; i++) {
     data.push([x_vals[i], y_vals[i]])
   }
@@ -163,6 +164,9 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       getGraphList()
         .then((res) => {
           setGraphList(res)
+          for (let each in res) {
+            getData(each[1]) // add all data into local storage
+          }
         })
         .catch((err) => {})
     }

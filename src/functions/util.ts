@@ -1,6 +1,8 @@
 /*
  *
  */
+import { getDefaultStore } from './storage'
+
 export const timeout = async (time: number) => {
   await new Promise((resolve) => setTimeout(resolve, time))
 }
@@ -68,4 +70,25 @@ export const buildAnimationURL = (
     '&bbox=-180.0,-90.0,180.0,90.0&width=1200&height=600' +
     '&srs=EPSG:4326&styles=&format=image/png; mode=8bit'
   )
+}
+
+export const requestDataByUrl = async (url: string) => {
+  let data_map: any
+
+  try {
+    let data: any = await fetch(url)
+    data_map = await data.json()
+    getDefaultStore()
+      .then((store) => {
+        store.set(url, data_map)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  } catch (e) {
+    let store = await getDefaultStore()
+    data_map = await store.get(url)
+  }
+
+  return data_map
 }
