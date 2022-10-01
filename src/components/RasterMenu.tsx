@@ -118,6 +118,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   // select the target one and unselect rest all
   const select = async (index: number) => {
     setCurrentRasterMapIndex(index)
+    setCurrentRasterIndex(index)
     setAge(0)
     if (rasterMaps.length > 0) {
       const endTime = rasterMaps[index].endTime

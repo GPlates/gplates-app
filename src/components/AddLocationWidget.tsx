@@ -37,7 +37,7 @@ import {
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { age } from '../functions/atoms'
+import { age, currentRasterMapIndexState } from '../functions/atoms'
 import {
   presentDayLonLatList,
   setPresentDayLonLatList,
@@ -47,6 +47,7 @@ import {
 import { serverURL } from '../functions/settings'
 import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
 import { reconstructPresentDayLocations } from '../functions/presentDayLocations'
+import { LonLatPid } from '../functions/types'
 
 let cameraChangedRemoveCallback: any = null
 let cameraMoveStartRemoveCallback: any = null
@@ -57,6 +58,7 @@ var locationCartesian: Cartesian3 | undefined = Cartesian3.fromDegrees(0, 0)
 
 //
 const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
+  //console.log(coords)
   //remove the old location entities
   locationEntities.forEach((entity, index) => {
     entity.position = new ConstantPositionProperty(
@@ -96,30 +98,42 @@ const setPresentDayLonLatPid = (
     lat: number
   }>
 ) => {
-  //reverse recontruct to get present day coords and plate id
-  //even when the paleo-age is 0, we still need the plate id
-  fetch(
-    serverURL.replace(/\/+$/, '') +
-      `/reconstruct/reconstruct_points/?points=${lonLat.current.lon},${lonLat.current.lat}` +
-      `&time=${age}&model=${rasterMaps[currentRasterIndex].model}&reverse&fc`
-  )
-    .then((response) => response.json())
-    .then((jsonData) => {
-      const coords = jsonData['features'][0]['geometry']['coordinates']
-      //console.log(jsonData)
-      setPresentDayLonLatList(
-        presentDayLonLatList.concat([
-          {
-            lon: coords[0],
-            lat: coords[1],
-            pid: jsonData['features'][0]['properties']['pid'],
-          },
-        ])
-      )
-    })
-    .catch((error) => {
-      console.log(error) //handle the promise rejection
-    })
+  if (!rasterMaps[currentRasterIndex].model) {
+    setPresentDayLonLatList(
+      presentDayLonLatList.concat([
+        {
+          lon: lonLat.current.lon,
+          lat: lonLat.current.lat,
+          pid: 0,
+        },
+      ])
+    )
+  } else {
+    //reverse recontruct to get present day coords and plate id
+    //even when the paleo-age is 0, we still need the plate id
+    fetch(
+      serverURL.replace(/\/+$/, '') +
+        `/reconstruct/reconstruct_points/?points=${lonLat.current.lon},${lonLat.current.lat}` +
+        `&time=${age}&model=${rasterMaps[currentRasterIndex].model}&reverse&fc`
+    )
+      .then((response) => response.json())
+      .then((jsonData) => {
+        const coords = jsonData['features'][0]['geometry']['coordinates']
+        //console.log(jsonData)
+        setPresentDayLonLatList(
+          presentDayLonLatList.concat([
+            {
+              lon: coords[0],
+              lat: coords[1],
+              pid: jsonData['features'][0]['properties']['pid'],
+            },
+          ])
+        )
+      })
+      .catch((error) => {
+        console.log(error) //handle the promise rejection
+      })
+  }
 }
 //
 //
@@ -141,15 +155,54 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const [showLocationDetails, setShowLocationDetails] = useState(false)
   const [showLocationIndex, setShowLocationIndex] = useState(0)
   const paleoAge = useRecoilValue(age)
+  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const [presentToast, dismissToast] = useIonToast()
 
   useEffect(() => {
     const paleoCoords = reconstructPresentDayLocations(paleoAge)
-    if (paleoCoords) {
+    if (paleoCoords.length > 0) {
       setLonLatlist(paleoCoords)
       updateLocationEntities(paleoCoords)
     }
   }, [paleoAge])
+
+  useEffect(() => {
+    if (!(rasterMaps.length > currentRasterMapIndex)) return
+
+    let points_str = ''
+    presentDayLonLatList.forEach((lonLatPid) => {
+      points_str +=
+        lonLatPid.lon.toFixed(4) + ',' + lonLatPid.lat.toFixed(4) + ','
+    })
+    points_str = points_str.slice(0, -1)
+
+    if (
+      rasterMaps[currentRasterMapIndex].model &&
+      presentDayLonLatList.length > 0
+    ) {
+      fetch(
+        serverURL.replace(/\/+$/, '') +
+          `/reconstruct/assign_points_plate_ids?points=${points_str}&model=${rasterMaps[currentRasterMapIndex].model}`
+      )
+        .then((response) => response.json())
+        .then((jsonData) => {
+          let newLonLatPid: LonLatPid[] = presentDayLonLatList.map(
+            (lonLatPid, index) => {
+              return {
+                lon: lonLatPid.lon,
+                lat: lonLatPid.lat,
+                pid: jsonData[index],
+              }
+            }
+          )
+          //console.log(jsonData)
+          setPresentDayLonLatList(newLonLatPid)
+        })
+        .catch((error) => {
+          console.log(error) //handle the promise rejection
+        })
+    }
+  }, [currentRasterMapIndex]) //the current raster index changed
 
   //duplicate this dispatch function in another file for external usage
   //setSetLonLatListCallback(setLonLatlist)
