@@ -61,7 +61,7 @@ export const buildAnimationURL = (
       }
     })
   }
-  console.log(layerName_)
+  //console.log(layerName_)
 
   return (
     wmsUrl +
