@@ -4,6 +4,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { age, showCities } from '../functions/atoms'
 import { serverURL } from '../functions/settings'
 import { currentModel } from '../functions/rotationModel'
+
 import { cesiumViewer } from '../functions/cesiumViewer'
 
 //for example: "Sydney": [151.2099, -33.8651],
@@ -36,6 +37,7 @@ interface MajorCitiesProps {}
 const MajorCities: React.FC<MajorCitiesProps> = () => {
   const paleoAge = useRecoilValue(age)
   const showCitiesFlag = useRecoilValue(showCities)
+
 
   useEffect(() => {
     //TODO: add city reconstruction code here
@@ -99,6 +101,7 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
       })
     }
   }, [showCitiesFlag])
+
 
   return null // non-GUI component
 }
