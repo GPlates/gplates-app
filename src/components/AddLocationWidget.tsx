@@ -37,16 +37,18 @@ import {
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { age } from '../functions/atoms'
+import { age, currentRasterMapIndexState } from '../functions/atoms'
 import {
-  presentDayLonLatList,
-  setPresentDayLonLatList,
+  PresentDayLocation,
   //setSetLonLatListCallback,
   //setUpdateLocationEntitiesCallback,
 } from '../functions/presentDayLocations'
+
+export let locationWidgetPresentDayLocation = new PresentDayLocation()
 import { serverURL } from '../functions/settings'
 import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
-import { reconstructPresentDayLocations } from '../functions/presentDayLocations'
+import { timeout } from '../functions/util'
+// import { reconstructPresentDayLocations } from '../functions/presentDayLocations'
 
 let cameraChangedRemoveCallback: any = null
 let cameraMoveStartRemoveCallback: any = null
@@ -58,7 +60,11 @@ var locationCartesian: Cartesian3 | undefined = Cartesian3.fromDegrees(0, 0)
 //
 const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
   //remove the old location entities
-  locationEntities.forEach((entity, index) => {
+  locationEntities.forEach(async (entity, index) => {
+    if (coords[index] == undefined) {
+      return
+    }
+
     entity.position = new ConstantPositionProperty(
       Cartesian3.fromDegrees(coords[index].lon, coords[index].lat)
     )
@@ -90,35 +96,43 @@ const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
 }
 
 const setPresentDayLonLatPid = (
+  insertIdx: number,
+  rasterMapName: string,
   age: number,
-  lonLat: React.MutableRefObject<{
-    lon: number
-    lat: number
-  }>
+  lon: number,
+  lat: number
 ) => {
   //reverse recontruct to get present day coords and plate id
   //even when the paleo-age is 0, we still need the plate id
   fetch(
     serverURL.replace(/\/+$/, '') +
-      `/reconstruct/reconstruct_points/?points=${lonLat.current.lon},${lonLat.current.lat}` +
-      `&time=${age}&model=${rasterMaps[currentRasterIndex].model}&reverse&fc`
+      `/reconstruct/reconstruct_points/?points=${lon},${lat}` +
+      `&time=${age}&model=${rasterMapName}&reverse&fc`
   )
     .then((response) => response.json())
     .then((jsonData) => {
       const coords = jsonData['features'][0]['geometry']['coordinates']
-      //console.log(jsonData)
-      setPresentDayLonLatList(
-        presentDayLonLatList.concat([
-          {
-            lon: coords[0],
-            lat: coords[1],
-            pid: jsonData['features'][0]['properties']['pid'],
-          },
-        ])
+      locationWidgetPresentDayLocation.presentDayLonLatList.splice(
+        insertIdx,
+        1,
+        {
+          lon: coords[0],
+          lat: coords[1],
+          pid: jsonData['features'][0]['properties']['pid'],
+        }
       )
     })
     .catch((error) => {
       console.log(error) //handle the promise rejection
+      locationWidgetPresentDayLocation.presentDayLonLatList.splice(
+        insertIdx,
+        1,
+        {
+          lon: lon,
+          lat: lat,
+          pid: undefined as unknown as number,
+        }
+      )
     })
 }
 //
@@ -142,14 +156,28 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const [showLocationIndex, setShowLocationIndex] = useState(0)
   const paleoAge = useRecoilValue(age)
   const [presentToast, dismissToast] = useIonToast()
+  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
 
   useEffect(() => {
-    const paleoCoords = reconstructPresentDayLocations(paleoAge)
+    const paleoCoords =
+      locationWidgetPresentDayLocation.reconstructPresentDayLocations(paleoAge)
     if (paleoCoords) {
       setLonLatlist(paleoCoords)
       updateLocationEntities(paleoCoords)
     }
   }, [paleoAge])
+
+  useEffect(() => {
+    locationEntities.forEach((entity, idx) => {
+      setPresentDayLonLatPid(
+        idx,
+        String(rasterMaps[currentRasterMapIndex].model),
+        paleoAge,
+        lonLatList[idx].lon,
+        lonLatList[idx].lat
+      )
+    })
+  }, [currentRasterMapIndex])
 
   //duplicate this dispatch function in another file for external usage
   //setSetLonLatListCallback(setLonLatlist)
@@ -258,9 +286,13 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                             a.splice(index, 1)
                             setLonLatlist(a)
                             //remove the present-day coordinates as well
-                            let b = [...presentDayLonLatList]
+                            let b = [
+                              ...locationWidgetPresentDayLocation.presentDayLonLatList,
+                            ]
                             b.splice(index, 1)
-                            setPresentDayLonLatList(b)
+                            locationWidgetPresentDayLocation.setPresentDayLonLatList(
+                              b
+                            )
 
                             cesiumViewer.entities.remove(
                               locationEntities[index]
@@ -311,9 +343,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                     { lon: lonLat.current.lon, lat: lonLat.current.lat },
                   ])
                 )
-                //get plate id and
-                //save the Present Day coordinates in another file
-                setPresentDayLonLatPid(paleoAge, lonLat)
 
                 let pe = cesiumViewer.entities.add({
                   name:
@@ -332,6 +361,16 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                   },
                 })
                 locationEntities.push(pe)
+
+                //get plate id and
+                //save the Present Day coordinates in another file
+                setPresentDayLonLatPid(
+                  locationEntities.length - 1,
+                  String(rasterMaps[currentRasterMapIndex].model),
+                  paleoAge,
+                  lonLat.current.lon,
+                  lonLat.current.lat
+                )
               }}
             >
               Insert

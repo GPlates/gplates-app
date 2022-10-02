@@ -1,4 +1,11 @@
-import { SingleTileImageryProvider, Viewer, ImageryLayer } from 'cesium'
+import {
+  SingleTileImageryProvider,
+  Viewer,
+  ImageryLayer,
+  Color,
+  Cartesian3,
+  ConstantPositionProperty,
+} from 'cesium'
 import {
   IonButton,
   IonButtons,
@@ -23,7 +30,7 @@ import {
 } from 'ionicons/icons'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
-import { timeout } from '../functions/util'
+import { requestDataByUrl } from '../functions/util'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   currentRasterMapIndexState,
@@ -38,10 +45,12 @@ import {
   getEnabledLayers,
   disableLayer,
 } from '../functions/vectorLayers'
-import { cachingServant } from '../functions/cache'
+
 import { cesiumViewer } from '../functions/cesiumViewer'
-import { buildAnimationURL } from '../functions/util'
 import './VectorDataLayerMenu.scss'
+import { PresentDayLocation } from '../functions/presentDayLocations'
+
+export let VectorLayerCitiesPresentDayLocation = new PresentDayLocation()
 
 //only for this GUI component
 let vectorLayers: VectorLayerType[] = []
@@ -52,6 +61,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const rAge = useRecoilValue(age)
+  const [cities, setCities] = useState([] as any[])
+  const [pidInfo, setPidInfo] = useState({} as Map<string, number[]>)
 
   //
   const getVecInfoByRaster = async (rasterModel: string) => {
@@ -77,7 +88,6 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
       }
       vectorLayers.push(layer) //add the new layer into the vector layer list
     }
-    console.log(vectorLayers)
   }
 
   //
@@ -132,14 +142,158 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   }
 
   //
-  const onCheckBoxChange = (val: any) => {
-    //console.log(val)
+  const onLayersCheckBoxChange = (val: any) => {
     let layer = vectorLayers[val.detail.value]
     layer.checked = val.detail.checked
     checkLayer(layer, layer.checked)
   }
 
   if (isShow && vectorLayers.length === 0) updateVectorDataInformation()
+
+  // ***********************  add cities part  ***********************
+  // initialize city location list
+  useEffect(() => {
+    getCityList().then(() => {
+      getPids().then(() => {
+        updatePresentDayLonLatList()
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    const paleoCoords =
+      VectorLayerCitiesPresentDayLocation.reconstructPresentDayLocations(rAge)
+    if (paleoCoords) {
+      updateLocationEntities(paleoCoords)
+    }
+  }, [rAge])
+
+  useEffect(() => {
+    updatePresentDayLonLatList()
+    // clear City Entities
+    cities.forEach((city, idx) => {
+      city.checked = false
+      removeCityEntity(city)
+    })
+  }, [currentRasterMapIndex])
+
+  const removeCityEntity = (city: any) => {
+    if (city.entity == undefined) {
+      return
+    }
+    cesiumViewer.entities.remove(city.entity)
+    city.entity = undefined
+  }
+
+  const getCityList = async () => {
+    let data_map = await requestDataByUrl(
+      'https://gws.gplates.org/mobile/get_cities'
+    )
+    let data: any[] = []
+    for (let key in data_map.coords) {
+      data.push({
+        name: key,
+        coord: data_map.coords[key],
+        checked: false,
+        entity: undefined,
+      })
+    }
+    setCities(data)
+  }
+
+  async function getPids() {
+    let data_map = await requestDataByUrl(
+      'https://gws.gplates.org/mobile/get_cities'
+    )
+    let plate_ids = new Map<string, number[]>()
+    for (let key in data_map['plate-ids']) {
+      plate_ids.set(key, data_map['plate-ids'][key])
+    }
+    setPidInfo(plate_ids)
+  }
+
+  const setPresentDayLonLatPid = async (
+    cityIdx: number,
+    lon: number,
+    lat: number
+  ) => {
+    let curRasterMap: any = rasterMaps[currentRasterMapIndex].model
+    curRasterMap =
+      curRasterMap === undefined
+        ? undefined
+        : pidInfo.get(curRasterMap)![cityIdx]
+    VectorLayerCitiesPresentDayLocation.presentDayLonLatList.splice(
+      cityIdx,
+      1,
+      {
+        lon: lon,
+        lat: lat,
+        pid: curRasterMap,
+      }
+    )
+  }
+
+  const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
+    cities.forEach(async (city, index) => {
+      if (city.entity == undefined) {
+        return
+      }
+      city.entity.position = new ConstantPositionProperty(
+        Cartesian3.fromDegrees(coords[index].lon, coords[index].lat)
+      )
+    })
+  }
+
+  const updatePresentDayLonLatList = (selectedIdx?: number) => {
+    if (selectedIdx === undefined) {
+      // update all
+      cities.forEach(async (city, idx) => {
+        let coord = city.coord
+        await setPresentDayLonLatPid(idx, coord[0], coord[1])
+      })
+    } else {
+      // update target city
+      let coord = cities[selectedIdx].coord
+      setPresentDayLonLatPid(selectedIdx, coord[0], coord[1])
+    }
+  }
+
+  const onCitiesCheckBoxChange = (val: any) => {
+    let curIdx = val.detail.value
+    let checked = val.detail.checked
+    cities[curIdx].checked = checked
+
+    if (checked) {
+      let curCoord = cities[curIdx].coord
+      let locationCartesian: Cartesian3 = Cartesian3.fromDegrees(
+        curCoord[0],
+        curCoord[1]
+      )
+      setPresentDayLonLatPid(curIdx, curCoord[0], curCoord[1]).then(() => {
+        let pe = cesiumViewer.entities.add({
+          name: cities[curIdx].name,
+          position: locationCartesian,
+          point: {
+            color: Color.BLUEVIOLET,
+            pixelSize: 10,
+            outlineColor: Color.WHITE,
+            outlineWidth: 3,
+          },
+          label: cities[curIdx].name,
+        })
+        cesiumViewer.scene.camera.flyTo({
+          destination: Cartesian3.fromDegrees(
+            curCoord[0],
+            curCoord[1],
+            9999999
+          ),
+        })
+        cities[curIdx].entity = pe
+      })
+    } else {
+      removeCityEntity(cities[curIdx])
+    }
+  }
 
   return (
     <div
@@ -160,7 +314,27 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
                       slot="end"
                       value={index}
                       checked={layer.checked}
-                      onIonChange={onCheckBoxChange}
+                      onIonChange={onLayersCheckBoxChange}
+                    />
+                  </IonItem>
+                </div>
+              )
+            })}
+          </IonAccordion>
+          <IonAccordion value="second">
+            <IonItem slot="header" color="light">
+              <IonLabel>Add Cities</IonLabel>
+            </IonItem>
+            {cities.map((city, index) => {
+              return (
+                <div slot="content" key={index}>
+                  <IonItem>
+                    <IonLabel>{city.name}</IonLabel>
+                    <IonCheckbox
+                      slot="end"
+                      value={index}
+                      checked={city.checked}
+                      onIonChange={onCitiesCheckBoxChange}
                     />
                   </IonItem>
                 </div>
