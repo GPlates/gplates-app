@@ -44,10 +44,11 @@ import {
   //setUpdateLocationEntitiesCallback,
 } from '../functions/presentDayLocations'
 
-export let locationWidgetPresentDayLocation = new PresentDayLocation()
+export let locationWidgetPDL = new PresentDayLocation()
 import { serverURL } from '../functions/settings'
 import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
 import { timeout } from '../functions/util'
+import { LonLatPid } from '../functions/types'
 // import { reconstructPresentDayLocations } from '../functions/presentDayLocations'
 
 let cameraChangedRemoveCallback: any = null
@@ -112,27 +113,19 @@ const setPresentDayLonLatPid = (
     .then((response) => response.json())
     .then((jsonData) => {
       const coords = jsonData['features'][0]['geometry']['coordinates']
-      locationWidgetPresentDayLocation.presentDayLonLatList.splice(
-        insertIdx,
-        1,
-        {
-          lon: coords[0],
-          lat: coords[1],
-          pid: jsonData['features'][0]['properties']['pid'],
-        }
-      )
+      locationWidgetPDL.presentDayLonLatList.splice(insertIdx, 1, {
+        lon: coords[0],
+        lat: coords[1],
+        pid: jsonData['features'][0]['properties']['pid'],
+      })
     })
     .catch((error) => {
       console.log(error) //handle the promise rejection
-      locationWidgetPresentDayLocation.presentDayLonLatList.splice(
-        insertIdx,
-        1,
-        {
-          lon: lon,
-          lat: lat,
-          pid: undefined as unknown as number,
-        }
-      )
+      locationWidgetPDL.presentDayLonLatList.splice(insertIdx, 1, {
+        lon: lon,
+        lat: lat,
+        pid: 0,
+      })
     })
 }
 //
@@ -160,24 +153,61 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
 
   useEffect(() => {
     const paleoCoords =
-      locationWidgetPresentDayLocation.reconstructPresentDayLocations(paleoAge)
+      locationWidgetPDL.reconstructPresentDayLocations(paleoAge)
     if (paleoCoords.length > 0) {
       setLonLatlist(paleoCoords)
       updateLocationEntities(paleoCoords)
     }
   }, [paleoAge])
 
+  // useEffect(() => {
+  //   locationEntities.forEach((entity, idx) => {
+  //     setPresentDayLonLatPid(
+  //       idx,
+  //       String(rasterMaps[currentRasterMapIndex].model),
+  //       paleoAge,
+  //       lonLatList[idx].lon,
+  //       lonLatList[idx].lat
+  //     )
+  //   })
+  // }, [currentRasterMapIndex])
+
   useEffect(() => {
-    locationEntities.forEach((entity, idx) => {
-      setPresentDayLonLatPid(
-        idx,
-        String(rasterMaps[currentRasterMapIndex].model),
-        paleoAge,
-        lonLatList[idx].lon,
-        lonLatList[idx].lat
-      )
+    if (!(rasterMaps.length > currentRasterMapIndex)) return
+
+    let points_str = ''
+    locationWidgetPDL.presentDayLonLatList.forEach((lonLatPid) => {
+      points_str +=
+        lonLatPid.lon.toFixed(4) + ',' + lonLatPid.lat.toFixed(4) + ','
     })
-  }, [currentRasterMapIndex])
+    points_str = points_str.slice(0, -1)
+
+    if (
+      rasterMaps[currentRasterMapIndex].model &&
+      locationWidgetPDL.presentDayLonLatList.length > 0
+    ) {
+      fetch(
+        serverURL.replace(/\/+$/, '') +
+          `/reconstruct/assign_points_plate_ids?points=${points_str}&model=${rasterMaps[currentRasterMapIndex].model}`
+      )
+        .then((response) => response.json())
+        .then((jsonData) => {
+          let newLonLatPid: LonLatPid[] =
+            locationWidgetPDL.presentDayLonLatList.map((lonLatPid, index) => {
+              return {
+                lon: lonLatPid.lon,
+                lat: lonLatPid.lat,
+                pid: jsonData[index],
+              }
+            })
+          //console.log(jsonData)
+          locationWidgetPDL.setPresentDayLonLatList(newLonLatPid)
+        })
+        .catch((error) => {
+          console.log(error) //handle the promise rejection
+        })
+    }
+  }, [currentRasterMapIndex]) //the current raster index changed
 
   //duplicate this dispatch function in another file for external usage
   //setSetLonLatListCallback(setLonLatlist)
@@ -286,13 +316,9 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                             a.splice(index, 1)
                             setLonLatlist(a)
                             //remove the present-day coordinates as well
-                            let b = [
-                              ...locationWidgetPresentDayLocation.presentDayLonLatList,
-                            ]
+                            let b = [...locationWidgetPDL.presentDayLonLatList]
                             b.splice(index, 1)
-                            locationWidgetPresentDayLocation.setPresentDayLonLatList(
-                              b
-                            )
+                            locationWidgetPDL.setPresentDayLonLatList(b)
 
                             cesiumViewer.entities.remove(
                               locationEntities[index]

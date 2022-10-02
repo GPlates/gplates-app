@@ -50,7 +50,7 @@ import { cesiumViewer } from '../functions/cesiumViewer'
 import './VectorDataLayerMenu.scss'
 import { PresentDayLocation } from '../functions/presentDayLocations'
 
-export let VectorLayerCitiesPresentDayLocation = new PresentDayLocation()
+export let VectorLayerCitiesPDL = new PresentDayLocation()
 
 //only for this GUI component
 let vectorLayers: VectorLayerType[] = []
@@ -162,7 +162,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
 
   useEffect(() => {
     const paleoCoords =
-      VectorLayerCitiesPresentDayLocation.reconstructPresentDayLocations(rAge)
+      VectorLayerCitiesPDL.reconstructPresentDayLocations(rAge)
     if (paleoCoords) {
       updateLocationEntities(paleoCoords)
     }
@@ -222,15 +222,11 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
       curRasterMap === undefined
         ? undefined
         : pidInfo.get(curRasterMap)![cityIdx]
-    VectorLayerCitiesPresentDayLocation.presentDayLonLatList.splice(
-      cityIdx,
-      1,
-      {
-        lon: lon,
-        lat: lat,
-        pid: curRasterMap,
-      }
-    )
+    VectorLayerCitiesPDL.presentDayLonLatList.splice(cityIdx, 1, {
+      lon: lon,
+      lat: lat,
+      pid: curRasterMap,
+    })
   }
 
   const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
