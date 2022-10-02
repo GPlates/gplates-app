@@ -3,68 +3,62 @@ import rasterMaps from './rasterMaps'
 import { LonLatPid } from './types'
 import { currentModel } from './rotationModel'
 
-export class PresentDayLocation {
-  presentDayLonLatList: LonLatPid[]
+export let presentDayLonLatList: LonLatPid[] = []
 
-  constructor() {
-    this.presentDayLonLatList = []
-  }
+export const setPresentDayLonLatList = (newList: LonLatPid[]) =>
+  (presentDayLonLatList = newList)
 
-  setPresentDayLonLatList = (newList: LonLatPid[]) =>
-    (this.presentDayLonLatList = newList)
+//the reconstruction service uses this "setLonLatListCallback" to update paleo-coordinates in AddLocationWidget
+//export let setLonLatListCallback: Function
+//the AddLocationWidget uses this "setSetLonLatListCallback" to allow reconstruction service to update paleo-coordinates
+//export const setSetLonLatListCallback = (func: Function) =>
+//  (setLonLatListCallback = func)
 
-  //the reconstruction service uses this "setLonLatListCallback" to update paleo-coordinates in AddLocationWidget
-  //export let setLonLatListCallback: Function
-  //the AddLocationWidget uses this "setSetLonLatListCallback" to allow reconstruction service to update paleo-coordinates
-  //export const setSetLonLatListCallback = (func: Function) =>
-  //  (setLonLatListCallback = func)
+//the reconstruction service use this "updateLocationEntitiesCallback" to notify AddLocationWidget to update locations on Cesium globe
+//let updateLocationEntitiesCallback: Function
+//export const setUpdateLocationEntitiesCallback = (funcs: Function) =>
+//  (updateLocationEntitiesCallback = funcs)
 
-  //the reconstruction service use this "updateLocationEntitiesCallback" to notify AddLocationWidget to update locations on Cesium globe
-  //let updateLocationEntitiesCallback: Function
-  //export const setUpdateLocationEntitiesCallback = (funcs: Function) =>
-  //  (updateLocationEntitiesCallback = funcs)
+//reconstruct present-day locations
+export const reconstructPresentDayLocations = (paleoAge: number) => {
+  if (
+    rasterMaps.length === 0 ||
+    presentDayLonLatList.length === 0 ||
+    typeof cesiumViewer === 'undefined'
+  )
+    return []
 
-  //reconstruct present-day locations
-  reconstructPresentDayLocations = (paleoAge: number) => {
-    if (
-      rasterMaps.length === 0 ||
-      this.presentDayLonLatList.length === 0 ||
-      typeof cesiumViewer === 'undefined'
+  // fetch finite rotation for plate IDs
+  currentModel.fetchFiniteRotations(
+    presentDayLonLatList.map((lll) => String(lll.pid))
+  )
+
+  let paleoCoords: { lon: number; lat: number }[] = []
+  presentDayLonLatList.forEach((point) => {
+    let rp = currentModel.rotateLonLatPid(
+      currentModel.getTimeIndex(paleoAge),
+      point
     )
-      return []
+    //console.log(rp)
+    paleoCoords.push(rp)
+  })
+  //setLonLatListCallback(paleoCoords) //notify AddLocationWidget
+  //updateLocationEntitiesCallback(paleoCoords) //update points on Cesium globe
 
-    // fetch finite rotation for plate IDs
-    currentModel.fetchFiniteRotations(
-      this.presentDayLonLatList.map((lll) => String(lll.pid))
-    )
-
-    let paleoCoords: { lon: number; lat: number }[] = []
-    this.presentDayLonLatList.forEach((point) => {
-      let rp = currentModel.rotateLonLatPid(
-        currentModel.getTimeIndex(paleoAge),
-        point
-      )
-      //console.log(rp)
-      paleoCoords.push(rp)
-    })
-    //setLonLatListCallback(paleoCoords) //notify AddLocationWidget
-    //updateLocationEntitiesCallback(paleoCoords) //update points on Cesium globe
-
-    return paleoCoords
-  }
-
-  /*
-    let data = await fetch(
-      serverURL +
-        `/reconstruct/reconstruct_points/?points=${coordsStr}&time=${paleoAge}&model=` +
-        rasterMaps[currentRasterIndex].model
-    )
-    let dataJson = await data.json()
-    //console.log(dataJson['coordinates'])
-    let paleoCoords: { lon: number; lat: number }[] = []
-    dataJson['coordinates'].forEach((coord: [number, number]) => {
-      paleoCoords.push({ lon: coord[0], lat: coord[1] })
-    })
-    console.log(`paleoAge:${paleoAge}`)
-    */
+  return paleoCoords
 }
+
+/*
+  let data = await fetch(
+    serverURL +
+      `/reconstruct/reconstruct_points/?points=${coordsStr}&time=${paleoAge}&model=` +
+      rasterMaps[currentRasterIndex].model
+  )
+  let dataJson = await data.json()
+  //console.log(dataJson['coordinates'])
+  let paleoCoords: { lon: number; lat: number }[] = []
+  dataJson['coordinates'].forEach((coord: [number, number]) => {
+    paleoCoords.push({ lon: coord[0], lat: coord[1] })
+  })
+  console.log(`paleoAge:${paleoAge}`)
+  */
