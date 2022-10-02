@@ -16,6 +16,7 @@ import {
 import rasterMaps from '../functions/rasterMaps'
 import { requestDataByUrl, timeout } from '../functions/util'
 import { getDefaultStore } from '../functions/storage'
+import { serverURL } from '../functions/settings'
 
 type EChartsOption = echarts.EChartsOption
 let MY_CHART: EChartsType
@@ -27,7 +28,7 @@ let DATA_MAP: string[]
 
 const getGraphList = async () => {
   let data_map: any = await requestDataByUrl(
-    'https://gws.gplates.org/mobile/get_graphs'
+    serverURL.replace(/\/+$/, '') + '/mobile/get_graphs'
   )
   const graphList = []
   for (let key in data_map) {
@@ -72,18 +73,31 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     await getData(graphList[curIdx][1]).then(
       ([data_map, data, x_vals, y_vals]) => {
         DATA_MAP = data_map
-        DATA = data.slice(
-          rasterMapAnimateRange.lower,
-          rasterMapAnimateRange.upper
-        )
-        X_VALS = x_vals.slice(
-          rasterMapAnimateRange.lower,
-          rasterMapAnimateRange.upper
-        )
-        Y_VALS = y_vals.slice(
-          rasterMapAnimateRange.lower,
-          rasterMapAnimateRange.upper
-        )
+        DATA = data
+        X_VALS = x_vals
+        Y_VALS = y_vals
+        //TODO: The time data fetched from the server may not be arithmetic sequence
+        //with 1Ma step, such as [0,4, 23,24,35...] is possible.
+        //the code below needs improvement
+        //Better to use linear interpolate on the data before cutting the range
+        if (rasterMapAnimateRange.upper != 0) {
+          DATA = data.slice(
+            rasterMapAnimateRange.lower,
+            rasterMapAnimateRange.upper
+          )
+          X_VALS = x_vals.slice(
+            rasterMapAnimateRange.lower,
+            rasterMapAnimateRange.upper
+          )
+          Y_VALS = y_vals.slice(
+            rasterMapAnimateRange.lower,
+            rasterMapAnimateRange.upper
+          )
+        }
+        console.log(DATA)
+        console.log(X_VALS)
+        console.log(Y_VALS)
+        console.log(rasterMapAnimateRange)
 
         let chartDom = document.getElementById('graphPanel-statistics')!
 
