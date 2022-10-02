@@ -24,11 +24,12 @@ import {
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { timeout } from '../functions/util'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   currentRasterMapIndexState,
   isVectorMenuShow,
   age,
+  showCities,
 } from '../functions/atoms'
 import rasterMaps from '../functions/rasterMaps'
 import { VectorLayerType } from '../functions/types'
@@ -52,6 +53,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const rAge = useRecoilValue(age)
+  const setShowCities = useSetRecoilState(showCities)
 
   //
   const getVecInfoByRaster = async (rasterModel: string) => {
@@ -77,7 +79,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
       }
       vectorLayers.push(layer) //add the new layer into the vector layer list
     }
-    console.log(vectorLayers)
+    //console.log(vectorLayers)
   }
 
   //
@@ -139,6 +141,10 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     checkLayer(layer, layer.checked)
   }
 
+  const onCitiesCheckBoxChange = (val: any) => {
+    setShowCities(val.detail.checked)
+  }
+
   if (isShow && vectorLayers.length === 0) updateVectorDataInformation()
 
   return (
@@ -151,6 +157,17 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
             <IonItem slot="header" color="light">
               <IonLabel>Add Overlays</IonLabel>
             </IonItem>
+            <div slot="content" key="cities">
+              <IonItem>
+                <IonLabel>Major Cities</IonLabel>
+                <IonCheckbox
+                  slot="end"
+                  value="999"
+                  checked={false}
+                  onIonChange={onCitiesCheckBoxChange}
+                />
+              </IonItem>
+            </div>
             {vectorLayers.map((layer, index) => {
               return (
                 <div slot="content" key={index}>

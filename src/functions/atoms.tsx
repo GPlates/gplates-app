@@ -94,3 +94,8 @@ export const isCacheInfoShowState = atom({
   key: 'isCacheInfoShowState',
   default: false,
 })
+
+export const showCities = atom({
+  key: 'showCities',
+  default: false,
+})

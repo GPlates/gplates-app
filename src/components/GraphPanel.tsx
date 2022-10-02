@@ -94,10 +94,6 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
             rasterMapAnimateRange.upper
           )
         }
-        console.log(DATA)
-        console.log(X_VALS)
-        console.log(Y_VALS)
-        console.log(rasterMapAnimateRange)
 
         let chartDom = document.getElementById('graphPanel-statistics')!
 
