@@ -115,7 +115,7 @@ export const StarrySky: React.FC<ContainerProps> = () => {
     assert(ctx != null)
     let w = window.innerWidth
     let h = window.innerHeight
-    console.log('w and h: ' + w + ' ' + h)
+
     canvas.height = h
     canvas.width = w
 

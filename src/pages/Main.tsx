@@ -16,6 +16,7 @@ import CustomToolbar from '../components/CustomToolbar'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
+import MajorCities from '../components/MajorCities'
 import { AboutPage } from './AboutPage'
 import { ModelInfo } from './ModelInfo'
 import { CacheInfo } from './CacheInfo'
@@ -332,6 +333,7 @@ const Main: React.FC = () => {
           <VectorDataLayerMenu />
           <GraphPanel />
         </div>
+        <MajorCities />
       </IonContent>
     </IonPage>
   )
