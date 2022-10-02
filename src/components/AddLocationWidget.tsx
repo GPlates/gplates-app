@@ -161,7 +161,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   useEffect(() => {
     const paleoCoords =
       locationWidgetPresentDayLocation.reconstructPresentDayLocations(paleoAge)
-    if (paleoCoords) {
+    if (paleoCoords.length > 0) {
       setLonLatlist(paleoCoords)
       updateLocationEntities(paleoCoords)
     }
