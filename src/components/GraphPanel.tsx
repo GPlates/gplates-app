@@ -72,19 +72,23 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     await getData(graphList[curIdx][1]).then(
       ([data_map, data, x_vals, y_vals]) => {
         DATA_MAP = data_map
-        DATA = data.slice(
-          rasterMapAnimateRange.lower,
-          rasterMapAnimateRange.upper
-        )
-        X_VALS = x_vals.slice(
-          rasterMapAnimateRange.lower,
-          rasterMapAnimateRange.upper
-        )
-        Y_VALS = y_vals.slice(
-          rasterMapAnimateRange.lower,
-          rasterMapAnimateRange.upper
-        )
-
+        DATA = data
+        X_VALS = x_vals
+        Y_VALS = y_vals
+        if (rasterMapAnimateRange.upper != 0) {
+          DATA = data.slice(
+            rasterMapAnimateRange.lower,
+            rasterMapAnimateRange.upper
+          )
+          X_VALS = x_vals.slice(
+            rasterMapAnimateRange.lower,
+            rasterMapAnimateRange.upper
+          )
+          Y_VALS = y_vals.slice(
+            rasterMapAnimateRange.lower,
+            rasterMapAnimateRange.upper
+          )
+        }
         let chartDom = document.getElementById('graphPanel-statistics')!
 
         if (MY_CHART != null) {
