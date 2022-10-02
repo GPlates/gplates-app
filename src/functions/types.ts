@@ -21,6 +21,7 @@ export type LonLatPid = {
 }
 
 export type VectorLayerType = {
+  displayName: string
   imageryLayer: any
   layerProvider: any
   layerName: string

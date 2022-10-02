@@ -63,6 +63,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
       let p = createCesiumImageryProvider(responseJson[key], rAge)
 
       let layer = {
+        displayName: responseJson[key].displayName,
         imageryLayer: null as unknown as ImageryLayer,
         layerProvider: p,
         layerName: key,
@@ -172,7 +173,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
               return (
                 <div slot="content" key={index}>
                   <IonItem>
-                    <IonLabel>{layer.layerName}</IonLabel>
+                    <IonLabel>{layer.displayName}</IonLabel>
                     <IonCheckbox
                       slot="end"
                       value={index}
@@ -202,7 +203,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   )
 }
 
-//
+//do not remove the code below
+//keep these code commented here for future reference
 const updateVectorLayers = (rAge: number) => {
   try {
     //not working this way
