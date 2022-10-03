@@ -47,6 +47,8 @@ import './VectorDataLayerMenu.scss'
 //only for this GUI component
 let vectorLayers: VectorLayerType[] = []
 
+let cityEnabledFlag = false
+
 interface ContainerProps {}
 
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
@@ -78,6 +80,9 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
         layer.checked = true
         layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(p)
       }
+      if (checkedLayers.includes('cities')) {
+        cityEnabledFlag = true
+      }
       vectorLayers.push(layer) //add the new layer into the vector layer list
     }
     //console.log(vectorLayers)
@@ -105,6 +110,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   // update to corresponding vector layer when raster map changes
   useEffect(() => {
     vectorLayers = []
+    cityEnabledFlag = false
   }, [currentRasterMapIndex])
 
   // initializing
@@ -144,6 +150,12 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
 
   const onCitiesCheckBoxChange = (val: any) => {
     setShowCities(val.detail.checked)
+    if (val.detail.checked) {
+      enableLayer(currentRasterMapIndex, 'cities')
+    } else {
+      disableLayer(currentRasterMapIndex, 'cities')
+    }
+    cityEnabledFlag = val.detail.checked
   }
 
   if (isShow && vectorLayers.length === 0) updateVectorDataInformation()
@@ -158,13 +170,13 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
             <IonItem slot="header" color="light">
               <IonLabel>Add Overlays</IonLabel>
             </IonItem>
-            <div slot="content" key="cities">
+            <div slot="content">
               <IonItem>
                 <IonLabel>Major Cities</IonLabel>
                 <IonCheckbox
                   slot="end"
-                  value="999"
-                  checked={false}
+                  value="0"
+                  checked={cityEnabledFlag}
                   onIonChange={onCitiesCheckBoxChange}
                 />
               </IonItem>
