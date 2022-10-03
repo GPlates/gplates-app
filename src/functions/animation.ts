@@ -198,7 +198,9 @@ export class AnimationService {
     let overlays: string[] = []
     let enabledLayers = getEnabledLayers(this.currentRasterMapIndex)
     enabledLayers.forEach((layer) => {
-      overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
+      if (layer !== 'cities') {
+        overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
+      }
     })
     return buildAnimationURL(
       rasterMaps[this.currentRasterMapIndex].wmsUrl,
