@@ -5,7 +5,6 @@ import { age, showCities, currentRasterMapIndexState } from '../functions/atoms'
 import { serverURL } from '../functions/settings'
 import { currentModel } from '../functions/rotationModel'
 import { cesiumViewer } from '../functions/cesiumViewer'
-import rasterMaps from '../functions/rasterMaps'
 
 //for example: "Sydney": [151.2099, -33.8651],
 let citiesLonLat: any = null
@@ -47,12 +46,9 @@ const drawCity = (lon: number, lat: number, name: string) => {
   cityCesiumEntities.push(pe)
 
   if (!labels) {
-    //labels = cesiumViewer.scene.primitives.add(new Cesium.LabelCollection())
-    //addLabel(0, 0, '0°E', false)
     labels = cesiumViewer.scene.primitives.add(new Cesium.LabelCollection())
   }
   if (labels) {
-    //console.log('add label')
     labels.add({
       position: locationCartesian,
       text: name,
@@ -73,6 +69,25 @@ const drawCity = (lon: number, lat: number, name: string) => {
 
 //
 //
+const drawPaleoCity = (city: number[], name: string, age: number) => {
+  if (cityPlateIDs) {
+    //reconstruct location
+    let reconstructedCity = currentModel.rotateLonLatPid(
+      currentModel.getTimeIndex(age),
+      {
+        lon: city[0],
+        lat: city[1],
+        pid: cityPlateIDs[currentModel.name][city[2]], //plate ID
+      }
+    )
+    drawCity(reconstructedCity.lon, reconstructedCity.lat, name) //draw reconstructed coordinates
+  } else {
+    console.log('Warning: cityPlateIDs is not loaded yet.')
+  }
+}
+
+//
+//
 const loadCityData = () => {
   fetch(serverURL + '/mobile/get_cities')
     .then((response) => response.json())
@@ -86,7 +101,7 @@ const loadCityData = () => {
       console.log(error)
     })
 }
-loadCityData()
+
 //
 //
 interface MajorCitiesProps {}
@@ -95,43 +110,49 @@ interface MajorCitiesProps {}
 const MajorCities: React.FC<MajorCitiesProps> = () => {
   const paleoAge = useRecoilValue(age)
   const showCitiesFlag = useRecoilValue(showCities)
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
 
+  //
+  //
   useEffect(() => {
     if (showCitiesFlag) {
-      //TODO: add city reconstruction code here
       undrawCities()
       // fetch finite rotation for plate IDs
+      // finite rotation must be ready before currentModel.rotateLonLatPid()
       currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
 
       for (let key in citiesLonLat) {
-        let city = citiesLonLat[key]
-        let rp = currentModel.rotateLonLatPid(
-          currentModel.getTimeIndex(paleoAge),
-          {
-            lon: city[0],
-            lat: city[1],
-            pid: cityPlateIDs[currentModel.name][city[2]],
-          }
-        )
-        console.log(city)
-        console.log(cityPlateIDs[currentModel.name][city[2]])
-        console.log(rp)
-        drawCity(rp.lon, rp.lat, key)
+        drawPaleoCity(citiesLonLat[key], key, paleoAge)
       }
     }
   }, [paleoAge])
 
+  //
+  //
   useEffect(() => {
-    //TODO: draw cities on cesium here
+    // fetch finite rotation for plate IDs
+    if (currentModel && cityPlateIDs) {
+      currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
+    }
+    // draw cities on cesium here
     if (showCitiesFlag) {
       for (let key in citiesLonLat) {
-        drawCity(citiesLonLat[key][0], citiesLonLat[key][1], key)
+        //paleoAge !== 0, draw reconstructed city coordinates
+        if (paleoAge !== 0 && currentModel) {
+          drawPaleoCity(citiesLonLat[key], key, paleoAge)
+        } else {
+          drawCity(citiesLonLat[key][0], citiesLonLat[key][1], key) //paleoAge===0, draw present-day cities
+        }
       }
     } else {
-      undrawCities()
+      undrawCities() // showCitiesFlag===false
     }
   }, [showCitiesFlag])
+
+  //
+  //
+  useEffect(() => {
+    loadCityData()
+  }, [])
 
   return null // non-GUI component
 }
