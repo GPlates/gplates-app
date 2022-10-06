@@ -20,8 +20,7 @@ import MajorCities from '../components/MajorCities'
 import { AboutPage } from './AboutPage'
 import { ModelInfo } from './ModelInfo'
 import { CacheInfo } from './CacheInfo'
-import { sqlite } from '../App'
-import { CachingService, setCachingServant } from '../functions/cache'
+import { CachingService, cachingServant } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
@@ -59,13 +58,13 @@ import RotationModel, { rotationModels } from '../functions/rotationModel'
 import { init as initDefaultStorage } from '../functions/storage'
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
+import { setPresentDataAlert } from '../functions/network'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
 
 let animationService: AnimationService
 let backgroundService: BackgroundService
-let cachingService: CachingService
 
 const Main: React.FC = () => {
   const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
@@ -112,7 +111,7 @@ const Main: React.FC = () => {
   const [presentToast, dismissToast] = useIonToast()
 
   animationService = new AnimationService(
-    cachingService,
+    cachingServant,
     setAge,
     exact,
     setExact,
@@ -127,6 +126,7 @@ const Main: React.FC = () => {
     cesiumViewer,
     currentRasterMapIndex
   )
+
   backgroundService = new BackgroundService(
     isBackgroundSettingEnable,
     isStarryBackgroundEnable,
@@ -134,6 +134,8 @@ const Main: React.FC = () => {
     color,
     cesiumViewer
   )
+
+  setPresentDataAlert(ionAlert, setDownloadOnCellular)
 
   useEffect(() => {
     if (isSettingsShown) {
@@ -274,24 +276,11 @@ const Main: React.FC = () => {
   }, [])
 
   //
-  useIonViewDidEnter(async () => {
-    // Initialize SQLite connection
-    const dbName = 'db_main'
-    const db = await sqlite.createConnection(dbName, false, 'no-encryption', 1)
-    await db.open()
-    cachingService = new CachingService(
-      db,
-      sqlite,
-      dbName,
-      ionAlert,
-      setDownloadOnCellular
-    )
-    setCachingServant(cachingService) //pass the instance into cache.ts for easier access
-  })
+  useIonViewDidEnter(async () => {})
 
   //close the connection which is opened in useIonViewDidEnter
   useIonViewDidLeave(async () => {
-    await cachingService.cleanup()
+    await cachingServant.cleanup()
   })
 
   //todo: this is not working for single tile imagery provider
