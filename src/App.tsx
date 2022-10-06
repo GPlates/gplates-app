@@ -25,6 +25,7 @@ import '@ionic/react/css/display.css'
 import './theme/variables.scss'
 import { RecoilRoot } from 'recoil'
 import Tutorial from './pages/Tutorial'
+import { setSQLiteHook } from './functions/cache'
 
 // Singleton SQLite Hook
 export let sqlite: SQLiteHook
@@ -33,7 +34,7 @@ setupIonicReact()
 
 const App: React.FC = () => {
   sqlite = useSQLite()
-
+  setSQLiteHook(sqlite)
   return (
     <IonApp>
       <IonReactRouter>

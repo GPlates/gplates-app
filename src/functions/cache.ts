@@ -1,12 +1,14 @@
-import { SQLiteDBConnection } from '@capacitor-community/sqlite'
-import { SQLiteHook } from 'react-sqlite-hook'
+import {
+  SQLiteDBConnection,
+  CapacitorSQLite,
+  SQLiteConnection,
+} from '@capacitor-community/sqlite'
 import { Capacitor } from '@capacitor/core'
 import RotationModel from './rotationModel'
 import { buildAnimationURL } from './util'
 import { canDownload, presentDataAlert } from './network'
-import { UseIonAlertResult } from '@ionic/react'
-import { SetterOrUpdater } from 'recoil'
 import { Preferences } from '@capacitor/preferences'
+import { SQLiteHook } from 'react-sqlite-hook'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -15,14 +17,17 @@ export const setCachingServant = (s: CachingService) => {
   cachingServant = s
 }
 
+let sqlite: SQLiteHook
+export const setSQLiteHook = (s: SQLiteHook) => {
+  sqlite = s
+}
+
 export class CachingService {
-  constructor(
-    private db: SQLiteDBConnection,
-    private sqlite: SQLiteHook,
-    private dbName: string,
-    private ionAlert: UseIonAlertResult,
-    private setDownloadOnCellular: SetterOrUpdater<boolean>
-  ) {}
+  private db: SQLiteDBConnection | null = null
+
+  constructor(private dbName: string) {
+    cachingServant = this
+  }
 
   hasPresented = false
 
@@ -38,14 +43,16 @@ export class CachingService {
     const command =
       'INSERT INTO cache (url, data, ttl) VALUES (?, ?, ?) ON CONFLICT (url) DO NOTHING;'
     const values = [url, data, ttl]
-    return this.db.run(command, values)
+    return this.db!.run(command, values)
   }
 
   // Try to load cached data
   async getCachedRequest(url: string): Promise<any> {
     const currentTime = new Date().getTime()
     let data
-    const ret = await this.db.query('SELECT * FROM cache WHERE url == ?', [url])
+    const ret = await this.db!.query('SELECT * FROM cache WHERE url == ?', [
+      url,
+    ])
     const value = ret.values && ret.values[0]
 
     //if the cache has a success hit.
@@ -55,7 +62,7 @@ export class CachingService {
       return URL.createObjectURL(blob)
     } else {
       //if cache does not hit, get the data from url and insert into cache
-      await this.db.run('DELETE FROM cache WHERE url == ?', [url])
+      await this.db!.run('DELETE FROM cache WHERE url == ?', [url])
       const blob: Blob | undefined = await this.getBlob(url)
       data = await this.convertBlobToDataURL(blob)
       //it is possible that the return data is invalid
@@ -99,7 +106,7 @@ export class CachingService {
       let res = await fetch(url)
       return await res.blob()
     } else if (!this.hasPresented) {
-      await presentDataAlert(this.ionAlert, this.setDownloadOnCellular)
+      await presentDataAlert()
       return
     }
   }
@@ -122,13 +129,13 @@ export class CachingService {
 
   // Remove all cached data & files
   clearCachedData() {
-    this.db.run(`DELETE FROM cache`)
+    this.db!.run(`DELETE FROM cache`)
   }
 
   //
   print() {
     //this.db.getUrl().then((data) => console.log(data))
-    this.db.query('SELECT * FROM cache').then((data) => console.log(data))
+    this.db!.query('SELECT * FROM cache').then((data) => console.log(data))
   }
 
   // insert the data from URL into cache
@@ -154,7 +161,7 @@ export class CachingService {
 
   // Example to remove one cached URL
   invalidateCacheEntry(url: string) {
-    return this.db.run('DELETE FROM cache WHERE url == ?', [url])
+    return this.db!.run('DELETE FROM cache WHERE url == ?', [url])
   }
 
   //clean up
@@ -163,10 +170,10 @@ export class CachingService {
     //on "web" platform, you need to saveToStore. otherwise the DB is in memory
     //save to indexedDB on disk
     if (platform === 'web') {
-      await this.sqlite.saveToStore(this.dbName)
+      await sqlite.saveToStore(this.dbName)
     }
-    await this.db.close()
-    await this.sqlite.closeConnection(this.dbName)
+    await this.db!.close()
+    await sqlite.closeConnection(this.dbName)
   }
 
   //
@@ -189,7 +196,7 @@ export class CachingService {
 
   //
   async checkExist(url: string) {
-    let ret = await this.db.query('SELECT 1 FROM cache WHERE url == ?', [url])
+    let ret = await this.db!.query('SELECT 1 FROM cache WHERE url == ?', [url])
     //console.log('check exist!')
     //console.log(ret)
     return ret.values?.length === 0 ? false : true
@@ -199,10 +206,10 @@ export class CachingService {
   async getCount(keyword: string = '') {
     let ret: any
     if (keyword.length === 0) {
-      ret = await this.db.query('SELECT COUNT(*) as num FROM cache')
+      ret = await this.db!.query('SELECT COUNT(*) as num FROM cache')
     } else {
       let idx = keyword.indexOf('{{time}}')
-      ret = await this.db.query(
+      ret = await this.db!.query(
         "SELECT COUNT(*) as num FROM cache WHERE url LIKE '%" +
           keyword.slice(0, idx - 1) +
           "%'"
@@ -213,6 +220,53 @@ export class CachingService {
     if (ret && ret.values && ret.values.length > 0) {
       return ret.values[0]['num']
     } else return 0
+  }
+
+  //must be called after new CachingService('db_main')
+  async init() {
+    const platform = Capacitor.getPlatform()
+    const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite)
+    try {
+      if (platform === 'web') {
+        const jeepEl = document.createElement('jeep-sqlite')
+        document.body.appendChild(jeepEl)
+        await customElements.whenDefined('jeep-sqlite')
+        const jeepSqliteEl = document.querySelector('jeep-sqlite')
+        if (jeepSqliteEl != null) {
+          await sqlite.initWebStore()
+        }
+      }
+      const ret = await sqlite.checkConnectionsConsistency()
+      const isConn = (await sqlite.isConnection(this.dbName)).result
+
+      // Set up the schema of the database
+      let db: SQLiteDBConnection
+      if (ret.result && isConn) {
+        db = await sqlite.retrieveConnection(this.dbName)
+      } else {
+        db = await sqlite.createConnection(
+          this.dbName,
+          false,
+          'no-encryption',
+          1
+        )
+      }
+
+      await db.open()
+      let query = `CREATE TABLE IF NOT EXISTS cache (
+      url STRING PRIMARY KEY NOT NULL,
+      data BLOB NOT NULL,
+      ttl NUMBER);`
+      await db.execute(query)
+
+      this.db = db
+      //await db.close()
+      //await sqlite.closeConnection(this.dbName)
+      console.log('DEBUG: cache DB has been initialized!')
+    } catch (err: any) {
+      console.log(`Error: ${err}`)
+      throw new Error(`Error: ${err}`)
+    }
   }
   //
 }
