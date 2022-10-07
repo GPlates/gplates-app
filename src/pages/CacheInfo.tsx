@@ -12,6 +12,7 @@ import {
   IonLabel,
   IonNote,
   IonIcon,
+  useIonAlert,
 } from '@ionic/react'
 import { trashOutline } from 'ionicons/icons'
 import rasterMaps from '../functions/rasterMaps'
@@ -45,6 +46,7 @@ interface ContainerProps {}
 export const CacheInfo: React.FC<ContainerProps> = () => {
   const [cacheInfoShow, setCacheInfoShow] = useRecoilState(isCacheInfoShowState)
   const [refresh, setRefresh] = useState(true)
+  const [presentAlert] = useIonAlert()
 
   return (
     <IonModal isOpen={cacheInfoShow} animated backdropDismiss={false}>
@@ -72,7 +74,34 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             <IonItem key={index}>
               <IonIcon
                 icon={trashOutline}
-                style={{ color: 'red', fontSize: 'larger' }}
+                style={{ color: 'red', fontSize: '20px' }}
+                onClick={() => {
+                  presentAlert({
+                    header: `Purge ${value[0]}?`,
+                    cssClass: 'purge-cache-alert',
+                    buttons: [
+                      {
+                        text: 'No',
+                        role: 'cancel',
+                        handler: () => {
+                          console.log('Info: cache purge cancelled!')
+                        },
+                      },
+                      {
+                        text: 'Yes',
+                        role: 'confirm',
+                        handler: () => {
+                          cachingServant.purge(value[0], async () => {
+                            await getCacheStatsData()
+                            setRefresh(!refresh)
+                          })
+                        },
+                      },
+                    ],
+                    onDidDismiss: (e: CustomEvent) =>
+                      console.log(`Dismissed with role: ${e.detail.role}`),
+                  })
+                }}
               />
               <IonLabel>{value[0]} </IonLabel>
               <IonNote slot="end">{value[1]}</IonNote>

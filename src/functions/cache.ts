@@ -183,7 +183,7 @@ export class CachingService {
     if (rowNum < model.times.length) {
       let url = buildAnimationURL(wmsUrl, layerName)
       let count = 0
-      console.log('caching ' + layerName)
+      //console.log('caching ' + layerName)
       model.times.forEach((time) => {
         //console.log('caching ' + String(time))
         count += 1
@@ -333,6 +333,34 @@ export class CachingService {
     })
     //console.log(layerCount)
     return layerCount
+  }
+
+  //
+  purge(layers: string, callback: Function) {
+    console.log(`purging ${layers}`)
+    let queryStr = ''
+    let workspaceAndLayers = layers.split(',')
+    workspaceAndLayers.forEach((keyword) => {
+      if (queryStr.length === 0) {
+        queryStr += "url LIKE '%" + keyword + "%'"
+      } else {
+        queryStr += " AND url LIKE '%" + keyword + "%'"
+      }
+    })
+
+    queryStr = 'DELETE FROM cache WHERE ' + queryStr
+    console.log(queryStr)
+    this.db!.run(queryStr).then(async (ret) => {
+      console.log(ret)
+      callback()
+      //enable the code below for web page
+      /*
+      const platform = Capacitor.getPlatform()
+      if (platform === 'web') {
+        await sqlite.saveToStore(this.dbName)
+      }
+      */
+    })
   }
 
   //
