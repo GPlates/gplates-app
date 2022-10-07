@@ -73,19 +73,22 @@ export const buildAnimationURL = (
 }
 
 export const requestDataByUrl = async (url: string) => {
-  let data_map: any
+  if (!url) return null
 
+  let data_map: any
   try {
     let data: any = await fetch(url)
     data_map = await data.json()
     getDefaultStore()
       .then((store) => {
+        //console.log(url)
         store.set(url, data_map)
       })
       .catch((error) => {
         console.log(error)
       })
   } catch (e) {
+    console.log(e)
     let store = await getDefaultStore()
     data_map = await store.get(url)
   }

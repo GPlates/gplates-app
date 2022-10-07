@@ -40,7 +40,7 @@ import { serverURL, setServerURL } from '../functions/settings'
 import rasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
-import { getData } from './CacheInfo'
+import { getCacheStatsData } from './CacheInfo'
 import { showGraticule, hideGraticule } from '../functions/graticule'
 import { useHistory } from 'react-router'
 
@@ -251,57 +251,18 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           </IonItem>
 
           <IonItemDivider>Cache</IonItemDivider>
-          <IonItem>
-            <IonButtons style={{ margin: 'auto' }}>
-              <IonButton
-                onClick={() => {
-                  cachingServant.clearCachedData()
-                  //TODO: https://ionicframework.com/docs/api/alert#buttons
-                  //ask user to confirm or cancel
-                  presentAlert({
-                    header: 'Purge Cache',
-                    subHeader: '',
-                    message: 'Purge request has been submitted!',
-                    buttons: ['OK'],
-                  })
-                }}
-                color={'primary'}
-                slot={'start'}
-              >
-                Purge Cache
-                <IonRippleEffect />
-              </IonButton>
 
-              <IonButton
-                onClick={() => {
-                  populateCache()
-
-                  presentAlert({
-                    header: 'Populate Cache',
-                    subHeader: '',
-                    message: 'Populate request has been submitted!',
-                    buttons: ['OK'],
-                  })
-                }}
-                color={'tertiary'}
-              >
-                Populate Cache
-                <IonRippleEffect />
-              </IonButton>
-
-              <IonButton
-                onClick={async () => {
-                  //cachingServant.print()
-                  await getData()
-                  setCacheInfoShow(true)
-                }}
-                color={'secondary'}
-                slot={'end'}
-              >
-                Cache Info
-                <IonRippleEffect />
-              </IonButton>
-            </IonButtons>
+          <IonItem
+            button
+            onClick={async () => {
+              await getCacheStatsData()
+              setCacheInfoShow(true)
+            }}
+          >
+            {!isPlatform('ios') && (
+              <IonIcon icon={chevronForward} slot={'end'} />
+            )}
+            <IonLabel>Cache Information</IonLabel>
           </IonItem>
 
           <IonItemDivider>Tutorial</IonItemDivider>
