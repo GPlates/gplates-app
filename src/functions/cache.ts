@@ -9,6 +9,7 @@ import { buildAnimationURL } from './util'
 import { canDownload, presentDataAlert } from './network'
 import { Preferences } from '@capacitor/preferences'
 import { SQLiteHook } from 'react-sqlite-hook'
+import CompositeEntityCollection from 'cesium/Source/DataSources/CompositeEntityCollection'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -268,5 +269,72 @@ export class CachingService {
       throw new Error(`Error: ${err}`)
     }
   }
+
+  //
+  getDBName() {
+    return this.dbName
+  }
+
+  //return a Map, for example {"layer-1":1000, "layer-2":20}
+  async getLayerCountMap() {
+    const layerCount = new Map<string, number>()
+
+    const ret = await this.db!.query('SELECT url FROM cache ')
+    let layersLeadingString = 'layers='
+    ret.values?.forEach((value) => {
+      //cut out the layers string
+      let firstIndex = value.url.indexOf(layersLeadingString)
+      if (firstIndex < 0) {
+        //ivalid url
+        console.log(`Warning: invalid url: ${value.url}`)
+        return
+      } else {
+        firstIndex += layersLeadingString.length // get rid of 'layers='
+      }
+
+      let secondIndex = value.url.indexOf('&', firstIndex)
+      if (secondIndex < 0) {
+        //ivalid url
+        console.log(`Warning: invalid url: ${value.url}`)
+        return
+      }
+
+      //separate the workspace name and layer names
+      let workspaceName = ''
+      let layers = ''
+      value.url
+        .slice(firstIndex, secondIndex)
+        .split(',')
+        .forEach((layer: string) => {
+          let layerName = ''
+          let layerSplit = layer.split(':')
+          if (layerSplit.length === 1) {
+            layerName = layerSplit[0]
+          } else if (layerSplit.length > 1) {
+            workspaceName = layerSplit[0]
+            layerName = layerSplit[1]
+          }
+          let m = layerName.match(/\d+(?=\D*$)/g) //find the last number in layer name
+          if (m) {
+            layers += layerName.slice(0, layerName.lastIndexOf(m[0]) - 1) + ','
+          } else {
+            layers += layerName + ','
+          }
+        })
+
+      //count the number for each  workspacename+layers
+      //basically, this group cache entries into groups
+      let keyStr = workspaceName + ':' + layers.slice(0, -1)
+      let num = layerCount.get(keyStr)
+      if (num) {
+        layerCount.set(keyStr, num + 1)
+      } else {
+        layerCount.set(keyStr, 1)
+      }
+    })
+    //console.log(layerCount)
+    return layerCount
+  }
+
   //
 }

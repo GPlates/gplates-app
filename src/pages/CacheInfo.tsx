@@ -11,23 +11,32 @@ import {
   IonItem,
   IonLabel,
   IonNote,
+  IonIcon,
 } from '@ionic/react'
+import { trashOutline } from 'ionicons/icons'
 import rasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { isCacheInfoShowState } from '../functions/atoms'
 
 export let cacheStatsList: Map<string, number> = new Map<string, number>()
+let total = 0
 
-export const getData = async () => {
-  //let currentRaster = rasterMaps[currentRasterIndex]
-  let data = await cachingServant.getCount()
-  cacheStatsList.set('All', data)
-
-  //
-  rasterMaps.forEach(async (raster) => {
-    data = await cachingServant.getCount(raster.layerName)
-    cacheStatsList.set(raster.layerName, data)
+export const getCacheStatsData = async () => {
+  //do not remove the code below
+  //for future reference
+  /*
+  await Promise.all(
+   rasterMaps.map(async (raster) => {
+      let data = await cachingServant.getCount(raster.layerName)
+      cacheStatsList.set(raster.layerName, data)
+    })
+  )
+  */
+  cacheStatsList = await cachingServant.getLayerCountMap()
+  total = 0
+  cacheStatsList.forEach((value, key) => {
+    total += value
   })
 }
 
@@ -55,28 +64,51 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
       </IonToolbar>
       <IonContent>
         <IonItem>
-          <IonLabel class="cache-db-label">Cache DB </IonLabel>
-          <IonNote slot="end">DB name goes here</IonNote>
+          <IonLabel class="cache-db-label">Cache Database Name </IonLabel>
+          <IonNote slot="end">{cachingServant.getDBName()}</IonNote>
         </IonItem>
         <IonList>
-          {Array.from(cacheStatsList).map((value) => (
-            <IonItem key={value[0]}>
+          {Array.from(cacheStatsList).map((value, index) => (
+            <IonItem key={index}>
+              <IonIcon
+                icon={trashOutline}
+                style={{ color: 'red', fontSize: 'larger' }}
+              />
               <IonLabel>{value[0]} </IonLabel>
               <IonNote slot="end">{value[1]}</IonNote>
             </IonItem>
           ))}
+          <IonItem key={999999}>
+            <IonLabel>{'Total:'} </IonLabel>
+            <IonNote slot="end">{total}</IonNote>
+          </IonItem>
         </IonList>
         <div>
+          Note: Press the &quot;POPULATE&quot; button to precache the current
+          raster and overlays for animation. Press the red bin to purge cache.
+        </div>
+        <div style={{ textAlign: 'center' }}>
           <IonButton
-            expand="full"
             shape="round"
             onClick={async () => {
-              await getData()
+              await getCacheStatsData()
               setRefresh(!refresh)
             }}
             color={'tertiary'}
           >
             Refresh
+            <IonRippleEffect />
+          </IonButton>
+
+          <IonButton
+            shape="round"
+            onClick={async () => {
+              await getCacheStatsData()
+              setRefresh(!refresh)
+            }}
+            color={'secondary'}
+          >
+            Populate
             <IonRippleEffect />
           </IonButton>
         </div>
