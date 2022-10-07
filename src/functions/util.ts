@@ -81,7 +81,7 @@ export const requestDataByUrl = async (url: string) => {
     data_map = await data.json()
     getDefaultStore()
       .then((store) => {
-        console.log(url)
+        //console.log(url)
         store.set(url, data_map)
       })
       .catch((error) => {

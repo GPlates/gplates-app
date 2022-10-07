@@ -9,7 +9,6 @@ import { buildAnimationURL } from './util'
 import { canDownload, presentDataAlert } from './network'
 import { Preferences } from '@capacitor/preferences'
 import { SQLiteHook } from 'react-sqlite-hook'
-import CompositeEntityCollection from 'cesium/Source/DataSources/CompositeEntityCollection'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
