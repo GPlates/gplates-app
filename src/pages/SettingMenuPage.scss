@@ -122,3 +122,15 @@ ion-item::part(native) {
 .cache-db-input {
   text-align: right;
 }
+
+ion-alert.purge-cache-alert {
+  --backdrop-opacity: 0.85;
+}
+
+.purge-cache-alert .alert-head {
+  text-align: center;
+}
+
+.purge-cache-alert .alert-wrapper {
+  border-radius: 25px;
+}
