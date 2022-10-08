@@ -3,6 +3,17 @@ import { UseIonAlertResult } from '@ionic/react'
 import { SetterOrUpdater } from 'recoil'
 import { Preferences } from '@capacitor/preferences'
 
+let ionAlert: UseIonAlertResult
+let setDownloadOnCellular: SetterOrUpdater<boolean>
+
+export const setPresentDataAlert = (
+  alert: UseIonAlertResult,
+  setter: SetterOrUpdater<boolean>
+) => {
+  ionAlert = alert
+  setDownloadOnCellular = setter
+}
+
 export const canDownload = async (downloadOnCellular: boolean) => {
   const status = await Network.getStatus()
 
@@ -14,10 +25,7 @@ export const canDownload = async (downloadOnCellular: boolean) => {
 
 let hasPresented = false
 
-export const presentDataAlert = async (
-  ionAlert: UseIonAlertResult,
-  setDownloadOnCellular: SetterOrUpdater<boolean>
-) => {
+export const presentDataAlert = async () => {
   if (!hasPresented) {
     const [presentAlert] = ionAlert
     const unpauseButton = {
