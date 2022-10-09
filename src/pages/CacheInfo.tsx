@@ -15,10 +15,13 @@ import {
   useIonAlert,
 } from '@ionic/react'
 import { trashOutline } from 'ionicons/icons'
-import rasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 import { isCacheInfoShowState } from '../functions/atoms'
+import { getEnabledLayers, vectorLayers } from '../functions/vectorLayers'
+import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import { currentModel } from '../functions/rotationModel'
+import { buildAnimationURL } from '../functions/util'
 
 export let cacheStatsList: Map<string, number> = new Map<string, number>()
 let total = 0
@@ -38,6 +41,35 @@ export const getCacheStatsData = async () => {
   total = 0
   cacheStatsList.forEach((value, key) => {
     total += value
+  })
+}
+
+//
+const CacheCurrentRasterAndOverlays = async () => {
+  let overlays: string[] = []
+  let enabledLayers = getEnabledLayers(currentRasterIndex)
+  enabledLayers.forEach((layer) => {
+    if (layer !== 'cities') {
+      overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
+    }
+  })
+  let url = buildAnimationURL(
+    rasterMaps[currentRasterIndex].wmsUrl,
+    rasterMaps[currentRasterIndex].layerName,
+    overlays
+  )
+  console.log(url)
+  let allUrls = await cachingServant.getAllUrls()
+  let count = 0
+  console.log(allUrls)
+  currentModel.times.forEach((time) => {
+    console.log(time)
+    let newUrl = url.replaceAll('{{time}}', time.toString())
+    if (!allUrls?.includes(newUrl)) {
+      console.log(`caching ${newUrl}`)
+      count += 1
+      setTimeout(() => cachingServant.cacheURL(newUrl), count * 1000)
+    }
   })
 }
 
@@ -132,8 +164,30 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
           <IonButton
             shape="round"
             onClick={async () => {
-              await getCacheStatsData()
-              setRefresh(!refresh)
+              presentAlert({
+                header: `Cache current raster and overlays?`,
+                cssClass: 'purge-cache-alert',
+                buttons: [
+                  {
+                    text: 'No',
+                    role: 'cancel',
+                    handler: () => {
+                      console.log(
+                        'Info: Cache Current Raster And Overlays cancelled!'
+                      )
+                    },
+                  },
+                  {
+                    text: 'Yes',
+                    role: 'confirm',
+                    handler: () => {
+                      CacheCurrentRasterAndOverlays()
+                    },
+                  },
+                ],
+                onDidDismiss: (e: CustomEvent) =>
+                  console.log(`Dismissed with role: ${e.detail.role}`),
+              })
             }}
             color={'secondary'}
           >

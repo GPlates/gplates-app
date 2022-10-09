@@ -134,3 +134,8 @@ ion-alert.purge-cache-alert {
 .purge-cache-alert .alert-wrapper {
   border-radius: 25px;
 }
+
+.purge-cache-alert .alert-button-group {
+  display: flex;
+  justify-content: space-around;
+}
