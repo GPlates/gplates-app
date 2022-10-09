@@ -43,7 +43,7 @@ async function getData(url: string) {
   let y_vals: number[] = []
   for (let key in data_map) {
     x_vals.push(Number(key))
-    y_vals.push(data_map[key])
+    y_vals.push(Number(data_map[key]))
   }
 
   let data = []
@@ -63,6 +63,40 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [present, dismiss] = useIonLoading()
   const [graphList, setGraphList] = useState([] as string[][])
+
+  function process_data(
+    data_map: any,
+    data: any[],
+    x_vals: number[],
+    y_vals: number[]
+  ) {
+    let new_x_vals = []
+    let new_y_vals = []
+    for (let i = 0; i < x_vals.length - 1; i++) {
+      new_x_vals.push(x_vals[i])
+      new_y_vals.push(y_vals[i])
+
+      // linear interpolate if having missed values
+      let fromIdx = x_vals[i]
+      let toIdx = x_vals[i + 1]
+      let betweenNum = toIdx - fromIdx
+      let increment = (y_vals[i + 1] - y_vals[i]) / betweenNum
+      let curIncr = increment
+      for (let inserIdx = fromIdx + 1; inserIdx < toIdx; inserIdx++) {
+        new_x_vals.push(inserIdx)
+        new_y_vals.push(y_vals[i] + curIncr)
+        curIncr += increment
+      }
+    }
+
+    let new_data = []
+    for (let i = 0; i < new_x_vals.length; i++) {
+      new_data.push([new_x_vals[i], new_y_vals[i]])
+    }
+
+    return [data_map, new_data, new_x_vals, new_y_vals]
+  }
+
   const loadGraph = async (instantCurGraphIdx?: number) => {
     let curIdx = curGraphIdx
     if (instantCurGraphIdx != undefined) curIdx = instantCurGraphIdx
@@ -72,14 +106,19 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
 
     await getData(graphList[curIdx][1]).then(
       ([data_map, data, x_vals, y_vals]) => {
+        //with 1Ma step, such as [0,4, 23,24,35...] is possible.
+        //so, use linear interpolate on the data before cutting the range
+        ;[data_map, data, x_vals, y_vals] = process_data(
+          data_map,
+          data,
+          x_vals,
+          y_vals
+        )
         DATA_MAP = data_map
         DATA = data
         X_VALS = x_vals
         Y_VALS = y_vals
-        //TODO: The time data fetched from the server may not be arithmetic sequence
-        //with 1Ma step, such as [0,4, 23,24,35...] is possible.
-        //the code below needs improvement
-        //Better to use linear interpolate on the data before cutting the range
+
         if (rasterMapAnimateRange.upper != 0) {
           DATA = data.slice(
             rasterMapAnimateRange.lower,
