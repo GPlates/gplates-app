@@ -12,6 +12,7 @@ import { homeOutline, helpOutline } from 'ionicons/icons'
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
 import React, { Fragment, useState } from 'react'
+import { useSetRecoilState } from 'recoil'
 
 // https://stackoverflow.com/a/69736635/15379768
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
@@ -23,6 +24,7 @@ import 'swiper/modules/pagination/pagination.scss'
 import { Pagination } from 'swiper'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { Geolocation } from '@capacitor/geolocation'
+import { isAddLocationWidgetShowState } from '../functions/atoms'
 
 interface ToolbarProps {
   scene: Scene
@@ -53,6 +55,9 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     },
   ]
   const [mode, setMode] = useState(sceneModes[0])
+  const setShowAddLocationWidget = useSetRecoilState(
+    isAddLocationWidgetShowState
+  )
 
   const goHome = async () => {
     //when run in a web browser, cannot request geolocation permission
@@ -136,6 +141,9 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
                   onClick={() => {
                     m.onClick()
                     setMode(m)
+                    if (m.id !== SceneMode.SCENE3D) {
+                      setShowAddLocationWidget(false)
+                    }
                   }}
                 >
                   <svg className="scene-mode-icon" viewBox="0 0 64 64">

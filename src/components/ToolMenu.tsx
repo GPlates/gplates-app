@@ -27,6 +27,8 @@ import {
   isVectorMenuShow,
   isModelInfoShowState,
 } from '../functions/atoms'
+import { cesiumViewer } from '../functions/cesiumViewer'
+import { SceneMode } from 'cesium'
 
 export const ToolMenu = () => {
   const [presentToast, dismissToast] = useIonToast()
@@ -108,8 +110,18 @@ export const ToolMenu = () => {
     <IonFabButton
       title="Add Locations"
       key={'tool-menu-button' + 6}
-      onClick={() => {
-        setShowAddLocationWidget(!showAddLocationWidget)
+      onClick={async () => {
+        if (cesiumViewer.scene.mode !== SceneMode.SCENE3D) {
+          await presentToast({
+            buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+            duration: 3000,
+            message:
+              '"Add Location" widget is only available in 3D globe mode.',
+            onDidDismiss: () => {},
+          })
+        } else {
+          setShowAddLocationWidget(!showAddLocationWidget)
+        }
       }}
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={locateOutline} />

@@ -27,6 +27,14 @@ export class CachingService {
 
   constructor(private dbName: string) {
     cachingServant = this
+    const platform = Capacitor.getPlatform()
+    //on "web" platform, you need to saveToStore. otherwise the DB is in memory
+    //save to indexedDB on disk
+    if (platform === 'web') {
+      setInterval(() => {
+        sqlite.saveToStore(this.dbName)
+      }, 10 * 1000)
+    }
   }
 
   hasPresented = false
@@ -363,5 +371,10 @@ export class CachingService {
     })
   }
 
+  //
+  async getAllUrls() {
+    const ret = await this.db!.query('SELECT url FROM cache ')
+    return ret.values?.map((value) => value)
+  }
   //
 }
