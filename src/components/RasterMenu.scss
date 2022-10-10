@@ -22,15 +22,14 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   bottom: $raster-menu-bottom;
   width: 100%;
   height: $raster-menu-height;
-
-  background: rgba(var(--ion-color-light-rgb), 0.5);
+  background: rgba(var(--ion-color-light-rgb), 0.85);
 
   ion-card {
     display: inline-block;
     background-color: rgba(0, 0, 0, 0);
     box-shadow: 0 0;
     margin-top: 0.5rem;
-    width: 7rem
+    width: 7rem;
   }
 
   ion-card-header {

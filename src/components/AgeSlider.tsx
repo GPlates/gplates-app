@@ -33,6 +33,7 @@ import {
   LIMIT_UPPER,
   animateRange,
   animateIncrement,
+  showTimeStampState,
 } from '../functions/atoms'
 import {
   matchDarkMode,
@@ -57,6 +58,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const [presentToast, dismissToast] = useIonToast()
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const range = useRecoilValue(animateRange)
+  const showTimeStamp = useRecoilValue(showTimeStampState)
 
   const openMenu = () => {
     setMenuPath('animation')
@@ -185,7 +187,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
           id={'timeStamp'} // screenshot need time information, using id to locate element
           onClick={() => showAgeSliderWidget()}
         >
-          {_age} Ma
+          {showTimeStamp && <span>{_age} Ma</span>}
         </div>
         <div>
           {buttons}

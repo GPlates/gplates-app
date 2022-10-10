@@ -17,6 +17,7 @@ import {
   isRasterMenuShow,
   age,
   animateRange,
+  showTimeStampState,
 } from '../functions/atoms'
 import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
 import { cesiumViewer } from '../functions/cesiumViewer'
@@ -50,9 +51,12 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
   const setAge = useSetRecoilState(age)
   const [range, setRange] = useRecoilState(animateRange)
+  const setShowTimeStampState = useSetRecoilState(showTimeStampState)
+
   const [swiper, setSwiper] = useState<SwiperType>()
   const [present, dismiss] = useIonLoading()
 
+  //
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
     const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
     //if (currentLayer != null) {
@@ -68,12 +72,14 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     }
   }
 
+  //
   useEffect(() => {
     let middle = Math.floor(rasterMaps.length / 2)
     select(middle)
     swiper?.slideTo(middle)
   }, [isCesiumViewerReady]) //initial selection
 
+  //
   useEffect(() => {
     setCurrentRasterIndex(currentRasterMapIndex)
   }, [currentRasterMapIndex]) //update current raster index
@@ -120,7 +126,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     setCurrentRasterMapIndex(index)
     setCurrentRasterIndex(index)
     setAge(0)
-    if (rasterMaps.length > 0) {
+    if (rasterMaps.length > index) {
       const endTime = rasterMaps[index].endTime
       const startTime = rasterMaps[index].startTime
       setRange({
@@ -129,6 +135,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       })
       if (endTime === 0 && startTime === 0) {
         setAgeSliderShown(false)
+        setShowTimeStampState(false)
+      } else {
+        setShowTimeStampState(true)
       }
     }
     cesiumViewer?.entities.removeById('userLocation')
