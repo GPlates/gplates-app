@@ -1,0 +1,62 @@
+.indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 16px;
+  height: 32px;
+  padding: 0 8px;
+}
+
+@keyframes label-animation {
+  0% {
+    max-width: 0;
+    opacity: 0;
+  }
+  10% {
+    max-width: 128px;
+    opacity: 1;
+  }
+  90% {
+    max-width: 128px;
+    opacity: 1;
+  }
+  100% {
+    max-width: 0;
+    opacity: 0;
+  }
+}
+
+.label {
+  &.animate {
+    animation-name: label-animation;
+    animation-duration: 5000ms;
+    animation-timing-function: ease-in-out;
+  }
+
+  span {
+    padding-right: 8px;
+  }
+
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: background 500ms ease-in-out;
+}
+
+.wifi {
+  background: #388E3C;
+}
+
+.cellular {
+  background: #F57C00;
+}
+
+.none {
+  background: #D32F2F;
+}
+
+.unknown {
+  background: #616161;
+}

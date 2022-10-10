@@ -1,3 +1,9 @@
+.network-indicator {
+  position: fixed;
+  bottom: calc(var(--ion-safe-area-bottom) + 10px);
+  right: 10px;
+}
+
 /* The animation code */
 @keyframes outline-animation {
   0% {
