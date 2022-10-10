@@ -47,6 +47,11 @@ export const networkDownloadOnCellular = atom({
   default: false,
 })
 
+export const networkStatus = atom({
+  key: 'networkStatus',
+  default: 'none',
+})
+
 export const isAboutPageShow = atom({ key: 'isAboutPageShow', default: false })
 export const isAgeSliderShown = atom({
   key: 'isAgeSliderShown',
