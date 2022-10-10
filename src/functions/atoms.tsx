@@ -39,7 +39,8 @@ export const backgroundIsCustom = atom({
   default: false,
 })
 
-export const appDarkMode = atom({ key: 'appDarkMode', default: 'auto' })
+//export const appDarkMode = atom({ key: 'appDarkMode', default: 'auto' })
+export const appDarkMode = atom({ key: 'appDarkMode', default: 'dark' })
 
 export const networkDownloadOnCellular = atom({
   key: 'downloadOnCellular',
@@ -98,4 +99,9 @@ export const isCacheInfoShowState = atom({
 export const showCities = atom({
   key: 'showCities',
   default: false,
+})
+
+export const showTimeStampState = atom({
+  key: 'showTimeStampState',
+  default: true,
 })

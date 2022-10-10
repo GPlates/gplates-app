@@ -219,7 +219,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             />
           </IonItem>
 
-          <IonItemDivider>Server Setting</IonItemDivider>
           <IonItem>
             <IonLabel class="server-url-label">Server URL </IonLabel>
             <IonInput

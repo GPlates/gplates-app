@@ -110,7 +110,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Animate from:</IonLabel>
+                <IonLabel>From:</IonLabel>
                 <IonInput
                   inputMode="numeric"
                   min={LIMIT_LOWER}
@@ -128,7 +128,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
             </IonCol>
             <IonCol>
               <IonItem>
-                <IonLabel>to:</IonLabel>
+                <IonLabel>To:</IonLabel>
                 <IonInput
                   inputMode="numeric"
                   min={LIMIT_LOWER}
@@ -146,9 +146,16 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
             </IonCol>
           </IonRow>
           <IonRow>
+            <IonCol className="reverse-col">
+              <IonButton onClick={reverseAnimation} size="small">
+                Reverse the Animation
+              </IonButton>
+            </IonCol>
+          </IonRow>
+          <IonRow>
             <IonCol className="increment-col">
               <IonItem>
-                <IonLabel>with an increment of:</IonLabel>
+                <IonLabel>Increment:</IonLabel>
                 <IonInput
                   inputMode="numeric"
                   min={minIncrement}
@@ -163,25 +170,11 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                   }
                   value={increment}
                 />
-                Myr per frame
-              </IonItem>
-            </IonCol>
-            <IonCol className="reverse-col">
-              <IonButton onClick={reverseAnimation} size="small">
-                Reverse the Animation
-              </IonButton>
-              <div className="description">
-                by swapping the start and end times
-              </div>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol>
-              <IonItem lines="none">
-                <h5>Options</h5>
+                Myr
               </IonItem>
             </IonCol>
           </IonRow>
+
           <IonRow>
             <IonCol>
               <IonItem>
@@ -198,6 +191,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
               </IonItem>
             </IonCol>
           </IonRow>
+
           <IonRow>
             <IonCol>
               <IonItem>
@@ -207,19 +201,16 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                   onIonChange={(e) => setExact(e.detail.checked)}
                 />
               </IonItem>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol>
               <IonItem>
                 <IonLabel>Loop</IonLabel>
                 <IonToggle
                   checked={loop}
                   onIonChange={(e) => setLoop(e.detail.checked)}
-                />
-              </IonItem>
-              <IonItem>
-                <IonLabel>Animate Overlays</IonLabel>
-                <IonToggle
-                  class={'reconstruct-overlays'}
-                  checked={false}
-                  onIonChange={(e) => console.log(e.detail.checked)}
                 />
               </IonItem>
             </IonCol>

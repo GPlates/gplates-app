@@ -75,12 +75,14 @@ ion-item::part(native) {
     padding-left: 8px;
   }
   .increment-col {
-    min-width: min(320px, var(--min-column-width));
+    color: var(--ion-text-color);
+    //min-width: min(320px, var(--min-column-width));
   }
   .reverse-col {
     ion-button {
       font-size: 14px;
       text-transform: revert;
+      margin: auto;
     }
     .description {
       color: var(--ion-text-color);
@@ -89,7 +91,7 @@ ion-item::part(native) {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
-    min-width: min(512px, var(--min-column-width));
+    //min-width: min(512px, var(--min-column-width));
   }
 }
 
