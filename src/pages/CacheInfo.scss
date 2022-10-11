@@ -1,0 +1,46 @@
+.cache-db-label {
+  min-width: 30% !important;
+}
+
+.cache-db-input {
+  text-align: right;
+}
+
+ion-alert.purge-cache-alert {
+  --backdrop-opacity: 0.85;
+}
+
+.purge-cache-alert .alert-head {
+  text-align: center;
+}
+
+.purge-cache-alert .alert-wrapper {
+  border-radius: 25px;
+}
+
+.purge-cache-alert .alert-button-group {
+  display: flex;
+  justify-content: space-around;
+}
+
+ion-alert.populate-cache-alert {
+  --backdrop-opacity: 0.85;
+}
+
+.populate-cache-alert .alert-head {
+  text-align: center;
+}
+
+.populate-cache-alert .alert-wrapper {
+  border-radius: 25px;
+}
+
+.populate-cache-alert .alert-button-group {
+  display: flex;
+  justify-content: space-around;
+}
+
+.cache-info-note {
+  font-style: italic;
+  margin: 5px 5px 5px 5px;
+}

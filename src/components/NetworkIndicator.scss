@@ -46,17 +46,34 @@
 }
 
 .wifi {
-  background: #388E3C;
+  background: #388e3c;
 }
 
 .cellular {
-  background: #F57C00;
+  background: #f57c00;
 }
 
 .none {
-  background: #D32F2F;
+  background: #d32f2f;
 }
 
 .unknown {
   background: #616161;
+}
+
+ion-alert.network-indicator-alert {
+  --backdrop-opacity: 0.85;
+}
+
+.network-indicator-alert .alert-head {
+  text-align: center;
+}
+
+.network-indicator-alert .alert-wrapper {
+  border-radius: 25px;
+}
+
+.network-indicator-alert .alert-button-group {
+  display: flex;
+  justify-content: space-around;
 }

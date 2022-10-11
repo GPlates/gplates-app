@@ -9,6 +9,7 @@ import { buildAnimationURL } from './util'
 import { canDownload, presentDataAlert } from './network'
 import { Preferences } from '@capacitor/preferences'
 import { SQLiteHook } from 'react-sqlite-hook'
+import { DEBUG } from './settings'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -270,7 +271,7 @@ export class CachingService {
       this.db = db
       //await db.close()
       //await sqlite.closeConnection(this.dbName)
-      console.log('DEBUG: cache DB has been initialized!')
+      if (DEBUG) console.log('DEBUG: cache DB has been initialized!')
     } catch (err: any) {
       console.log(`Error: ${err}`)
       throw new Error(`Error: ${err}`)
