@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import './CacheInfo.scss'
 import {
   IonButton,
   IonButtons,
@@ -144,10 +145,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             <IonNote slot="end">{total}</IonNote>
           </IonItem>
         </IonList>
-        <div>
-          Note: Press the &quot;POPULATE&quot; button to precache the current
-          raster and overlays for animation. Press the red bin to purge cache.
-        </div>
+        <br></br>
         <div style={{ textAlign: 'center' }}>
           <IonButton
             shape="round"
@@ -163,10 +161,10 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
 
           <IonButton
             shape="round"
-            onClick={async () => {
+            onClick={() => {
               presentAlert({
                 header: `Cache current raster and overlays?`,
-                cssClass: 'purge-cache-alert',
+                cssClass: 'populate-cache-alert',
                 buttons: [
                   {
                     text: 'No',
@@ -194,6 +192,10 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             Populate
             <IonRippleEffect />
           </IonButton>
+        </div>
+        <div className="cache-info-note">
+          Note: Press the &quot;POPULATE&quot; button to precache the current
+          raster and overlays for animation. Press the red bin to purge cache.
         </div>
         <br />
         <br />

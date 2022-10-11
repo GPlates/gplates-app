@@ -20,7 +20,7 @@ import MajorCities from '../components/MajorCities'
 import { AboutPage } from './AboutPage'
 import { ModelInfo } from './ModelInfo'
 import { CacheInfo } from './CacheInfo'
-import { CachingService, cachingServant } from '../functions/cache'
+import { cachingServant } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
@@ -60,6 +60,7 @@ import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import { setPresentDataAlert } from '../functions/network'
 import NetworkIndicator from '../components/NetworkIndicator'
+import { DEBUG } from '../functions/settings'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -188,7 +189,7 @@ const Main: React.FC = () => {
         })
       }
 
-      console.log('DEBUG: raster maps loaded!')
+      if (DEBUG) console.log('DEBUG: raster maps loaded!')
       setIsRasterMapsLoaded(true) //notify the raster maps have been loaded.
 
       //init Ceium viewer if has not been done yet
@@ -200,7 +201,7 @@ const Main: React.FC = () => {
         )
 
         setIsCesiumViewerReady(true) //notify the Ceium viewer is ready
-        console.log('DEBUG: Ceium viewer is ready!')
+        if (DEBUG) console.log('DEBUG: Ceium viewer is ready!')
 
         // Load settings
         Preferences.get({ key: 'animationSettings' }).then((res) => {
@@ -266,7 +267,7 @@ const Main: React.FC = () => {
           }
         }
       })
-      console.log('DEBUG: rotation models have been created!')
+      if (DEBUG) console.log('DEBUG: rotation models have been created!')
 
       //add more init code here
 

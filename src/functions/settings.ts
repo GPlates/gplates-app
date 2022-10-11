@@ -14,3 +14,5 @@ export const setServerURL = (url: string) => {
 Preferences.get({ key: 'serverURL' }).then((result) => {
   serverURL = result.value ?? DEFAULT_SERVER_URL
 })
+
+export const DEBUG = false

@@ -6,18 +6,19 @@ import { networkStatus } from '../functions/atoms'
 import {
   cellularOutline,
   cloudOfflineOutline,
-  helpOutline,
+  extensionPuzzleOutline,
   wifiOutline,
 } from 'ionicons/icons'
-import { IonIcon } from '@ionic/react'
+import { IonIcon, useIonAlert } from '@ionic/react'
 
 let timeoutId: NodeJS.Timeout | undefined
 
 const NetworkIndicator: React.FC = () => {
   const [animate, setAnimate] = useState(true)
-  const [icon, setIcon] = useState(helpOutline)
+  const [icon, setIcon] = useState(extensionPuzzleOutline)
   const [label, setLabel] = useState('Unknown')
   const [status, setStatus] = useRecoilState(networkStatus)
+  const [presentAlert] = useIonAlert()
 
   const onStatusChange = (newStatus: ConnectionStatus) => {
     const status = newStatus.connectionType
@@ -32,7 +33,7 @@ const NetworkIndicator: React.FC = () => {
       setIcon(cloudOfflineOutline)
       setLabel('Disconnected')
     } else {
-      setIcon(helpOutline)
+      setIcon(extensionPuzzleOutline)
       setLabel('Unknown')
     }
     clearTimeout(timeoutId)
@@ -51,12 +52,40 @@ const NetworkIndicator: React.FC = () => {
     })
   }, [])
 
+  //
+  const showAlert = () => {
+    presentAlert({
+      header:
+        `This is a network indicator. If you see a puzzle icon, it means your network status is unknown. ` +
+        'The App may download a large volumn of data from our server. ' +
+        'This indicator here helps you to avoid using too much of your celullar data.',
+      cssClass: 'network-indicator-alert',
+      buttons: [
+        {
+          text: 'Dismiss',
+          role: 'confirm',
+          handler: () => {},
+        },
+      ],
+      onDidDismiss: (e: CustomEvent) => {
+        let element = document.getElementById('network-indicator-label')
+        element?.classList.add('animate')
+        setTimeout(() => {
+          element?.classList.remove('animate')
+        }, 5000)
+      },
+    })
+  }
+
   return (
     <div className={status + ' indicator'}>
-      <div className={(animate ? 'animate ' : '') + 'label'}>
+      <div
+        className={(animate ? 'animate ' : '') + 'label'}
+        id="network-indicator-label"
+      >
         <span>{label}</span>
       </div>
-      <IonIcon icon={icon} />
+      <IonIcon icon={icon} onClick={showAlert} />
     </div>
   )
 }
