@@ -92,7 +92,6 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   background-color: var(--ion-color-light);
   opacity: 0.5;
   z-index: 9999;
-  child-align: middle;
 
   p {
     display: block;

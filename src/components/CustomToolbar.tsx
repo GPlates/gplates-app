@@ -15,7 +15,8 @@ import React, { Fragment, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 // https://stackoverflow.com/a/69736635/15379768
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+//import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+import { Swiper, SwiperSlide } from 'swiper/react'
 
 // Swiper styles must use direct files import
 import 'swiper/swiper.scss' // core Swiper

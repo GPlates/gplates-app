@@ -28,14 +28,6 @@ export class CachingService {
 
   constructor(private dbName: string) {
     cachingServant = this
-    const platform = Capacitor.getPlatform()
-    //on "web" platform, you need to saveToStore. otherwise the DB is in memory
-    //save to indexedDB on disk
-    if (platform === 'web') {
-      setInterval(() => {
-        sqlite.saveToStore(this.dbName)
-      }, 10 * 1000)
-    }
   }
 
   hasPresented = false
@@ -262,6 +254,7 @@ export class CachingService {
       }
 
       await db.open()
+
       let query = `CREATE TABLE IF NOT EXISTS cache (
       url STRING PRIMARY KEY NOT NULL,
       data BLOB NOT NULL,
@@ -272,6 +265,14 @@ export class CachingService {
       //await db.close()
       //await sqlite.closeConnection(this.dbName)
       if (DEBUG) console.log('DEBUG: cache DB has been initialized!')
+
+      //on "web" platform, you need to saveToStore. otherwise the DB is in memory
+      //save to indexedDB on disk
+      if (platform === 'web') {
+        setInterval(() => {
+          sqlite.saveToStore(this.dbName)
+        }, 10 * 1000)
+      }
     } catch (err: any) {
       console.log(`Error: ${err}`)
       throw new Error(`Error: ${err}`)

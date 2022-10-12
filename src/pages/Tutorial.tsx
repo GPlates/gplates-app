@@ -6,7 +6,8 @@ import {
   IonPage,
   useIonViewDidLeave,
 } from '@ionic/react'
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+//import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination } from 'swiper'
 import * as Types from 'swiper/types'
 
