@@ -238,18 +238,19 @@ export class CachingService {
         }
       }
       const ret = await sqlite.checkConnectionsConsistency()
-      const isConn = (await sqlite.isConnection(this.dbName)).result
+      const isConn = (await sqlite.isConnection(this.dbName, false)).result
 
       // Set up the schema of the database
       let db: SQLiteDBConnection
       if (ret.result && isConn) {
-        db = await sqlite.retrieveConnection(this.dbName)
+        db = await sqlite.retrieveConnection(this.dbName, false)
       } else {
         db = await sqlite.createConnection(
           this.dbName,
           false,
           'no-encryption',
-          1
+          1,
+          false
         )
       }
 
