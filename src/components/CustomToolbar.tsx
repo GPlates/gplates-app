@@ -15,12 +15,16 @@ import React, { Fragment, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 // https://stackoverflow.com/a/69736635/15379768
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+//import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+import { Swiper, SwiperSlide } from 'swiper/react'
 
 // Swiper styles must use direct files import
-import 'swiper/swiper.scss' // core Swiper
-import 'swiper/modules/navigation/navigation.scss' // Navigation module
-import 'swiper/modules/pagination/pagination.scss'
+//import 'swiper/swiper.scss' // core Swiper
+//import 'swiper/modules/navigation/navigation.scss' // Navigation module
+//import 'swiper/modules/pagination/pagination.scss'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 import { Pagination } from 'swiper'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { Geolocation } from '@capacitor/geolocation'
