@@ -66,6 +66,15 @@ You can try `sudo gem install cocoapods` to install [CocoaPods](https://cocoapod
 
 To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how-to-run-cocoapods-on-apple-silicon-m1) mac, use HomeBrew: `brew install cocoapods`
 
+### Upgrade @capacitor-community/sqlite
+
+**Important:**
+⚠ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
+
+### Firebase Deploy
+
+<https://gplates-app-5e092.web.app> @gplatesearthbyte@gmail.com
+
 ## Some random notes
 
 - nvm use 16
