@@ -183,17 +183,19 @@ const saveImage = async (img: string) => {
       })
     }
   } else if (isPlatform('android')) {
-    if (
-      (await Media.getAlbums()).albums.find((a) => a.name === albumName) ===
-      undefined
-    ) {
-      // no 'GPlates App' album, create one
-      await Media.createAlbum({ name: albumName })
-    }
-    await Media.savePhoto({
-      path: savedPath,
-      album: albumName,
+    const media = await Media.getAlbums().catch((err) => {
+      console.log(err)
     })
+    if (media) {
+      if (media.albums.find((a) => a.name === albumName) === undefined) {
+        // no 'GPlates App' album, create one
+        await Media.createAlbum({ name: albumName })
+      }
+      await Media.savePhoto({
+        path: savedPath,
+        album: albumName,
+      })
+    }
   }
   return savedPath
 }
