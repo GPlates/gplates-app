@@ -24,7 +24,7 @@
     "@ionic/react": "^6.1.4",
     "@ionic/react-router": "^6.1.4",
     "@ionic/storage": "^3.0.6",
-    "cesium": "^1.95.0",
+    "cesium": "1.95.0",
     "echarts": "^5.3.3",
     "es6-promise-plugin": "^4.2.2",
     "html2canvas": "^1.4.1",
@@ -111,7 +111,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "jeep-sqlite": "^1.5.2",
     "prettier": "^2.7.1",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "webpack": "^5.74.0"
   },
   "bundledDependencies": [
     "ionicons/icons"
