@@ -8,11 +8,17 @@ import {
   getPlatforms,
   IonAccordion,
   IonAccordionGroup,
+  IonButton,
+  IonIcon,
   IonItem,
   IonLabel,
   IonList,
+  IonPopover,
+  IonSelect,
+  IonSelectOption,
   useIonLoading,
 } from '@ionic/react'
+import { caretDownOutline } from 'ionicons/icons'
 import rasterMaps from '../functions/rasterMaps'
 import { requestDataByUrl, timeout } from '../functions/util'
 import { getDefaultStore } from '../functions/storage'
@@ -63,6 +69,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [present, dismiss] = useIonLoading()
   const [graphList, setGraphList] = useState([] as string[][])
+  const [curGraphName, setCurGraphName] = useState('')
 
   function process_data(
     data_map: any,
@@ -146,13 +153,9 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         })
 
         OPTION = {
-          title: [
-            {
-              left: 'center',
-              top: '5%',
-              text: graphList[curIdx][0],
-            },
-          ],
+          grid: {
+            top: '7%',
+          },
           xAxis: {
             type: 'category',
             data: X_VALS,
@@ -213,6 +216,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       getGraphList()
         .then((res) => {
           setGraphList(res)
+          setCurGraphName(res[curGraphIdx][0])
           for (let each in res) {
             getData(each[1]) // add all data into local storage
           }
@@ -242,6 +246,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         onClick={async () => {
           await present({ message: 'Loading...' })
           setCurGraphIdx(i)
+          setCurGraphName(graphList[i][0])
           await loadGraph(i)
           await dismiss()
         }}
@@ -262,16 +267,22 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div id="graphPanel-statistics" className="graph-panel-statistics" />
-      <IonAccordionGroup className="graph-panel-list" hidden={!isShow}>
-        <IonAccordion value="first">
-          <IonItem slot="header">
-            <IonLabel>Graph List</IonLabel>
-          </IonItem>
-          <div slot="content">
-            <IonList>{optionList}</IonList>
-          </div>
-        </IonAccordion>
-      </IonAccordionGroup>
+      <div className="graph-panel-list">
+        <div
+          id="graph-panel-click-trigger"
+          style={{
+            margin: '0.5rem 10% 0 10%',
+            width: 'auto',
+            textAlign: 'center',
+          }}
+        >
+          {curGraphName + '  '}
+          <IonIcon icon={caretDownOutline} />
+        </div>
+        <IonPopover trigger="graph-panel-click-trigger" triggerAction="click">
+          <IonList>{optionList}</IonList>
+        </IonPopover>
+      </div>
     </div>
   )
 }
