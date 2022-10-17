@@ -5,6 +5,8 @@ import rasterMaps from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { buildAnimationURL } from './util'
 import { currentModel } from './rotationModel'
+import { createCesiumImageryProvider } from './dataLoader'
+import { cesiumViewer } from './cesiumViewer'
 
 let animateFrame = 0
 let animateNext = false
@@ -27,10 +29,11 @@ export class AnimationService {
     public range: { lower: number; upper: number },
     public setRange: SetterOrUpdater<{ lower: number; upper: number }>,
     public viewer: Viewer,
-    public currentRasterMapIndex: number
+    public currentRasterMapIndex: number,
+    public setCurrentLayer: SetterOrUpdater<any>
   ) {}
 
-  drawFrame = async (url: string, force = false) => {
+  drawFrame = async (url: string) => {
     animateStartTime = Date.now()
     try {
       const dataURL: string = await this.cachingService?.getCachedRequest(
@@ -45,7 +48,7 @@ export class AnimationService {
           url: dataURL,
         })
         // Disallow old frames from being printed when manually changing age
-        if (animateNext || force) {
+        if (animateNext) {
           this.viewer.imageryLayers.addImageryProvider(provider)
         }
       }
@@ -77,7 +80,7 @@ export class AnimationService {
       if (nextFrame) {
         this.nextFrameNumber()
       }
-      this.drawFrame(url)
+      return this.drawFrame(url)
     }, Math.max(timeToNext, 0)) //due to the event loop, the timeToNext cannot be guaranteed.
   }
 
@@ -116,14 +119,14 @@ export class AnimationService {
   onAgeSliderChange = (value: number) => {
     if (!this.playing) {
       animateFrame = value
-      this.drawFrame(this.getCurrentRasterAnimationURL(), true)
+      this.drawTiles()
     }
   }
 
   resetPlayHead = () => {
     this.setPlaying(false)
     animateFrame = this.range.lower
-    this.drawFrame(this.getCurrentRasterAnimationURL(), true)
+    this.drawTiles()
   }
 
   movePlayHead = (value: number) => {
@@ -135,7 +138,7 @@ export class AnimationService {
       ),
       rasterMaps[this.currentRasterMapIndex].startTime
     )
-    this.drawFrame(this.getCurrentRasterAnimationURL(), true)
+    this.drawTiles()
   }
 
   setDragging = (value: boolean) => {
@@ -187,6 +190,7 @@ export class AnimationService {
       this.scheduleFrame(this.getCurrentRasterAnimationURL())
     } else {
       clearTimeout(animateTimeout)
+      this.drawTiles()
     }
   }
 
@@ -207,5 +211,17 @@ export class AnimationService {
       rasterMaps[this.currentRasterMapIndex].layerName,
       overlays
     )
+  }
+
+  drawTiles = () => {
+    const provider = createCesiumImageryProvider(
+      rasterMaps[this.currentRasterMapIndex],
+      animateFrame
+    )
+    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
+    this.setCurrentLayer(newLayer)
+    if (cesiumViewer.imageryLayers.length > 8) {
+      cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
+    }
   }
 }

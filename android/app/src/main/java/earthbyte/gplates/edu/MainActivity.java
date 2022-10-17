@@ -12,8 +12,13 @@ import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewFeature;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.community.media.MediaPlugin;
 
 public class MainActivity extends BridgeActivity {
+    public void onCreate() {
+        registerPlugin(MediaPlugin.class);
+    }
+
     // Source: https://fellow.engineering/how-we-implemented-dark-mode-with-capacitor-d59b29e51b7d
     @Override
     public void onConfigurationChanged(Configuration configuration) {

@@ -126,7 +126,8 @@ const Main: React.FC = () => {
     range,
     setRange,
     cesiumViewer,
-    currentRasterMapIndex
+    currentRasterMapIndex,
+    setRasterMenuCurrentLayer
   )
 
   backgroundService = new BackgroundService(
