@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@awesome-cordova-plugins/core": "^5.44.0",
+    "@awesome-cordova-plugins/core": "^6.0.1",
     "@capacitor-community/media": "^4.0.0-0",
     "@capacitor-community/sqlite": "^4.2.1",
     "@capacitor/android": "^4.0.0",
@@ -110,7 +110,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "jeep-sqlite": "^1.5.2",
+    "jeep-sqlite": "^1.6.5",
     "prettier": "^2.7.1",
     "react-scripts": "^5.0.1",
     "webpack": "^5.74.0"
