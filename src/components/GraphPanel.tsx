@@ -268,14 +268,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div id="graphPanel-statistics" className="graph-panel-statistics" />
       <div className="graph-panel-list">
-        <div
-          id="graph-panel-click-trigger"
-          style={{
-            margin: '0.5rem 10% 0 10%',
-            width: 'auto',
-            textAlign: 'center',
-          }}
-        >
+        <div id="graph-panel-click-trigger">
           {curGraphName + '  '}
           <IonIcon icon={caretDownOutline} />
         </div>
