@@ -30,8 +30,6 @@ import {
   currentRasterMapIndexState,
   appDarkMode,
   isAgeSliderShown,
-  LIMIT_LOWER,
-  LIMIT_UPPER,
   animateRange,
   animateIncrement,
   showTimeStampState,
@@ -103,12 +101,12 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
             min={
               rasterMaps.length > 0
                 ? rasterMaps[currentRasterMapIndex].endTime
-                : LIMIT_LOWER
+                : 0
             }
             max={
               rasterMaps.length > 0
                 ? rasterMaps[currentRasterMapIndex].startTime
-                : LIMIT_UPPER
+                : 0
             }
             onIonChange={(e) =>
               setNumber(
@@ -116,10 +114,10 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
                 e.detail.value,
                 rasterMaps.length > 0
                   ? rasterMaps[currentRasterMapIndex].endTime
-                  : LIMIT_LOWER,
+                  : 0,
                 rasterMaps.length > 0
                   ? rasterMaps[currentRasterMapIndex].startTime
-                  : LIMIT_UPPER
+                  : 0
               )
             }
             value={_age}

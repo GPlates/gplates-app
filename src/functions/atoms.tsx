@@ -3,10 +3,6 @@ import { RasterCfg } from './types'
 
 import { failSafeRasterMaps } from './rasterMaps'
 
-// TODO: Dynamically assign these variables based on selected raster
-export const LIMIT_UPPER = 410
-export const LIMIT_LOWER = 0
-
 export const age = atom({ key: 'age', default: 0 })
 export const animateExact = atom({ key: 'animateExact', default: false })
 export const animateFps = atom({ key: 'animateFps', default: 10 })
@@ -16,8 +12,8 @@ export const animatePlaying = atom({ key: 'animatePlaying', default: false })
 export const animateRange = atom({
   key: 'animateRange',
   default: {
-    lower: LIMIT_LOWER,
-    upper: LIMIT_UPPER,
+    lower: 0,
+    upper: 410,
   },
 })
 

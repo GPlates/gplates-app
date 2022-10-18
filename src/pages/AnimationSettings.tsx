@@ -21,8 +21,6 @@ import {
   animateIncrement,
   animateLoop,
   animateRange,
-  LIMIT_LOWER,
-  LIMIT_UPPER,
   currentRasterMapIndexState,
 } from '../functions/atoms'
 import RasterMaps from '../functions/rasterMaps'
@@ -74,6 +72,11 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
     }, 100)
   }, [])
 
+  let minTime =
+    RasterMaps.length > 0 ? RasterMaps[currentRasterMapIndex].endTime : 0
+  let maxTime =
+    RasterMaps.length > 0 ? RasterMaps[currentRasterMapIndex].startTime : 1000
+
   return (
     <div>
       <IonList className={'settings-list'}>
@@ -88,20 +91,27 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonRange
-                dir="rtl"
+                dir={range.lower > range.upper ? 'rtl' : 'ltr'}
                 dualKnobs={true}
-                min={
-                  RasterMaps.length > 0
-                    ? RasterMaps[currentRasterMapIndex].endTime
-                    : LIMIT_LOWER
-                }
-                max={
-                  RasterMaps.length > 0
-                    ? RasterMaps[currentRasterMapIndex].startTime
-                    : LIMIT_UPPER
-                }
+                min={minTime}
+                max={maxTime}
                 onIonKnobMoveEnd={(e) => {
-                  setRange(e.detail.value as any)
+                  //console.log(e.detail.value)
+                  let rangeValue = e.detail.value as {
+                    lower: number
+                    upper: number
+                  }
+                  if (range.lower > range.upper) {
+                    setRange({
+                      lower: rangeValue.upper,
+                      upper: rangeValue.lower,
+                    })
+                  } else {
+                    setRange({
+                      lower: rangeValue.lower,
+                      upper: rangeValue.upper,
+                    })
+                  }
                 }}
                 value={range}
               />
@@ -113,8 +123,8 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                 <IonLabel>From:</IonLabel>
                 <IonInput
                   inputMode="numeric"
-                  min={LIMIT_LOWER}
-                  max={LIMIT_UPPER}
+                  min={minTime}
+                  max={maxTime}
                   onIonChange={(e) =>
                     setRange({
                       lower: Number(e.detail.value) || 0,
@@ -131,8 +141,8 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                 <IonLabel>To:</IonLabel>
                 <IonInput
                   inputMode="numeric"
-                  min={LIMIT_LOWER}
-                  max={LIMIT_UPPER}
+                  min={minTime}
+                  max={maxTime}
                   onIonChange={(e) =>
                     setRange({
                       lower: range.lower,
