@@ -13,6 +13,7 @@ import {
   pauseOutline,
   playOutline,
   playSkipForwardOutline,
+  playSkipBackOutline,
   playBackOutline,
   playForwardOutline,
   timeOutline,
@@ -136,14 +137,14 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
             </IonButton>
             <IonButton
               fill="clear"
-              onClick={() => animationService.movePlayHead(increment)}
+              onClick={() => animationService.movePrev()}
               size="default"
             >
               <IonIcon icon={playBackOutline} />
             </IonButton>
             <IonButton
               fill="clear"
-              onClick={() => animationService.movePlayHead(-increment)}
+              onClick={() => animationService.moveNext()}
               size="default"
             >
               <IonIcon icon={playForwardOutline} />
@@ -153,7 +154,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
               onClick={() => animationService.resetPlayHead()}
               size="default"
             >
-              <IonIcon icon={playSkipForwardOutline} />
+              <IonIcon icon={playSkipBackOutline} />
             </IonButton>
             <IonButton fill="clear" onClick={openMenu} size="default">
               <IonIcon icon={cogOutline} />
@@ -162,7 +163,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
         </IonItem>
         <IonItem className="slider" lines="none">
           <IonRange
-            dir="rtl"
+            dir={range.lower < range.upper ? 'ltr' : 'rtl'}
             onIonKnobMoveStart={() => {
               animationService.setDragging(true)
               animationService.setPlaying(false)

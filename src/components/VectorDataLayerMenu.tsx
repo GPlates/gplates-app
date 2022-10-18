@@ -57,22 +57,22 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const rAge = useRecoilValue(age)
   const setShowCities = useSetRecoilState(showCities)
 
-  //
+  //get vector layers and draw them on Cesium globe
   const getVecInfoByRaster = async (rasterModel: string) => {
-    let responseJson = getVectorLayers(rasterModel)
+    let layers = getVectorLayers(rasterModel)
     vectorLayers = []
-    for (let key in responseJson) {
-      let p = createCesiumImageryProvider(responseJson[key], rAge)
+    for (let key in layers) {
+      let p = createCesiumImageryProvider(layers[key], rAge)
 
       let layer = {
-        displayName: responseJson[key].displayName,
+        displayName: layers[key].displayName,
         imageryLayer: null as unknown as ImageryLayer,
         layerProvider: p,
         layerName: key,
-        layer: responseJson[key].layer,
-        url: responseJson[key].url,
-        wmsUrl: responseJson[key].wmsUrl,
-        style: responseJson[key].style,
+        layer: layers[key].layer,
+        url: layers[key].url,
+        wmsUrl: layers[key].wmsUrl,
+        style: layers[key].style,
         checked: false,
       }
       let checkedLayers = getEnabledLayers(currentRasterMapIndex)

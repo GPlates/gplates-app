@@ -133,6 +133,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         lower: endTime,
         upper: startTime,
       })
+      //hide the time widget and time slider if the raster is present-day only
       if (endTime === 0 && startTime === 0) {
         setAgeSliderShown(false)
         setShowTimeStampState(false)
