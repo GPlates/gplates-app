@@ -6,15 +6,17 @@ import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { buildAnimationURL } from './util'
 import { currentModel } from './rotationModel'
 import { createCesiumImageryProvider } from './dataLoader'
-import { cesiumViewer } from './cesiumViewer'
+import { cesiumViewer, drawLayers } from './cesiumViewer'
 
-let animateFrame = 0
+let animateFrame = 0 //current age
 let animateNext = false
 let animateStartTime = 0
 let animateTimeout: NodeJS.Timeout
 let dragging = false
 
 export class AnimationService {
+  private from: number
+  private to: number
   constructor(
     public cachingService: CachingService,
     public setAge: SetterOrUpdater<number>,
@@ -31,8 +33,12 @@ export class AnimationService {
     public viewer: Viewer,
     public currentRasterMapIndex: number,
     public setCurrentLayer: SetterOrUpdater<any>
-  ) {}
+  ) {
+    this.from = range.lower
+    this.to = range.upper
+  }
 
+  //
   drawFrame = async (url: string) => {
     animateStartTime = Date.now()
     try {
@@ -78,12 +84,13 @@ export class AnimationService {
     //console.log(timeToNext)
     animateTimeout = setTimeout(() => {
       if (nextFrame) {
-        this.nextFrameNumber()
+        animateFrame = this.getNextFrameNumber()
       }
       return this.drawFrame(url)
     }, Math.max(timeToNext, 0)) //due to the event loop, the timeToNext cannot be guaranteed.
   }
 
+  //
   nextFrameNumber = () => {
     const reversed = this.range.lower > this.range.upper
 
@@ -116,6 +123,59 @@ export class AnimationService {
     return animateFrame
   }
 
+  //return the next valid age
+  getNextFrameNumber = () => {
+    //if loop is true and frame has reached the end, go to the start
+    //otherwise, stay at the end
+    if (Math.abs(animateFrame - this.to) < Number.EPSILON) {
+      return this.loop ? this.from : this.to
+    }
+
+    let big = Math.max(this.from, this.to)
+    let small = Math.min(this.from, this.to)
+    let nextNumber =
+      this.from > this.to
+        ? animateFrame - this.increment
+        : animateFrame + this.increment
+
+    //when the next number reached boundary
+    //either use the boundary value or stop at where it was
+    if (nextNumber > big) {
+      nextNumber = this.loop || this.exact ? big : animateFrame
+    }
+    if (nextNumber < small) {
+      nextNumber = this.loop || this.exact ? small : animateFrame
+    }
+    return currentModel.getNearestTime(nextNumber)
+  }
+
+  //return the previous valid age
+  getPrevFrameNumber = () => {
+    //if loop is true and frame has reached the start, go to the end
+    //otherwise, stay at the end
+    if (Math.abs(animateFrame - this.from) < Number.EPSILON) {
+      return this.loop ? this.to : this.from
+    }
+
+    let big = Math.max(this.from, this.to)
+    let small = Math.min(this.from, this.to)
+    let prevNumber =
+      this.from > this.to
+        ? animateFrame + this.increment
+        : animateFrame - this.increment
+
+    //when the previous number reached boundary
+    //either use the boundary value or stop at where it was
+    if (prevNumber > big) {
+      prevNumber = this.loop || this.exact ? big : animateFrame
+    }
+    if (prevNumber < small) {
+      prevNumber = this.loop || this.exact ? small : animateFrame
+    }
+    return currentModel.getNearestTime(prevNumber)
+  }
+
+  //
   onAgeSliderChange = (value: number) => {
     if (!this.playing) {
       animateFrame = value
@@ -123,12 +183,15 @@ export class AnimationService {
     }
   }
 
+  //
   resetPlayHead = () => {
     this.setPlaying(false)
     animateFrame = this.range.lower
+    this.setAge(animateFrame)
     this.drawTiles()
   }
 
+  //
   movePlayHead = (value: number) => {
     this.setPlaying(false)
     animateFrame = Math.min(
@@ -138,55 +201,37 @@ export class AnimationService {
       ),
       rasterMaps[this.currentRasterMapIndex].startTime
     )
+    this.setAge(animateFrame)
     this.drawTiles()
   }
 
+  //
+  moveNext = () => {
+    this.setPlaying(false)
+    animateFrame = this.getNextFrameNumber()
+    this.setAge(animateFrame)
+    this.drawTiles()
+  }
+
+  //
+  movePrev = () => {
+    this.setPlaying(false)
+    animateFrame = this.getPrevFrameNumber()
+    this.setAge(animateFrame)
+    this.drawTiles()
+  }
+
+  //
   setDragging = (value: boolean) => {
     dragging = value
   }
 
+  //
   setPlaying = (value: boolean) => {
     this._setPlaying(value)
     animateNext = value
     if (value) {
-      const reversed = this.range.lower > this.range.upper
-
-      // Reset play head if we're outside the range
-      if (animateFrame === this.range.upper) {
-        animateFrame = this.range.lower
-      } else if (
-        !reversed &&
-        animateFrame + this.increment > this.range.upper &&
-        this.exact
-      ) {
-        animateFrame = this.range.upper
-      } else if (
-        reversed &&
-        animateFrame - this.increment < this.range.upper &&
-        this.exact
-      ) {
-        animateFrame = this.range.lower
-      } else if (
-        (!reversed &&
-          (animateFrame + this.increment < this.range.lower ||
-            animateFrame + this.increment > this.range.upper)) ||
-        (reversed &&
-          (animateFrame - this.increment > this.range.lower ||
-            animateFrame - this.increment < this.range.upper))
-      ) {
-        animateFrame = this.range.lower
-      }
-
-      //make sure the animateFrame(age) does not go out of valid range
-      animateFrame = Math.min(
-        animateFrame,
-        rasterMaps[this.currentRasterMapIndex].startTime
-      )
-      animateFrame = Math.max(
-        animateFrame,
-        rasterMaps[this.currentRasterMapIndex].endTime
-      )
-
+      animateFrame = this.getNextFrameNumber()
       this.scheduleFrame(this.getCurrentRasterAnimationURL())
     } else {
       clearTimeout(animateTimeout)
@@ -213,15 +258,8 @@ export class AnimationService {
     )
   }
 
+  //
   drawTiles = () => {
-    const provider = createCesiumImageryProvider(
-      rasterMaps[this.currentRasterMapIndex],
-      animateFrame
-    )
-    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
-    this.setCurrentLayer(newLayer)
-    if (cesiumViewer.imageryLayers.length > 8) {
-      cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
-    }
+    drawLayers(animateFrame)
   }
 }

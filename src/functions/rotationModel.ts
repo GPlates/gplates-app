@@ -127,4 +127,27 @@ export default class RotationModel {
   getTimeIndex = (time: number) => {
     return this.times.indexOf(time)
   }
+
+  //return the nearest valid time
+  //assume this.times is sorted in ascending order
+  getNearestTime = (time: number) => {
+    let lastOne = -1
+    for (let i = 0; i < this.times.length; i++) {
+      if (this.times[i] < time) {
+        lastOne = this.times[i]
+        continue //not found yet, go to next one
+      } else {
+        if (lastOne < 0) {
+          return this.times[i]
+        } else {
+          return Math.abs(this.times[i] - time) > Math.abs(time - lastOne)
+            ? lastOne
+            : this.times[i]
+        }
+      }
+    }
+    return this.times[-1] //the last one is the nearest
+  }
+
+  //
 }
