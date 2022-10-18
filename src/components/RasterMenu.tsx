@@ -31,16 +31,12 @@ import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 
 interface ContainerProps {
-  currentLayer: any
-  setCurrentLayer: Function
   isViewerLoading: Function
   isCesiumViewerReady: boolean
   setAgeSliderShown: SetterOrUpdater<boolean>
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
-  currentLayer,
-  setCurrentLayer,
   isViewerLoading,
   isCesiumViewerReady,
   setAgeSliderShown,
@@ -58,11 +54,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   //
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
-    const newLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
-    //if (currentLayer != null) {
-    //cesiumViewer.imageryLayers.remove(currentLayer)
-    //}
-    setCurrentLayer(newLayer)
+    cesiumViewer.imageryLayers.addImageryProvider(provider)
     // we don't remove the old layer immediately.
     // the "remove" is very fast to complete, but the "add" is slow.
     // if we remove the old layer immediately, user will see something underneath.

@@ -68,7 +68,13 @@ export const drawLayers = (time: number) => {
     }
   }
 
-  if (cesiumViewer.imageryLayers.length > 8) {
+  pruneLayers()
+}
+
+//
+export const pruneLayers = () => {
+  while (cesiumViewer.imageryLayers.length > 15) {
+    //console.log(cesiumViewer.imageryLayers.length)
     cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
   }
 }

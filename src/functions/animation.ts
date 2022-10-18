@@ -31,8 +31,7 @@ export class AnimationService {
     public range: { lower: number; upper: number },
     public setRange: SetterOrUpdater<{ lower: number; upper: number }>,
     public viewer: Viewer,
-    public currentRasterMapIndex: number,
-    public setCurrentLayer: SetterOrUpdater<any>
+    public currentRasterMapIndex: number
   ) {
     this.from = range.lower
     this.to = range.upper

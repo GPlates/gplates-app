@@ -69,7 +69,6 @@ let animationService: AnimationService
 let backgroundService: BackgroundService
 
 const Main: React.FC = () => {
-  const [rasterMenuCurrentLayer, setRasterMenuCurrentLayer] = useState(null)
   const isSettingsShown = useRecoilValue(isSettingsMenuShow)
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
     isAddLocationWidgetShowState
@@ -126,8 +125,7 @@ const Main: React.FC = () => {
     range,
     setRange,
     cesiumViewer,
-    currentRasterMapIndex,
-    setRasterMenuCurrentLayer
+    currentRasterMapIndex
   )
 
   backgroundService = new BackgroundService(
@@ -316,8 +314,6 @@ const Main: React.FC = () => {
         <div>
           <SettingMenuPage backgroundService={backgroundService} />
           <RasterMenu
-            currentLayer={rasterMenuCurrentLayer}
-            setCurrentLayer={setRasterMenuCurrentLayer}
             isViewerLoading={isViewerLoading}
             isCesiumViewerReady={isCesiumViewerReady}
             setAgeSliderShown={setAgeSliderShown}
