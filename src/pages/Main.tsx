@@ -141,7 +141,7 @@ const Main: React.FC = () => {
   setPresentDataAlert(ionAlert, setDownloadOnCellular)
 
   useEffect(() => {
-    if (isSettingsShown) {
+    if (isSettingsShown && playing) {
       animationService.setPlaying(false)
     }
   })

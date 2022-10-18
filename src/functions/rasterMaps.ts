@@ -1,6 +1,6 @@
 import { RasterCfg } from './types'
 import { createCesiumImageryProvider } from './dataLoader'
-import { serverURL } from './settings'
+import { serverURL, DEBUG } from './settings'
 import { getDefaultStore } from './storage'
 
 export const failSafeRasterMaps: RasterCfg[] = [
@@ -56,10 +56,11 @@ export const setCurrentRasterIndex = (idx: number) => {
   if (rasterMaps.length > idx) {
     currentRasterIndex = idx
   } else {
-    console.log(
-      'Warning: setCurrentRasterIndex() try to set an invalid index.' +
-        `(${rasterMaps.length}:${idx})`
-    )
+    if (DEBUG)
+      console.log(
+        'DEBUG: setCurrentRasterIndex() try to set an invalid index.' +
+          `(${rasterMaps.length}:${idx})`
+      )
   }
 }
 
