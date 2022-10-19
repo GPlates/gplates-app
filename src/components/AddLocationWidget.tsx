@@ -38,15 +38,9 @@ import './AddLocationWidget.scss'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { age, currentRasterMapIndexState } from '../functions/atoms'
-import {
-  presentDayLonLatList,
-  setPresentDayLonLatList,
-  //setSetLonLatListCallback,
-  //setUpdateLocationEntitiesCallback,
-} from '../functions/presentDayLocations'
 import { serverURL } from '../functions/settings'
 import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
-import { reconstructPresentDayLocations } from '../functions/presentDayLocations'
+import { currentModel } from '../functions/rotationModel'
 import { LonLatPid } from '../functions/types'
 
 let cameraChangedRemoveCallback: any = null
@@ -56,41 +50,20 @@ let cameraMoveEndtRemoveCallback: any = null
 var locationEntities: Entity[] = []
 var locationCartesian: Cartesian3 | undefined = Cartesian3.fromDegrees(0, 0)
 
-//
+let presentDayLonLatList: LonLatPid[] = []
+
+//move the locations to the new positions
 const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
   //console.log(coords)
-  //remove the old location entities
+  //change the position property for the entities
   locationEntities.forEach((entity, index) => {
     entity.position = new ConstantPositionProperty(
       Cartesian3.fromDegrees(coords[index].lon, coords[index].lat)
     )
-    //cesiumViewer.scene.requestRenderMode = true
-    //cesiumViewer.scene.requestRender()
-    //cesiumViewer.entities.remove(entity)
   })
-
-  //add new location entities to cesium globe
-  /*coords.forEach((coord: { lon: number; lat: number }, index: number) => {
-    let pe = cesiumViewer.entities.add({
-      name:
-        'Index(' +
-        String(index) +
-        ') Lon: ' +
-        String(coord.lon) +
-        ' Lat: ' +
-        String(coord.lat),
-      position: Cartesian3.fromDegrees(coord.lon, coord.lat),
-      point: {
-        color: Color.BLACK,
-        pixelSize: 10,
-        outlineColor: Color.YELLOW,
-        outlineWidth: 3,
-      },
-    })
-    locationEntities.push(pe)
-  })*/
 }
 
+//reverse reconstruction the coordinates to find the present day coordinates
 const setPresentDayLonLatPid = (
   age: number,
   lonLat: React.MutableRefObject<{
@@ -99,15 +72,13 @@ const setPresentDayLonLatPid = (
   }>
 ) => {
   if (!rasterMaps[currentRasterIndex].model) {
-    setPresentDayLonLatList(
-      presentDayLonLatList.concat([
-        {
-          lon: lonLat.current.lon,
-          lat: lonLat.current.lat,
-          pid: 0,
-        },
-      ])
-    )
+    presentDayLonLatList = presentDayLonLatList.concat([
+      {
+        lon: lonLat.current.lon,
+        lat: lonLat.current.lat,
+        pid: 0,
+      },
+    ])
   } else {
     //reverse recontruct to get present day coords and plate id
     //even when the paleo-age is 0, we still need the plate id
@@ -120,21 +91,48 @@ const setPresentDayLonLatPid = (
       .then((jsonData) => {
         const coords = jsonData['features'][0]['geometry']['coordinates']
         //console.log(jsonData)
-        setPresentDayLonLatList(
-          presentDayLonLatList.concat([
-            {
-              lon: coords[0],
-              lat: coords[1],
-              pid: jsonData['features'][0]['properties']['pid'],
-            },
-          ])
-        )
+        presentDayLonLatList = presentDayLonLatList.concat([
+          {
+            lon: coords[0],
+            lat: coords[1],
+            pid: jsonData['features'][0]['properties']['pid'],
+          },
+        ])
       })
       .catch((error) => {
         console.log(error) //handle the promise rejection
       })
   }
 }
+
+//reconstruct the present day coordinate back in time
+const reconstructPresentDayLocations = (paleoAge: number) => {
+  if (
+    rasterMaps.length === 0 ||
+    presentDayLonLatList.length === 0 ||
+    typeof cesiumViewer === 'undefined'
+  )
+    return []
+
+  // fetch finite rotation for plate IDs
+  currentModel.fetchFiniteRotations(
+    presentDayLonLatList.map((lll) => String(lll.pid))
+  )
+  //console.log(presentDayLonLatList)
+
+  let paleoCoords: { lon: number; lat: number }[] = []
+  presentDayLonLatList.forEach((point) => {
+    let rp = currentModel.rotateLonLatPid(
+      currentModel.getTimeIndex(paleoAge),
+      point
+    )
+    //console.log(rp)
+    paleoCoords.push(rp)
+  })
+
+  return paleoCoords
+}
+
 //
 //
 interface AddLocationWidgetProps {
@@ -166,6 +164,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     }
   }, [paleoAge])
 
+  //the current raster index changed
   useEffect(() => {
     if (!(rasterMaps.length > currentRasterMapIndex)) return
 
@@ -182,7 +181,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     ) {
       fetch(
         serverURL.replace(/\/+$/, '') +
-          `/reconstruct/assign_points_plate_ids?points=${points_str}&model=${rasterMaps[currentRasterMapIndex].model}`
+          `/reconstruct/assign_points_plate_ids?points=${points_str}` +
+          `&model=${rasterMaps[currentRasterMapIndex].model}`
       )
         .then((response) => response.json())
         .then((jsonData) => {
@@ -196,19 +196,13 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             }
           )
           //console.log(jsonData)
-          setPresentDayLonLatList(newLonLatPid)
+          presentDayLonLatList = newLonLatPid
         })
         .catch((error) => {
           console.log(error) //handle the promise rejection
         })
     }
   }, [currentRasterMapIndex]) //the current raster index changed
-
-  //duplicate this dispatch function in another file for external usage
-  //setSetLonLatListCallback(setLonLatlist)
-
-  //the callback function to update points on Cesium globe
-  //setUpdateLocationEntitiesCallback(updateLocationEntities)
 
   //handle the camera changed event
   //calculate the coordinates of the center of camera lens
@@ -313,7 +307,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                             //remove the present-day coordinates as well
                             let b = [...presentDayLonLatList]
                             b.splice(index, 1)
-                            setPresentDayLonLatList(b)
+                            presentDayLonLatList = b
 
                             cesiumViewer.entities.remove(
                               locationEntities[index]
