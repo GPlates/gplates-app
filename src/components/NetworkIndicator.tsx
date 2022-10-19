@@ -56,9 +56,9 @@ const NetworkIndicator: React.FC = () => {
   const showAlert = () => {
     presentAlert({
       header:
-        `This is a network indicator. If you see a puzzle icon, it means your network status is unknown. ` +
-        'The App may download a large volumn of data from our server. ' +
-        'This indicator here helps you to avoid using too much of your celullar data.',
+        'This is a network indicator. ' +
+        'The App needs to download data from our server. ' +
+        'Switch to WiFi to avoid using too much of your cellular data.',
       cssClass: 'network-indicator-alert',
       buttons: [
         {

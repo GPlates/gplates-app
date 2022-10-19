@@ -116,3 +116,7 @@ ion-item::part(native) {
 .server-url-input {
   text-align: right;
 }
+
+.frames-per-second-label {
+  max-width: 300px !important;
+}
