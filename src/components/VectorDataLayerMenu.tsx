@@ -56,6 +56,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const rAge = useRecoilValue(age)
   const setShowCities = useSetRecoilState(showCities)
+  const [refresh, setRefresh] = useState(true)
 
   //get vector layers and draw them on Cesium globe
   const getVecInfoByRaster = async (rasterModel: string) => {
@@ -111,6 +112,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   useEffect(() => {
     vectorLayers = []
     cityEnabledFlag = false
+    setRefresh(!refresh)
   }, [currentRasterMapIndex])
 
   // initializing

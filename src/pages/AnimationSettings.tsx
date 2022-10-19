@@ -188,8 +188,11 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Frames per second:</IonLabel>
+                <IonLabel class="frames-per-second-label">
+                  Frames per second (best-effort):
+                </IonLabel>
                 <IonInput
+                  slot="end"
                   inputMode="numeric"
                   min={minFps}
                   max={maxFps}
@@ -205,7 +208,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Finish animation exactly on end time</IonLabel>
+                <IonLabel>Finish animation exactly on end time:</IonLabel>
                 <IonToggle
                   checked={exact}
                   onIonChange={(e) => setExact(e.detail.checked)}
@@ -217,7 +220,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Loop</IonLabel>
+                <IonLabel>Loop:</IonLabel>
                 <IonToggle
                   checked={loop}
                   onIonChange={(e) => setLoop(e.detail.checked)}

@@ -4,10 +4,10 @@ import { RasterCfg } from './types'
 import { failSafeRasterMaps } from './rasterMaps'
 
 export const age = atom({ key: 'age', default: 0 })
-export const animateExact = atom({ key: 'animateExact', default: false })
-export const animateFps = atom({ key: 'animateFps', default: 10 })
+export const animateExact = atom({ key: 'animateExact', default: true })
+export const animateFps = atom({ key: 'animateFps', default: 3 })
 export const animateIncrement = atom({ key: 'animateIncrement', default: 1 })
-export const animateLoop = atom({ key: 'animateLoop', default: false })
+export const animateLoop = atom({ key: 'animateLoop', default: true })
 export const animatePlaying = atom({ key: 'animatePlaying', default: false })
 export const animateRange = atom({
   key: 'animateRange',
