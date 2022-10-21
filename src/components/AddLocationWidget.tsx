@@ -28,7 +28,7 @@ import {
   Cartesian2,
   Entity,
   Cartographic,
-  Math,
+  Math as CMath,
   Cartesian3,
   ConstantPositionProperty,
   SceneMode,
@@ -105,34 +105,6 @@ const setPresentDayLonLatPid = (
   }
 }
 
-//reconstruct the present day coordinate back in time
-const reconstructPresentDayLocations = (paleoAge: number) => {
-  if (
-    rasterMaps.length === 0 ||
-    presentDayLonLatList.length === 0 ||
-    typeof cesiumViewer === 'undefined'
-  )
-    return []
-
-  // fetch finite rotation for plate IDs
-  currentModel.fetchFiniteRotations(
-    presentDayLonLatList.map((lll) => String(lll.pid))
-  )
-  //console.log(presentDayLonLatList)
-
-  let paleoCoords: { lon: number; lat: number }[] = []
-  presentDayLonLatList.forEach((point) => {
-    let rp = currentModel.rotateLonLatPid(
-      currentModel.getTimeIndex(paleoAge),
-      point
-    )
-    //console.log(rp)
-    paleoCoords.push(rp)
-  })
-
-  return paleoCoords
-}
-
 //
 //
 interface AddLocationWidgetProps {
@@ -156,12 +128,47 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const [presentToast, dismissToast] = useIonToast()
 
-  useEffect(() => {
+  //reconstruct the present day coordinate back in time
+  const reconstructPresentDayLocations = (paleoAge: number) => {
+    if (
+      rasterMaps.length === 0 ||
+      presentDayLonLatList.length === 0 ||
+      typeof cesiumViewer === 'undefined'
+    )
+      return []
+
+    // fetch finite rotation for plate IDs
+    currentModel.fetchFiniteRotations(
+      presentDayLonLatList.map((lll) => String(lll.pid)),
+      () => {
+        reconstructAndUpdateLocations()
+      }
+    )
+    //console.log(presentDayLonLatList)
+
+    let paleoCoords: { lon: number; lat: number }[] = []
+    presentDayLonLatList.forEach((point) => {
+      let rp = currentModel.rotateLonLatPid(
+        currentModel.getTimeIndex(paleoAge),
+        point
+      )
+      //console.log(rp)
+      paleoCoords.push(rp)
+    })
+
+    return paleoCoords
+  }
+
+  const reconstructAndUpdateLocations = () => {
     const paleoCoords = reconstructPresentDayLocations(paleoAge)
     if (paleoCoords.length > 0) {
       setLonLatlist(paleoCoords)
       updateLocationEntities(paleoCoords)
     }
+  }
+
+  useEffect(() => {
+    reconstructAndUpdateLocations()
   }, [paleoAge])
 
   //the current raster index changed
@@ -219,8 +226,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
       if (locationCartesian) {
         let pc = Cartographic.fromCartesian(locationCartesian)
         lonLat.current = {
-          lon: Math.toDegrees(pc.longitude),
-          lat: Math.toDegrees(pc.latitude),
+          lon: CMath.toDegrees(pc.longitude),
+          lat: CMath.toDegrees(pc.latitude),
         }
         if (update) setUpdateLonLat(!updateLonLat)
       }
@@ -414,27 +421,61 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           </IonHeader>
           <IonContent>
             <IonItem>
-              <IonLabel>Longitude:</IonLabel>
+              <IonLabel>Paleo-age:</IonLabel>
+              <IonInput readonly value={paleoAge}></IonInput>
+            </IonItem>
+            <IonItem>
+              <IonLabel>Paleo-longitude:</IonLabel>
               <IonInput
                 readonly
                 value={
                   lonLatList.length > showLocationIndex
-                    ? lonLatList[showLocationIndex].lon
+                    ? lonLatList[showLocationIndex].lon.toFixed(4)
                     : 0
                 }
               ></IonInput>
 
-              <IonLabel>Latitude:</IonLabel>
+              <IonLabel>Paleo-latitude:</IonLabel>
               <IonInput
                 readonly
                 value={
                   lonLatList.length > showLocationIndex
-                    ? lonLatList[showLocationIndex].lat
+                    ? lonLatList[showLocationIndex].lat.toFixed(4)
                     : 0
                 }
               ></IonInput>
             </IonItem>
-            <p>TODO: collect more info about this location and put here</p>
+            <IonItem>
+              <IonLabel>Present-day Longitude:</IonLabel>
+              <IonInput
+                readonly
+                value={
+                  presentDayLonLatList.length > showLocationIndex
+                    ? presentDayLonLatList[showLocationIndex].lon.toFixed(4)
+                    : 0
+                }
+              ></IonInput>
+              <IonLabel>Present-day Latitude:</IonLabel>
+              <IonInput
+                readonly
+                value={
+                  presentDayLonLatList.length > showLocationIndex
+                    ? presentDayLonLatList[showLocationIndex].lat.toFixed(4)
+                    : 0
+                }
+              ></IonInput>
+            </IonItem>
+            <IonItem>
+              <IonLabel>Plate ID:</IonLabel>
+              <IonInput
+                readonly
+                value={
+                  presentDayLonLatList.length > showLocationIndex
+                    ? presentDayLonLatList[showLocationIndex].pid
+                    : 0
+                }
+              ></IonInput>
+            </IonItem>
           </IonContent>
         </IonModal>
       </div>

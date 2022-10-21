@@ -167,14 +167,19 @@ export class CachingService {
 
   //clean up
   async cleanup() {
+    await this.saveToWebStore()
+    await this.db!.close()
+    await sqlite.closeConnection(this.dbName)
+  }
+
+  //on "web" platform, save the DB data to disk
+  async saveToWebStore() {
     const platform = Capacitor.getPlatform()
     //on "web" platform, you need to saveToStore. otherwise the DB is in memory
     //save to indexedDB on disk
     if (platform === 'web') {
       await sqlite.saveToStore(this.dbName)
     }
-    await this.db!.close()
-    await sqlite.closeConnection(this.dbName)
   }
 
   //

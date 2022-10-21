@@ -146,7 +146,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
           </IonItem>
         </IonList>
         <br></br>
-        <div style={{ textAlign: 'center' }}>
+        <div className="cache-info-buttons-div">
           <IonButton
             shape="round"
             onClick={async () => {
