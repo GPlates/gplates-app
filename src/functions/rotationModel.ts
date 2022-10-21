@@ -60,7 +60,7 @@ export default class RotationModel {
 
   //retrieve all Euler pole and angles for given plate ids in a rotation model from the server
   // /rotation/get_euler_pole_and_angle?pids=701,801&group_by_pid&model=MULLER2019
-  fetchFiniteRotations = (pids: string[]) => {
+  fetchFiniteRotations = (pids: string[], callback: Function = () => {}) => {
     let times = this.times
 
     let pids_: string[] = []
@@ -97,6 +97,7 @@ export default class RotationModel {
           ...Array.from(this.finiteRotations.entries()),
           ...Array.from(Object.entries(jsonData)),
         ])
+        callback()
         //console.log(this.finiteRotations)
       })
       .catch((error) => {

@@ -279,9 +279,13 @@ const Main: React.FC = () => {
   //
   useIonViewDidEnter(async () => {})
 
-  //close the connection which is opened in useIonViewDidEnter
+  //only save the DB to disk on "web" platform
+  //do not close the DB connection here!!!
+  //let's keep the DB connection valid all the time
+  //I guess it is OK if the DB connection is still open when the app exits.
+  //not ideal, but OK for this App
   useIonViewDidLeave(async () => {
-    await cachingServant.cleanup()
+    cachingServant.saveToWebStore()
   })
 
   //todo: this is not working for single tile imagery provider

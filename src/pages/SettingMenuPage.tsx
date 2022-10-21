@@ -211,7 +211,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
           <IonItemDivider>Network Settings</IonItemDivider>
           <IonItem>
-            <IonLabel>Download on Mobile Data</IonLabel>
+            <IonLabel>Use Mobile Data</IonLabel>
             <IonToggle
               class={'single-setting-option'}
               checked={downloadOnCellular}
