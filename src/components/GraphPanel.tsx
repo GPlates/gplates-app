@@ -6,58 +6,52 @@ import './GraphPanel.scss'
 import { EChartsType } from 'echarts'
 import {
   getPlatforms,
-  IonAccordion,
-  IonAccordionGroup,
-  IonButton,
   IonIcon,
   IonItem,
   IonLabel,
   IonList,
   IonPopover,
-  IonSelect,
-  IonSelectOption,
-  useIonLoading,
 } from '@ionic/react'
 import { caretDownOutline } from 'ionicons/icons'
-import rasterMaps from '../functions/rasterMaps'
-import { requestDataByUrl, timeout } from '../functions/util'
-import { getDefaultStore } from '../functions/storage'
+import { requestDataByUrl } from '../functions/util'
 import { serverURL } from '../functions/settings'
 
-type EChartsOption = echarts.EChartsOption
-let MY_CHART: EChartsType
-let OPTION: EChartsOption
-let X_VALS
-let Y_VALS
-let DATA
-let DATA_MAP: string[]
+let graphChart: EChartsType
+let graphOptions: any
 
-const getGraphList = async () => {
-  let data_map: any = await requestDataByUrl(
-    serverURL.replace(/\/+$/, '') + '/mobile/get_graphs'
-  )
-  const graphList = []
-  for (let key in data_map) {
-    graphList.push([key, data_map[key]])
+//
+const sliceData = (
+  xData: string[],
+  yData: number[],
+  lower: number,
+  upper: number
+) => {
+  let big = Math.max(lower, upper)
+  let small = Math.min(lower, upper)
+  let smallIdx = -1,
+    bigIdx = -1
+  xData.every((x, idx) => {
+    if (Number(x) > small && smallIdx < 0) {
+      smallIdx = idx
+      if (smallIdx > 0) {
+        smallIdx -= 1 //move back one position
+      }
+    }
+    if (Number(x) > big && bigIdx < 0) {
+      bigIdx = idx + 1
+      return false
+    }
+    return true
+  })
+  console.log(smallIdx)
+  console.log(bigIdx)
+  if (smallIdx >= 0 && bigIdx > smallIdx) {
+    return {
+      x: xData.slice(smallIdx, bigIdx),
+      y: yData.slice(smallIdx, bigIdx),
+    }
   }
-  return graphList
-}
-
-async function getData(url: string) {
-  let data_map: any = await requestDataByUrl(url)
-  let x_vals: number[] = []
-  let y_vals: number[] = []
-  for (let key in data_map) {
-    x_vals.push(Number(key))
-    y_vals.push(Number(data_map[key]))
-  }
-
-  let data = []
-  for (let i = 0; i < x_vals.length; i++) {
-    data.push([x_vals[i], y_vals[i]])
-  }
-
-  return [data_map, data, x_vals, y_vals]
+  return { x: [] as string[], y: [] as number[] }
 }
 
 interface ContainerProps {}
@@ -67,10 +61,11 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const [_age, setAge] = useRecoilState(age)
   const rasterMapAnimateRange = useRecoilValue(animateRange)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
-  const [present, dismiss] = useIonLoading()
   const [graphList, setGraphList] = useState([] as string[][])
   const [curGraphName, setCurGraphName] = useState('')
 
+  //
+  /*
   function process_data(
     data_map: any,
     data: any[],
@@ -102,140 +97,171 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     }
 
     return [data_map, new_data, new_x_vals, new_y_vals]
-  }
+  }*/
 
-  const loadGraph = async (instantCurGraphIdx?: number) => {
-    let curIdx = curGraphIdx
-    if (instantCurGraphIdx != undefined) curIdx = instantCurGraphIdx
+  //
+  const loadGraph = async (instantCurGraphIdx: number) => {
+    if (!(graphList.length > instantCurGraphIdx)) return
 
-    // waiting for graph list loading finish
-    while (graphList == undefined) await timeout(200)
-
-    await getData(graphList[curIdx][1]).then(
-      ([data_map, data, x_vals, y_vals]) => {
-        //with 1Ma step, such as [0,4, 23,24,35...] is possible.
-        //so, use linear interpolate on the data before cutting the range
-        ;[data_map, data, x_vals, y_vals] = process_data(
-          data_map,
-          data,
-          x_vals,
-          y_vals
-        )
-        DATA_MAP = data_map
-        DATA = data
-        X_VALS = x_vals
-        Y_VALS = y_vals
-
-        if (rasterMapAnimateRange.upper != 0) {
-          DATA = data.slice(
-            rasterMapAnimateRange.lower,
-            rasterMapAnimateRange.upper
-          )
-          X_VALS = x_vals.slice(
-            rasterMapAnimateRange.lower,
-            rasterMapAnimateRange.upper
-          )
-          Y_VALS = y_vals.slice(
-            rasterMapAnimateRange.lower,
-            rasterMapAnimateRange.upper
-          )
-        }
-
-        let chartDom = document.getElementById('graphPanel-statistics')!
-
-        if (MY_CHART != null) {
-          MY_CHART.dispose()
-        }
-        MY_CHART = echarts.init(chartDom)
-
-        globalThis.addEventListener('resize', function () {
-          MY_CHART.resize()
-        })
-
-        OPTION = {
-          grid: {
-            top: '7%',
-          },
-          xAxis: {
-            type: 'category',
-            data: X_VALS,
-            axisPointer: {
-              show: true,
-              snap: true,
-              value: _age,
-              handle: {
-                show: true,
-                size: 20,
-                margin: 35,
-                color: 'white',
-              },
-              label: {
-                show: true,
-                margin: 3,
-                formatter: (params) => {
-                  let num_age = _age
-                  if (typeof params.value === 'string') {
-                    num_age = parseInt(params.value)
-                    //setAge(num_age)//need to think about this more
-                  }
-                  return num_age + 'Ma : ' + DATA_MAP[num_age]
-                },
-              },
-            },
-          },
-
-          yAxis: {
-            type: 'value',
-          },
-          series: [
-            {
-              data: DATA,
-              type: 'line',
-              symbol: 'none',
-            },
-          ],
-        }
-
-        // for pc mode
-        if (getPlatforms().includes('desktop')) {
-          OPTION.tooltip = {
-            triggerOn: 'none',
-          }
-        } else {
-          // for touch device mode
-          // @ts-ignore
-          OPTION.xAxis!.axisPointer.handle.icon = 'none'
-        }
-        OPTION && MY_CHART.setOption(OPTION)
-      }
+    //the second coloum [1] is the data url
+    let dataMap = await requestDataByUrl(graphList[instantCurGraphIdx][1])
+    let xData: string[] = []
+    let yData: number[] = []
+    //we need to sort by the keys first
+    let dataArray = Object.entries(dataMap)
+    dataArray.sort((a: any, b: any) => {
+      return Number(a[0]) - Number(b[0])
+    })
+    dataArray.forEach((item) => {
+      xData.push(item[0])
+      yData.push(Number(item[1]))
+    })
+    //with 1Ma step, such as [0,4, 23,24,35...] is possible.
+    //so, use linear interpolate on the data before cutting the range
+    /*;[data_map, data, x_vals, y_vals] = process_data(
+      data_map,
+      data,
+      x_vals,
+      y_vals
     )
+    DATA_MAP = data_map
+    DATA = data
+    X_VALS = x_vals
+    Y_VALS = y_vals
+
+    if (rasterMapAnimateRange.upper != 0) {
+      DATA = data.slice(
+        rasterMapAnimateRange.lower,
+        rasterMapAnimateRange.upper
+      )
+      X_VALS = x_vals.slice(
+        rasterMapAnimateRange.lower,
+        rasterMapAnimateRange.upper
+      )
+      Y_VALS = y_vals.slice(
+        rasterMapAnimateRange.lower,
+        rasterMapAnimateRange.upper
+      )
+    }*/
+    if (
+      rasterMapAnimateRange.upper != 0 &&
+      rasterMapAnimateRange.upper != rasterMapAnimateRange.lower
+    ) {
+      let xy = sliceData(
+        xData,
+        yData,
+        rasterMapAnimateRange.lower,
+        rasterMapAnimateRange.upper
+      )
+      xData = xy.x
+      yData = xy.y
+      console.log(xData)
+    }
+    let chartDom = document.getElementById('graphPanel-statistics')!
+    //if (graphChart != null) {
+    //  graphChart.dispose()
+    //}
+    if (!graphChart) {
+      graphChart = echarts.init(chartDom)
+    }
+
+    let graphOptions = {
+      grid: {
+        top: '7%',
+      },
+      xAxis: {
+        type: 'category',
+        data: xData,
+        axisPointer: {
+          show: true,
+          snap: true,
+          value: _age,
+          handle: {
+            show: true,
+            size: 20,
+            margin: 35,
+            color: 'white',
+            icon: 'M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7v-1.2h6.6z M13.3,22H6.7v-1.2h6.6z M13.3,19.6H6.7v-1.2h6.6z',
+          },
+          label: {
+            show: true,
+            margin: 3,
+            formatter: (params: any) => {
+              /*let num_age = _age
+              if (typeof params.value === 'string') {
+                num_age = parseInt(params.value)
+                setAge(num_age)//need to think about this more
+              }*/
+              return `${params.value} Ma`
+            },
+          },
+        },
+      },
+
+      yAxis: {
+        type: 'value',
+      },
+      series: [
+        {
+          data: yData,
+          type: 'line',
+          symbol: 'none',
+        },
+      ],
+      tooltip: {},
+    }
+
+    // for pc mode
+    if (getPlatforms().includes('desktop')) {
+      graphOptions.tooltip = {
+        triggerOn: 'none',
+      }
+    } else {
+      // for touch device mode
+      graphOptions.xAxis!.axisPointer.handle.icon = 'none'
+    }
+    graphOptions && graphChart.setOption(graphOptions)
   }
+
+  //
+  const loadGraphList = async () => {
+    let data_map: any = await requestDataByUrl(
+      serverURL.replace(/\/+$/, '') + '/mobile/get_graphs'
+    )
+    const graphList: string[][] = []
+    for (let [key, value] of Object.entries(data_map)) {
+      graphList.push([key, value as string])
+    }
+    setGraphList(graphList)
+    setCurGraphName(graphList[curGraphIdx][0])
+    return graphList
+  }
+
   // initialization
   useEffect(() => {
     if (graphList.length === 0) {
-      getGraphList()
-        .then((res) => {
-          setGraphList(res)
-          setCurGraphName(res[curGraphIdx][0])
-          for (let each in res) {
-            getData(each[1]) // add all data into local storage
-          }
-        })
-        .catch((err) => {})
+      loadGraphList()
     }
+    globalThis.addEventListener('resize', function () {
+      graphChart.resize()
+    })
   }, [])
 
+  //
   useEffect(() => {
-    loadGraph().catch((err) => {})
+    loadGraph(curGraphIdx).catch((err) => {
+      console.log(err)
+    })
   }, [rasterMapAnimateRange])
 
+  //
   useEffect(() => {
-    if (OPTION == undefined) {
+    if (graphOptions == undefined) {
       return
     }
-    // @ts-ignore
-    OPTION.xAxis!.axisPointer.value = _age
-    MY_CHART.setOption(OPTION)
+
+    graphOptions.xAxis!.axisPointer.value = _age
+    graphChart.setOption(graphOptions)
   }, [_age])
 
   let optionList = []
@@ -244,11 +270,9 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       <IonItem
         key={i}
         onClick={async () => {
-          await present({ message: 'Loading...' })
           setCurGraphIdx(i)
           setCurGraphName(graphList[i][0])
           await loadGraph(i)
-          await dismiss()
         }}
       >
         <IonLabel
