@@ -41,7 +41,12 @@ import rasterMaps from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
 import { getCacheStatsData } from './CacheInfo'
-import { showGraticule, hideGraticule } from '../functions/graticule'
+import {
+  showGraticule,
+  hideGraticule,
+  setShowGraticuleFlag,
+  showGraticuleFlag,
+} from '../functions/graticule'
 import { useHistory } from 'react-router'
 
 //
@@ -91,9 +96,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
   const isSliderShow = useRecoilValue(isAgeSliderShown)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
-  const [isShowGraticule, setIsShowGraticule] = useState(false)
-
-  const [presentAlert] = useIonAlert()
 
   const history = useHistory()
 
@@ -235,16 +237,20 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             <IonLabel>Show Graticules</IonLabel>
             <IonToggle
               class={'single-setting-option'}
-              checked={isShowGraticule}
+              checked={showGraticuleFlag}
               onIonChange={(e) => {
                 //console.log(e.detail.checked)
                 if (e.detail.checked) {
                   showGraticule()
-                  setIsShowGraticule(true)
+                  setShowGraticuleFlag(true)
                 } else {
                   hideGraticule()
-                  setIsShowGraticule(false)
+                  setShowGraticuleFlag(false)
                 }
+                Preferences.set({
+                  key: 'showGraticule',
+                  value: JSON.stringify(e.detail.checked),
+                })
               }}
             />
           </IonItem>
