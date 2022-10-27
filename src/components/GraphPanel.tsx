@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { age, animateRange, isGraphPanelShowState } from '../functions/atoms'
 import './GraphPanel.scss'
-import { EChartsType } from 'echarts'
 import {
   getPlatforms,
   IonIcon,
@@ -16,10 +15,10 @@ import { caretDownOutline } from 'ionicons/icons'
 import { requestDataByUrl } from '../functions/util'
 import { serverURL } from '../functions/settings'
 
-let graphChart: EChartsType
+let graphChart: echarts.EChartsType
 let graphOptions: any
 
-//
+//cut the xData and yData according to the give range(lower, upper)
 const sliceData = (
   xData: string[],
   yData: number[],
@@ -52,6 +51,63 @@ const sliceData = (
   return { x: [] as string[], y: [] as number[] }
 }
 
+//find the index of x in xData
+//if x is not in xData, return xData[index] > x >xData[index-1]
+//if x is in Data, return two indexes with the same value
+//assume x wouldn't out of range
+const findIndexes = (xData: string[], x: number) => {
+  let firstIndex = -1
+  if (xData.length > 1) {
+    for (let i = 0; i < xData.length; i++) {
+      if (
+        Math.abs(Number(xData[i]) - x) < Number.EPSILON &&
+        x.toString() === xData[i]
+      ) {
+        return { first: i, second: i } //find the exact data point
+      }
+
+      if (Number(xData[i]) < x) {
+        continue //no result yet
+      } else if (Number(xData[i]) > x && firstIndex === -1) {
+        if (i === 0) {
+          console.log(`Error: input x ${x} is out of range. (${xData}) `)
+          return null
+        } else {
+          return { first: i - 1, second: i }
+        } //find the x is between firstIndex and secondIndex
+      }
+    }
+  }
+
+  console.log(`Error: input x ${x} is out of range. (${xData}) `)
+  return null
+}
+
+//assume the xData is in acsending order
+//insert data points very 1Myr
+const interpolate = (xData: string[], yData: number[]) => {
+  let small = Math.ceil(Number(xData[0]))
+  let big = Math.floor(Number(xData[xData.length - 1]))
+  for (let i = small; i < big; i++) {
+    let indexes = findIndexes(xData, i)
+    if (indexes) {
+      if (indexes.first === indexes.second) {
+        continue //data point exists in xData
+      } else {
+        let yValue =
+          ((yData[indexes.second] - yData[indexes.first]) /
+            (Number(xData[indexes.second]) - Number(xData[indexes.first]))) *
+            (i - Number(xData[indexes.first])) +
+          yData[indexes.first]
+
+        yData.splice(indexes.second, 0, parseFloat(yValue.toFixed(2)))
+
+        xData.splice(indexes.second, 0, i.toString())
+      }
+    }
+  }
+}
+
 interface ContainerProps {}
 
 export const GraphPanel: React.FC<ContainerProps> = () => {
@@ -61,41 +117,6 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [graphList, setGraphList] = useState([] as string[][])
   const [curGraphName, setCurGraphName] = useState('')
-
-  //
-  /*
-  function process_data(
-    data_map: any,
-    data: any[],
-    x_vals: number[],
-    y_vals: number[]
-  ) {
-    let new_x_vals = []
-    let new_y_vals = []
-    for (let i = 0; i < x_vals.length - 1; i++) {
-      new_x_vals.push(x_vals[i])
-      new_y_vals.push(y_vals[i])
-
-      // linear interpolate if having missed values
-      let fromIdx = x_vals[i]
-      let toIdx = x_vals[i + 1]
-      let betweenNum = toIdx - fromIdx
-      let increment = (y_vals[i + 1] - y_vals[i]) / betweenNum
-      let curIncr = increment
-      for (let inserIdx = fromIdx + 1; inserIdx < toIdx; inserIdx++) {
-        new_x_vals.push(inserIdx)
-        new_y_vals.push(y_vals[i] + curIncr)
-        curIncr += increment
-      }
-    }
-
-    let new_data = []
-    for (let i = 0; i < new_x_vals.length; i++) {
-      new_data.push([new_x_vals[i], new_y_vals[i]])
-    }
-
-    return [data_map, new_data, new_x_vals, new_y_vals]
-  }*/
 
   //
   const loadGraph = async (instantCurGraphIdx: number) => {
@@ -116,13 +137,8 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     })
     //with 1Ma step, such as [0,4, 23,24,35...] is possible.
     //so, use linear interpolate on the data before cutting the range
-    /*;[data_map, data, x_vals, y_vals] = process_data(
-      data_map,
-      data,
-      x_vals,
-      y_vals
-    )
-    */
+    interpolate(xData, yData)
+
     if (
       rasterMapAnimateRange.upper != 0 &&
       rasterMapAnimateRange.upper != rasterMapAnimateRange.lower
@@ -135,7 +151,6 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       )
       xData = xy.x
       yData = xy.y
-      //console.log(xData)
     }
     let chartDom = document.getElementById('graphPanel-statistics')!
     //if (graphChart != null) {
@@ -145,7 +160,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       graphChart = echarts.init(chartDom)
     }
 
-    let graphOptions = {
+    graphOptions = {
       grid: {
         top: '7%',
       },
@@ -236,7 +251,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
 
   //
   useEffect(() => {
-    if (graphOptions == undefined) {
+    if (graphOptions === undefined) {
       return
     }
 
