@@ -5,8 +5,8 @@ import rasterMaps from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { buildAnimationURL } from './util'
 import { currentModel } from './rotationModel'
-import { createCesiumImageryProvider } from './dataLoader'
-import { cesiumViewer, drawLayers } from './cesiumViewer'
+import { drawLayers } from './cesiumViewer'
+import { raiseGraticuleLayerToTop } from './graticule'
 
 let animateFrame = 0 //current age
 let animateNext = false
@@ -55,6 +55,7 @@ export class AnimationService {
         // Disallow old frames from being printed when manually changing age
         if (animateNext) {
           this.viewer.imageryLayers.addImageryProvider(provider)
+          raiseGraticuleLayerToTop()
         }
       }
       //reconstruct locations inserted by user

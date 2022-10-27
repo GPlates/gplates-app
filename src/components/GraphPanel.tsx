@@ -43,8 +43,6 @@ const sliceData = (
     }
     return true
   })
-  console.log(smallIdx)
-  console.log(bigIdx)
   if (smallIdx >= 0 && bigIdx > smallIdx) {
     return {
       x: xData.slice(smallIdx, bigIdx),
@@ -124,25 +122,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       x_vals,
       y_vals
     )
-    DATA_MAP = data_map
-    DATA = data
-    X_VALS = x_vals
-    Y_VALS = y_vals
-
-    if (rasterMapAnimateRange.upper != 0) {
-      DATA = data.slice(
-        rasterMapAnimateRange.lower,
-        rasterMapAnimateRange.upper
-      )
-      X_VALS = x_vals.slice(
-        rasterMapAnimateRange.lower,
-        rasterMapAnimateRange.upper
-      )
-      Y_VALS = y_vals.slice(
-        rasterMapAnimateRange.lower,
-        rasterMapAnimateRange.upper
-      )
-    }*/
+    */
     if (
       rasterMapAnimateRange.upper != 0 &&
       rasterMapAnimateRange.upper != rasterMapAnimateRange.lower
@@ -155,7 +135,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       )
       xData = xy.x
       yData = xy.y
-      console.log(xData)
+      //console.log(xData)
     }
     let chartDom = document.getElementById('graphPanel-statistics')!
     //if (graphChart != null) {
