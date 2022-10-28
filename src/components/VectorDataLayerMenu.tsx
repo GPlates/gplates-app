@@ -1,29 +1,14 @@
-import { SingleTileImageryProvider, Viewer, ImageryLayer } from 'cesium'
+import { ImageryLayer } from 'cesium'
 import {
   IonButton,
-  IonButtons,
   IonCheckbox,
-  IonContent,
   IonItem,
   IonLabel,
-  IonModal,
-  IonRippleEffect,
-  IonTitle,
-  IonToolbar,
   IonAccordionGroup,
   IonAccordion,
-  useIonLoading,
-  IonIcon,
 } from '@ionic/react'
-import {
-  locateOutline,
-  trashOutline,
-  informationOutline,
-  closeOutline,
-} from 'ionicons/icons'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
-import { timeout } from '../functions/util'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   currentRasterMapIndexState,
@@ -39,15 +24,30 @@ import {
   getEnabledLayers,
   disableLayer,
 } from '../functions/vectorLayers'
-import { cachingServant } from '../functions/cache'
 import { cesiumViewer } from '../functions/cesiumViewer'
-import { buildAnimationURL } from '../functions/util'
 import './VectorDataLayerMenu.scss'
 
 //only for this GUI component
 let vectorLayers: VectorLayerType[] = []
 
 let cityEnabledFlag = false
+
+//given the layer's ID, update the cesium ImageryLayer object
+export const updateImageryLayer = (layerID: string, imageryLayer: any) => {
+  let layer: any = null
+  for (let i = 0; i < vectorLayers.length; i++) {
+    if (vectorLayers[i].id === layerID) {
+      layer = vectorLayers[i]
+      break
+    }
+  }
+  if (layer) {
+    if (layer.imageryLayer) {
+      cesiumViewer.imageryLayers.remove(layer.imageryLayer)
+    }
+    layer.imageryLayer = imageryLayer
+  }
+}
 
 interface ContainerProps {}
 
@@ -63,23 +63,23 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     let layers = getVectorLayers(rasterModel)
     vectorLayers = []
     for (let key in layers) {
-      let p = createCesiumImageryProvider(layers[key], rAge)
-
       let layer = {
         displayName: layers[key].displayName,
         imageryLayer: null as unknown as ImageryLayer,
-        layerProvider: p,
-        layerName: key,
-        layer: layers[key].layer,
+        id: key,
+        layerName: layers[key].layerName,
         url: layers[key].url,
         wmsUrl: layers[key].wmsUrl,
         style: layers[key].style,
         checked: false,
       }
+
       let checkedLayers = getEnabledLayers(currentRasterMapIndex)
       if (checkedLayers.includes(layer.layerName)) {
         layer.checked = true
-        layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(p)
+        layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
+          createCesiumImageryProvider(layers[key], rAge)
+        )
       }
       if (checkedLayers.includes('cities')) {
         cityEnabledFlag = true
@@ -129,27 +129,27 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     if (isChecked) {
       if (layer.imageryLayer === null) {
         layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-          layer.layerProvider
+          createCesiumImageryProvider(layer, rAge)
         )
       }
-      enableLayer(currentRasterMapIndex, layer.layerName)
+      enableLayer(currentRasterMapIndex, layer.id)
     } else {
       if (layer.imageryLayer) {
         cesiumViewer.imageryLayers.remove(layer.imageryLayer)
         layer.imageryLayer = null
       }
-      disableLayer(currentRasterMapIndex, layer.layerName)
+      disableLayer(currentRasterMapIndex, layer.id)
     }
   }
 
   //
   const onCheckBoxChange = (val: any) => {
-    //console.log(val)
     let layer = vectorLayers[val.detail.value]
     layer.checked = val.detail.checked
     checkLayer(layer, layer.checked)
   }
 
+  //
   const onCitiesCheckBoxChange = (val: any) => {
     setShowCities(val.detail.checked)
     if (val.detail.checked) {

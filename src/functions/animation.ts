@@ -248,6 +248,7 @@ export class AnimationService {
     let enabledLayers = getEnabledLayers(this.currentRasterMapIndex)
     enabledLayers.forEach((layer) => {
       if (layer !== 'cities') {
+        console.log(vectorLayers.get(currentModel.name)[layer])
         overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
       }
     })

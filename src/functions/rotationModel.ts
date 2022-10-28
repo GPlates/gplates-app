@@ -1,6 +1,3 @@
-/*
- *
- */
 import assert from 'assert'
 import { serverURL } from './settings'
 import { LonLatPid } from './types'
@@ -60,7 +57,7 @@ export default class RotationModel {
 
   //retrieve all Euler pole and angles for given plate ids in a rotation model from the server
   // /rotation/get_euler_pole_and_angle?pids=701,801&group_by_pid&model=MULLER2019
-  fetchFiniteRotations = (pids: string[], callback: Function = () => {}) => {
+  fetchFiniteRotations = async (pids: string[]) => {
     let times = this.times
 
     let pids_: string[] = []
@@ -74,35 +71,31 @@ export default class RotationModel {
       return
     }
 
-    /*fetch(
-      serverURL +
-        '/rotation/get_euler_pole_and_angle?pids=' +
-        pids_.join() +
-        '&group_by_pid&model=' +
-        this.name
-    )*/
     let data = {
       times: times.join(),
       model: this.name,
       group_by_pid: '',
       pids: pids_.join(),
     }
-    fetch(serverURL + '/rotation/get_euler_pole_and_angle', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((jsonData) => {
-        this.finiteRotations = new Map([
-          ...Array.from(this.finiteRotations.entries()),
-          ...Array.from(Object.entries(jsonData)),
-        ])
-        callback()
-        //console.log(this.finiteRotations)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    try {
+      let response = await fetch(
+        serverURL + '/rotation/get_euler_pole_and_angle',
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }
+      )
+      let jsonData = await response.json()
+
+      this.finiteRotations = new Map([
+        ...Array.from(this.finiteRotations.entries()),
+        ...Array.from(Object.entries(jsonData)),
+      ])
+
+      //console.log(this.finiteRotations)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   //get Euler pole and angle for a plate id at a time

@@ -126,6 +126,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     let dataMap = await requestDataByUrl(graphList[instantCurGraphIdx][1])
     let xData: string[] = []
     let yData: number[] = []
+
     //we need to sort by the keys first
     let dataArray = Object.entries(dataMap)
     dataArray.sort((a: any, b: any) => {
@@ -135,10 +136,12 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       xData.push(item[0])
       yData.push(Number(item[1]))
     })
+
     //with 1Ma step, such as [0,4, 23,24,35...] is possible.
     //so, use linear interpolate on the data before cutting the range
     interpolate(xData, yData)
 
+    //slice the data according to the range
     if (
       rasterMapAnimateRange.upper != 0 &&
       rasterMapAnimateRange.upper != rasterMapAnimateRange.lower
@@ -152,6 +155,13 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       xData = xy.x
       yData = xy.y
     }
+
+    let index = findIndexes(xData, _age)
+    if (!index) {
+      index = { first: 0, second: 0 }
+    }
+
+    //create the chart
     let chartDom = document.getElementById('graphPanel-statistics')!
     //if (graphChart != null) {
     //  graphChart.dispose()
@@ -170,7 +180,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         axisPointer: {
           show: true,
           snap: true,
-          value: _age,
+          value: index.first,
           handle: {
             show: true,
             size: 20,
@@ -249,39 +259,17 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     })
   }, [rasterMapAnimateRange])
 
-  //
+  //when the paleo-age is changed
   useEffect(() => {
     if (graphOptions === undefined) {
       return
     }
-
-    graphOptions.xAxis!.axisPointer.value = _age
-    graphChart.setOption(graphOptions)
+    let index = findIndexes(graphOptions.xAxis.data, _age)
+    if (index) {
+      graphOptions.xAxis!.axisPointer.value = index.first
+      graphChart.setOption(graphOptions)
+    }
   }, [_age])
-
-  let optionList = []
-  for (let i = 0; i < graphList.length; i++) {
-    optionList.push(
-      <IonItem
-        key={i}
-        onClick={async () => {
-          setCurGraphIdx(i)
-          setCurGraphName(graphList[i][0])
-          await loadGraph(i)
-        }}
-      >
-        <IonLabel
-          style={
-            i === curGraphIdx
-              ? { fontWeight: 'bolder', color: 'var(--ion-color-primary)' }
-              : {}
-          }
-        >
-          {graphList[i][0]}
-        </IonLabel>
-      </IonItem>
-    )
-  }
 
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
@@ -292,7 +280,31 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
           <IonIcon icon={caretDownOutline} />
         </div>
         <IonPopover trigger="graph-panel-click-trigger" triggerAction="click">
-          <IonList>{optionList}</IonList>
+          <IonList>
+            {graphList.map((graph, index) => (
+              <IonItem
+                key={index}
+                onClick={async () => {
+                  setCurGraphIdx(index)
+                  setCurGraphName(graph[0]) //the first column is graph name
+                  await loadGraph(index)
+                }}
+              >
+                <IonLabel
+                  style={
+                    index === curGraphIdx
+                      ? {
+                          fontWeight: 'bolder',
+                          color: 'var(--ion-color-primary)',
+                        }
+                      : {}
+                  }
+                >
+                  {graph[0]}
+                </IonLabel>
+              </IonItem>
+            ))}
+          </IonList>
         </IonPopover>
       </div>
     </div>

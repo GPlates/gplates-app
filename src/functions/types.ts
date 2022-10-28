@@ -22,12 +22,11 @@ export type LonLatPid = {
 
 export type VectorLayerType = {
   displayName: string
-  imageryLayer: any
-  layerProvider: any
-  layerName: string
-  layer: string
-  url: string
-  wmsUrl: string
-  style: string
-  checked: boolean
+  imageryLayer: any //cesium Imagery Layer object
+  id: string //layer ID/key in layer config
+  layerName: string // layer name in geoserver
+  url: string //wmts url(tiled)
+  wmsUrl: string //wms url(not tiled)
+  style: string //geoserver style name
+  checked: boolean //if the layer has been enabled in GUI
 }
