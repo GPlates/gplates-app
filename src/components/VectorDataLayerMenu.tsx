@@ -1,29 +1,16 @@
-import { SingleTileImageryProvider, Viewer, ImageryLayer } from 'cesium'
+import { ImageryLayer } from 'cesium'
 import {
   IonButton,
-  IonButtons,
   IonCheckbox,
-  IonContent,
   IonItem,
   IonLabel,
-  IonModal,
-  IonRippleEffect,
-  IonTitle,
-  IonToolbar,
   IonAccordionGroup,
   IonAccordion,
-  useIonLoading,
-  IonIcon,
 } from '@ionic/react'
-import {
-  locateOutline,
-  trashOutline,
-  informationOutline,
-  closeOutline,
-} from 'ionicons/icons'
+
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
-import { timeout } from '../functions/util'
+
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   currentRasterMapIndexState,
@@ -39,9 +26,7 @@ import {
   getEnabledLayers,
   disableLayer,
 } from '../functions/vectorLayers'
-import { cachingServant } from '../functions/cache'
 import { cesiumViewer } from '../functions/cesiumViewer'
-import { buildAnimationURL } from '../functions/util'
 import './VectorDataLayerMenu.scss'
 
 //only for this GUI component
@@ -144,12 +129,12 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
 
   //
   const onCheckBoxChange = (val: any) => {
-    //console.log(val)
     let layer = vectorLayers[val.detail.value]
     layer.checked = val.detail.checked
     checkLayer(layer, layer.checked)
   }
 
+  //
   const onCitiesCheckBoxChange = (val: any) => {
     setShowCities(val.detail.checked)
     if (val.detail.checked) {

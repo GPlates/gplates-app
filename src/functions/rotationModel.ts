@@ -71,16 +71,10 @@ export default class RotationModel {
     })
     if (pids_.length === 0) {
       //console.log('DEBUG: no need to fetch data from server!')
+      callback()
       return
     }
 
-    /*fetch(
-      serverURL +
-        '/rotation/get_euler_pole_and_angle?pids=' +
-        pids_.join() +
-        '&group_by_pid&model=' +
-        this.name
-    )*/
     let data = {
       times: times.join(),
       model: this.name,

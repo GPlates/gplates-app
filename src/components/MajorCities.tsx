@@ -94,8 +94,6 @@ const loadCityData = () => {
     .then((jsonData) => {
       citiesLonLat = jsonData.coords
       cityPlateIDs = jsonData['plate-ids']
-      //console.log(cityPlateIDs)
-      //console.log(citiesLonLat)
     })
     .catch((error) => {
       console.log(error)
@@ -131,15 +129,19 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
   useEffect(() => {
     // fetch finite rotation for plate IDs
     if (currentModel && cityPlateIDs) {
-      currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
+      currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name], () => {
+        //paleoAge !== 0, draw reconstructed city coordinates
+        if (showCitiesFlag && paleoAge !== 0 && currentModel) {
+          for (let key in citiesLonLat) {
+            drawPaleoCity(citiesLonLat[key], key, paleoAge)
+          }
+        }
+      })
     }
     // draw cities on cesium here
     if (showCitiesFlag) {
       for (let key in citiesLonLat) {
-        //paleoAge !== 0, draw reconstructed city coordinates
-        if (paleoAge !== 0 && currentModel) {
-          drawPaleoCity(citiesLonLat[key], key, paleoAge)
-        } else {
+        if (paleoAge === 0) {
           drawCity(citiesLonLat[key][0], citiesLonLat[key][1], key) //paleoAge===0, draw present-day cities
         }
       }

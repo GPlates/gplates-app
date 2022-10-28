@@ -156,7 +156,6 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       }
     }
   }
-  let winWidth = screen.width
 
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>

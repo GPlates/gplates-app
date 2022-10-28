@@ -49,7 +49,6 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
   Preferences.get({ key: 'showGraticule' }).then((res) => {
     if (res?.value) {
       const flag = JSON.parse(res.value)
-      console.log(flag)
       if (flag) {
         setShowGraticuleFlag(true)
         showGraticule()
