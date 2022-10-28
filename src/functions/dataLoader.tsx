@@ -30,10 +30,11 @@ var gridNames = [
   'EPSG:4326:21',
 ]
 
-export const createCesiumImageryProvider = (raster: RasterCfg, time = 0) => {
-  let url_str = raster.url
-  let layer_name = raster.layerName
-  let style_name = raster.style
+//the input "image:any" must have properties: "url", "layerName", "style", "wmsUrl"
+export const createCesiumImageryProvider = (image: any, time = 0) => {
+  let url_str = image.url
+  let layer_name = image.layerName
+  let style_name = image.style
   let provider = new Cesium.WebMapTileServiceImageryProvider({
     url: url_str,
     layer: layer_name.replace('{{time}}', String(time)),
@@ -46,11 +47,13 @@ export const createCesiumImageryProvider = (raster: RasterCfg, time = 0) => {
     tilingScheme: new Cesium.GeographicTilingScheme(),
     credit: new Cesium.Credit('EarthByte, The University of Sydney'),
   })
+
+  //if the network is disconnected, use this error handler to load stored low resolution image
   const handler = (providerError: any) => {
     console.log(providerError)
     cesiumViewer.imageryLayers.removeAll()
     //console.log(url_str, layer_name, style_name)
-    let url_ = buildAnimationURL(raster.wmsUrl, layer_name)
+    let url_ = buildAnimationURL(image.wmsUrl, layer_name)
     cachingServant
       .getCachedRequest(url_.replace('{{time}}', String(time)))
       .then((dataURL) => {
@@ -67,7 +70,9 @@ export const createCesiumImageryProvider = (raster: RasterCfg, time = 0) => {
   provider.errorEvent.addEventListener(handler)
 
   //cache the low resolution image
-  let url = buildAnimationURL(raster.wmsUrl, layer_name)
+  let url = buildAnimationURL(image.wmsUrl, layer_name)
   cachingServant?.cacheURL(url.replace('{{time}}', String(time)))
   return provider
 }
+
+//

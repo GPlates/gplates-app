@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect } from 'react'
 import * as Cesium from 'cesium'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { age, showCities, currentRasterMapIndexState } from '../functions/atoms'
+import { useRecoilValue } from 'recoil'
+import { age, showCities } from '../functions/atoms'
 import { serverURL } from '../functions/settings'
 import { currentModel } from '../functions/rotationModel'
 import { cesiumViewer } from '../functions/cesiumViewer'
@@ -127,16 +127,18 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
   //
   //
   useEffect(() => {
+    const drawPaleoCities = async () => {
+      await currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
+      //paleoAge !== 0, draw reconstructed city coordinates
+      if (showCitiesFlag && paleoAge !== 0 && currentModel) {
+        for (let key in citiesLonLat) {
+          drawPaleoCity(citiesLonLat[key], key, paleoAge)
+        }
+      }
+    }
     // fetch finite rotation for plate IDs
     if (currentModel && cityPlateIDs) {
-      currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name], () => {
-        //paleoAge !== 0, draw reconstructed city coordinates
-        if (showCitiesFlag && paleoAge !== 0 && currentModel) {
-          for (let key in citiesLonLat) {
-            drawPaleoCity(citiesLonLat[key], key, paleoAge)
-          }
-        }
-      })
+      drawPaleoCities()
     }
     // draw cities on cesium here
     if (showCitiesFlag) {

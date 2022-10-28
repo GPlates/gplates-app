@@ -8,6 +8,7 @@ import {
   showGraticule,
   setShowGraticuleFlag,
 } from './graticule'
+import { updateImageryLayer } from '../components/VectorDataLayerMenu'
 
 //singleton cersium viewer
 export let cesiumViewer: Viewer
@@ -70,8 +71,10 @@ export const drawLayers = (time: number) => {
   for (let key in vLayers) {
     let checkedLayers = getEnabledLayers(currentRasterIndex)
     if (checkedLayers.includes(key)) {
-      let p = createCesiumImageryProvider(vLayers[key], time)
-      cesiumViewer.imageryLayers.addImageryProvider(p) //draw the vector layers
+      let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
+        createCesiumImageryProvider(vLayers[key], time)
+      ) //draw the vector layers
+      updateImageryLayer(key, imageryLayer)
     }
   }
   raiseGraticuleLayerToTop() //raise graticlue layer if enabled

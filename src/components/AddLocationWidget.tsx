@@ -129,7 +129,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const [presentToast, dismissToast] = useIonToast()
 
   //reconstruct the present day coordinate back in time
-  const reconstructPresentDayLocations = (paleoAge: number) => {
+  const reconstructPresentDayLocations = async (paleoAge: number) => {
     if (
       rasterMaps.length === 0 ||
       presentDayLonLatList.length === 0 ||
@@ -137,16 +137,13 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     )
       return []
 
-    // fetch finite rotation for plate IDs
-    currentModel.fetchFiniteRotations(
-      presentDayLonLatList.map((lll) => String(lll.pid)),
-      () => {
-        reconstructAndUpdateLocations()
-      }
-    )
-    //console.log(presentDayLonLatList)
-
     let paleoCoords: { lon: number; lat: number }[] = []
+
+    // fetch finite rotation for plate IDs
+    await currentModel.fetchFiniteRotations(
+      presentDayLonLatList.map((lll) => String(lll.pid))
+    )
+
     presentDayLonLatList.forEach((point) => {
       let rp = currentModel.rotateLonLatPid(
         currentModel.getTimeIndex(paleoAge),
@@ -159,8 +156,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     return paleoCoords
   }
 
-  const reconstructAndUpdateLocations = () => {
-    const paleoCoords = reconstructPresentDayLocations(paleoAge)
+  const reconstructAndUpdateLocations = async () => {
+    const paleoCoords = await reconstructPresentDayLocations(paleoAge)
     if (paleoCoords.length > 0) {
       setLonLatlist(paleoCoords)
       updateLocationEntities(paleoCoords)
