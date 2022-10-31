@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'earthbyte.gplates.edu',
-  appName: 'GPlates In Schools',
+  appName: 'GPlates',
   webDir: 'build',
   bundledWebRuntime: false,
   server: {
