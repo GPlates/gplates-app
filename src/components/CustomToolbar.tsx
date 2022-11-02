@@ -13,20 +13,17 @@ import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
 import React, { Fragment, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
-
-// https://stackoverflow.com/a/69736635/15379768
-//import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+import {
+  cesiumViewer,
+  HOME_LONGITUDE,
+  HOME_LATITUDE,
+  DEFAULT_CAMERA_HEIGHT,
+} from '../functions/cesiumViewer'
 import { Swiper, SwiperSlide } from 'swiper/react'
-
-// Swiper styles must use direct files import
-//import 'swiper/swiper.scss' // core Swiper
-//import 'swiper/modules/navigation/navigation.scss' // Navigation module
-//import 'swiper/modules/pagination/pagination.scss'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import { Pagination } from 'swiper'
-import { cesiumViewer } from '../functions/cesiumViewer'
 import { Geolocation } from '@capacitor/geolocation'
 import { isAddLocationWidgetShowState } from '../functions/atoms'
 
@@ -42,7 +39,18 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     {
       id: SceneMode.SCENE3D,
       name: '3D',
-      onClick: () => scene.morphTo3D(),
+      onClick: () => {
+        scene.morphTo3D()
+        setTimeout(() => {
+          scene.camera.flyTo({
+            destination: Cartesian3.fromDegrees(
+              HOME_LONGITUDE,
+              HOME_LATITUDE,
+              DEFAULT_CAMERA_HEIGHT
+            ),
+          })
+        }, 2500) //wait for the morphTo3D to finish(by default 2 seconds morphTo3D to finish)
+      },
       path: globePath,
     },
     {
@@ -66,7 +74,13 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   const goHome = async () => {
     //when run in a web browser, cannot request geolocation permission
     if (getPlatforms().includes('desktop')) {
-      scene.camera.flyHome()
+      scene.camera.flyTo({
+        destination: Cartesian3.fromDegrees(
+          HOME_LONGITUDE,
+          HOME_LATITUDE,
+          DEFAULT_CAMERA_HEIGHT
+        ),
+      })
       return
     }
 
@@ -97,18 +111,17 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           outlineWidth: 3,
         },
       })
-      // Rectangle animates nicer than Cartesian3
-      const width = 40.9
-      const height = 33.3
-      const rectangle = Rectangle.fromDegrees(
-        lon - width,
-        lat - height,
-        lon + width,
-        lat + height
-      )
-      scene.camera.flyTo({ destination: rectangle })
+      scene.camera.flyTo({
+        destination: Cartesian3.fromDegrees(lon, lat, DEFAULT_CAMERA_HEIGHT),
+      })
     } else {
-      scene.camera.flyHome()
+      scene.camera.flyTo({
+        destination: Cartesian3.fromDegrees(
+          HOME_LONGITUDE,
+          HOME_LATITUDE,
+          DEFAULT_CAMERA_HEIGHT
+        ),
+      })
     }
   }
 

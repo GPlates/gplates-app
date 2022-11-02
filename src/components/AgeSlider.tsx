@@ -128,17 +128,20 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
           <div>
             <IonButton
               fill="clear"
-              onClick={() => animationService.setPlaying(!playing)}
-              size="default"
-            >
-              <IonIcon icon={playing ? pauseOutline : playOutline} />
-            </IonButton>
-            <IonButton
-              fill="clear"
               onClick={() => animationService.movePrev()}
               size="default"
             >
               <IonIcon icon={playBackOutline} />
+            </IonButton>
+            <IonButton
+              fill="clear"
+              onClick={() => animationService.setPlaying(!playing)}
+              size="default"
+            >
+              <IonIcon
+                id="play-pause-icon"
+                icon={playing ? pauseOutline : playOutline}
+              />
             </IonButton>
             <IonButton
               fill="clear"

@@ -1,5 +1,5 @@
 import { Preferences } from '@capacitor/preferences'
-import { Color, Viewer, ImageryProvider, Camera, Rectangle } from 'cesium'
+import { Color, Viewer, ImageryProvider, Cartesian3 } from 'cesium'
 import rasterMaps, { currentRasterIndex } from './rasterMaps'
 import { createCesiumImageryProvider } from './dataLoader'
 import { getVectorLayers, getEnabledLayers } from '../functions/vectorLayers'
@@ -12,6 +12,10 @@ import { updateImageryLayer } from '../components/VectorDataLayerMenu'
 
 //singleton cersium viewer
 export let cesiumViewer: Viewer
+
+export const HOME_LONGITUDE = 135.0
+export const HOME_LATITUDE = -25.0
+export const DEFAULT_CAMERA_HEIGHT = 15000000
 
 //initialize the Cesium viewer
 export const initCesiumViewer = (provider: ImageryProvider) => {
@@ -39,13 +43,13 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
 
   viewer.scene.globe.tileCacheSize = 1000
 
-  // Rough bounding box of Australia
-  Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(
-    112.8,
-    -43.7,
-    153.7,
-    -10.4
-  )
+  viewer.scene.camera.setView({
+    destination: Cartesian3.fromDegrees(
+      HOME_LONGITUDE,
+      HOME_LATITUDE,
+      DEFAULT_CAMERA_HEIGHT
+    ),
+  })
   cesiumViewer = viewer
   Preferences.get({ key: 'showGraticule' }).then((res) => {
     if (res?.value) {
