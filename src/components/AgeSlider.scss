@@ -1,12 +1,12 @@
 $transition: all 150ms;
 
-@media screen and (max-width: 328px) {
+@media screen and (max-width: 318px) {
   .hidden {
     transform: translateY(calc(-154px - env(safe-area-inset-top)));
   }
 }
 
-@media screen and (min-width: 328px) and (max-width: 648px) {
+@media screen and (min-width: 318px) and (max-width: 648px) {
   .hidden {
     transform: translateY(calc(-106px - env(safe-area-inset-top)));
   }
@@ -54,6 +54,7 @@ $transition: all 150ms;
     }
     height: 40px;
     width: 40px;
+    margin: 0;
   }
   ion-icon {
     font-size: 24px;
@@ -62,7 +63,7 @@ $transition: all 150ms;
   --padding-end: 4px;
   --ion-safe-area-left: 0;
   --ion-safe-area-right: 0;
-  width: 228px;
+  //width: 228px;
 }
 
 .slider {
@@ -101,4 +102,9 @@ $transition: all 150ms;
   --ion-safe-area-right: 0;
   min-height: 48px;
   width: 100px;
+}
+
+#play-pause-icon {
+  --ionicon-stroke-width: 64px;
+  font-size: 30px;
 }
