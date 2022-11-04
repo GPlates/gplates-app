@@ -1,20 +1,23 @@
-import { Color, Viewer, ImageryProvider, Camera, Rectangle } from 'cesium'
+import { Preferences } from '@capacitor/preferences'
+import { Color, Viewer, ImageryProvider, Cartesian3 } from 'cesium'
 import rasterMaps, { currentRasterIndex } from './rasterMaps'
-
-import { buildAnimationURL } from './util'
-import { currentModel } from './rotationModel'
 import { createCesiumImageryProvider } from './dataLoader'
+import { getVectorLayers, getEnabledLayers } from '../functions/vectorLayers'
 import {
-  getVectorLayers,
-  enableLayer,
-  getEnabledLayers,
-  disableLayer,
-} from '../functions/vectorLayers'
+  raiseGraticuleLayerToTop,
+  showGraticule,
+  setShowGraticuleFlag,
+} from './graticule'
+import { updateImageryLayer } from '../components/VectorDataLayerMenu'
 
 //singleton cersium viewer
 export let cesiumViewer: Viewer
 
-//
+export const HOME_LONGITUDE = 135.0
+export const HOME_LATITUDE = -25.0
+export const DEFAULT_CAMERA_HEIGHT = 15000000
+
+//initialize the Cesium viewer
 export const initCesiumViewer = (provider: ImageryProvider) => {
   let viewer: Viewer = new Viewer('cesiumContainer', {
     baseLayerPicker: false,
@@ -40,38 +43,50 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
 
   viewer.scene.globe.tileCacheSize = 1000
 
-  // Rough bounding box of Australia
-  Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(
-    112.8,
-    -43.7,
-    153.7,
-    -10.4
-  )
+  viewer.scene.camera.setView({
+    destination: Cartesian3.fromDegrees(
+      HOME_LONGITUDE,
+      HOME_LATITUDE,
+      DEFAULT_CAMERA_HEIGHT
+    ),
+  })
   cesiumViewer = viewer
+  Preferences.get({ key: 'showGraticule' }).then((res) => {
+    if (res?.value) {
+      const flag = JSON.parse(res.value)
+      if (flag) {
+        setShowGraticuleFlag(true)
+        showGraticule()
+      }
+    }
+  })
 }
 
-//
+//draw raster layer and vector layers
 export const drawLayers = (time: number) => {
   const provider = createCesiumImageryProvider(
     rasterMaps[currentRasterIndex],
     time
   )
-  cesiumViewer.imageryLayers.addImageryProvider(provider)
+  cesiumViewer.imageryLayers.addImageryProvider(provider) //draw the raster layer
 
   let model = rasterMaps[currentRasterIndex]?.model ?? 'MERDITH2021'
   let vLayers = getVectorLayers(model)
   for (let key in vLayers) {
     let checkedLayers = getEnabledLayers(currentRasterIndex)
     if (checkedLayers.includes(key)) {
-      let p = createCesiumImageryProvider(vLayers[key], time)
-      cesiumViewer.imageryLayers.addImageryProvider(p)
+      let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
+        createCesiumImageryProvider(vLayers[key], time)
+      ) //draw the vector layers
+      updateImageryLayer(key, imageryLayer)
     }
   }
-
+  raiseGraticuleLayerToTop() //raise graticlue layer if enabled
   pruneLayers()
 }
 
-//
+//get rid of some old layers
+//TODO: need a smarter way to do this
 export const pruneLayers = () => {
   while (cesiumViewer.imageryLayers.length > 7) {
     //console.log(cesiumViewer.imageryLayers.length)

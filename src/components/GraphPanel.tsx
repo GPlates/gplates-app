@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { age, animateRange, isGraphPanelShowState } from '../functions/atoms'
 import './GraphPanel.scss'
-import { EChartsType } from 'echarts'
 import {
   getPlatforms,
   IonIcon,
@@ -16,10 +15,10 @@ import { caretDownOutline } from 'ionicons/icons'
 import { requestDataByUrl } from '../functions/util'
 import { serverURL } from '../functions/settings'
 
-let graphChart: EChartsType
+let graphChart: echarts.EChartsType
 let graphOptions: any
 
-//
+//cut the xData and yData according to the give range(lower, upper)
 const sliceData = (
   xData: string[],
   yData: number[],
@@ -43,8 +42,6 @@ const sliceData = (
     }
     return true
   })
-  console.log(smallIdx)
-  console.log(bigIdx)
   if (smallIdx >= 0 && bigIdx > smallIdx) {
     return {
       x: xData.slice(smallIdx, bigIdx),
@@ -52,6 +49,63 @@ const sliceData = (
     }
   }
   return { x: [] as string[], y: [] as number[] }
+}
+
+//find the index of x in xData
+//if x is not in xData, return xData[index] > x >xData[index-1]
+//if x is in Data, return two indexes with the same value
+//assume x wouldn't out of range
+const findIndexes = (xData: string[], x: number) => {
+  let firstIndex = -1
+  if (xData.length > 1) {
+    for (let i = 0; i < xData.length; i++) {
+      if (
+        Math.abs(Number(xData[i]) - x) < Number.EPSILON &&
+        x.toString() === xData[i]
+      ) {
+        return { first: i, second: i } //find the exact data point
+      }
+
+      if (Number(xData[i]) < x) {
+        continue //no result yet
+      } else if (Number(xData[i]) > x && firstIndex === -1) {
+        if (i === 0) {
+          console.log(`Error: input x ${x} is out of range. (${xData}) `)
+          return null
+        } else {
+          return { first: i - 1, second: i }
+        } //find the x is between firstIndex and secondIndex
+      }
+    }
+  }
+
+  console.log(`Error: input x ${x} is out of range. (${xData}) `)
+  return null
+}
+
+//assume the xData is in acsending order
+//insert data points very 1Myr
+const interpolate = (xData: string[], yData: number[]) => {
+  let small = Math.ceil(Number(xData[0]))
+  let big = Math.floor(Number(xData[xData.length - 1]))
+  for (let i = small; i < big; i++) {
+    let indexes = findIndexes(xData, i)
+    if (indexes) {
+      if (indexes.first === indexes.second) {
+        continue //data point exists in xData
+      } else {
+        let yValue =
+          ((yData[indexes.second] - yData[indexes.first]) /
+            (Number(xData[indexes.second]) - Number(xData[indexes.first]))) *
+            (i - Number(xData[indexes.first])) +
+          yData[indexes.first]
+
+        yData.splice(indexes.second, 0, parseFloat(yValue.toFixed(2)))
+
+        xData.splice(indexes.second, 0, i.toString())
+      }
+    }
+  }
 }
 
 interface ContainerProps {}
@@ -65,41 +119,6 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const [curGraphName, setCurGraphName] = useState('')
 
   //
-  /*
-  function process_data(
-    data_map: any,
-    data: any[],
-    x_vals: number[],
-    y_vals: number[]
-  ) {
-    let new_x_vals = []
-    let new_y_vals = []
-    for (let i = 0; i < x_vals.length - 1; i++) {
-      new_x_vals.push(x_vals[i])
-      new_y_vals.push(y_vals[i])
-
-      // linear interpolate if having missed values
-      let fromIdx = x_vals[i]
-      let toIdx = x_vals[i + 1]
-      let betweenNum = toIdx - fromIdx
-      let increment = (y_vals[i + 1] - y_vals[i]) / betweenNum
-      let curIncr = increment
-      for (let inserIdx = fromIdx + 1; inserIdx < toIdx; inserIdx++) {
-        new_x_vals.push(inserIdx)
-        new_y_vals.push(y_vals[i] + curIncr)
-        curIncr += increment
-      }
-    }
-
-    let new_data = []
-    for (let i = 0; i < new_x_vals.length; i++) {
-      new_data.push([new_x_vals[i], new_y_vals[i]])
-    }
-
-    return [data_map, new_data, new_x_vals, new_y_vals]
-  }*/
-
-  //
   const loadGraph = async (instantCurGraphIdx: number) => {
     if (!(graphList.length > instantCurGraphIdx)) return
 
@@ -107,6 +126,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     let dataMap = await requestDataByUrl(graphList[instantCurGraphIdx][1])
     let xData: string[] = []
     let yData: number[] = []
+
     //we need to sort by the keys first
     let dataArray = Object.entries(dataMap)
     dataArray.sort((a: any, b: any) => {
@@ -116,33 +136,12 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       xData.push(item[0])
       yData.push(Number(item[1]))
     })
+
     //with 1Ma step, such as [0,4, 23,24,35...] is possible.
     //so, use linear interpolate on the data before cutting the range
-    /*;[data_map, data, x_vals, y_vals] = process_data(
-      data_map,
-      data,
-      x_vals,
-      y_vals
-    )
-    DATA_MAP = data_map
-    DATA = data
-    X_VALS = x_vals
-    Y_VALS = y_vals
+    interpolate(xData, yData)
 
-    if (rasterMapAnimateRange.upper != 0) {
-      DATA = data.slice(
-        rasterMapAnimateRange.lower,
-        rasterMapAnimateRange.upper
-      )
-      X_VALS = x_vals.slice(
-        rasterMapAnimateRange.lower,
-        rasterMapAnimateRange.upper
-      )
-      Y_VALS = y_vals.slice(
-        rasterMapAnimateRange.lower,
-        rasterMapAnimateRange.upper
-      )
-    }*/
+    //slice the data according to the range
     if (
       rasterMapAnimateRange.upper != 0 &&
       rasterMapAnimateRange.upper != rasterMapAnimateRange.lower
@@ -155,8 +154,14 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       )
       xData = xy.x
       yData = xy.y
-      console.log(xData)
     }
+
+    let index = findIndexes(xData, _age)
+    if (!index) {
+      index = { first: 0, second: 0 }
+    }
+
+    //create the chart
     let chartDom = document.getElementById('graphPanel-statistics')!
     //if (graphChart != null) {
     //  graphChart.dispose()
@@ -165,7 +170,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       graphChart = echarts.init(chartDom)
     }
 
-    let graphOptions = {
+    graphOptions = {
       grid: {
         top: '7%',
       },
@@ -175,7 +180,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         axisPointer: {
           show: true,
           snap: true,
-          value: _age,
+          value: index.first,
           handle: {
             show: true,
             size: 20,
@@ -254,39 +259,17 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     })
   }, [rasterMapAnimateRange])
 
-  //
+  //when the paleo-age is changed
   useEffect(() => {
-    if (graphOptions == undefined) {
+    if (graphOptions === undefined) {
       return
     }
-
-    graphOptions.xAxis!.axisPointer.value = _age
-    graphChart.setOption(graphOptions)
+    let index = findIndexes(graphOptions.xAxis.data, _age)
+    if (index) {
+      graphOptions.xAxis!.axisPointer.value = index.first
+      graphChart.setOption(graphOptions)
+    }
   }, [_age])
-
-  let optionList = []
-  for (let i = 0; i < graphList.length; i++) {
-    optionList.push(
-      <IonItem
-        key={i}
-        onClick={async () => {
-          setCurGraphIdx(i)
-          setCurGraphName(graphList[i][0])
-          await loadGraph(i)
-        }}
-      >
-        <IonLabel
-          style={
-            i === curGraphIdx
-              ? { fontWeight: 'bolder', color: 'var(--ion-color-primary)' }
-              : {}
-          }
-        >
-          {graphList[i][0]}
-        </IonLabel>
-      </IonItem>
-    )
-  }
 
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
@@ -297,7 +280,31 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
           <IonIcon icon={caretDownOutline} />
         </div>
         <IonPopover trigger="graph-panel-click-trigger" triggerAction="click">
-          <IonList>{optionList}</IonList>
+          <IonList>
+            {graphList.map((graph, index) => (
+              <IonItem
+                key={index}
+                onClick={async () => {
+                  setCurGraphIdx(index)
+                  setCurGraphName(graph[0]) //the first column is graph name
+                  await loadGraph(index)
+                }}
+              >
+                <IonLabel
+                  style={
+                    index === curGraphIdx
+                      ? {
+                          fontWeight: 'bolder',
+                          color: 'var(--ion-color-primary)',
+                        }
+                      : {}
+                  }
+                >
+                  {graph[0]}
+                </IonLabel>
+              </IonItem>
+            ))}
+          </IonList>
         </IonPopover>
       </div>
     </div>
