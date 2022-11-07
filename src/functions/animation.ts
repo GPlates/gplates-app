@@ -21,15 +21,12 @@ export class AnimationService {
     public cachingService: CachingService,
     public setAge: SetterOrUpdater<number>,
     public exact: boolean,
-    public setExact: SetterOrUpdater<boolean>,
     public fps: number,
     public increment: number,
     public loop: boolean,
-    public setLoop: SetterOrUpdater<boolean>,
     public playing: boolean,
     public _setPlaying: SetterOrUpdater<boolean>,
     public range: { lower: number; upper: number },
-    public setRange: SetterOrUpdater<{ lower: number; upper: number }>,
     public viewer: Viewer,
     public currentRasterMapIndex: number
   ) {
@@ -145,6 +142,10 @@ export class AnimationService {
     }
     if (nextNumber < small) {
       nextNumber = this.loop || this.exact ? small : animateFrame
+    }
+    // Pause once we reach the boundary
+    if (nextNumber >= big || nextNumber <= small) {
+      this.setPlaying(false)
     }
     return currentModel.getNearestTime(nextNumber)
   }

@@ -115,15 +115,12 @@ const Main: React.FC = () => {
     cachingServant,
     setAge,
     exact,
-    setExact,
     fps,
     increment,
     loop,
-    setLoop,
     playing,
     _setPlaying,
     range,
-    setRange,
     cesiumViewer,
     currentRasterMapIndex
   )

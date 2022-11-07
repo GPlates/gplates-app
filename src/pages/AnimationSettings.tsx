@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   IonButton,
-  IonCheckbox,
   IonCol,
   IonGrid,
   IonInput,
@@ -32,6 +31,7 @@ interface ContainerProps {}
 export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const [exact, setExact] = useRecoilState(animateExact)
   const [fps, setFps] = useRecoilState(animateFps)
+  const [tempFps, setTempFps] = useState<string | null>()
   const [increment, setIncrement] = useRecoilState(animateIncrement)
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [range, setRange] = useRecoilState(animateRange)
@@ -189,16 +189,21 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
             <IonCol>
               <IonItem>
                 <IonLabel class="frames-per-second-label">
-                  Frames per second (best-effort):
+                  <h2>Frames per second:</h2>
+                  <p>(best effort)</p>
                 </IonLabel>
                 <IonInput
                   slot="end"
                   inputMode="numeric"
                   min={minFps}
                   max={maxFps}
-                  onIonChange={(e) =>
-                    setNumber(setFps, e.detail.value, minFps, maxFps)
-                  }
+                  onIonBlur={() => {
+                    setNumber(setFps, tempFps, minFps, maxFps)
+                  }}
+                  onIonChange={(e) => {
+                    setNumber(setFps, e.detail.value)
+                    setTempFps(e.detail.value)
+                  }}
                   value={fps}
                 />
               </IonItem>
