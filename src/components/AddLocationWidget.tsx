@@ -36,7 +36,7 @@ import {
 } from 'cesium'
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../functions/cesiumViewer'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 import { age, currentRasterMapIndexState } from '../functions/atoms'
 import { serverURL } from '../functions/settings'
 import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
@@ -52,7 +52,9 @@ var locationCartesian: Cartesian3 | undefined = Cartesian3.fromDegrees(0, 0)
 
 let presentDayLonLatList: LonLatPid[] = []
 
+//
 //move the locations to the new positions
+//
 const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
   //console.log(coords)
   //change the position property for the entities
@@ -63,7 +65,9 @@ const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
   })
 }
 
+//
 //reverse reconstruction the coordinates to find the present day coordinates
+//
 const setPresentDayLonLatPid = (
   age: number,
   lonLat: React.MutableRefObject<{
@@ -111,6 +115,8 @@ interface AddLocationWidgetProps {
   show: boolean
   setShow: Function
 }
+
+//
 //
 //
 const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
@@ -118,6 +124,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   setShow,
 }) => {
   const lonLat = useRef({ lon: 0, lat: 0 }) //do not trigger re-render
+  const lonInput = useRef(null)
+  const latInput = useRef(null)
   const [updateLonLat, setUpdateLonLat] = useState(false) //triger re-render when lonLat changed
   const [lonLatList, setLonLatlist] = useState<{ lon: number; lat: number }[]>(
     []
@@ -128,7 +136,76 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
   const [presentToast, dismissToast] = useIonToast()
 
+  //
+  //insert the current locatoin into the location list
+  //
+  const insertLocation = () => {
+    if (cesiumViewer.scene.mode != SceneMode.SCENE3D) {
+      presentToast({
+        buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+        duration: 5000,
+        message: 'Only work with 3D globe mode!',
+        onDidDismiss: () => {},
+      })
+      return
+    }
+    let inputLon = lonInput.current ? parseFloat(lonInput.current['value']) : 0
+    let inputLat = latInput.current ? parseFloat(latInput.current['value']) : 0
+
+    if (inputLon > 180 || inputLon < -180 || inputLat > 90 || inputLat < -90) {
+      presentToast({
+        buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+        duration: 2000,
+        message: `Invalid longitude or latitude (${inputLon}, ${inputLat})!`,
+        onDidDismiss: () => {},
+      })
+      return
+    }
+
+    //add the new location into the list
+    setLonLatlist(lonLatList.concat([{ lon: inputLon, lat: inputLat }]))
+
+    //get plate id and
+    //save the Present Day coordinates
+    setPresentDayLonLatPid(paleoAge, lonLat)
+
+    //draw the location on Cesium globe
+    let pe = cesiumViewer.entities.add({
+      name:
+        'Index(' +
+        String(lonLatList.length) +
+        ') Lon: ' +
+        String(lonLat.current.lon) +
+        ' Lat: ' +
+        String(lonLat.current.lat),
+      position: Cartesian3.fromDegrees(inputLon, inputLat),
+      point: {
+        color: Color.BLACK,
+        pixelSize: 10,
+        outlineColor: Color.YELLOW,
+        outlineWidth: 3,
+      },
+    })
+    locationEntities.push(pe)
+
+    //move to user input location
+    if (
+      Math.abs(inputLon - lonLat.current.lon) > 1 ||
+      Math.abs(inputLat - lonLat.current.lat) > 1
+    ) {
+      cesiumViewer.scene.camera.flyTo({
+        destination: Cartesian3.fromDegrees(
+          inputLon,
+          inputLat,
+          cesiumViewer.scene.camera.positionCartographic.height
+        ),
+      })
+    }
+  }
+
+  //
   //reconstruct the present day coordinate back in time
+  //
   const reconstructPresentDayLocations = async (paleoAge: number) => {
     if (
       rasterMaps.length === 0 ||
@@ -156,6 +233,9 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     return paleoCoords
   }
 
+  //
+  //
+  //
   const reconstructAndUpdateLocations = async () => {
     const paleoCoords = await reconstructPresentDayLocations(paleoAge)
     if (paleoCoords.length > 0) {
@@ -164,11 +244,16 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     }
   }
 
+  //
+  //
+  //
   useEffect(() => {
     reconstructAndUpdateLocations()
   }, [paleoAge])
 
+  //
   //the current raster index changed
+  //
   useEffect(() => {
     if (!(rasterMaps.length > currentRasterMapIndex)) return
 
@@ -208,8 +293,10 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     }
   }, [currentRasterMapIndex]) //the current raster index changed
 
+  //
   //handle the camera changed event
   //calculate the coordinates of the center of camera lens
+  //
   const cameraHandler = (update = true) => {
     let ray = cesiumViewer.scene.camera.getPickRay(
       new Cartesian2(
@@ -335,55 +422,19 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonInput
               type="number"
               value={lonLat.current.lon.toFixed(4)}
+              ref={lonInput}
             ></IonInput>
 
             <IonLabel>Latitude:</IonLabel>
             <IonInput
               type="number"
               value={lonLat.current.lat.toFixed(4)}
+              ref={latInput}
             ></IonInput>
             <IonButton
               id="open-modal"
               color="primary"
-              onClick={() => {
-                if (cesiumViewer.scene.mode != SceneMode.SCENE3D) {
-                  presentToast({
-                    buttons: [
-                      { text: 'Dismiss', handler: () => dismissToast() },
-                    ],
-                    duration: 5000,
-                    message: 'Only work with 3D globe mode!',
-                    onDidDismiss: () => {},
-                  })
-                  return
-                }
-                setLonLatlist(
-                  lonLatList.concat([
-                    { lon: lonLat.current.lon, lat: lonLat.current.lat },
-                  ])
-                )
-                //get plate id and
-                //save the Present Day coordinates in another file
-                setPresentDayLonLatPid(paleoAge, lonLat)
-
-                let pe = cesiumViewer.entities.add({
-                  name:
-                    'Index(' +
-                    String(lonLatList.length) +
-                    ') Lon: ' +
-                    String(lonLat.current.lon) +
-                    ' Lat: ' +
-                    String(lonLat.current.lat),
-                  position: locationCartesian,
-                  point: {
-                    color: Color.BLACK,
-                    pixelSize: 10,
-                    outlineColor: Color.YELLOW,
-                    outlineWidth: 3,
-                  },
-                })
-                locationEntities.push(pe)
-              }}
+              onClick={() => insertLocation()}
             >
               Insert
             </IonButton>
