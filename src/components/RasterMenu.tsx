@@ -37,7 +37,6 @@ interface ContainerProps {
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
-  isViewerLoading,
   isCesiumViewerReady,
   setAgeSliderShown,
 }) => {
@@ -50,7 +49,6 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const setShowTimeStampState = useSetRecoilState(showTimeStampState)
 
   const [swiper, setSwiper] = useState<SwiperType>()
-  const [present, dismiss] = useIonLoading()
 
   //
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
@@ -66,6 +64,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   //
   useEffect(() => {
+    //by default, select the raster icon in the middle.
     let middle = Math.floor(rasterMaps.length / 2)
     select(middle)
     swiper?.slideTo(middle)
@@ -88,13 +87,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           onClick={async (e) => {
             if (currentRasterMapIndex !== i) {
               select(i)
-              await present({ message: 'Loading...' })
               switchLayer(createCesiumImageryProvider(rasterMaps[i]))
-              await timeout(200)
-              while (!isViewerLoading()) {
-                await timeout(200)
-              }
-              await dismiss()
             }
           }}
         >
