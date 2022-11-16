@@ -35,6 +35,8 @@ export class AnimationService {
   }
 
   //
+  //
+  //
   drawFrame = async (url: string) => {
     animateStartTime = Date.now()
     try {
@@ -75,18 +77,31 @@ export class AnimationService {
     }
   }
 
+  //
   // TODO: Cache next image before timeout expires to improve cold animation performance?
+  //
   scheduleFrame = (url: string, nextFrame = false) => {
     const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
     //console.log(timeToNext)
     animateTimeout = setTimeout(() => {
       if (nextFrame) {
-        animateFrame = this.getNextFrameNumber()
+        let nextFrameNumber = this.getNextFrameNumber()
+        //if the next number is the same as the current number
+        //it means the animation reached end
+        //so, pause the animation and return
+        if (Math.abs(nextFrameNumber - animateFrame) < Number.EPSILON) {
+          this.setPlaying(false)
+          return
+        }
+
+        animateFrame = nextFrameNumber
       }
       return this.drawFrame(url)
     }, Math.max(timeToNext, 0)) //due to the event loop, the timeToNext cannot be guaranteed.
   }
 
+  //
+  //
   //
   nextFrameNumber = () => {
     const reversed = this.range.lower > this.range.upper
@@ -120,7 +135,9 @@ export class AnimationService {
     return animateFrame
   }
 
+  //
   //return the next valid age
+  //
   getNextFrameNumber = () => {
     //if loop is true and frame has reached the end, go to the start
     //otherwise, stay at the end
@@ -143,14 +160,13 @@ export class AnimationService {
     if (nextNumber < small) {
       nextNumber = this.loop || this.exact ? small : animateFrame
     }
-    // Pause once we reach the boundary
-    if (nextNumber >= big || nextNumber <= small) {
-      this.setPlaying(false)
-    }
+
     return currentModel.getNearestTime(nextNumber)
   }
 
+  //
   //return the previous valid age
+  //
   getPrevFrameNumber = () => {
     //if loop is true and frame has reached the start, go to the end
     //otherwise, stay at the end
@@ -177,6 +193,8 @@ export class AnimationService {
   }
 
   //
+  //
+  //
   onAgeSliderChange = (value: number) => {
     if (!this.playing) {
       animateFrame = value
@@ -185,6 +203,8 @@ export class AnimationService {
   }
 
   //
+  //
+  //
   resetPlayHead = () => {
     this.setPlaying(false)
     animateFrame = this.range.lower
@@ -192,6 +212,8 @@ export class AnimationService {
     this.drawTiles()
   }
 
+  //
+  //
   //
   movePlayHead = (value: number) => {
     this.setPlaying(false)
@@ -207,6 +229,8 @@ export class AnimationService {
   }
 
   //
+  //
+  //
   moveNext = () => {
     this.setPlaying(false)
     animateFrame = this.getNextFrameNumber()
@@ -214,6 +238,8 @@ export class AnimationService {
     this.drawTiles()
   }
 
+  //
+  //
   //
   movePrev = () => {
     this.setPlaying(false)
@@ -223,10 +249,14 @@ export class AnimationService {
   }
 
   //
+  //
+  //
   setDragging = (value: boolean) => {
     dragging = value
   }
 
+  //
+  //
   //
   setPlaying = (value: boolean) => {
     this._setPlaying(value)
@@ -260,6 +290,8 @@ export class AnimationService {
     )
   }
 
+  //
+  //
   //
   drawTiles = () => {
     drawLayers(animateFrame)
