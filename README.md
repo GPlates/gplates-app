@@ -47,6 +47,7 @@ Or
 ## Deploy on ios device
 
 - `ionic capacitor copy ios`
+- `npx cap sync`
 - install pods (see below for notes on how to install CocoaPods): `cd ios/App/; pod install; cd ../..`
 - Open XCode with `npx cap open ios`
 - Add an account with your Apple ID and choose the team under "signing&capabilities" in XCode
