@@ -20,7 +20,7 @@
     "@capacitor/share": "^4.0.0",
     "@capacitor/splash-screen": "^4.0.0",
     "@capacitor/status-bar": "^4.0.0",
-    "@craco/craco": "^6.4.3",
+    "@craco/craco": "^7.0.0",
     "@ionic/react": "^6.1.4",
     "@ionic/react-router": "^6.1.4",
     "@ionic/storage": "^3.0.6",
