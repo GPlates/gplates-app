@@ -156,6 +156,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       yData = xy.y
     }
 
+    //find the axisPointer location according to the age
     let index = findIndexes(xData, _age)
     if (!index) {
       index = { first: 0, second: 0 }
