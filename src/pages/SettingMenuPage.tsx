@@ -47,6 +47,7 @@ import {
   setShowGraticuleFlag,
   showGraticuleFlag,
 } from '../functions/graticule'
+//import { useNavigate } from 'react-router'
 import { useHistory } from 'react-router'
 
 //
@@ -97,6 +98,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const isSliderShow = useRecoilValue(isAgeSliderShown)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
 
+  //const navigate = useNavigate()
   const history = useHistory()
 
   useEffect(() => {
@@ -276,6 +278,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             button
             onClick={() => {
               Preferences.remove({ key: 'hasFinishedTutorial' }).then(() => {
+                //navigate('/tutorial', { replace: true })
                 history.replace('/tutorial')
                 setIsShow(false)
               })

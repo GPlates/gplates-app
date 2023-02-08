@@ -14,12 +14,14 @@ import * as Types from 'swiper/types'
 import './Tutorial.scss'
 import { Preferences } from '@capacitor/preferences'
 import { SplashScreen } from '@capacitor/splash-screen'
+//import { useNavigate } from 'react-router'
 import { useHistory } from 'react-router'
 
 const Tutorial: React.FC = () => {
   const [index, setIndex] = useState(0)
   const [show, setShow] = useState(false)
   const [swiper, setSwiper] = useState<Types.Swiper>()
+  //const navigate = useNavigate()
   const history = useHistory()
 
   useEffect(() => {
@@ -29,6 +31,7 @@ const Tutorial: React.FC = () => {
     }).then((res) => {
       if (res.value) {
         history.replace('/main')
+        //navigate('/main', { replace: true })
       } else {
         setShow(true)
         SplashScreen.hide()
@@ -43,6 +46,7 @@ const Tutorial: React.FC = () => {
   const finishTutorial = () => {
     return Preferences.set({ key: 'hasFinishedTutorial', value: 'true' }).then(
       () => history.replace('/main')
+      //() => navigate('/main', { replace: true })
     )
   }
 

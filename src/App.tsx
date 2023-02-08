@@ -1,4 +1,6 @@
 import React from 'react'
+/*import { Navigate, Route } from 'react-router-dom' 
+for react-router-dom 6, waiting for ionic framework to update*/
 import { Redirect, Route } from 'react-router-dom'
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
@@ -32,6 +34,8 @@ export let sqlite: SQLiteHook
 
 setupIonicReact()
 
+/*remove "exact" and replace Redirect with Navigate
+for react-router-dom 6, waiting for ionic framework to update*/
 const App: React.FC = () => {
   sqlite = useSQLite()
   setSQLiteHook(sqlite)
