@@ -10,6 +10,7 @@ import React, { useState } from 'react'
 import {
   cogOutline,
   earthOutline,
+  earthSharp,
   informationCircleOutline,
   layersOutline,
   locateOutline,
@@ -48,7 +49,7 @@ export const ToolMenu = () => {
 
   const toolMenuList: any[] = [
     <IonFabButton
-      title="Choose Rasters"
+      title="Present-day Rasters"
       key={'tool-menu-button' + 1}
       onClick={() => {
         setRasterMenuPageShow(true)
@@ -56,16 +57,19 @@ export const ToolMenu = () => {
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={earthOutline} />
     </IonFabButton>,
+    //--------------------------------------
     <IonFabButton
-      title="Settings"
-      key={'tool-menu-button' + 0}
+      title="Reconstructed Rasters"
+      key={'tool-menu-button' + 7}
       onClick={() => {
-        setMenuPageShow(true)
+        setRasterMenuPageShow(true)
       }}
     >
-      <IonIcon style={{ pointerEvents: 'none' }} icon={cogOutline} />
+      <IonIcon style={{ pointerEvents: 'none' }} icon={earthSharp} />
     </IonFabButton>,
-    <IonFabButton
+
+    //--------------------------------------
+    /*<IonFabButton
       title="Share Screenshot"
       key={'tool-menu-button' + 2}
       onClick={async () => {
@@ -76,7 +80,8 @@ export const ToolMenu = () => {
         style={{ pointerEvents: 'none' }}
         icon={shareSocialOutline}
       ></IonIcon>
-    </IonFabButton>,
+    </IonFabButton>,*/
+    //--------------------------------------
     <IonFabButton
       title="Add Layers"
       key={'tool-menu-button' + 3}
@@ -86,7 +91,8 @@ export const ToolMenu = () => {
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={layersOutline} />
     </IonFabButton>,
-    <IonFabButton
+    //--------------------------------------
+    /*<IonFabButton
       title="Model Info"
       key={'tool-menu-button' + 4}
       onClick={() => {
@@ -97,7 +103,8 @@ export const ToolMenu = () => {
         style={{ pointerEvents: 'none' }}
         icon={informationCircleOutline}
       />
-    </IonFabButton>,
+    </IonFabButton>,*/
+    //--------------------------------------
     <IonFabButton
       title="Show Graphs"
       key={'tool-menu-button' + 5}
@@ -107,6 +114,7 @@ export const ToolMenu = () => {
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={statsChartOutline} />
     </IonFabButton>,
+    //--------------------------------------
     <IonFabButton
       title="Add Locations"
       key={'tool-menu-button' + 6}
@@ -125,6 +133,16 @@ export const ToolMenu = () => {
       }}
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={locateOutline} />
+    </IonFabButton>,
+    //--------------------------------------
+    <IonFabButton
+      title="Settings"
+      key={'tool-menu-button' + 0}
+      onClick={() => {
+        setMenuPageShow(true)
+      }}
+    >
+      <IonIcon style={{ pointerEvents: 'none' }} icon={cogOutline} />
     </IonFabButton>,
   ]
 

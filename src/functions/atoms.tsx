@@ -76,6 +76,7 @@ export const currentRasterMapIndexState = atom({
 
 // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
 export const settingsPath = atom({ key: 'settingsPath', default: 'root' })
+export const infoPath = atom({ key: 'infoPath', default: 'root' })
 
 export const isGraphPanelShowState = atom({
   key: 'isGraphPanelShowState',
