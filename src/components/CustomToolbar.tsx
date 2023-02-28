@@ -10,7 +10,12 @@ import {
   useIonToast,
 } from '@ionic/react'
 import { Cartesian3, Color, Rectangle, Scene, SceneMode } from 'cesium'
-import { homeOutline, helpOutline, shareSocialOutline } from 'ionicons/icons'
+import {
+  homeOutline,
+  helpOutline,
+  shareSocialOutline,
+  informationOutline,
+} from 'ionicons/icons'
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
 import React, { Fragment, useState } from 'react'
@@ -191,7 +196,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           setShowModelInfo(true)
         }}
       >
-        <IonIcon icon={helpOutline} />
+        <IonIcon icon={informationOutline} />
       </IonButton>
 
       <IonButton

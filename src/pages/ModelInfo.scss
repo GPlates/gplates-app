@@ -15,24 +15,23 @@
   }
 }
 
-.fade-enter {
+.info-fade-enter {
+  opacity: 0;
+  transform: scale(0.1);
+}
+
+.info-fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+
+  transition: transform 2000ms, opacity 2000ms;
+}
+
+.info-fade-exit {
   opacity: 0;
 }
 
-.fade-enter-active {
-  opacity: 1;
-  transition: opacity 200ms;
-}
-
-.fade-exit {
-  opacity: 1;
-}
-
-.fade-exit-active {
+.info-fade-exit-active {
   opacity: 0;
-  transition: opacity 200ms;
+  transition: opacity 100ms;
 }
-
-//.fade-enter-done {
-//opacity: 0.1;
-//}

@@ -31,8 +31,9 @@ import { HowToUse } from './HowToUse'
 //
 const titles: { [key: string]: string } = {
   root: 'Information',
-  about: 'About',
-  howtouse: 'How To Use',
+  model: 'Model Information',
+  about: 'About GPlates',
+  howtouse: 'How To Handle 3D Globe',
 }
 
 interface ContainerProps {}
@@ -102,31 +103,28 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
         </IonButtons>
       </IonToolbar>
 
-      {/* put new settings in this IonList element below */}
-      {/* some demo is shown below */}
+      {/* root page */}
       <CSSTransition
         in={path === 'root'}
         timeout={200}
         unmountOnExit
-        classNames={'fade'}
+        classNames={'info-fade'}
       >
         <IonContent>
-          {subPageRouting('about', 'About')}
-          {subPageRouting('howtouse', 'How To Use')}
+          {subPageRouting('model', 'Model Information')}
+          {subPageRouting('about', 'About GPlates')}
+          {subPageRouting('howtouse', 'How To Handle 3D Globe')}
+        </IonContent>
+      </CSSTransition>
 
-          <div className="open-about-page-button">
-            <IonButton
-              expand="full"
-              shape="round"
-              onClick={() => {
-                setAboutPageShow(true)
-              }}
-              color={'tertiary'}
-            >
-              About The GPlates App And Contact Us
-              <IonRippleEffect />
-            </IonButton>
-          </div>
+      {/* model information page */}
+      <CSSTransition
+        in={path === 'model'}
+        timeout={200}
+        unmountOnExit
+        classNames={'info-fade'}
+      >
+        <IonContent>
           <IonList>
             {Object.entries(listMap).map((value) => (
               <IonItem key={value[0]}>
@@ -150,20 +148,20 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
       {/* About subpage */}
       <CSSTransition
         in={path === 'about'}
-        timeout={200}
-        nodeRef={nodeRef}
+        appear={true}
+        timeout={2000}
         unmountOnExit
-        classNames={'fade'}
+        classNames={'info-fade'}
       >
-        <AboutPage></AboutPage>
+        <AboutPage />
       </CSSTransition>
 
       {/* HowToUse subpage */}
       <CSSTransition
         in={path === 'howtouse'}
-        timeout={200}
+        timeout={2000}
         unmountOnExit
-        classNames={'fade'}
+        classNames={'info-fade'}
       >
         <HowToUse />
       </CSSTransition>
