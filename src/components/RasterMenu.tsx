@@ -29,16 +29,19 @@ import RotationModel, {
 } from '../functions/rotationModel'
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
+import { AnimationService } from '../functions/animation'
 
 interface ContainerProps {
   isViewerLoading: Function
   isCesiumViewerReady: boolean
   setAgeSliderShown: SetterOrUpdater<boolean>
+  animationService: AnimationService
 }
 
 export const RasterMenu: React.FC<ContainerProps> = ({
   isCesiumViewerReady,
   setAgeSliderShown,
+  animationService,
 }) => {
   const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
     currentRasterMapIndexState
@@ -52,6 +55,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   //
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
+    animationService.setPlaying(false)
     cesiumViewer.imageryLayers.addImageryProvider(provider)
     // we don't remove the old layer immediately.
     // the "remove" is very fast to complete, but the "add" is slow.

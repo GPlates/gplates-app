@@ -318,6 +318,7 @@ const Main: React.FC = () => {
             isViewerLoading={isViewerLoading}
             isCesiumViewerReady={isCesiumViewerReady}
             setAgeSliderShown={setAgeSliderShown}
+            animationService={animationService}
           />
           <AboutPage />
           <ModelInfo />

@@ -84,7 +84,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
   return (
     <IonModal isOpen={cacheInfoShow} animated backdropDismiss={false}>
       <IonToolbar>
-        <IonTitle>Cache Information</IonTitle>
+        <IonTitle>Caching</IonTitle>
         <IonButtons slot={'end'}>
           <IonButton
             onClick={() => {
@@ -99,10 +99,13 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
       </IonToolbar>
       <IonContent>
         <IonItem>
-          <IonLabel class="cache-db-label">Cache Database Name </IonLabel>
+          <IonLabel class="cache-db-label">Database Name </IonLabel>
           <IonNote slot="end">{cachingServant.getDBName()}</IonNote>
         </IonItem>
         <IonList>
+          <IonItem key={9999997}>
+            <IonLabel>Cached Rasters </IonLabel>
+          </IonItem>
           {Array.from(cacheStatsList).map((value, index) => (
             <IonItem key={index}>
               <IonIcon
@@ -141,7 +144,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             </IonItem>
           ))}
           <IonItem key={999999}>
-            <IonLabel>{'Total:'} </IonLabel>
+            <IonLabel>Total </IonLabel>
             <IonNote slot="end">{total}</IonNote>
           </IonItem>
         </IonList>

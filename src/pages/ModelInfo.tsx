@@ -20,7 +20,6 @@ import { serverURL } from '../functions/settings'
 import { useRecoilState } from 'recoil'
 import {
   isModelInfoShowState,
-  isAboutPageShow,
   currentRasterMapIndexState,
   infoPath,
 } from '../functions/atoms'
@@ -31,7 +30,7 @@ import { HowToUse } from './HowToUse'
 //
 const titles: { [key: string]: string } = {
   root: 'Information',
-  model: 'Model Information',
+  model: 'Model Details',
   about: 'About GPlates',
   howtouse: 'How To Handle 3D Globe',
 }
@@ -40,12 +39,8 @@ interface ContainerProps {}
 
 export const ModelInfo: React.FC<ContainerProps> = () => {
   const [modelInfoShow, setModelInfoShow] = useRecoilState(isModelInfoShowState)
-  const [aboutPageShow, setAboutPageShow] = useRecoilState(isAboutPageShow)
-  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
-    currentRasterMapIndexState
-  )
+  const [currentRasterMapIndex, _] = useRecoilState(currentRasterMapIndexState)
   const [path, setPath] = useRecoilState(infoPath)
-  const nodeRef = useRef(null)
 
   let currentRaster = rasterMaps[currentRasterMapIndex]
   let rasterID = rasterMaps.length > 0 ? currentRaster.id : ''
@@ -111,7 +106,7 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
         classNames={'info-fade'}
       >
         <IonContent>
-          {subPageRouting('model', 'Model Information')}
+          {subPageRouting('model', 'Model Details')}
           {subPageRouting('about', 'About GPlates')}
           {subPageRouting('howtouse', 'How To Handle 3D Globe')}
         </IonContent>
@@ -159,9 +154,9 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
       {/* HowToUse subpage */}
       <CSSTransition
         in={path === 'howtouse'}
-        timeout={2000}
+        timeout={4000}
         unmountOnExit
-        classNames={'info-fade'}
+        classNames={'how-fade'}
       >
         <HowToUse />
       </CSSTransition>

@@ -1,16 +1,6 @@
 import React from 'react'
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonModal,
-  IonRippleEffect,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/react'
+import { IonContent } from '@ionic/react'
 import './AboutPage.scss'
-import { Browser } from '@capacitor/browser'
-import { useRecoilState } from 'recoil'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'

@@ -52,7 +52,7 @@ import { useHistory } from 'react-router'
 
 //
 const titles: { [key: string]: string } = {
-  root: 'Settings Menu',
+  root: 'Settings',
   animation: 'Animation Settings',
   backgroundSetting: 'Background Settings',
 }
@@ -195,6 +195,37 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           {subPageRouting('animation', 'Animation Settings')}
           {subPageRouting('backgroundSetting', 'Background Settings')}
 
+          {/*--------------------------------------------*/}
+          <IonItem
+            button
+            onClick={async () => {
+              await getCacheStatsData()
+              setCacheInfoShow(true)
+            }}
+          >
+            {!isPlatform('ios') && (
+              <IonIcon icon={chevronForward} slot={'end'} />
+            )}
+            <IonLabel>Caching</IonLabel>
+          </IonItem>
+          {/*--------------------------------------------*/}
+
+          <IonItem
+            button
+            onClick={() => {
+              Preferences.remove({ key: 'hasFinishedTutorial' }).then(() => {
+                //navigate('/tutorial', { replace: true })
+                history.replace('/tutorial')
+                setIsShow(false)
+              })
+            }}
+          >
+            {!isPlatform('ios') && (
+              <IonIcon icon={chevronForward} slot={'end'} />
+            )}
+            <IonLabel>Tutorial</IonLabel>
+          </IonItem>
+          {/*--------------------------------------------*/}
           <IonItemDivider>App Theme</IonItemDivider>
           <IonItem>
             <IonSegment
@@ -212,7 +243,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
               </IonSegmentButton>
             </IonSegment>
           </IonItem>
-
+          {/*--------------------------------------------*/}
           <IonItemDivider>Network Settings</IonItemDivider>
           <IonItem>
             <IonLabel>Use Mobile Data</IonLabel>
@@ -222,7 +253,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
               onIonChange={(e) => setDownloadOnCellular(e.detail.checked)}
             />
           </IonItem>
-
+          {/*--------------------------------------------*/}
           <IonItem>
             <IonLabel class="server-url-label">Server URL </IonLabel>
             <IonInput
@@ -233,7 +264,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
               }}
             />
           </IonItem>
-
+          {/*--------------------------------------------*/}
           <IonItemDivider>Graticules</IonItemDivider>
           <IonItem>
             <IonLabel>Show Graticules</IonLabel>
@@ -255,39 +286,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 })
               }}
             />
-          </IonItem>
-
-          <IonItemDivider>Cache</IonItemDivider>
-
-          <IonItem
-            button
-            onClick={async () => {
-              await getCacheStatsData()
-              setCacheInfoShow(true)
-            }}
-          >
-            {!isPlatform('ios') && (
-              <IonIcon icon={chevronForward} slot={'end'} />
-            )}
-            <IonLabel>Cache Information</IonLabel>
-          </IonItem>
-
-          <IonItemDivider>Tutorial</IonItemDivider>
-
-          <IonItem
-            button
-            onClick={() => {
-              Preferences.remove({ key: 'hasFinishedTutorial' }).then(() => {
-                //navigate('/tutorial', { replace: true })
-                history.replace('/tutorial')
-                setIsShow(false)
-              })
-            }}
-          >
-            {!isPlatform('ios') && (
-              <IonIcon icon={chevronForward} slot={'end'} />
-            )}
-            <IonLabel>Relaunch Tutorial</IonLabel>
           </IonItem>
         </IonList>
       </CSSTransition>
