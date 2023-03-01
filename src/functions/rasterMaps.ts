@@ -52,6 +52,51 @@ const rasterMaps: RasterCfg[] = []
 export default rasterMaps
 export let currentRasterIndex: number = 0
 
+const presentDayRasters: RasterCfg[] = []
+const paleoRasters: RasterCfg[] = []
+
+export let currentPresentDayRasterIndex: number = 0
+export let currentPaleoRasterIndex: number = 0
+
+//
+//
+//
+export const getPresentDayRasters = () => {
+  if (presentDayRasters.length == 0) {
+    groupRasters()
+  }
+  return presentDayRasters
+}
+
+//
+//
+//
+export const getPaleoRasters = () => {
+  if (presentDayRasters.length == 0) {
+    groupRasters()
+  }
+  return paleoRasters
+}
+
+//
+//
+//
+const groupRasters = () => {
+  for (let i = 0; i < rasterMaps.length; i++) {
+    //without a rotation model, it means present-day raster
+
+    if (!rasterMaps[i].model) {
+      presentDayRasters.push(rasterMaps[i])
+    } else {
+      // with a rotation model, it means paleo-raster
+      paleoRasters.push(rasterMaps[i])
+    }
+  }
+}
+
+//
+//
+//
 export const setCurrentRasterIndex = (idx: number) => {
   if (rasterMaps.length > idx) {
     currentRasterIndex = idx
@@ -147,6 +192,8 @@ export const loadRasterMaps = (callback: Function) => {
     })
 }
 
+//
+//
 //
 const convertJsonToRasterMaps = (jsonData: any) => {
   let maps = []

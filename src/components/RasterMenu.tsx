@@ -4,22 +4,31 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  useIonLoading,
 } from '@ionic/react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperType, { FreeMode, Navigation } from 'swiper'
 
 import './RasterMenu.scss'
-import { SetterOrUpdater, useRecoilState, useSetRecoilState } from 'recoil'
+import {
+  SetterOrUpdater,
+  useRecoilState,
+  useSetRecoilState,
+  useRecoilValue,
+} from 'recoil'
 import {
   currentRasterMapIndexState,
   isRasterMenuShow,
   age,
   animateRange,
   showTimeStampState,
+  showPresentDayRasters,
 } from '../functions/atoms'
-import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
+import {
+  setCurrentRasterIndex,
+  getPresentDayRasters,
+  getPaleoRasters,
+} from '../functions/rasterMaps'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import { timeout, timeRange } from '../functions/util'
@@ -30,6 +39,9 @@ import RotationModel, {
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import { AnimationService } from '../functions/animation'
+import { RasterCfg } from '../functions/types'
+
+let rasterMaps: RasterCfg[] = []
 
 interface ContainerProps {
   isViewerLoading: Function
@@ -38,6 +50,9 @@ interface ContainerProps {
   animationService: AnimationService
 }
 
+//
+//
+//
 export const RasterMenu: React.FC<ContainerProps> = ({
   isCesiumViewerReady,
   setAgeSliderShown,
@@ -48,11 +63,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   )
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
   const setAge = useSetRecoilState(age)
-  const [range, setRange] = useRecoilState(animateRange)
+  const setRange = useSetRecoilState(animateRange)
   const setShowTimeStampState = useSetRecoilState(showTimeStampState)
-
+  const isShowPresentDayRasters = useRecoilValue(showPresentDayRasters)
   const [swiper, setSwiper] = useState<SwiperType>()
 
+  //
+  //
   //
   const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
     animationService.setPlaying(false)
@@ -67,13 +84,36 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   }
 
   //
+  //
+  //
   useEffect(() => {
     //by default, select the raster icon in the middle.
-    let middle = Math.floor(rasterMaps.length / 2)
+    /*
+    let middle = Math.floor(getNumberOfRasters() / 2)
+    console.log(middle)
     select(middle)
     swiper?.slideTo(middle)
+    */
   }, [isCesiumViewerReady]) //initial selection
 
+  //
+  //
+  //
+  useEffect(() => {
+    if (isShowPresentDayRasters) {
+      rasterMaps = getPresentDayRasters()
+    } else {
+      rasterMaps = getPaleoRasters()
+    }
+    //select the raster icon in the middle.
+    let middle = Math.floor(rasterMaps.length / 2)
+    console.log(middle)
+    select(middle)
+    swiper?.slideTo(middle)
+  }, [isShowPresentDayRasters])
+
+  //
+  //
   //
   useEffect(() => {
     setCurrentRasterIndex(currentRasterMapIndex)
@@ -81,6 +121,19 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
+    //if "only show present-day rasters flag" is true,
+    //skip all rasters with a rotation model
+    if (isShowPresentDayRasters) {
+      if (rasterMaps[i].model) {
+        continue
+      }
+    } else {
+      //if "only show present-day rasters flag" is false,
+      //skip all rasters without a rotation model
+      if (!rasterMaps[i].model) {
+        continue
+      }
+    }
     optionList.push(
       <SwiperSlide style={{ width: 'auto' }} key={i}>
         <IonCard
@@ -110,7 +163,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     )
   }
 
-  // select the target one and unselect rest all
+  //
+  // select the current raster and deselect all others
+  //
   const select = async (index: number) => {
     setCurrentRasterMapIndex(index)
     setCurrentRasterIndex(index)
@@ -152,8 +207,11 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         setCurrentModel(m)
       }
     }
-  }
+  } //end of select()
 
+  //
+  //
+  //
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       <div

@@ -11,13 +11,11 @@ import {
   cogOutline,
   earthOutline,
   earthSharp,
-  informationCircleOutline,
   layersOutline,
   locateOutline,
-  shareSocialOutline,
   statsChartOutline,
 } from 'ionicons/icons'
-import { SocialSharing } from './SocialSharing'
+
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import {
   isAboutPageShow,
@@ -27,25 +25,26 @@ import {
   isSettingsMenuShow,
   isVectorMenuShow,
   isModelInfoShowState,
+  showPresentDayRasters,
 } from '../functions/atoms'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { SceneMode } from 'cesium'
 
 export const ToolMenu = () => {
   const [presentToast, dismissToast] = useIonToast()
-  const [present, dismiss] = useIonLoading()
 
   const setMenuPageShow = useSetRecoilState(isSettingsMenuShow)
   const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
   const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
-  const setIsAboutPageShow = useSetRecoilState(isAboutPageShow)
+
   const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
     isGraphPanelShowState
   )
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
     isAddLocationWidgetShowState
   )
-  const setShowModelInfo = useSetRecoilState(isModelInfoShowState)
+
+  const setShowPresentDayRasters = useSetRecoilState(showPresentDayRasters)
 
   const toolMenuList: any[] = [
     <IonFabButton
@@ -53,6 +52,7 @@ export const ToolMenu = () => {
       key={'tool-menu-button' + 1}
       onClick={() => {
         setRasterMenuPageShow(true)
+        setShowPresentDayRasters(true)
       }}
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={earthOutline} />
@@ -63,6 +63,7 @@ export const ToolMenu = () => {
       key={'tool-menu-button' + 7}
       onClick={() => {
         setRasterMenuPageShow(true)
+        setShowPresentDayRasters(false)
       }}
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={earthSharp} />

@@ -107,3 +107,8 @@ export const showTimeStampState = atom({
   key: 'showTimeStampState',
   default: true,
 })
+
+export const showPresentDayRasters = atom({
+  key: 'showPresentDayRasters',
+  default: false,
+})
