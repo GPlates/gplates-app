@@ -2,7 +2,6 @@ import { RasterCfg, RasterGroup } from './types'
 import { createCesiumImageryProvider } from './dataLoader'
 import { serverURL, DEBUG } from './settings'
 import { getDefaultStore } from './storage'
-import { present } from '@ionic/core/dist/types/utils/overlays'
 
 export const failSafeRasterMaps: RasterCfg[] = [
   {
@@ -43,19 +42,10 @@ export let currentRasterIndex: number = 0
 const presentDayRasters: RasterCfg[] = []
 const paleoRasters: RasterCfg[] = []
 
-let rasterGroup: RasterGroup = RasterGroup.present //by default "present" rasters
-
-//
-// set the raster group name, 'present' or
-//
-export const setRasterGroup = (group: RasterGroup) => {
-  rasterGroup = group
-}
-
 //
 // return the rasters according to which raster group is in use
 //
-export const getRasters = () => {
+export const getRasters = (rasterGroup: RasterGroup) => {
   if (rasterGroup == RasterGroup.present) {
     return getPresentDayRasters()
   } else if (rasterGroup == RasterGroup.paleo) {

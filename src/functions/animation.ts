@@ -7,6 +7,7 @@ import { buildAnimationURL } from './util'
 import { currentModel } from './rotationModel'
 import { drawLayers } from './cesiumViewer'
 import { raiseGraticuleLayerToTop } from './graticule'
+import { RasterGroup } from './types'
 
 let animateFrame = 0 //current age
 let animateNext = false
@@ -28,7 +29,8 @@ export class AnimationService {
     public _setPlaying: SetterOrUpdater<boolean>,
     public range: { lower: number; upper: number },
     public viewer: Viewer,
-    public currentRasterMapIndex: number
+    public currentRasterMapIndex: number,
+    public rasterGroup: RasterGroup
   ) {
     this.from = range.lower
     this.to = range.upper
@@ -125,11 +127,11 @@ export class AnimationService {
     //make sure the animateFrame(age) does not go out of valid range
     animateFrame = Math.min(
       animateFrame,
-      getRasters()[this.currentRasterMapIndex].startTime
+      getRasters(this.rasterGroup)[this.currentRasterMapIndex].startTime
     )
     animateFrame = Math.max(
       animateFrame,
-      getRasters()[this.currentRasterMapIndex].endTime
+      getRasters(this.rasterGroup)[this.currentRasterMapIndex].endTime
     )
 
     return animateFrame
@@ -217,12 +219,13 @@ export class AnimationService {
   //
   movePlayHead = (value: number) => {
     this.setPlaying(false)
+    let rasters = getRasters(this.rasterGroup)
     animateFrame = Math.min(
       Math.max(
         animateFrame + value,
-        getRasters()[this.currentRasterMapIndex].endTime
+        rasters[this.currentRasterMapIndex].endTime
       ),
-      getRasters()[this.currentRasterMapIndex].startTime
+      rasters[this.currentRasterMapIndex].startTime
     )
     this.setAge(animateFrame)
     drawLayers(animateFrame)
@@ -286,7 +289,7 @@ export class AnimationService {
     })
 
     //build the URL
-    let rasters = getRasters()
+    let rasters = getRasters(this.rasterGroup)
     let url = rasters[this.currentRasterMapIndex].paleoMapUrl
     if (url) {
       // URL for gplates web service

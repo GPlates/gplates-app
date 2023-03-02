@@ -1,7 +1,5 @@
 import { atom } from 'recoil'
-import { RasterCfg } from './types'
-
-import { failSafeRasterMaps } from './rasterMaps'
+import { RasterGroup } from './types'
 
 export const age = atom({ key: 'age', default: 0 })
 export const animateExact = atom({ key: 'animateExact', default: true })
@@ -65,10 +63,7 @@ export const isVectorMenuShow = atom({
   key: 'isVectorMenuShow',
   default: false,
 })
-export const rasterMapState = atom<RasterCfg[]>({
-  key: 'rasterMapState',
-  default: failSafeRasterMaps,
-})
+
 export const currentRasterMapIndexState = atom({
   key: 'currentRasterMapIndexState',
   default: 0,
@@ -108,7 +103,7 @@ export const showTimeStampState = atom({
   default: true,
 })
 
-export const showPresentDayRasters = atom({
-  key: 'showPresentDayRasters',
-  default: false,
+export const rasterGroupState = atom({
+  key: 'rasterGroupState',
+  default: RasterGroup.present,
 })

@@ -18,17 +18,16 @@ import {
 
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import {
-  isAboutPageShow,
   isAddLocationWidgetShowState,
   isGraphPanelShowState,
   isRasterMenuShow,
   isSettingsMenuShow,
   isVectorMenuShow,
-  isModelInfoShowState,
-  showPresentDayRasters,
+  rasterGroupState,
 } from '../functions/atoms'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { SceneMode } from 'cesium'
+import { RasterGroup } from '../functions/types'
 
 export const ToolMenu = () => {
   const [presentToast, dismissToast] = useIonToast()
@@ -44,7 +43,7 @@ export const ToolMenu = () => {
     isAddLocationWidgetShowState
   )
 
-  const setShowPresentDayRasters = useSetRecoilState(showPresentDayRasters)
+  const setRasterGroup = useSetRecoilState(rasterGroupState)
 
   const toolMenuList: any[] = [
     <IonFabButton
@@ -52,7 +51,7 @@ export const ToolMenu = () => {
       key={'tool-menu-button' + 1}
       onClick={() => {
         setRasterMenuPageShow(true)
-        setShowPresentDayRasters(true)
+        setRasterGroup(RasterGroup.present)
       }}
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={earthOutline} />
@@ -63,7 +62,7 @@ export const ToolMenu = () => {
       key={'tool-menu-button' + 7}
       onClick={() => {
         setRasterMenuPageShow(true)
-        setShowPresentDayRasters(false)
+        setRasterGroup(RasterGroup.paleo)
       }}
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={earthSharp} />

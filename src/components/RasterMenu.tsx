@@ -22,13 +22,9 @@ import {
   age,
   animateRange,
   showTimeStampState,
-  showPresentDayRasters,
+  rasterGroupState,
 } from '../functions/atoms'
-import {
-  setCurrentRasterIndex,
-  setRasterGroup,
-  getRasters,
-} from '../functions/rasterMaps'
+import { setCurrentRasterIndex, getRasters } from '../functions/rasterMaps'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import { timeout, timeRange } from '../functions/util'
@@ -65,8 +61,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const setAge = useSetRecoilState(age)
   const setRange = useSetRecoilState(animateRange)
   const setShowTimeStampState = useSetRecoilState(showTimeStampState)
-  const isShowPresentDayRasters = useRecoilValue(showPresentDayRasters)
+
   const [swiper, setSwiper] = useState<SwiperType>()
+  const [rasterGroup, setRasterGroup] = useRecoilState(rasterGroupState)
 
   //
   //
@@ -100,18 +97,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   //
   useEffect(() => {
-    if (isShowPresentDayRasters) {
-      setRasterGroup(RasterGroup.present)
-    } else {
-      setRasterGroup(RasterGroup.paleo)
-    }
-    rasterMaps = getRasters()
+    rasterMaps = getRasters(rasterGroup)
     //select the raster icon in the middle.
     let middle = Math.floor(rasterMaps.length / 2)
     //console.log(middle)
     select(middle)
     swiper?.slideTo(middle)
-  }, [isShowPresentDayRasters])
+  }, [rasterGroup])
 
   //
   //
@@ -122,14 +114,14 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
-    //if "only show present-day rasters flag" is true,
+    //if present-day raster,
     //skip all rasters with a rotation model
-    if (isShowPresentDayRasters) {
+    if (rasterGroup == RasterGroup.present) {
       if (rasterMaps[i].model) {
         continue
       }
     } else {
-      //if "only show present-day rasters flag" is false,
+      //if paleo-rasters,
       //skip all rasters without a rotation model
       if (!rasterMaps[i].model) {
         continue

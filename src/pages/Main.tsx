@@ -43,6 +43,7 @@ import {
   currentRasterMapIndexState,
   networkDownloadOnCellular,
   isAgeSliderShown,
+  rasterGroupState,
 } from '../functions/atoms'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
@@ -105,6 +106,7 @@ const Main: React.FC = () => {
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
 
   const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const rasterGroup = useRecoilValue(rasterGroupState)
   const [isOffline, setIsOffline] = useState(false)
   //we don't show message if the app is online at startup
   const isStartupOnline = useRef(true)
@@ -122,7 +124,8 @@ const Main: React.FC = () => {
     _setPlaying,
     range,
     cesiumViewer,
-    currentRasterMapIndex
+    currentRasterMapIndex,
+    rasterGroup
   )
 
   backgroundService = new BackgroundService(
