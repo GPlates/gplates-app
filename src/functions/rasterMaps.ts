@@ -42,6 +42,26 @@ const presentDayRasters: RasterCfg[] = []
 const paleoRasters: RasterCfg[] = []
 
 //
+// find raster config by ID
+//
+export const getRasterByID = (id: string) => {
+  for (let i = 0; i < rasterMaps.length; i++) {
+    if (rasterMaps[i].id === id) return rasterMaps[i]
+  }
+  return undefined
+}
+
+//
+// find raster index config by ID
+//
+export const getRasterIndexByID = (id: string) => {
+  for (let i = 0; i < rasterMaps.length; i++) {
+    if (rasterMaps[i].id === id) return i
+  }
+  return undefined
+}
+
+//
 // return the rasters according to which raster group is in use
 //
 export const getRasters = (rasterGroup: RasterGroup) => {

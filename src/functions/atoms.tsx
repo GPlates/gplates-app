@@ -64,11 +64,6 @@ export const isVectorMenuShow = atom({
   default: false,
 })
 
-export const currentRasterMapIndexState = atom({
-  key: 'currentRasterMapIndexState',
-  default: 0,
-})
-
 // Settings menu path: Ionic's Nav component is not available under React yet, so we have to build our own solution
 export const settingsPath = atom({ key: 'settingsPath', default: 'root' })
 export const infoPath = atom({ key: 'infoPath', default: 'root' })
@@ -106,4 +101,9 @@ export const showTimeStampState = atom({
 export const rasterGroupState = atom({
   key: 'rasterGroupState',
   default: RasterGroup.present,
+})
+
+export const currentRasterIDState = atom({
+  key: 'currentRasterIDState',
+  default: 'none',
 })

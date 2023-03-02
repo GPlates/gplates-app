@@ -11,12 +11,15 @@ import { createCesiumImageryProvider } from '../functions/dataLoader'
 import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  currentRasterMapIndexState,
+  currentRasterIDState,
   isVectorMenuShow,
   age,
   showCities,
 } from '../functions/atoms'
-import rasterMaps from '../functions/rasterMaps'
+import rasterMaps, {
+  getRasterByID,
+  getRasterIndexByID,
+} from '../functions/rasterMaps'
 import { VectorLayerType } from '../functions/types'
 import {
   getVectorLayers,
@@ -53,7 +56,7 @@ interface ContainerProps {}
 
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
   const rAge = useRecoilValue(age)
   const setShowCities = useSetRecoilState(showCities)
   const [refresh, setRefresh] = useState(true)
@@ -74,7 +77,9 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
         checked: false,
       }
 
-      let checkedLayers = getEnabledLayers(currentRasterMapIndex)
+      let index = getRasterIndexByID(currentRasterID)
+      let checkedLayers: string[] = []
+      if (index) checkedLayers = getEnabledLayers(index)
       if (checkedLayers.includes(layer.layerName)) {
         layer.checked = true
         layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
@@ -101,7 +106,9 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   //update the vector layer list when the current raster has changed
   function updateVectorDataInformation() {
     //get the current model name. if no avaible, give it a default model
-    let model = rasterMaps[currentRasterMapIndex]?.model ?? 'MERDITH2021'
+    let raster = getRasterByID(currentRasterID)
+    if (!raster) return
+    let model = raster.model ?? 'MERDITH2021'
 
     removeAllVectorLayer()
 
@@ -113,7 +120,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     vectorLayers = []
     cityEnabledFlag = false
     setRefresh(!refresh)
-  }, [currentRasterMapIndex])
+  }, [currentRasterID])
 
   // initializing
   useEffect(() => {
@@ -126,19 +133,21 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
 
   // check or uncheck target vector layer
   const checkLayer = (layer: VectorLayerType, isChecked: boolean) => {
+    let index = getRasterIndexByID(currentRasterID)
+    if (!index) return
     if (isChecked) {
       if (layer.imageryLayer === null) {
         layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
           createCesiumImageryProvider(layer, rAge)
         )
       }
-      enableLayer(currentRasterMapIndex, layer.id)
+      enableLayer(index, layer.id)
     } else {
       if (layer.imageryLayer) {
         cesiumViewer.imageryLayers.remove(layer.imageryLayer)
         layer.imageryLayer = null
       }
-      disableLayer(currentRasterMapIndex, layer.id)
+      disableLayer(index, layer.id)
     }
   }
 
@@ -152,10 +161,12 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   //
   const onCitiesCheckBoxChange = (val: any) => {
     setShowCities(val.detail.checked)
+    let index = getRasterIndexByID(currentRasterID)
+    if (!index) return
     if (val.detail.checked) {
-      enableLayer(currentRasterMapIndex, 'cities')
+      enableLayer(index, 'cities')
     } else {
-      disableLayer(currentRasterMapIndex, 'cities')
+      disableLayer(index, 'cities')
     }
     cityEnabledFlag = val.detail.checked
   }

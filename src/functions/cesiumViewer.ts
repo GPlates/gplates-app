@@ -9,6 +9,7 @@ import {
 } from './graticule'
 import { updateImageryLayer } from '../components/VectorDataLayerMenu'
 import { RasterCfg } from './types'
+import { getRasterIndexByID } from './rasterMaps'
 
 //singleton cersium viewer
 export let cesiumViewer: Viewer
@@ -17,7 +18,9 @@ export const HOME_LONGITUDE = 135.0
 export const HOME_LATITUDE = -25.0
 export const DEFAULT_CAMERA_HEIGHT = 15000000
 
+//
 //initialize the Cesium viewer
+//
 export const initCesiumViewer = (provider: ImageryProvider) => {
   let viewer: Viewer = new Viewer('cesiumContainer', {
     baseLayerPicker: false,
@@ -62,22 +65,22 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
   })
 }
 
+//
 //draw raster layer and vector layers
-export const drawLayers = (
-  time: number,
-  rasterMaps: RasterCfg[],
-  currentRasterIndex: number
-) => {
-  const provider = createCesiumImageryProvider(
-    rasterMaps[currentRasterIndex],
-    time
-  )
+//
+export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
+  const provider = createCesiumImageryProvider(rasterCfg, time)
   cesiumViewer.imageryLayers.addImageryProvider(provider) //draw the raster layer
 
-  let model = rasterMaps[currentRasterIndex]?.model ?? 'MERDITH2021'
+  let model = rasterCfg?.model ?? 'MERDITH2021'
   let vLayers = getVectorLayers(model)
   for (let key in vLayers) {
-    let checkedLayers = getEnabledLayers(currentRasterIndex)
+    let checkedLayers: string[] = []
+    let index = getRasterIndexByID(rasterCfg.id)
+    if (index) {
+      checkedLayers = getEnabledLayers(index)
+    }
+
     if (checkedLayers.includes(key)) {
       let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
         createCesiumImageryProvider(vLayers[key], time)
@@ -89,8 +92,10 @@ export const drawLayers = (
   pruneLayers()
 }
 
+//
 //get rid of some old layers
 //TODO: need a smarter way to do this
+//
 export const pruneLayers = () => {
   while (cesiumViewer.imageryLayers.length > 7) {
     //console.log(cesiumViewer.imageryLayers.length)

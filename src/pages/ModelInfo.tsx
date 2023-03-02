@@ -15,12 +15,12 @@ import {
   isPlatform,
 } from '@ionic/react'
 import './ModelInfo.scss'
-import rasterMaps from '../functions/rasterMaps'
+import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
 import { serverURL } from '../functions/settings'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   isModelInfoShowState,
-  currentRasterMapIndexState,
+  currentRasterIDState,
   infoPath,
 } from '../functions/atoms'
 import { chevronBack, chevronForward } from 'ionicons/icons'
@@ -39,10 +39,11 @@ interface ContainerProps {}
 
 export const ModelInfo: React.FC<ContainerProps> = () => {
   const [modelInfoShow, setModelInfoShow] = useRecoilState(isModelInfoShowState)
-  const [currentRasterMapIndex, _] = useRecoilState(currentRasterMapIndexState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
   const [path, setPath] = useRecoilState(infoPath)
 
-  let currentRaster = rasterMaps[currentRasterMapIndex]
+  let currentRaster = getRasterByID(currentRasterID)
+  if (!currentRaster) return null
   let rasterID = rasterMaps.length > 0 ? currentRaster.id : ''
   let listMap = {
     Model: rasterMaps.length > 0 ? currentRaster.model : '',

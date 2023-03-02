@@ -47,7 +47,7 @@ export const ToolMenu = () => {
 
   const toolMenuList: any[] = [
     <IonFabButton
-      title="Present-day Rasters"
+      title="Rasters"
       key={'tool-menu-button' + 1}
       onClick={() => {
         setRasterMenuPageShow(true)
@@ -58,7 +58,7 @@ export const ToolMenu = () => {
     </IonFabButton>,
     //--------------------------------------
     <IonFabButton
-      title="Reconstructed Rasters"
+      title="Paleo-rasters"
       key={'tool-menu-button' + 7}
       onClick={() => {
         setRasterMenuPageShow(true)

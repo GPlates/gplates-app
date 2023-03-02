@@ -40,13 +40,17 @@ import {
   backgroundColor,
   appDarkMode,
   isAddLocationWidgetShowState,
-  currentRasterMapIndexState,
   networkDownloadOnCellular,
   isAgeSliderShown,
   rasterGroupState,
+  currentRasterIDState,
 } from '../functions/atoms'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
-import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
+import rasterMaps, {
+  loadRasterMaps,
+  getPaleoRasters,
+  getPresentDayRasters,
+} from '../functions/rasterMaps'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode } from '../functions/darkMode'
@@ -105,7 +109,8 @@ const Main: React.FC = () => {
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
 
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const [currentRasterID, setCurrentRasterID] =
+    useRecoilState(currentRasterIDState)
   const rasterGroup = useRecoilValue(rasterGroupState)
   const [isOffline, setIsOffline] = useState(false)
   //we don't show message if the app is online at startup
@@ -124,7 +129,7 @@ const Main: React.FC = () => {
     _setPlaying,
     range,
     cesiumViewer,
-    currentRasterMapIndex,
+    currentRasterID,
     rasterGroup
   )
 
@@ -193,11 +198,14 @@ const Main: React.FC = () => {
 
       //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
-        initCesiumViewer(
-          createCesiumImageryProvider(
-            rasterMaps[Math.floor(rasterMaps.length / 2)]
-          )
-        )
+        let rasters = getPresentDayRasters()
+        if (rasters.length == 0) {
+          rasters = getPaleoRasters()
+        }
+        if (rasters.length > 0) {
+          initCesiumViewer(createCesiumImageryProvider(rasters[0]))
+          setCurrentRasterID(rasters[0].id)
+        }
 
         setIsCesiumViewerReady(true) //notify the Ceium viewer is ready
         if (DEBUG) console.log('DEBUG: Ceium viewer is ready!')

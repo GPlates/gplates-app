@@ -17,17 +17,17 @@ import {
   useRecoilValue,
 } from 'recoil'
 import {
-  currentRasterMapIndexState,
   isRasterMenuShow,
   age,
   animateRange,
   showTimeStampState,
   rasterGroupState,
+  currentRasterIDState,
 } from '../functions/atoms'
-import { getRasters } from '../functions/rasterMaps'
+import { getRasters, getRasterByID } from '../functions/rasterMaps'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { WebMapTileServiceImageryProvider } from 'cesium'
-import { timeout, timeRange } from '../functions/util'
+import { timeRange } from '../functions/util'
 import RotationModel, {
   rotationModels,
   setCurrentModel,
@@ -54,9 +54,9 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   setAgeSliderShown,
   animationService,
 }) => {
-  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
-    currentRasterMapIndexState
-  )
+  const [currentRasterID, setCurrentRasterID] =
+    useRecoilState(currentRasterIDState)
+
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
   const setAge = useSetRecoilState(age)
   const setRange = useSetRecoilState(animateRange)
@@ -99,16 +99,16 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   useEffect(() => {
     rasterMaps = getRasters(rasterGroup)
     //select the raster icon in the middle.
-    let middle = Math.floor(rasterMaps.length / 2)
+    //let middle = Math.floor(rasterMaps.length / 2)
     //console.log(middle)
-    select(middle)
-    swiper?.slideTo(middle)
+    //select(middle)
+    //swiper?.slideTo(middle)
   }, [rasterGroup])
 
   //
   //
   //
-  useEffect(() => {}, [currentRasterMapIndex]) //update current raster index
+  useEffect(() => {}, [currentRasterID]) // current raster ID changed
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
@@ -126,15 +126,17 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       }
     }
     optionList.push(
-      <SwiperSlide style={{ width: 'auto' }} key={i}>
+      <SwiperSlide style={{ width: 'auto' }} key={rasterMaps[i].id}>
         <IonCard
-          key={'raster-menu-element-' + i}
+          key={'raster-menu-element-' + rasterMaps[i].id}
           className={
-            currentRasterMapIndex === i ? 'selected-opt' : 'unselected-opt'
+            currentRasterID === rasterMaps[i].id
+              ? 'selected-opt'
+              : 'unselected-opt'
           }
           onClick={async (e) => {
-            if (currentRasterMapIndex !== i) {
-              select(i)
+            if (currentRasterID !== rasterMaps[i].id) {
+              select(rasterMaps[i].id)
               switchLayer(createCesiumImageryProvider(rasterMaps[i]))
             }
           }}
@@ -157,13 +159,15 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   // select the current raster and deselect all others
   //
-  const select = async (index: number) => {
-    setCurrentRasterMapIndex(index)
+  const select = async (rasterID: string) => {
+    setCurrentRasterID(rasterID)
 
     setAge(0)
-    if (rasterMaps.length > index) {
-      const endTime = rasterMaps[index].endTime
-      const startTime = rasterMaps[index].startTime
+
+    let raster = getRasterByID(rasterID)
+    if (raster) {
+      const endTime = raster.endTime
+      const startTime = raster.startTime
       setRange({
         lower: endTime,
         upper: startTime,
@@ -180,17 +184,12 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
     //find out if the rotation model has been created
     //if not, create one
-    if (index < rasterMaps.length) {
-      let currentRaster = rasterMaps[index]
-      let modelName = currentRaster.model
+    if (raster) {
+      let modelName = raster.model
       if (modelName) {
         let m = rotationModels.get(modelName)
         if (!m) {
-          let times = timeRange(
-            currentRaster.startTime,
-            currentRaster.endTime,
-            currentRaster.step
-          )
+          let times = timeRange(raster.startTime, raster.endTime, raster.step)
           await loadVectorLayers(modelName)
           m = new RotationModel(modelName, times, getVectorLayers(modelName))
           rotationModels.set(modelName, m)

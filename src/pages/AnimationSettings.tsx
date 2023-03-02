@@ -20,10 +20,10 @@ import {
   animateIncrement,
   animateLoop,
   animateRange,
-  currentRasterMapIndexState,
+  currentRasterIDState,
   isCacheInfoShowState,
 } from '../functions/atoms'
-import RasterMaps from '../functions/rasterMaps'
+import RasterMaps, { getRasterByID } from '../functions/rasterMaps'
 import { getCacheStatsData } from './CacheInfo'
 
 //
@@ -37,7 +37,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const [increment, setIncrement] = useRecoilState(animateIncrement)
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [range, setRange] = useRecoilState(animateRange)
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
 
   // Animation constants
@@ -75,11 +75,13 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
     }, 100)
   }, [])
 
-  let minTime =
-    RasterMaps.length > 0 ? RasterMaps[currentRasterMapIndex].endTime : 0
-  let maxTime =
-    RasterMaps.length > 0 ? RasterMaps[currentRasterMapIndex].startTime : 1000
-
+  let raster = getRasterByID(currentRasterID)
+  let minTime = 0
+  let maxTime = 0
+  if (raster) {
+    minTime = RasterMaps.length > 0 ? raster.endTime : 0
+    maxTime = RasterMaps.length > 0 ? raster.startTime : 1000
+  }
   return (
     <div>
       <IonList className={'settings-list'}>

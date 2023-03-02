@@ -18,12 +18,9 @@ import {
 import { trashOutline } from 'ionicons/icons'
 import { cachingServant } from '../functions/cache'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import {
-  isCacheInfoShowState,
-  currentRasterMapIndexState,
-} from '../functions/atoms'
+import { isCacheInfoShowState, currentRasterIDState } from '../functions/atoms'
 import { getEnabledLayers, vectorLayers } from '../functions/vectorLayers'
-import rasterMaps from '../functions/rasterMaps'
+import rasterMaps, { getRasterIndexByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
 import { buildAnimationURL } from '../functions/util'
 
@@ -83,7 +80,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
   const [cacheInfoShow, setCacheInfoShow] = useRecoilState(isCacheInfoShowState)
   const [refresh, setRefresh] = useState(true)
   const [presentAlert] = useIonAlert()
-  const currentRasterIndex = useRecoilValue(currentRasterMapIndexState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
 
   return (
     <IonModal isOpen={cacheInfoShow} animated backdropDismiss={false}>
@@ -186,7 +183,10 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                     text: 'Yes',
                     role: 'confirm',
                     handler: () => {
-                      CacheCurrentRasterAndOverlays(currentRasterIndex)
+                      let index = getRasterIndexByID(currentRasterID)
+                      if (index) {
+                        CacheCurrentRasterAndOverlays(index)
+                      }
                     },
                   },
                 ],
