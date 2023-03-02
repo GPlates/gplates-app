@@ -1,6 +1,5 @@
 import { Preferences } from '@capacitor/preferences'
 import { Color, Viewer, ImageryProvider, Cartesian3 } from 'cesium'
-import rasterMaps, { currentRasterIndex } from './rasterMaps'
 import { createCesiumImageryProvider } from './dataLoader'
 import { getVectorLayers, getEnabledLayers } from '../functions/vectorLayers'
 import {
@@ -9,6 +8,7 @@ import {
   setShowGraticuleFlag,
 } from './graticule'
 import { updateImageryLayer } from '../components/VectorDataLayerMenu'
+import { RasterCfg } from './types'
 
 //singleton cersium viewer
 export let cesiumViewer: Viewer
@@ -63,7 +63,11 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
 }
 
 //draw raster layer and vector layers
-export const drawLayers = (time: number) => {
+export const drawLayers = (
+  time: number,
+  rasterMaps: RasterCfg[],
+  currentRasterIndex: number
+) => {
   const provider = createCesiumImageryProvider(
     rasterMaps[currentRasterIndex],
     time

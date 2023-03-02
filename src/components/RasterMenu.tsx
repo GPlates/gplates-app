@@ -24,7 +24,7 @@ import {
   showTimeStampState,
   rasterGroupState,
 } from '../functions/atoms'
-import { setCurrentRasterIndex, getRasters } from '../functions/rasterMaps'
+import { getRasters } from '../functions/rasterMaps'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { WebMapTileServiceImageryProvider } from 'cesium'
 import { timeout, timeRange } from '../functions/util'
@@ -108,9 +108,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   //
   //
-  useEffect(() => {
-    setCurrentRasterIndex(currentRasterMapIndex)
-  }, [currentRasterMapIndex]) //update current raster index
+  useEffect(() => {}, [currentRasterMapIndex]) //update current raster index
 
   let optionList = []
   for (let i = 0; i < rasterMaps.length; i++) {
@@ -161,7 +159,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   const select = async (index: number) => {
     setCurrentRasterMapIndex(index)
-    setCurrentRasterIndex(index)
+
     setAge(0)
     if (rasterMaps.length > index) {
       const endTime = rasterMaps[index].endTime

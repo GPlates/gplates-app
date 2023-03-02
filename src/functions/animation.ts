@@ -200,7 +200,11 @@ export class AnimationService {
   onAgeSliderChange = (value: number) => {
     if (!this.playing) {
       animateFrame = value
-      drawLayers(animateFrame)
+      drawLayers(
+        animateFrame,
+        getRasters(this.rasterGroup),
+        this.currentRasterMapIndex
+      )
     }
   }
 
@@ -211,7 +215,11 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.range.lower
     this.setAge(animateFrame)
-    drawLayers(animateFrame)
+    drawLayers(
+      animateFrame,
+      getRasters(this.rasterGroup),
+      this.currentRasterMapIndex
+    )
   }
 
   //
@@ -228,7 +236,7 @@ export class AnimationService {
       rasters[this.currentRasterMapIndex].startTime
     )
     this.setAge(animateFrame)
-    drawLayers(animateFrame)
+    drawLayers(animateFrame, rasters, this.currentRasterMapIndex)
   }
 
   //
@@ -238,7 +246,11 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.getNextFrameNumber()
     this.setAge(animateFrame)
-    drawLayers(animateFrame)
+    drawLayers(
+      animateFrame,
+      getRasters(this.rasterGroup),
+      this.currentRasterMapIndex
+    )
   }
 
   //
@@ -248,7 +260,11 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.getPrevFrameNumber()
     this.setAge(animateFrame)
-    drawLayers(animateFrame)
+    drawLayers(
+      animateFrame,
+      getRasters(this.rasterGroup),
+      this.currentRasterMapIndex
+    )
   }
 
   //
@@ -269,7 +285,11 @@ export class AnimationService {
       this.scheduleFrame(this.getAnimationURL())
     } else {
       clearTimeout(animateTimeout)
-      drawLayers(animateFrame)
+      drawLayers(
+        animateFrame,
+        getRasters(this.rasterGroup),
+        this.currentRasterMapIndex
+      )
     }
   }
 

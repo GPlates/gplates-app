@@ -37,9 +37,13 @@ import {
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { useRecoilValue } from 'recoil'
-import { age, currentRasterMapIndexState } from '../functions/atoms'
+import {
+  age,
+  currentRasterMapIndexState,
+  rasterGroupState,
+} from '../functions/atoms'
 import { serverURL } from '../functions/settings'
-import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import { getRasters } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
 import { LonLatPid } from '../functions/types'
 
@@ -73,9 +77,10 @@ const setPresentDayLonLatPid = (
   lonLat: React.MutableRefObject<{
     lon: number
     lat: number
-  }>
+  }>,
+  modelName: string | undefined
 ) => {
-  if (!rasterMaps[currentRasterIndex].model) {
+  if (!modelName) {
     presentDayLonLatList = presentDayLonLatList.concat([
       {
         lon: lonLat.current.lon,
@@ -89,7 +94,7 @@ const setPresentDayLonLatPid = (
     fetch(
       serverURL.replace(/\/+$/, '') +
         `/reconstruct/reconstruct_points/?points=${lonLat.current.lon},${lonLat.current.lat}` +
-        `&time=${age}&model=${rasterMaps[currentRasterIndex].model}&reverse&fc`
+        `&time=${age}&model=${modelName}&reverse&fc`
     )
       .then((response) => response.json())
       .then((jsonData) => {
@@ -133,8 +138,11 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const [showLocationDetails, setShowLocationDetails] = useState(false)
   const [showLocationIndex, setShowLocationIndex] = useState(0)
   const paleoAge = useRecoilValue(age)
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const currentRasterIndex = useRecoilValue(currentRasterMapIndexState)
+  const rasterGroup = useRecoilValue(rasterGroupState)
   const [presentToast, dismissToast] = useIonToast()
+
+  let rasterMaps = getRasters(rasterGroup)
 
   //
   //insert the current locatoin into the location list
@@ -167,7 +175,11 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
 
     //get plate id and
     //save the Present Day coordinates
-    setPresentDayLonLatPid(paleoAge, lonLat)
+    setPresentDayLonLatPid(
+      paleoAge,
+      lonLat,
+      rasterMaps[currentRasterIndex].model
+    )
 
     //draw the location on Cesium globe
     let pe = cesiumViewer.entities.add({
@@ -255,7 +267,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   //the current raster index changed
   //
   useEffect(() => {
-    if (!(rasterMaps.length > currentRasterMapIndex)) return
+    if (!(rasterMaps.length > currentRasterIndex)) return
 
     let points_str = ''
     presentDayLonLatList.forEach((lonLatPid) => {
@@ -265,13 +277,13 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     points_str = points_str.slice(0, -1)
 
     if (
-      rasterMaps[currentRasterMapIndex].model &&
+      rasterMaps[currentRasterIndex].model &&
       presentDayLonLatList.length > 0
     ) {
       fetch(
         serverURL.replace(/\/+$/, '') +
           `/reconstruct/assign_points_plate_ids?points=${points_str}` +
-          `&model=${rasterMaps[currentRasterMapIndex].model}`
+          `&model=${rasterMaps[currentRasterIndex].model}`
       )
         .then((response) => response.json())
         .then((jsonData) => {
@@ -291,7 +303,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           console.log(error) //handle the promise rejection
         })
     }
-  }, [currentRasterMapIndex]) //the current raster index changed
+  }, [currentRasterIndex]) //the current raster index changed
 
   //
   //handle the camera changed event

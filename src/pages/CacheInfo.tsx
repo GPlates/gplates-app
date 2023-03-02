@@ -17,10 +17,13 @@ import {
 } from '@ionic/react'
 import { trashOutline } from 'ionicons/icons'
 import { cachingServant } from '../functions/cache'
-import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
-import { isCacheInfoShowState } from '../functions/atoms'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import {
+  isCacheInfoShowState,
+  currentRasterMapIndexState,
+} from '../functions/atoms'
 import { getEnabledLayers, vectorLayers } from '../functions/vectorLayers'
-import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import rasterMaps from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
 import { buildAnimationURL } from '../functions/util'
 
@@ -46,7 +49,7 @@ export const getCacheStatsData = async () => {
 }
 
 //
-const CacheCurrentRasterAndOverlays = async () => {
+const CacheCurrentRasterAndOverlays = async (currentRasterIndex: number) => {
   let overlays: string[] = []
   let enabledLayers = getEnabledLayers(currentRasterIndex)
   enabledLayers.forEach((layer) => {
@@ -80,6 +83,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
   const [cacheInfoShow, setCacheInfoShow] = useRecoilState(isCacheInfoShowState)
   const [refresh, setRefresh] = useState(true)
   const [presentAlert] = useIonAlert()
+  const currentRasterIndex = useRecoilValue(currentRasterMapIndexState)
 
   return (
     <IonModal isOpen={cacheInfoShow} animated backdropDismiss={false}>
@@ -182,7 +186,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                     text: 'Yes',
                     role: 'confirm',
                     handler: () => {
-                      CacheCurrentRasterAndOverlays()
+                      CacheCurrentRasterAndOverlays(currentRasterIndex)
                     },
                   },
                 ],

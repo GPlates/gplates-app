@@ -37,7 +37,6 @@ export const failSafeRasterMaps: RasterCfg[] = [
 
 const rasterMaps: RasterCfg[] = []
 export default rasterMaps
-export let currentRasterIndex: number = 0
 
 const presentDayRasters: RasterCfg[] = []
 const paleoRasters: RasterCfg[] = []
@@ -87,21 +86,6 @@ const groupRasters = () => {
       // with a rotation model, it means paleo-raster
       paleoRasters.push(rasterMaps[i])
     }
-  }
-}
-
-//
-//
-//
-export const setCurrentRasterIndex = (idx: number) => {
-  if (rasterMaps.length > idx) {
-    currentRasterIndex = idx
-  } else {
-    if (DEBUG)
-      console.log(
-        'DEBUG: setCurrentRasterIndex() try to set an invalid index.' +
-          `(${rasterMaps.length}:${idx})`
-      )
   }
 }
 
