@@ -1,13 +1,15 @@
-import { RasterCfg } from './types'
+import { RasterCfg, RasterGroup } from './types'
 import { createCesiumImageryProvider } from './dataLoader'
 import { serverURL, DEBUG } from './settings'
 import { getDefaultStore } from './storage'
+import { present } from '@ionic/core/dist/types/utils/overlays'
 
 export const failSafeRasterMaps: RasterCfg[] = [
   {
     id: 'geology',
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
+    paleoMapUrl: '',
     layerName: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
     style: '',
     title: 'Geology',
@@ -16,12 +18,12 @@ export const failSafeRasterMaps: RasterCfg[] = [
     startTime: 0,
     endTime: 0,
     step: 0,
-    model: 'MULLER2019',
   },
   {
     id: 'agegrid',
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
+    paleoMapUrl: '',
     layerName: 'gplates:agegrid',
     style: '',
     title: 'Agegrid',
@@ -32,20 +34,6 @@ export const failSafeRasterMaps: RasterCfg[] = [
     step: 0,
     model: 'SETON2012',
   },
-  {
-    id: 'topography',
-    url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
-    wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
-    layerName: 'gplates:topography',
-    style: '',
-    title: 'Topography',
-    subTitle: 'present day',
-    icon: 'assets/raster_menu/topography-256x256.png',
-    startTime: 0,
-    endTime: 0,
-    step: 0,
-    model: 'MERDITH2021',
-  },
 ]
 
 const rasterMaps: RasterCfg[] = []
@@ -55,9 +43,27 @@ export let currentRasterIndex: number = 0
 const presentDayRasters: RasterCfg[] = []
 const paleoRasters: RasterCfg[] = []
 
-export let currentPresentDayRasterIndex: number = 0
-export let currentPaleoRasterIndex: number = 0
+let rasterGroup: RasterGroup = RasterGroup.present //by default "present" rasters
 
+//
+// set the raster group name, 'present' or
+//
+export const setRasterGroup = (group: RasterGroup) => {
+  rasterGroup = group
+}
+
+//
+// return the rasters according to which raster group is in use
+//
+export const getRasters = () => {
+  if (rasterGroup == RasterGroup.present) {
+    return getPresentDayRasters()
+  } else if (rasterGroup == RasterGroup.paleo) {
+    return getPaleoRasters()
+  } else {
+    return [] //should never happen
+  }
+}
 //
 //
 //
@@ -193,7 +199,8 @@ export const loadRasterMaps = (callback: Function) => {
 }
 
 //
-//
+//this function convert the JSON data retrieved from server to a
+//list of RasterCfg objects
 //
 const convertJsonToRasterMaps = (jsonData: any) => {
   let maps = []
@@ -207,6 +214,7 @@ const convertJsonToRasterMaps = (jsonData: any) => {
       layerName: jsonData[key].layerName,
       url: jsonData[key].url,
       wmsUrl: jsonData[key].wmsUrl,
+      paleoMapUrl: jsonData[key].paleoMapUrl,
       style: jsonData[key].style,
       title: jsonData[key].title,
       subTitle: jsonData[key].subTitle,

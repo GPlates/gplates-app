@@ -1,7 +1,7 @@
 import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
-import rasterMaps from './rasterMaps'
+import { getRasters } from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { buildAnimationURL } from './util'
 import { currentModel } from './rotationModel'
@@ -125,11 +125,11 @@ export class AnimationService {
     //make sure the animateFrame(age) does not go out of valid range
     animateFrame = Math.min(
       animateFrame,
-      rasterMaps[this.currentRasterMapIndex].startTime
+      getRasters()[this.currentRasterMapIndex].startTime
     )
     animateFrame = Math.max(
       animateFrame,
-      rasterMaps[this.currentRasterMapIndex].endTime
+      getRasters()[this.currentRasterMapIndex].endTime
     )
 
     return animateFrame
@@ -198,7 +198,7 @@ export class AnimationService {
   onAgeSliderChange = (value: number) => {
     if (!this.playing) {
       animateFrame = value
-      this.drawTiles()
+      drawLayers(animateFrame)
     }
   }
 
@@ -209,7 +209,7 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.range.lower
     this.setAge(animateFrame)
-    this.drawTiles()
+    drawLayers(animateFrame)
   }
 
   //
@@ -220,12 +220,12 @@ export class AnimationService {
     animateFrame = Math.min(
       Math.max(
         animateFrame + value,
-        rasterMaps[this.currentRasterMapIndex].endTime
+        getRasters()[this.currentRasterMapIndex].endTime
       ),
-      rasterMaps[this.currentRasterMapIndex].startTime
+      getRasters()[this.currentRasterMapIndex].startTime
     )
     this.setAge(animateFrame)
-    this.drawTiles()
+    drawLayers(animateFrame)
   }
 
   //
@@ -235,7 +235,7 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.getNextFrameNumber()
     this.setAge(animateFrame)
-    this.drawTiles()
+    drawLayers(animateFrame)
   }
 
   //
@@ -245,7 +245,7 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.getPrevFrameNumber()
     this.setAge(animateFrame)
-    this.drawTiles()
+    drawLayers(animateFrame)
   }
 
   //
@@ -263,18 +263,19 @@ export class AnimationService {
     animateNext = value
     if (value) {
       animateFrame = this.getNextFrameNumber()
-      this.scheduleFrame(this.getCurrentRasterAnimationURL())
+      this.scheduleFrame(this.getAnimationURL())
     } else {
       clearTimeout(animateTimeout)
-      this.drawTiles()
+      drawLayers(animateFrame)
     }
   }
 
   //
-  // return the low-resolution map url for the current selected raster
-  // TODO: do the similar thing for vector layers(overlays)
+  // return the low-resolution map url of the current selected raster for animation
+  // The {{time}} will be replaced by real value of time in function drawFrame()
   //
-  getCurrentRasterAnimationURL = () => {
+  getAnimationURL = () => {
+    // get overlays
     let overlays: string[] = []
     let enabledLayers = getEnabledLayers(this.currentRasterMapIndex)
     enabledLayers.forEach((layer) => {
@@ -283,17 +284,25 @@ export class AnimationService {
         overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
       }
     })
-    return buildAnimationURL(
-      rasterMaps[this.currentRasterMapIndex].wmsUrl,
-      rasterMaps[this.currentRasterMapIndex].layerName,
-      overlays
-    )
-  }
 
-  //
-  //
-  //
-  drawTiles = () => {
-    drawLayers(animateFrame)
+    //build the URL
+    let rasters = getRasters()
+    let url = rasters[this.currentRasterMapIndex].paleoMapUrl
+    if (url) {
+      // URL for gplates web service
+      overlays.forEach((layer) => {
+        url = url + ',' + layer
+      })
+      url += '&time={{time}}&model=' + currentModel.name
+      console.log(url)
+      return url
+    } else {
+      //URL for geosever
+      return buildAnimationURL(
+        rasters[this.currentRasterMapIndex].wmsUrl,
+        rasters[this.currentRasterMapIndex].layerName,
+        overlays
+      )
+    }
   }
 }

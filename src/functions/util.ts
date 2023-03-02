@@ -8,6 +8,8 @@ export const timeout = async (time: number) => {
 }
 
 //
+//
+//
 export const timeRange = (begin: number, end: number, step: number) => {
   //I believe Number.EPSILON is good enough in this case
   if (Math.abs(step) < Number.EPSILON) {
@@ -45,6 +47,8 @@ export const timeRange = (begin: number, end: number, step: number) => {
 }
 
 //
+//
+//
 export const buildAnimationURL = (
   wmsUrl: string,
   layerName: string,
@@ -72,6 +76,9 @@ export const buildAnimationURL = (
   )
 }
 
+//
+//
+//
 export const requestDataByUrl = async (url: string) => {
   if (!url) return null
 

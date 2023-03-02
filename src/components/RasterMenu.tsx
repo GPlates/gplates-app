@@ -26,8 +26,8 @@ import {
 } from '../functions/atoms'
 import {
   setCurrentRasterIndex,
-  getPresentDayRasters,
-  getPaleoRasters,
+  setRasterGroup,
+  getRasters,
 } from '../functions/rasterMaps'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { WebMapTileServiceImageryProvider } from 'cesium'
@@ -39,7 +39,7 @@ import RotationModel, {
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import { AnimationService } from '../functions/animation'
-import { RasterCfg } from '../functions/types'
+import { RasterCfg, RasterGroup } from '../functions/types'
 
 let rasterMaps: RasterCfg[] = []
 
@@ -101,13 +101,14 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   useEffect(() => {
     if (isShowPresentDayRasters) {
-      rasterMaps = getPresentDayRasters()
+      setRasterGroup(RasterGroup.present)
     } else {
-      rasterMaps = getPaleoRasters()
+      setRasterGroup(RasterGroup.paleo)
     }
+    rasterMaps = getRasters()
     //select the raster icon in the middle.
     let middle = Math.floor(rasterMaps.length / 2)
-    console.log(middle)
+    //console.log(middle)
     select(middle)
     swiper?.slideTo(middle)
   }, [isShowPresentDayRasters])
