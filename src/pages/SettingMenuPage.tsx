@@ -98,6 +98,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const isSliderShow = useRecoilValue(isAgeSliderShown)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
 
+  const [presentAlert] = useIonAlert()
+
   //const navigate = useNavigate()
   const history = useHistory()
 
@@ -152,6 +154,36 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     )
   }
 
+  //
+  // when the server url has changed, ask user if reload the page
+  //
+  const showReloadPageAlert = () => {
+    presentAlert({
+      header: 'The server URL has changed. Would you like to reload?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            console.log('reload page canceled')
+          },
+        },
+        {
+          text: 'Yes',
+          role: 'confirm',
+          handler: () => {
+            window.location.reload()
+          },
+        },
+      ],
+      onDidDismiss: (e: CustomEvent) =>
+        console.log(`Dismissed with role: ${e.detail.role}`),
+    })
+  }
+
+  //
+  //
+  //
   return (
     <IonModal isOpen={isShow} animated backdropDismiss={false}>
       <IonToolbar>
@@ -259,8 +291,14 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             <IonInput
               class="server-url-input"
               value={serverURL}
-              onIonChange={(e) => {
-                if (e.detail.value) setServerURL(e.detail.value)
+              onIonBlur={async (e) => {
+                //console.log(e.target.value)
+                if (e.target.value) {
+                  let isChanged = await setServerURL(e.target.value.toString())
+                  if (isChanged) {
+                    showReloadPageAlert()
+                  }
+                }
               }}
             />
           </IonItem>
