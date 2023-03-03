@@ -35,9 +35,7 @@ import RotationModel, {
 import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import { AnimationService } from '../functions/animation'
-import { RasterCfg, RasterGroup } from '../functions/types'
-
-let rasterMaps: RasterCfg[] = []
+import { RasterGroup } from '../functions/types'
 
 interface ContainerProps {
   isViewerLoading: Function
@@ -47,7 +45,7 @@ interface ContainerProps {
 }
 
 //
-//
+// RasterMenu funtional component
 //
 export const RasterMenu: React.FC<ContainerProps> = ({
   isCesiumViewerReady,
@@ -63,12 +61,12 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const setShowTimeStampState = useSetRecoilState(showTimeStampState)
 
   const [swiper, setSwiper] = useState<SwiperType>()
-  const [rasterGroup, setRasterGroup] = useRecoilState(rasterGroupState)
+  const rasterGroup = useRecoilValue(rasterGroupState)
 
   //
+  // switch to another raster
   //
-  //
-  const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
+  const switchRaster = (provider: WebMapTileServiceImageryProvider) => {
     animationService.setPlaying(false)
     cesiumViewer.imageryLayers.addImageryProvider(provider)
     // we don't remove the old layer immediately.
@@ -83,27 +81,12 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   //
   //
-  useEffect(() => {
-    //by default, select the raster icon in the middle.
-    /*
-    let middle = Math.floor(getNumberOfRasters() / 2)
-    console.log(middle)
-    select(middle)
-    swiper?.slideTo(middle)
-    */
-  }, [isCesiumViewerReady]) //initial selection
+  useEffect(() => {}, [isCesiumViewerReady]) //initial selection
 
   //
   //
   //
-  useEffect(() => {
-    rasterMaps = getRasters(rasterGroup)
-    //select the raster icon in the middle.
-    //let middle = Math.floor(rasterMaps.length / 2)
-    //console.log(middle)
-    //select(middle)
-    //swiper?.slideTo(middle)
-  }, [rasterGroup])
+  useEffect(() => {}, [rasterGroup])
 
   //
   //
@@ -111,44 +94,46 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   useEffect(() => {}, [currentRasterID]) // current raster ID changed
 
   let optionList = []
-  for (let i = 0; i < rasterMaps.length; i++) {
+  let rasters = getRasters(rasterGroup)
+  console.log(rasters)
+  for (let i = 0; i < rasters.length; i++) {
     //if present-day raster,
     //skip all rasters with a rotation model
     if (rasterGroup == RasterGroup.present) {
-      if (rasterMaps[i].model) {
+      if (rasters[i].model) {
         continue
       }
     } else {
       //if paleo-rasters,
       //skip all rasters without a rotation model
-      if (!rasterMaps[i].model) {
+      if (!rasters[i].model) {
         continue
       }
     }
     optionList.push(
-      <SwiperSlide style={{ width: 'auto' }} key={rasterMaps[i].id}>
+      <SwiperSlide style={{ width: 'auto' }} key={rasters[i].id}>
         <IonCard
-          key={'raster-menu-element-' + rasterMaps[i].id}
+          key={'raster-menu-element-' + rasters[i].id}
           className={
-            currentRasterID === rasterMaps[i].id
+            currentRasterID === rasters[i].id
               ? 'selected-opt'
               : 'unselected-opt'
           }
           onClick={async (e) => {
-            if (currentRasterID !== rasterMaps[i].id) {
-              select(rasterMaps[i].id)
-              switchLayer(createCesiumImageryProvider(rasterMaps[i]))
+            if (currentRasterID !== rasters[i].id) {
+              select(rasters[i].id)
+              switchRaster(createCesiumImageryProvider(rasters[i]))
             }
           }}
         >
           <img
-            src={rasterMaps[i].icon}
-            className={'map-icon'}
-            alt={'global icon'}
+            src={rasters[i].icon}
+            className={'raster-icon'}
+            alt={rasters[i].title}
           />
           <IonCardHeader>
-            <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
-            <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
+            <IonCardTitle>{rasters[i].title}</IonCardTitle>
+            <IonCardSubtitle>{rasters[i].subTitle}</IonCardSubtitle>
           </IonCardHeader>
           <div />
         </IonCard>
@@ -199,6 +184,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     }
   } //end of select()
 
+  swiper?.destroy() //destroy the old swiper instance. a new one will be created.
   //
   //
   //

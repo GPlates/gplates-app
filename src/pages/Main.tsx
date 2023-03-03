@@ -44,6 +44,7 @@ import {
   isAgeSliderShown,
   rasterGroupState,
   currentRasterIDState,
+  showTimeStampState,
 } from '../functions/atoms'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, {
@@ -112,6 +113,7 @@ const Main: React.FC = () => {
   const [currentRasterID, setCurrentRasterID] =
     useRecoilState(currentRasterIDState)
   const rasterGroup = useRecoilValue(rasterGroupState)
+  const setShowTimeStamp = useSetRecoilState(showTimeStampState)
   const [isOffline, setIsOffline] = useState(false)
   //we don't show message if the app is online at startup
   const isStartupOnline = useRef(true)
@@ -201,6 +203,8 @@ const Main: React.FC = () => {
         let rasters = getPresentDayRasters()
         if (rasters.length == 0) {
           rasters = getPaleoRasters()
+        } else {
+          setShowTimeStamp(false)
         }
         if (rasters.length > 0) {
           initCesiumViewer(createCesiumImageryProvider(rasters[0]))

@@ -3,10 +3,9 @@ import {
   IonFabButton,
   IonFabList,
   IonIcon,
-  useIonLoading,
   useIonToast,
 } from '@ionic/react'
-import React, { useState } from 'react'
+import React from 'react'
 import {
   cogOutline,
   earthOutline,
@@ -28,6 +27,7 @@ import {
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { SceneMode } from 'cesium'
 import { RasterGroup } from '../functions/types'
+import './ToolMenu.scss'
 
 export const ToolMenu = () => {
   const [presentToast, dismissToast] = useIonToast()
@@ -65,7 +65,10 @@ export const ToolMenu = () => {
         setRasterGroup(RasterGroup.paleo)
       }}
     >
-      <IonIcon style={{ pointerEvents: 'none' }} icon={earthSharp} />
+      <IonIcon
+        style={{ pointerEvents: 'none', color: 'purple' }}
+        icon={earthSharp}
+      />
     </IonFabButton>,
 
     //--------------------------------------

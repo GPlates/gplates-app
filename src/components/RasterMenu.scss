@@ -15,6 +15,10 @@ $raster-menu-height: $icon-size + $card-top-margin + $card-bottom-margin +
 $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   $raster-menu-bottom;
 
+.raster-menu-scroll .swiper-wrapper {
+  justify-content: center;
+}
+
 .raster-menu-scroll {
   text-align: center;
   white-space: break-spaces;
@@ -48,7 +52,7 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   }
 }
 
-.map-icon {
+.raster-icon {
   height: $icon-size;
   width: $icon-size;
 }
