@@ -4,6 +4,8 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonButton,
+  IonIcon,
 } from '@ionic/react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -36,6 +38,7 @@ import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import { AnimationService } from '../functions/animation'
 import { RasterGroup } from '../functions/types'
+import { closeCircleOutline } from 'ionicons/icons'
 
 interface ContainerProps {
   isViewerLoading: Function
@@ -190,12 +193,22 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
-      <div
+      {/*<div
         className={'raster-menu-backdrop'}
         onClick={() => {
           setIsShow(false)
         }}
+      />*/}
+
+      <IonIcon
+        className="raster-menu-close-button"
+        icon={closeCircleOutline}
+        size="large"
+        onClick={() => {
+          setIsShow(false)
+        }}
       />
+
       <Swiper
         slidesPerView={'auto'}
         spaceBetween={30}

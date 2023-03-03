@@ -88,6 +88,16 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   height: 100vh;
 }
 
+.raster-menu-close-button {
+  position: absolute;
+  bottom: 3rem;
+  z-index: 10;
+  left: 50%;
+  background-color: grey;
+  border-radius: 1rem;
+  transform: translate(-50%, -50%);
+}
+
 .raster-menu-loading {
   position: absolute;
   bottom: 0;
@@ -107,8 +117,10 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   }
 }
 
+/*
 @media (prefers-color-scheme: light) {
   .raster-menu-scroll {
     background: rgba(var(--ion-color-light-rgb), 0.25);
   }
 }
+*/
