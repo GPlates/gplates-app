@@ -58,6 +58,8 @@ const titles: { [key: string]: string } = {
 }
 
 //
+// try to cache everything. not in use for now
+//
 export const populateCache = () => {
   let count = 0
   rasterMaps.forEach(async (raster) => {
@@ -70,7 +72,11 @@ export const populateCache = () => {
         if (rowNum < m.times.length) {
           setTimeout(
             () =>
-              cachingServant.cacheLayer(m!, raster.wmsUrl, raster.layerName),
+              cachingServant.cacheRasterLayer(
+                m!,
+                raster.wmsUrl,
+                raster.layerName
+              ),
             count * 1000
           )
           count += m.times.length

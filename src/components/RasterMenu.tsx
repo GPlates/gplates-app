@@ -98,7 +98,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
   let optionList = []
   let rasters = getRasters(rasterGroup)
-  console.log(rasters)
+  //console.log(rasters)
   for (let i = 0; i < rasters.length; i++) {
     //if present-day raster,
     //skip all rasters with a rotation model
@@ -187,7 +187,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     }
   } //end of select()
 
-  swiper?.destroy() //destroy the old swiper instance. a new one will be created.
+  swiper?.destroy(true, false) //destroy the old swiper instance. a new one will be created.
   //
   //
   //

@@ -28,6 +28,7 @@ export const loadVectorLayers = async (rasterModel: string) => {
         rasterModel
     )
     let json = await response.json()
+    //console.log(json)
     vectorLayers.set(rasterModel, json)
     ;(await getVectorLayerStore()).set(rasterModel, json)
   } catch (error) {

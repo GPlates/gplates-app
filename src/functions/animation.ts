@@ -3,7 +3,7 @@ import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
 import { getRasters, getRasterByID, getRasterIndexByID } from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
-import { buildAnimationURL } from './util'
+import { getLowResImageUrlForGeosrv } from './util'
 import { currentModel } from './rotationModel'
 import { drawLayers } from './cesiumViewer'
 import { raiseGraticuleLayerToTop } from './graticule'
@@ -292,6 +292,7 @@ export class AnimationService {
   getAnimationURL = () => {
     // get overlays
     let overlays: string[] = []
+    let layerIDs: string[] = []
     let enabledLayers: string[] = []
     let index = getRasterIndexByID(this.currentRasterID)
     if (index) {
@@ -302,6 +303,7 @@ export class AnimationService {
       if (layer !== 'cities') {
         console.log(vectorLayers.get(currentModel.name)[layer])
         overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
+        layerIDs.push(vectorLayers.get(currentModel.name)[layer].id)
       }
     })
 
@@ -311,15 +313,19 @@ export class AnimationService {
       let url = raster.paleoMapUrl
       if (url) {
         // URL for gplates web service
-        overlays.forEach((layer) => {
-          url = url + ',' + layer
+        enabledLayers.forEach((id) => {
+          url = url + ',' + id
         })
         url += '&time={{time}}&model=' + currentModel.name
         console.log(url)
         return url
       } else {
         //URL for geosever
-        return buildAnimationURL(raster.wmsUrl, raster.layerName, overlays)
+        return getLowResImageUrlForGeosrv(
+          raster.wmsUrl,
+          raster.layerName,
+          overlays
+        )
       }
     }
   }

@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium'
-import { buildAnimationURL } from './util'
+import { getLowResImageUrlForGeosrv } from './util'
 import { RasterCfg } from './types'
 import { cachingServant } from './cache'
 import { cesiumViewer } from './cesiumViewer'
@@ -53,7 +53,7 @@ export const createCesiumImageryProvider = (image: any, time = 0) => {
     console.log(providerError)
     cesiumViewer.imageryLayers.removeAll()
     //console.log(url_str, layer_name, style_name)
-    let url_ = buildAnimationURL(image.wmsUrl, layer_name)
+    let url_ = getLowResImageUrlForGeosrv(image.wmsUrl, layer_name)
     cachingServant
       .getCachedRequest(url_.replace('{{time}}', String(time)))
       .then((dataURL) => {
@@ -70,7 +70,7 @@ export const createCesiumImageryProvider = (image: any, time = 0) => {
   provider.errorEvent.addEventListener(handler)
 
   //cache the low resolution image
-  let url = buildAnimationURL(image.wmsUrl, layer_name)
+  let url = getLowResImageUrlForGeosrv(image.wmsUrl, layer_name)
   cachingServant?.cacheURL(url.replace('{{time}}', String(time)))
   return provider
 }

@@ -174,6 +174,7 @@ export const ToolMenu = () => {
           setRasterMenuPageShow(false)
           setIsGraphPanelShow(false)
           setShowAddLocationWidget(false)
+          setIsVectorDataLayerMenuShow(false)
         }}
       >
         <IonIcon

@@ -5,7 +5,7 @@ import {
 } from '@capacitor-community/sqlite'
 import { Capacitor } from '@capacitor/core'
 import RotationModel from './rotationModel'
-import { buildAnimationURL } from './util'
+import { getLowResImageUrlForGeosrv } from './util'
 import { canDownload, presentDataAlert } from './network'
 import { Preferences } from '@capacitor/preferences'
 import { SQLiteHook } from 'react-sqlite-hook'
@@ -183,11 +183,17 @@ export class CachingService {
   }
 
   //
-  async cacheLayer(model: RotationModel, wmsUrl: string, layerName: string) {
+  // cache low resolution images from geoserver
+  //
+  async cacheRasterLayer(
+    model: RotationModel,
+    wmsUrl: string,
+    layerName: string
+  ) {
     let rowNum = await this.getCount(layerName)
     //check if the layer has been cached.
     if (rowNum < model.times.length) {
-      let url = buildAnimationURL(wmsUrl, layerName)
+      let url = getLowResImageUrlForGeosrv(wmsUrl, layerName)
       let count = 0
       //console.log('caching ' + layerName)
       model.times.forEach((time) => {

@@ -22,7 +22,7 @@ import { isCacheInfoShowState, currentRasterIDState } from '../functions/atoms'
 import { getEnabledLayers, vectorLayers } from '../functions/vectorLayers'
 import rasterMaps, { getRasterIndexByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
-import { buildAnimationURL } from '../functions/util'
+import { getLowResImageUrlForGeosrv } from '../functions/util'
 
 export let cacheStatsList: Map<string, number> = new Map<string, number>()
 let total = 0
@@ -46,6 +46,9 @@ export const getCacheStatsData = async () => {
 }
 
 //
+// Cache the current raster and overlays
+// for now, only work for geoserver
+//
 const CacheCurrentRasterAndOverlays = async (currentRasterIndex: number) => {
   let overlays: string[] = []
   let enabledLayers = getEnabledLayers(currentRasterIndex)
@@ -54,7 +57,7 @@ const CacheCurrentRasterAndOverlays = async (currentRasterIndex: number) => {
       overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
     }
   })
-  let url = buildAnimationURL(
+  let url = getLowResImageUrlForGeosrv(
     rasterMaps[currentRasterIndex].wmsUrl,
     rasterMaps[currentRasterIndex].layerName,
     overlays

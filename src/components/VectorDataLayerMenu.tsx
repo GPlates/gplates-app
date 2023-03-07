@@ -67,9 +67,9 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     vectorLayers = []
     for (let key in layers) {
       let layer = {
+        id: key,
         displayName: layers[key].displayName,
         imageryLayer: null as unknown as ImageryLayer,
-        id: key,
         layerName: layers[key].layerName,
         url: layers[key].url,
         wmsUrl: layers[key].wmsUrl,
