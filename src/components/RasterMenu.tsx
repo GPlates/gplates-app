@@ -4,7 +4,6 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  IonButton,
   IonIcon,
 } from '@ionic/react'
 
@@ -27,17 +26,21 @@ import {
   currentRasterIDState,
 } from '../functions/atoms'
 import { getRasters, getRasterByID } from '../functions/rasterMaps'
-import { cesiumViewer } from '../functions/cesiumViewer'
-import { WebMapTileServiceImageryProvider } from 'cesium'
+import { cesiumViewer, pruneLayers } from '../functions/cesiumViewer'
 import { timeRange } from '../functions/util'
+import { raiseGraticuleLayerToTop } from '../functions/graticule'
 import RotationModel, {
   rotationModels,
   setCurrentModel,
 } from '../functions/rotationModel'
-import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
+import {
+  loadVectorLayers,
+  getVectorLayers,
+  getEnabledLayers,
+} from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
 import { AnimationService } from '../functions/animation'
-import { RasterGroup } from '../functions/types'
+import { RasterCfg, RasterGroup } from '../functions/types'
 import { closeCircleOutline } from 'ionicons/icons'
 
 interface ContainerProps {
@@ -69,16 +72,21 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   //
   // switch to another raster
   //
-  const switchRaster = (provider: WebMapTileServiceImageryProvider) => {
+  const switchRaster = (raster: RasterCfg) => {
+    //stop the animation if necessary
     animationService.setPlaying(false)
+
+    //draw the raster
+    let provider = createCesiumImageryProvider(raster)
     cesiumViewer.imageryLayers.addImageryProvider(provider)
+
+    raiseGraticuleLayerToTop() //raise graticlue layer if enabled
+
     // we don't remove the old layer immediately.
     // the "remove" is very fast to complete, but the "add" is slow.
     // if we remove the old layer immediately, user will see something underneath.
     // sometimes, we don't want to show user that.
-    if (cesiumViewer.imageryLayers.length > 8) {
-      cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
-    }
+    pruneLayers()
   }
 
   //
@@ -125,7 +133,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           onClick={async (e) => {
             if (currentRasterID !== rasters[i].id) {
               select(rasters[i].id)
-              switchRaster(createCesiumImageryProvider(rasters[i]))
+              switchRaster(rasters[i])
             }
           }}
         >
@@ -173,12 +181,13 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     //find out if the rotation model has been created
     //if not, create one
     if (raster) {
+      if (!getVectorLayers(raster.id)) await loadVectorLayers(raster.id)
       let modelName = raster.model
       if (modelName) {
         let m = rotationModels.get(modelName)
         if (!m) {
           let times = timeRange(raster.startTime, raster.endTime, raster.step)
-          await loadVectorLayers(modelName)
+
           m = new RotationModel(modelName, times, getVectorLayers(modelName))
           rotationModels.set(modelName, m)
         }

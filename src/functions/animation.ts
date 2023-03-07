@@ -294,10 +294,8 @@ export class AnimationService {
     let overlays: string[] = []
     let layerIDs: string[] = []
     let enabledLayers: string[] = []
-    let index = getRasterIndexByID(this.currentRasterID)
-    if (index) {
-      enabledLayers = getEnabledLayers(index)
-    }
+
+    enabledLayers = getEnabledLayers(this.currentRasterID)
 
     enabledLayers.forEach((layer) => {
       if (layer !== 'cities') {

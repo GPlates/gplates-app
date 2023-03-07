@@ -49,17 +49,19 @@ export const getCacheStatsData = async () => {
 // Cache the current raster and overlays
 // for now, only work for geoserver
 //
-const CacheCurrentRasterAndOverlays = async (currentRasterIndex: number) => {
+const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
   let overlays: string[] = []
-  let enabledLayers = getEnabledLayers(currentRasterIndex)
+  let enabledLayers = getEnabledLayers(currentRasterID)
   enabledLayers.forEach((layer) => {
     if (layer !== 'cities') {
       overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
     }
   })
+  let index = getRasterIndexByID(currentRasterID)
+  if (!index) return
   let url = getLowResImageUrlForGeosrv(
-    rasterMaps[currentRasterIndex].wmsUrl,
-    rasterMaps[currentRasterIndex].layerName,
+    rasterMaps[index].wmsUrl,
+    rasterMaps[index].layerName,
     overlays
   )
   console.log(url)
@@ -186,10 +188,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                     text: 'Yes',
                     role: 'confirm',
                     handler: () => {
-                      let index = getRasterIndexByID(currentRasterID)
-                      if (index) {
-                        CacheCurrentRasterAndOverlays(index)
-                      }
+                      CacheCurrentRasterAndOverlays(currentRasterID)
                     },
                   },
                 ],

@@ -66,26 +66,23 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
 }
 
 //
-//draw raster layer and vector layers
+// draw raster layer and vector layers
 //
 export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
+  //draw the raster layer
   const provider = createCesiumImageryProvider(rasterCfg, time)
-  cesiumViewer.imageryLayers.addImageryProvider(provider) //draw the raster layer
+  cesiumViewer.imageryLayers.addImageryProvider(provider)
 
-  let model = rasterCfg?.model ?? 'MERDITH2021'
-  let vLayers = getVectorLayers(model)
-  for (let key in vLayers) {
-    let checkedLayers: string[] = []
-    let index = getRasterIndexByID(rasterCfg.id)
-    if (index) {
-      checkedLayers = getEnabledLayers(index)
-    }
+  //draw the vector layers
+  let vectorLayers = getVectorLayers(rasterCfg.id)
+  for (let id in vectorLayers) {
+    let enabledLayers = getEnabledLayers(rasterCfg.id)
 
-    if (checkedLayers.includes(key)) {
+    if (enabledLayers.includes(id)) {
       let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-        createCesiumImageryProvider(vLayers[key], time)
-      ) //draw the vector layers
-      updateImageryLayer(key, imageryLayer)
+        createCesiumImageryProvider(vectorLayers[id], time)
+      )
+      updateImageryLayer(id, imageryLayer)
     }
   }
   raiseGraticuleLayerToTop() //raise graticlue layer if enabled
@@ -93,8 +90,8 @@ export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
 }
 
 //
-//get rid of some old layers
-//TODO: need a smarter way to do this
+// get rid of some old layers
+// TODO: need a smarter way to do this
 //
 export const pruneLayers = () => {
   while (cesiumViewer.imageryLayers.length > 7) {
