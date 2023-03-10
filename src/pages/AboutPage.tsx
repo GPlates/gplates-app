@@ -1,23 +1,11 @@
 import React from 'react'
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonModal,
-  IonRippleEffect,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/react'
+import { IonContent } from '@ionic/react'
 import './AboutPage.scss'
 import { Browser } from '@capacitor/browser'
-import { useRecoilState } from 'recoil'
-import { isAboutPageShow } from '../functions/atoms'
 
 interface ContainerProps {}
 
 export const AboutPage: React.FC<ContainerProps> = () => {
-  const [isShow, setIsShow] = useRecoilState(isAboutPageShow)
-
   return (
     <IonContent>
       <div className={'about-page-icon'}>
@@ -38,13 +26,18 @@ export const AboutPage: React.FC<ContainerProps> = () => {
             GPlates
           </a>
           ,&nbsp;the App benefits from the feature-rich web APIs and the
-          flexible software architecture of its underlying technology. With its
-          intuitive interface and advanced capabilities, the GPlates App is an
-          invaluable tool for anyone seeking to gain a deeper understanding of
-          the Earth&apos;s geological history. Whether you are a student,
-          teacher, researcher, or just a curious enthusiast, the GPlates App is
-          the perfect tool to explore our ever-evolving planet. In addition,
-          the&nbsp;
+          flexible software architecture of its underlying technology.
+        </p>
+        <p className={'about-page-intro-text'}>
+          {' '}
+          With its intuitive interface and advanced capabilities, the GPlates
+          App is an invaluable tool for anyone seeking to gain a deeper
+          understanding of the Earth&apos;s geological history. Whether you are
+          a student, teacher, researcher, or just a curious enthusiast, the
+          GPlates App is the perfect tool to explore our ever-evolving planet.{' '}
+        </p>
+        <p className={'about-page-intro-text'}>
+          In addition, the&nbsp;
           <a
             onClick={async () => {
               await Browser.open({ url: 'https://gwsdoc.gplates.org' })

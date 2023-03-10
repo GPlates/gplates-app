@@ -11,7 +11,9 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 50%;
+    margin-top: 5px;
+    text-align: center;
+    //width: 50%;
   }
 }
 
@@ -53,4 +55,8 @@
 .how-fade-exit-active {
   opacity: 0;
   transition: opacity 100ms;
+}
+
+.info-small-label {
+  font-size: 80% !important;
 }

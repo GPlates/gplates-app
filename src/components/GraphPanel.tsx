@@ -11,7 +11,7 @@ import {
   IonList,
   IonPopover,
 } from '@ionic/react'
-import { caretDownOutline } from 'ionicons/icons'
+import { caretDownOutline, closeCircleOutline } from 'ionicons/icons'
 import { requestDataByUrl } from '../functions/util'
 import { serverURL } from '../functions/settings'
 
@@ -111,12 +111,16 @@ const interpolate = (xData: string[], yData: number[]) => {
 interface ContainerProps {}
 
 export const GraphPanel: React.FC<ContainerProps> = () => {
-  const isShow = useRecoilValue(isGraphPanelShowState)
+  const [showGraphPanel, setShowGraphPanel] = useRecoilState(
+    isGraphPanelShowState
+  )
   const [_age, setAge] = useRecoilState(age)
   const rasterMapAnimateRange = useRecoilValue(animateRange)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [graphList, setGraphList] = useState([] as string[][])
   const [curGraphName, setCurGraphName] = useState('')
+
+  let isGraphLoaded = false
 
   //
   const loadGraph = async (instantCurGraphIdx: number) => {
@@ -142,10 +146,14 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     interpolate(xData, yData)
 
     //slice the data according to the range
+    /*
+    //for now, we don't cut the data according to start time and end time
+    //it seems unnecessary
     if (
       rasterMapAnimateRange.upper != 0 &&
       rasterMapAnimateRange.upper != rasterMapAnimateRange.lower
     ) {
+      
       let xy = sliceData(
         xData,
         yData,
@@ -154,7 +162,8 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       )
       xData = xy.x
       yData = xy.y
-    }
+      
+    }*/
 
     //find the axisPointer location according to the age
     let index = findIndexes(xData, _age)
@@ -227,6 +236,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       graphOptions.xAxis!.axisPointer.handle.icon = 'none'
     }
     graphOptions && graphChart.setOption(graphOptions)
+    isGraphLoaded = true
   }
 
   //
@@ -253,12 +263,13 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     })
   }, [])
 
-  //
+  /*
   useEffect(() => {
     loadGraph(curGraphIdx).catch((err) => {
       console.log(err)
     })
   }, [rasterMapAnimateRange])
+  */
 
   //when the paleo-age is changed
   useEffect(() => {
@@ -272,10 +283,26 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     }
   }, [_age])
 
+  //safe guard
+  //in case the graph chart has not been loaded for the first time yet.
+  if (!isGraphLoaded) {
+    loadGraph(0)
+  }
+
   return (
-    <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
+    <div style={{ visibility: showGraphPanel ? 'visible' : 'hidden' }}>
       <div id="graphPanel-statistics" className="graph-panel-statistics" />
+
       <div className="graph-panel-list">
+        <IonIcon
+          className="graph-panel-close-button"
+          icon={closeCircleOutline}
+          size="large"
+          onClick={() => {
+            setShowGraphPanel(false)
+          }}
+        />
+
         <div id="graph-panel-click-trigger">
           {curGraphName + '  '}
           <IonIcon icon={caretDownOutline} />

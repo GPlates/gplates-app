@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   IonButton,
   IonButtons,
@@ -15,7 +15,7 @@ import {
   isPlatform,
 } from '@ionic/react'
 import './ModelInfo.scss'
-import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
+import { getRasterByID } from '../functions/rasterMaps'
 import { serverURL } from '../functions/settings'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import {
@@ -29,7 +29,7 @@ import { AboutPage } from './AboutPage'
 import { HowToUse } from './HowToUse'
 //
 const titles: { [key: string]: string } = {
-  root: 'Information',
+  root: 'Info',
   model: 'Model Details',
   about: 'About GPlates',
   howtouse: 'How To Handle 3D Globe',
@@ -41,19 +41,31 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
   const [modelInfoShow, setModelInfoShow] = useRecoilState(isModelInfoShowState)
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const [path, setPath] = useRecoilState(infoPath)
+  const [showRasterLengend, setShowRasterLengend] = useState(false)
+
+  //
+  //
+  //
+  useEffect(() => {
+    setShowRasterLengend(false)
+  }, [currentRasterID])
 
   let currentRaster = getRasterByID(currentRasterID)
   if (!currentRaster) return null
-  let rasterID = rasterMaps.length > 0 ? currentRaster.id : ''
-  let listMap = {
-    Model: rasterMaps.length > 0 ? currentRaster.model : '',
-    Raster: rasterMaps.length > 0 ? currentRaster.layerName : '',
-    End: rasterMaps.length > 0 ? currentRaster.endTime : '',
-    Start: rasterMaps.length > 0 ? currentRaster.startTime : '',
-    WMTS: rasterMaps.length > 0 ? currentRaster.url : '',
-    WMS: rasterMaps.length > 0 ? currentRaster.wmsUrl : '',
+
+  //get time range
+  let timeRangeStr = 'Present-day Only'
+  if (currentRaster.startTime > currentRaster.endTime) {
+    timeRangeStr =
+      currentRaster.startTime.toString() +
+      ' Ma - ' +
+      currentRaster.endTime.toString() +
+      ' Ma'
   }
 
+  //
+  //
+  //
   const subPageRouting = (path: string, name: string) => {
     return (
       <IonItem
@@ -107,37 +119,40 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
         classNames={'info-fade'}
       >
         <IonContent>
-          {subPageRouting('model', 'Model Details')}
+          <IonList>
+            <IonItem key={'raster-title'}>
+              <IonLabel className={'info-small-label'}>{'Raster'} </IonLabel>
+              <IonNote slot="end">{currentRaster?.title}</IonNote>
+            </IonItem>
+
+            <IonItem key={'time-range'}>
+              <IonLabel className={'info-small-label'}>{'Time Range'}</IonLabel>
+              <IonNote slot="end">{timeRangeStr}</IonNote>
+            </IonItem>
+            {currentRaster.model && (
+              <IonItem key={'rotation-model'}>
+                <IonLabel className={'info-small-label'}>
+                  {'Rotation Model'}
+                </IonLabel>
+                <IonNote slot="end">{currentRaster.model}</IonNote>
+              </IonItem>
+            )}
+          </IonList>
+
           {subPageRouting('about', 'About GPlates')}
           {subPageRouting('howtouse', 'How To Handle 3D Globe')}
-        </IonContent>
-      </CSSTransition>
 
-      {/* model information page */}
-      <CSSTransition
-        in={path === 'model'}
-        timeout={200}
-        unmountOnExit
-        classNames={'info-fade'}
-      >
-        <IonContent>
-          <IonList>
-            {Object.entries(listMap).map((value) => (
-              <IonItem key={value[0]}>
-                <IonLabel>{value[0]} </IonLabel>
-                <IonNote slot="end">{value[1]}</IonNote>
-              </IonItem>
-            ))}
-          </IonList>
-          <div className="raster-legend">
-            <img src={serverURL + '/static/app-legend/' + rasterID + '.png'} />
+          <div
+            className="raster-legend"
+            style={showRasterLengend ? {} : { display: 'none' }}
+          >
+            <img
+              src={serverURL + '/static/app-legend/' + currentRasterID + '.png'}
+              alt={'Raster Legend Not Available'}
+              height={50}
+              onLoad={() => setShowRasterLengend(true)}
+            />
           </div>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
         </IonContent>
       </CSSTransition>
 

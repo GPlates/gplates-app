@@ -82,7 +82,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   //
   // prepare the vectorLayers array
   //
-  const populateVectorLayers = () => {
+  const prepareVectorLayers = () => {
     //find out all the vector layers defined for the current raster
     let layers = getVectorLayers(currentRasterID)
     vectorLayers = []
@@ -114,7 +114,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   // when current raster is changed, populate the vectorLayers array
   //
   useEffect(() => {
-    populateVectorLayers()
+    prepareVectorLayers()
     drawEnabledVectorLayers()
   }, [currentRasterID])
 
@@ -162,7 +162,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   }
 
   // in case vectorLayers was not ready, but the widget wants to show ifself
-  if (isShow && vectorLayers.length === 0) populateVectorLayers()
+  if (isShow && vectorLayers.length === 0) prepareVectorLayers()
 
   return (
     <div
