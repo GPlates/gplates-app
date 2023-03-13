@@ -297,17 +297,18 @@ export class AnimationService {
 
     enabledLayers = getEnabledLayers(this.currentRasterID)
 
-    enabledLayers.forEach((layer) => {
-      if (layer !== 'cities') {
-        console.log(vectorLayers.get(currentModel.name)[layer])
-        overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
-        layerIDs.push(vectorLayers.get(currentModel.name)[layer].id)
-      }
-    })
-
-    //build the URL
     let raster = getRasterByID(this.currentRasterID)
     if (raster) {
+      enabledLayers.forEach((layer) => {
+        if (layer !== 'cities') {
+          if (!raster) return
+          console.log(vectorLayers.get(raster.id)[layer])
+          overlays.push(vectorLayers.get(raster.id)[layer].layerName)
+          layerIDs.push(vectorLayers.get(raster.id)[layer].id)
+        }
+      })
+
+      //build the URL
       let url = raster.paleoMapUrl
       if (url) {
         // URL for gplates web service
