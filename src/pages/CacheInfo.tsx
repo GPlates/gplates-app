@@ -27,6 +27,9 @@ import { getLowResImageUrlForGeosrv } from '../functions/util'
 export let cacheStatsList: Map<string, number> = new Map<string, number>()
 let total = 0
 
+//
+//
+//
 export const getCacheStatsData = async () => {
   //do not remove the code below
   //for future reference
@@ -156,6 +159,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
         </IonList>
         <br></br>
         <div className="cache-info-buttons-div">
+          {/* the refresh button */}
           <IonButton
             shape="round"
             onClick={async () => {
@@ -168,6 +172,43 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             <IonRippleEffect />
           </IonButton>
 
+          {/* the purge button */}
+          <IonButton
+            shape="round"
+            onClick={() => {
+              presentAlert({
+                header: `Purge All Cache Files?`,
+                cssClass: 'purge-cache-alert',
+                buttons: [
+                  {
+                    text: 'No',
+                    role: 'cancel',
+                    handler: () => {
+                      console.log('Info: cache purge cancelled!')
+                    },
+                  },
+                  {
+                    text: 'Yes',
+                    role: 'confirm',
+                    handler: () => {
+                      cachingServant.clearCachedData(async () => {
+                        await getCacheStatsData()
+                        setRefresh(!refresh)
+                      })
+                    },
+                  },
+                ],
+                onDidDismiss: (e: CustomEvent) =>
+                  console.log(`Dismissed with role: ${e.detail.role}`),
+              })
+            }}
+            color={'danger'}
+          >
+            Purge
+            <IonRippleEffect />
+          </IonButton>
+
+          {/* the Download button */}
           <IonButton
             shape="round"
             onClick={() => {
@@ -198,13 +239,13 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             }}
             color={'secondary'}
           >
-            Populate
+            Download
             <IonRippleEffect />
           </IonButton>
         </div>
         <div className="cache-info-note">
-          Note: Press the &quot;POPULATE&quot; button to precache the current
-          raster and overlays for animation. Press the red bin to purge cache.
+          Note: Press the &quot;DOWNLOAD&quot; button to cache the current
+          raster and overlays for animation.
         </div>
         <br />
         <br />

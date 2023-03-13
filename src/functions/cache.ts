@@ -32,6 +32,7 @@ export class CachingService {
 
   hasPresented = false
 
+  //
   // Store request data
   // ttl = time to live (in seconds). Values <= 0 will be ignored (data will live forever)
   cacheRequest(url: string, data: any, ttl?: number): Promise<any> {
@@ -47,7 +48,9 @@ export class CachingService {
     return this.db!.run(command, values)
   }
 
+  //
   // Try to load cached data
+  //
   async getCachedRequest(url: string): Promise<any> {
     const currentTime = new Date().getTime()
     let data
@@ -79,6 +82,7 @@ export class CachingService {
     }
   }
 
+  //
   //  SQLite Capacitor doesn't support blobs, so we have to convert to string (base64)
   //  https://github.com/capacitor-community/sqlite/issues/266
   async getBlobAsString(url: string) {
@@ -95,7 +99,9 @@ export class CachingService {
       )
   }
 
+  //
   //fetch url and return a blob
+  //
   async getBlob(url: string) {
     // TODO: Get from recoil store
     const downloadOnCellular = await Preferences.get({
@@ -112,7 +118,9 @@ export class CachingService {
     }
   }
 
+  //
   //convert a blob to data URL
+  //
   convertBlobToDataURL(blob?: Blob) {
     if (blob) {
       return new Promise((resolve, reject) => {
@@ -128,18 +136,27 @@ export class CachingService {
     }
   }
 
+  //
   // Remove all cached data & files
-  clearCachedData() {
-    this.db!.run(`DELETE FROM cache`)
+  //
+  clearCachedData(callback: Function = () => {}) {
+    this.db!.run(`DELETE FROM cache`).then((ret) => {
+      console.log(ret)
+      callback()
+    })
   }
 
+  //
+  //
   //
   print() {
     //this.db.getUrl().then((data) => console.log(data))
     this.db!.query('SELECT * FROM cache').then((data) => console.log(data))
   }
 
+  //
   // insert the data from URL into cache
+  //
   async cacheURL(url: string) {
     let exist = await this.checkExist(url)
     //console.log(`exist: ${exist}`)
@@ -160,19 +177,25 @@ export class CachingService {
     }
   }
 
+  //
   // Example to remove one cached URL
+  //
   invalidateCacheEntry(url: string) {
     return this.db!.run('DELETE FROM cache WHERE url == ?', [url])
   }
 
+  //
   //clean up
+  //
   async cleanup() {
     await this.saveToWebStore()
     await this.db!.close()
     await sqlite.closeConnection(this.dbName)
   }
 
+  //
   //on "web" platform, save the DB data to disk
+  //
   async saveToWebStore() {
     const platform = Capacitor.getPlatform()
     //on "web" platform, you need to saveToStore. otherwise the DB is in memory
@@ -207,6 +230,8 @@ export class CachingService {
   }
 
   //
+  //
+  //
   async checkExist(url: string) {
     let ret = await this.db!.query('SELECT 1 FROM cache WHERE url == ?', [url])
     //console.log('check exist!')
@@ -234,7 +259,9 @@ export class CachingService {
     } else return 0
   }
 
+  //
   //must be called after new CachingService('db_main')
+  //
   async init() {
     const platform = Capacitor.getPlatform()
     const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite)
@@ -292,11 +319,15 @@ export class CachingService {
   }
 
   //
+  //
+  //
   getDBName() {
     return this.dbName
   }
 
+  //
   //return a Map, for example {"layer-1":1000, "layer-2":20}
+  //
   async getLayerCountMap() {
     const layerCount = new Map<string, number>()
 
@@ -344,7 +375,7 @@ export class CachingService {
         })
 
       //count the number for each  workspacename+layers
-      //basically, this group cache entries into groups
+      //basically, this puts cache entries into groups
       let keyStr = workspaceName + ':' + layers.slice(0, -1)
       let num = layerCount.get(keyStr)
       if (num) {
@@ -357,6 +388,8 @@ export class CachingService {
     return layerCount
   }
 
+  //
+  // remove cache for given layers
   //
   purge(layers: string, callback: Function) {
     console.log(`purging ${layers}`)
@@ -385,6 +418,8 @@ export class CachingService {
     })
   }
 
+  //
+  //
   //
   async getAllUrls() {
     const ret = await this.db!.query('SELECT url FROM cache ')
