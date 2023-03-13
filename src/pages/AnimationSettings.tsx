@@ -15,6 +15,7 @@ import { Preferences } from '@capacitor/preferences'
 import { setNumber } from '../functions/input'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
+  age,
   animateExact,
   animateFps,
   animateIncrement,
@@ -39,6 +40,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const [range, setRange] = useRecoilState(animateRange)
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
+  const [currentAge, setCurrentAge] = useRecoilState(age)
 
   // Animation constants
   const minIncrement = 1
@@ -46,12 +48,19 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const minFps = 1
   const maxFps = 60
 
+  //
+  //
+  //
   const reverseAnimation = () => {
     const lower = range.upper
     const upper = range.lower
     setRange({ lower, upper })
+    setCurrentAge(lower)
   }
 
+  //
+  //
+  //
   useEffect(() => {
     const settings = {
       exact,
@@ -66,7 +75,9 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
     })
   }, [exact, fps, increment, loop, range])
 
+  //
   // Hack to get IonRange knobs to show the correct position on component mount
+  //
   useEffect(() => {
     setTimeout(() => {
       const old = Object.assign({}, range)
@@ -166,7 +177,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
               <IonItem>
                 <IonLabel>Swap</IonLabel>
                 <IonButton onClick={reverseAnimation} size="small">
-                  Swap FROM age and TO age
+                  Swap &quot;FROM age&quot; and &quot;TO age&quot;
                 </IonButton>
               </IonItem>
             </IonCol>

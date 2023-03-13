@@ -9,10 +9,9 @@ import {
   useIonLoading,
   useIonToast,
 } from '@ionic/react'
-import { Cartesian3, Color, Rectangle, Scene, SceneMode } from 'cesium'
+import { Cartesian3, Color, Scene, SceneMode } from 'cesium'
 import {
   homeOutline,
-  helpOutline,
   shareSocialOutline,
   informationOutline,
 } from 'ionicons/icons'
@@ -26,11 +25,9 @@ import {
   HOME_LATITUDE,
   DEFAULT_CAMERA_HEIGHT,
 } from '../functions/cesiumViewer'
-import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
-import { Pagination } from 'swiper'
 import { Geolocation } from '@capacitor/geolocation'
 import {
   isAddLocationWidgetShowState,
@@ -140,19 +137,10 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     }
   }
 
-  // Swiper page indicator
-  const pagination = {
-    clickable: true,
-    renderBullet: function (index: number, className: string) {
-      return (
-        '<span class="' +
-        className +
-        '">' +
-        (index ? 'Mouse' : 'Touch') +
-        '</span>'
-      )
-    },
-  }
+  //do not show social sharing button on desktop/web browser
+  let showSocialSharingButton = getPlatforms().includes('desktop')
+    ? false
+    : true
 
   return (
     <Fragment>
@@ -199,8 +187,10 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
         <IonIcon icon={informationOutline} />
       </IonButton>
 
+      {/* social sharing button */}
       <IonButton
         className="round-button"
+        style={{ display: showSocialSharingButton ? '' : 'none' }}
         id="screenshot-button"
         onClick={async () => {
           await SocialSharing(present, dismiss, presentToast, dismissToast)

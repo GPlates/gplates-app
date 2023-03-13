@@ -18,7 +18,7 @@ import {
   playForwardOutline,
   timeOutline,
 } from 'ionicons/icons'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -58,6 +58,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const range = useRecoilValue(animateRange)
   const showTimeStamp = useRecoilValue(showTimeStampState)
+  const [showTimeButton, setShowTimeButton] = useState(false) //the button to open time slider
 
   const openMenu = () => {
     setMenuPath('animation')
@@ -81,6 +82,9 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
     }
   }
 
+  //
+  //
+  //
   useEffect(() => {
     if (shown) {
       setStatusBarTheme(darkMode)
@@ -90,6 +94,19 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
       matchDarkMode.removeEventListener('change', statusBarListener)
     }
   }, [shown])
+
+  //
+  //
+  //
+  useEffect(() => {
+    let raster = getRasterByID(currentRasterID)
+    if (!raster) return
+    if (raster?.startTime == raster.endTime && raster?.startTime == 0) {
+      setShowTimeButton(false)
+    } else {
+      setShowTimeButton(true)
+    }
+  }, [currentRasterID])
 
   let raster = getRasterByID(currentRasterID)
   if (!raster) return null
@@ -184,8 +201,10 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
         </div>
         <div>
           {buttons}
+          {/* the button to show or hide time slider */}
           <IonButton
             className="round-button show-button"
+            style={{ display: showTimeButton ? '' : 'none' }}
             onClick={() => showAgeSliderWidget()}
             size="default"
           >

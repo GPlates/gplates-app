@@ -3,7 +3,6 @@ import './SettingMenuPage.scss'
 import {
   IonButton,
   IonButtons,
-  IonCheckbox,
   IonIcon,
   IonInput,
   IonItem,
@@ -32,12 +31,13 @@ import {
   settingsPath,
   isCacheInfoShowState,
   networkDownloadOnCellular,
+  currentRasterIDState,
 } from '../functions/atoms'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
 import { serverURL, setServerURL } from '../functions/settings'
-import rasterMaps from '../functions/rasterMaps'
+import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
 import { cachingServant } from '../functions/cache'
 import { rotationModels } from '../functions/rotationModel'
 import { getCacheStatsData } from './CacheInfo'
@@ -103,12 +103,17 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
   const isSliderShow = useRecoilValue(isAgeSliderShown)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
+  const [showAnimationSettings, setShowAnimationSettings] = useState(false)
 
   const [presentAlert] = useIonAlert()
 
   //const navigate = useNavigate()
   const history = useHistory()
 
+  //
+  //
+  //
   useEffect(() => {
     if (isShow) {
       setStatusBarTheme(darkMode)
@@ -119,7 +124,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     }
   }, [isShow])
 
+  //
   // Save settings on each change
+  //
   useEffect(() => {
     if (isShow && path === 'root') {
       setDarkMode(darkMode)
@@ -134,6 +141,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     }
   }, [darkMode])
 
+  //
+  //
+  //
   useEffect(() => {
     if (isShow && path === 'root') {
       const settings = {
@@ -146,6 +156,22 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     }
   })
 
+  //
+  //
+  //
+  useEffect(() => {
+    let raster = getRasterByID(currentRasterID)
+    if (!raster) return
+    if (raster.endTime == raster.startTime && raster.endTime == 0) {
+      setShowAnimationSettings(false)
+    } else {
+      setShowAnimationSettings(true)
+    }
+  }, [currentRasterID])
+
+  //
+  //
+  //
   const subPageRouting = (path: string, name: string) => {
     return (
       <IonItem
@@ -230,7 +256,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         classNames={'fade'}
       >
         <IonList className={'settings-list'}>
-          {subPageRouting('animation', 'Animation Settings')}
+          {showAnimationSettings &&
+            subPageRouting('animation', 'Animation Settings')}
           {subPageRouting('backgroundSetting', 'Background Settings')}
 
           {/*--------------------------------------------*/}
