@@ -312,7 +312,7 @@ export class AnimationService {
       let url = raster.paleoMapUrl
       if (url) {
         // URL for gplates web service
-        enabledLayers.forEach((id) => {
+        layerIDs.forEach((id) => {
           url = url + ',' + id
         })
         url += '&time={{time}}&model=' + currentModel.name
