@@ -66,7 +66,7 @@ export const ToolMenu = () => {
       }}
     >
       <IonIcon
-        style={{ pointerEvents: 'none', color: 'purple' }}
+        style={{ pointerEvents: 'none', transform: 'rotate(90deg)' }}
         icon={earthSharp}
       />
     </IonFabButton>,

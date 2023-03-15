@@ -10,6 +10,8 @@ import { canDownload, presentDataAlert } from './network'
 import { Preferences } from '@capacitor/preferences'
 import { SQLiteHook } from 'react-sqlite-hook'
 import { DEBUG } from './settings'
+import rasterMaps from './rasterMaps'
+import { vectorLayers } from './vectorLayers'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -425,5 +427,136 @@ export class CachingService {
     const ret = await this.db!.query('SELECT url FROM cache ')
     return ret.values?.map((value) => value)
   }
+
   //
+  // return a map
+  // for example, {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
+  //
+  async getRasterLayerCount() {
+    let urlMap = new Map<string, number>()
+    const allUrls = await this.getAllUrls()
+    if (!allUrls) return urlMap
+
+    rasterMaps.forEach((raster) => {
+      allUrls.forEach((row) => {
+        let url = row['url']
+        //when the images are kept on gplates web service server
+        if (raster.paleoMapUrl) {
+          //console.log(url)
+          if (url.startsWith(raster.paleoMapUrl)) {
+            //find layers and build key string, such as agegrid(coastlines, topologies)
+            let startIdx = url.indexOf('layers=')
+            startIdx = url.indexOf(',', startIdx)
+            let endIdx = url.indexOf('&', startIdx)
+            let layersStr = ''
+            if (startIdx > 0 && startIdx < endIdx) {
+              layersStr = url.slice(startIdx + 1, endIdx)
+            }
+
+            setCountNumber(raster.title, layersStr, urlMap)
+          }
+        }
+        //when the images are on geoserver
+        else {
+          if (url.startsWith(raster.wmsUrl)) {
+            //find layers and build key string, such as agegrid(coastlines, topologies)
+            let startIdx = url.indexOf('layers=') + 'layers='.length
+            let endIdx = url.indexOf('&', startIdx)
+            let layersStr = ''
+            if (startIdx > 0 && startIdx < endIdx) {
+              layersStr = url.slice(startIdx, endIdx)
+            }
+            //console.log(layersStr)
+            //the layer string should be something like MULLER2019:paleo-age-grid-3-Ma,MULLER2019:coastlines_3Ma
+            let layers = layersStr.split(',')
+            if (layers.length == 0) {
+              console.log('No layer found! Something is wrong!' + layersStr)
+            }
+            let rasterName = layers[0]
+            const regStr = raster.layerName.replace('{{time}}', '.*') //build the regexp searh string
+            const regex = new RegExp(regStr)
+
+            //check if the raster name match the regexp
+            if (regex.test(rasterName)) {
+              layersStr = '' //reuse the layersStr variable
+              let vectorLayersInUrl = layers.slice(1) //remove the raster layer
+              let allVectorLayersOfThisRaster = vectorLayers.get(raster.id)
+
+              //loop through all layers in the url
+              for (let i = 0; i < vectorLayersInUrl.length; i++) {
+                let layerInUrl = vectorLayersInUrl[i]
+                let layerDisplayName = getDisplayNameFromRasterCfg(
+                  layerInUrl,
+                  allVectorLayersOfThisRaster
+                )
+                if (!layerDisplayName) {
+                  //the layer in url cannot be found in raster config
+                  //this url does not belong to this raster
+                  //do not increase the count
+                  //return to try next url
+                  return
+                } else {
+                  layersStr += layerDisplayName + ','
+                }
+              } //end of for (let i = 0; i < vectorLayersInUrl.length; i++)
+
+              //remove the last ','
+              if (layersStr.length > 0) {
+                layersStr = layersStr.slice(0, -1)
+              }
+              setCountNumber(raster.title, layersStr, urlMap)
+            } else {
+              return //if the raster name does not match, do nothing and go to next url
+            }
+          } //end of if (url.startsWith(raster.wmsUrl))
+        } // end of if (raster.paleoMapUrl)
+      }) // end of allUrls.forEach() loop
+    }) //end of rasterMaps.forEach loop
+    return urlMap
+  }
+}
+
+//
+// find displayName in raster config for given layer name
+// if the given layer name does not exist in raster config, return undefined
+//
+const getDisplayNameFromRasterCfg = (
+  layerInUrl: string,
+  allVectorLayersOfThisRaster: any[]
+) => {
+  //loop through all vector layers in the raster config
+  //allVectorLayersOfThisRaster is a javascript Object
+  for (const j in allVectorLayersOfThisRaster) {
+    let layerOfThisRaster = allVectorLayersOfThisRaster[j]
+    const regStr = layerOfThisRaster.layerName.replace('{{time}}', '.*') //build the regexp searh string
+    const regex = new RegExp(regStr)
+    if (regex.test(layerInUrl)) {
+      return layerOfThisRaster.displayName
+    }
+  }
+  return undefined
+}
+
+//
+// helper function to set the number in url count map
+// mainly used in getRasterLayerCount()
+// the map looks like something {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
+//
+const setCountNumber = (
+  rasterName: string,
+  layersStr: string,
+  urlMap: Map<string, number>
+) => {
+  let keyStr = rasterName
+  //now set the count number
+  if (layersStr) {
+    keyStr += '(' + layersStr + ')'
+  }
+  //count the number
+  let num = urlMap.get(keyStr)
+  if (num) {
+    urlMap.set(keyStr, num + 1)
+  } else {
+    urlMap.set(keyStr, 1)
+  }
 }

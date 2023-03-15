@@ -274,7 +274,7 @@ export class AnimationService {
     animateNext = value
     if (value) {
       animateFrame = this.getNextFrameNumber()
-      let url = this.getAnimationURL()
+      let url = this.getLowResImageUrl()
       if (url) this.scheduleFrame(url)
     } else {
       clearTimeout(animateTimeout)
@@ -289,7 +289,7 @@ export class AnimationService {
   // return the low-resolution map url of the current selected raster for animation
   // The {{time}} will be replaced by real value of time in function drawFrame()
   //
-  getAnimationURL = () => {
+  getLowResImageUrl = () => {
     // get overlays
     let overlays: string[] = []
     let layerIDs: string[] = []
@@ -302,9 +302,9 @@ export class AnimationService {
       enabledLayers.forEach((layer) => {
         if (layer !== 'cities') {
           if (!raster) return
-          console.log(vectorLayers.get(raster.id)[layer])
+          console.log(vectorLayers.get(raster.id))
           overlays.push(vectorLayers.get(raster.id)[layer].layerName)
-          layerIDs.push(vectorLayers.get(raster.id)[layer].id)
+          layerIDs.push(layer)
         }
       })
 

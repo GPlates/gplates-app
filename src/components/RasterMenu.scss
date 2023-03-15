@@ -26,7 +26,8 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   bottom: $raster-menu-bottom;
   width: 100%;
   height: $raster-menu-height;
-  background: rgba(var(--ion-color-light-rgb), 0.85);
+  //background: rgba(var(--ion-color-light-rgb), 0.85);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1));
 
   ion-card {
     display: inline-block;
@@ -45,10 +46,12 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   ion-card-title {
     font-size: $title-font-size;
     --font-color: var(--ion-text-color);
+    color: white;
   }
 
   ion-card-subtitle {
     font-size: $subtitle-font-size;
+    color: grey;
   }
 }
 
@@ -93,7 +96,8 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   bottom: 3rem;
   z-index: 10;
   left: 50%;
-  background-color: grey;
+  //background-color: grey;
+  background-image: linear-gradient(0deg, black, transparent);
   border-radius: 1rem;
   transform: translate(-50%, -50%);
 }

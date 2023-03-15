@@ -41,7 +41,7 @@ export const getCacheStatsData = async () => {
     })
   )
   */
-  cacheStatsList = await cachingServant.getLayerCountMap()
+  cacheStatsList = await cachingServant.getRasterLayerCount()
   total = 0
   cacheStatsList.forEach((value, key) => {
     total += value
