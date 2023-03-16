@@ -295,7 +295,7 @@ export class AnimationService {
     let layerIDs: string[] = []
     let enabledLayers: string[] = []
 
-    enabledLayers = getEnabledLayers(this.currentRasterID)
+    enabledLayers = getEnabledLayers(this.currentRasterID).sort()
 
     let raster = getRasterByID(this.currentRasterID)
     if (raster) {
@@ -315,7 +315,7 @@ export class AnimationService {
         layerIDs.forEach((id) => {
           url = url + ',' + id
         })
-        url += '&time={{time}}&model=' + currentModel.name
+        url += '&time={{time}}&model=' + currentModel.name + '&bg=211,211,211'
         console.log(url)
         return url
       } else {

@@ -296,6 +296,7 @@ export class CachingService {
 
       await db.open()
 
+      //create cache table
       let query = `CREATE TABLE IF NOT EXISTS cache (
       url STRING PRIMARY KEY NOT NULL,
       data BLOB NOT NULL,
@@ -393,19 +394,10 @@ export class CachingService {
   //
   // remove cache for given layers
   //
-  purge(layers: string, callback: Function) {
-    console.log(`purging ${layers}`)
-    let queryStr = ''
-    let workspaceAndLayers = layers.split(',')
-    workspaceAndLayers.forEach((keyword) => {
-      if (queryStr.length === 0) {
-        queryStr += "url LIKE '%" + keyword + "%'"
-      } else {
-        queryStr += " AND url LIKE '%" + keyword + "%'"
-      }
-    })
+  purge(queryStr: string, callback: Function) {
+    console.log(`purging ${queryStr}`)
 
-    queryStr = 'DELETE FROM cache WHERE ' + queryStr
+    queryStr = "DELETE FROM cache WHERE url like '" + queryStr + "'"
     console.log(queryStr)
     this.db!.run(queryStr).then(async (ret) => {
       console.log(ret)
@@ -453,12 +445,18 @@ export class CachingService {
               layersStr = url.slice(startIdx + 1, endIdx)
             }
 
-            setCountNumber(raster.title, layersStr, urlMap)
+            setCountNumber(
+              raster.title,
+              layersStr,
+              raster.paleoMapUrl + '%' + layersStr,
+              urlMap
+            )
           }
         }
         //when the images are on geoserver
         else {
           if (url.startsWith(raster.wmsUrl)) {
+            let queryStr = raster.wmsUrl
             //find layers and build key string, such as agegrid(coastlines, topologies)
             let startIdx = url.indexOf('layers=') + 'layers='.length
             let endIdx = url.indexOf('&', startIdx)
@@ -478,6 +476,7 @@ export class CachingService {
 
             //check if the raster name match the regexp
             if (regex.test(rasterName)) {
+              queryStr += '%' + raster.layerName.replace('{{time}}', '%')
               layersStr = '' //reuse the layersStr variable
               let vectorLayersInUrl = layers.slice(1) //remove the raster layer
               let allVectorLayersOfThisRaster = vectorLayers.get(raster.id)
@@ -485,9 +484,11 @@ export class CachingService {
               //loop through all layers in the url
               for (let i = 0; i < vectorLayersInUrl.length; i++) {
                 let layerInUrl = vectorLayersInUrl[i]
+                let queryObj = { query: queryStr }
                 let layerDisplayName = getDisplayNameFromRasterCfg(
                   layerInUrl,
-                  allVectorLayersOfThisRaster
+                  allVectorLayersOfThisRaster,
+                  queryObj
                 )
                 if (!layerDisplayName) {
                   //the layer in url cannot be found in raster config
@@ -504,7 +505,7 @@ export class CachingService {
               if (layersStr.length > 0) {
                 layersStr = layersStr.slice(0, -1)
               }
-              setCountNumber(raster.title, layersStr, urlMap)
+              setCountNumber(raster.title, layersStr, queryStr, urlMap)
             } else {
               return //if the raster name does not match, do nothing and go to next url
             }
@@ -522,7 +523,8 @@ export class CachingService {
 //
 const getDisplayNameFromRasterCfg = (
   layerInUrl: string,
-  allVectorLayersOfThisRaster: any[]
+  allVectorLayersOfThisRaster: any[],
+  queryObj: any
 ) => {
   //loop through all vector layers in the raster config
   //allVectorLayersOfThisRaster is a javascript Object
@@ -531,6 +533,8 @@ const getDisplayNameFromRasterCfg = (
     const regStr = layerOfThisRaster.layerName.replace('{{time}}', '.*') //build the regexp searh string
     const regex = new RegExp(regStr)
     if (regex.test(layerInUrl)) {
+      queryObj['query'] +=
+        '%' + layerOfThisRaster.layerName.replace('{{time}}', '%')
       return layerOfThisRaster.displayName
     }
   }
@@ -545,6 +549,7 @@ const getDisplayNameFromRasterCfg = (
 const setCountNumber = (
   rasterName: string,
   layersStr: string,
+  queryStr: string,
   urlMap: Map<string, number>
 ) => {
   let keyStr = rasterName
@@ -552,6 +557,7 @@ const setCountNumber = (
   if (layersStr) {
     keyStr += '(' + layersStr + ')'
   }
+  keyStr += '{{sep}}' + queryStr + '%'
   //count the number
   let num = urlMap.get(keyStr)
   if (num) {

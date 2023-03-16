@@ -24,7 +24,7 @@ import rasterMaps, { getRasterIndexByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
 import { getLowResImageUrlForGeosrv } from '../functions/util'
 
-export let cacheStatsList: Map<string, number> = new Map<string, number>()
+export let cacheStatsMap: Map<string, number> = new Map<string, number>()
 let total = 0
 
 //
@@ -41,9 +41,9 @@ export const getCacheStatsData = async () => {
     })
   )
   */
-  cacheStatsList = await cachingServant.getRasterLayerCount()
+  cacheStatsMap = await cachingServant.getRasterLayerCount()
   total = 0
-  cacheStatsList.forEach((value, key) => {
+  cacheStatsMap.forEach((value, key) => {
     total += value
   })
 }
@@ -57,7 +57,7 @@ const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
   let enabledLayers = getEnabledLayers(currentRasterID)
   enabledLayers.forEach((layer) => {
     if (layer !== 'cities') {
-      overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
+      overlays.push(vectorLayers.get(currentRasterID)[layer].layerName)
     }
   })
   let index = getRasterIndexByID(currentRasterID)
@@ -90,6 +90,11 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
   const [presentAlert] = useIonAlert()
   const currentRasterID = useRecoilValue(currentRasterIDState)
 
+  let cacheStatsList = Array.from(cacheStatsMap, (entry) => {
+    let nameAndUrlPattern = entry[0].split('{{sep}}')
+    return [nameAndUrlPattern[0], nameAndUrlPattern[1], entry[1]]
+  })
+
   return (
     <IonModal isOpen={cacheInfoShow} animated backdropDismiss={false}>
       <IonToolbar>
@@ -115,7 +120,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
           <IonItem key={9999997}>
             <IonLabel>Cached Rasters </IonLabel>
           </IonItem>
-          {Array.from(cacheStatsList).map((value, index) => (
+          {cacheStatsList.map((value, index) => (
             <IonItem key={index}>
               <IonIcon
                 icon={trashOutline}
@@ -136,10 +141,13 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                         text: 'Yes',
                         role: 'confirm',
                         handler: () => {
-                          cachingServant.purge(value[0], async () => {
-                            await getCacheStatsData()
-                            setRefresh(!refresh)
-                          })
+                          cachingServant.purge(
+                            value[1].toString(),
+                            async () => {
+                              await getCacheStatsData()
+                              setRefresh(!refresh)
+                            }
+                          )
                         },
                       },
                     ],
@@ -149,7 +157,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                 }}
               />
               <IonLabel>{value[0]} </IonLabel>
-              <IonNote slot="end">{value[1]}</IonNote>
+              <IonNote slot="end">{value[2]}</IonNote>
             </IonItem>
           ))}
           <IonItem key={999999}>
