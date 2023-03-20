@@ -162,8 +162,17 @@ const Main: React.FC = () => {
     } else {
       if (!isStartupOnline.current) {
         presentToast({
-          buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
-          duration: 5000,
+          buttons: [
+            {
+              text: 'Reload App',
+              role: 'reload',
+              handler: () => {
+                window.location.reload()
+              },
+            },
+            { text: 'Dismiss', handler: () => dismissToast() },
+          ],
+          duration: 15000,
           message: 'Back online',
           onDidDismiss: () => {},
         })

@@ -189,9 +189,10 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   //
   // when the server url has changed, ask user if reload the page
   //
-  const showReloadPageAlert = () => {
+  const showReloadPageAlert = (msg: string) => {
     presentAlert({
-      header: 'The server URL has changed. Would you like to reload?',
+      header: 'Confirm Reload',
+      message: msg,
       buttons: [
         {
           text: 'No',
@@ -291,6 +292,21 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             <IonLabel>Tutorial</IonLabel>
           </IonItem>
           {/*--------------------------------------------*/}
+          <IonItem
+            button
+            onClick={() => {
+              showReloadPageAlert(
+                'Are you sure that you would like to reload the App.'
+              )
+            }}
+          >
+            {!isPlatform('ios') && (
+              <IonIcon icon={chevronForward} slot={'end'} />
+            )}
+            <IonLabel>Reload App</IonLabel>
+          </IonItem>
+
+          {/*--------------------------------------------*/}
           <IonItemDivider>App Theme</IonItemDivider>
           <IonItem>
             <IonSegment
@@ -329,7 +345,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                 if (e.target.value) {
                   let isChanged = await setServerURL(e.target.value.toString())
                   if (isChanged) {
-                    showReloadPageAlert()
+                    showReloadPageAlert(
+                      'The server URL is changed. Would you like to reload the App?'
+                    )
                   }
                 }
               }}
@@ -358,6 +376,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
               }}
             />
           </IonItem>
+          {/*--------------------------------------------*/}
         </IonList>
       </CSSTransition>
 
