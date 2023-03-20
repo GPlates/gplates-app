@@ -210,7 +210,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
             <IonCol>
               <IonItem>
                 <IonLabel class="frames-per-second-label">
-                  <IonLabel>FPS (best effort)</IonLabel>
+                  FPS (best effort)
                 </IonLabel>
                 <IonInput
                   slot="end"

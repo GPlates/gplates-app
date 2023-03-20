@@ -192,6 +192,8 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           rotationModels.set(modelName, m)
         }
         setCurrentModel(m)
+      } else {
+        setCurrentModel(undefined) //present-day only raster, no reconstruction model
       }
     }
   } //end of select()

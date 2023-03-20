@@ -71,7 +71,7 @@ const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
   let allUrls = await cachingServant.getAllUrls()
   let count = 0
   console.log(allUrls)
-  currentModel.times.forEach((time) => {
+  currentModel?.times.forEach((time) => {
     console.log(time)
     let newUrl = url.replaceAll('{{time}}', time.toString())
     if (!allUrls?.includes(newUrl)) {

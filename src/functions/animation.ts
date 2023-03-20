@@ -160,7 +160,7 @@ export class AnimationService {
       nextNumber = this.loop || this.exact ? small : animateFrame
     }
 
-    return currentModel.getNearestTime(nextNumber)
+    return currentModel ? currentModel.getNearestTime(nextNumber) : 0
   }
 
   //
@@ -188,7 +188,7 @@ export class AnimationService {
     if (prevNumber < small) {
       prevNumber = this.loop || this.exact ? small : animateFrame
     }
-    return currentModel.getNearestTime(prevNumber)
+    return currentModel ? currentModel.getNearestTime(prevNumber) : 0
   }
 
   //
@@ -315,7 +315,7 @@ export class AnimationService {
         layerIDs.forEach((id) => {
           url = url + ',' + id
         })
-        url += '&time={{time}}&model=' + currentModel.name + '&bg=211,211,211'
+        url += '&time={{time}}&model=' + currentModel?.name + '&bg=211,211,211'
         console.log(url)
         return url
       } else {

@@ -72,14 +72,18 @@ const drawCity = (lon: number, lat: number, name: string) => {
 const drawPaleoCity = (city: number[], name: string, age: number) => {
   if (cityPlateIDs) {
     //reconstruct location
-    let reconstructedCity = currentModel.rotateLonLatPid(
+    let reconstructedCity = currentModel?.rotateLonLatPid(
       currentModel.getTimeIndex(age),
       {
         lon: city[0],
         lat: city[1],
-        pid: cityPlateIDs[currentModel.name][city[2]], //plate ID
+        pid: cityPlateIDs[currentModel?.name][city[2]], //plate ID
       }
     )
+    if (!reconstructedCity) {
+      console.log('reconstructed city coordinates are undefined.')
+      return
+    }
     drawCity(reconstructedCity.lon, reconstructedCity.lat, name) //draw reconstructed coordinates
   } else {
     console.log('Warning: cityPlateIDs is not loaded yet.')
@@ -116,7 +120,9 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
       undrawCities()
       // fetch finite rotation for plate IDs
       // finite rotation must be ready before currentModel.rotateLonLatPid()
-      currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
+      if (currentModel) {
+        currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
+      }
 
       for (let key in citiesLonLat) {
         drawPaleoCity(citiesLonLat[key], key, paleoAge)
@@ -128,7 +134,9 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
   //
   useEffect(() => {
     const drawPaleoCities = async () => {
-      await currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
+      if (currentModel) {
+        await currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
+      }
       //paleoAge !== 0, draw reconstructed city coordinates
       if (showCitiesFlag && paleoAge !== 0 && currentModel) {
         for (let key in citiesLonLat) {
