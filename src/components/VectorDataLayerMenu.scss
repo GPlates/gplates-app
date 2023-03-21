@@ -1,6 +1,7 @@
 .overlay-container {
   overflow: hidden;
   position: absolute;
+
   bottom: 0;
   right: 0;
   height: auto;
@@ -36,4 +37,14 @@
     transform: translateY(0);
     transition: transform 0.5s;
   }
+}
+
+.overlay-close-button-container {
+  text-align: right;
+}
+
+.overlay-close-button {
+  background-color: var(--ion-background-color, #fff);
+  margin-bottom: -5px;
+  border-radius: 5px 5px 0px 0px;
 }

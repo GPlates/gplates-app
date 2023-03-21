@@ -8,6 +8,8 @@ export const timeout = async (time: number) => {
 }
 
 //
+//
+//
 export const timeRange = (begin: number, end: number, step: number) => {
   //I believe Number.EPSILON is good enough in this case
   if (Math.abs(step) < Number.EPSILON) {
@@ -45,12 +47,15 @@ export const timeRange = (begin: number, end: number, step: number) => {
 }
 
 //
-export const buildAnimationURL = (
+// get the low resolution image URL for geoserver
+//
+export const getLowResImageUrlForGeosrv = (
   wmsUrl: string,
   layerName: string,
   overlays: string[] = []
 ) => {
-  //experimental code to reconstruct overlays
+  //experimental code to get overlay layers as well
+  //currently only works for MULLER2019 model
   let layerName_ = layerName
   let [workspaceName, _] = layerName.split(':')
   if (workspaceName === 'MULLER2019') {
@@ -72,6 +77,9 @@ export const buildAnimationURL = (
   )
 }
 
+//
+//
+//
 export const requestDataByUrl = async (url: string) => {
   if (!url) return null
 

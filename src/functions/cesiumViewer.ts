@@ -1,6 +1,5 @@
 import { Preferences } from '@capacitor/preferences'
 import { Color, Viewer, ImageryProvider, Cartesian3 } from 'cesium'
-import rasterMaps, { currentRasterIndex } from './rasterMaps'
 import { createCesiumImageryProvider } from './dataLoader'
 import { getVectorLayers, getEnabledLayers } from '../functions/vectorLayers'
 import {
@@ -9,6 +8,8 @@ import {
   setShowGraticuleFlag,
 } from './graticule'
 import { updateImageryLayer } from '../components/VectorDataLayerMenu'
+import { RasterCfg } from './types'
+import { getRasterIndexByID } from './rasterMaps'
 
 //singleton cersium viewer
 export let cesiumViewer: Viewer
@@ -17,7 +18,9 @@ export const HOME_LONGITUDE = 135.0
 export const HOME_LATITUDE = -25.0
 export const DEFAULT_CAMERA_HEIGHT = 15000000
 
+//
 //initialize the Cesium viewer
+//
 export const initCesiumViewer = (provider: ImageryProvider) => {
   let viewer: Viewer = new Viewer('cesiumContainer', {
     baseLayerPicker: false,
@@ -62,31 +65,34 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
   })
 }
 
-//draw raster layer and vector layers
-export const drawLayers = (time: number) => {
-  const provider = createCesiumImageryProvider(
-    rasterMaps[currentRasterIndex],
-    time
-  )
-  cesiumViewer.imageryLayers.addImageryProvider(provider) //draw the raster layer
+//
+// draw raster layer and vector layers
+//
+export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
+  //draw the raster layer
+  const provider = createCesiumImageryProvider(rasterCfg, time)
+  cesiumViewer.imageryLayers.addImageryProvider(provider)
 
-  let model = rasterMaps[currentRasterIndex]?.model ?? 'MERDITH2021'
-  let vLayers = getVectorLayers(model)
-  for (let key in vLayers) {
-    let checkedLayers = getEnabledLayers(currentRasterIndex)
-    if (checkedLayers.includes(key)) {
+  //draw the vector layers
+  let vectorLayers = getVectorLayers(rasterCfg.id)
+  for (let id in vectorLayers) {
+    let enabledLayers = getEnabledLayers(rasterCfg.id)
+
+    if (enabledLayers.includes(id)) {
       let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-        createCesiumImageryProvider(vLayers[key], time)
-      ) //draw the vector layers
-      updateImageryLayer(key, imageryLayer)
+        createCesiumImageryProvider(vectorLayers[id], time)
+      )
+      updateImageryLayer(id, imageryLayer)
     }
   }
   raiseGraticuleLayerToTop() //raise graticlue layer if enabled
   pruneLayers()
 }
 
-//get rid of some old layers
-//TODO: need a smarter way to do this
+//
+// get rid of some old layers
+// TODO: need a smarter way to do this
+//
 export const pruneLayers = () => {
   while (cesiumViewer.imageryLayers.length > 7) {
     //console.log(cesiumViewer.imageryLayers.length)

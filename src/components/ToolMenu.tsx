@@ -3,69 +3,76 @@ import {
   IonFabButton,
   IonFabList,
   IonIcon,
-  useIonLoading,
   useIonToast,
 } from '@ionic/react'
-import React, { useState } from 'react'
+import React from 'react'
 import {
   cogOutline,
   earthOutline,
-  informationCircleOutline,
+  earthSharp,
   layersOutline,
   locateOutline,
-  shareSocialOutline,
   statsChartOutline,
 } from 'ionicons/icons'
-import { SocialSharing } from './SocialSharing'
+
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import {
-  isAboutPageShow,
   isAddLocationWidgetShowState,
   isGraphPanelShowState,
   isRasterMenuShow,
   isSettingsMenuShow,
   isVectorMenuShow,
-  isModelInfoShowState,
+  rasterGroupState,
 } from '../functions/atoms'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { SceneMode } from 'cesium'
+import { RasterGroup } from '../functions/types'
+import './ToolMenu.scss'
 
 export const ToolMenu = () => {
   const [presentToast, dismissToast] = useIonToast()
-  const [present, dismiss] = useIonLoading()
 
   const setMenuPageShow = useSetRecoilState(isSettingsMenuShow)
   const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
   const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
-  const setIsAboutPageShow = useSetRecoilState(isAboutPageShow)
+
   const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
     isGraphPanelShowState
   )
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
     isAddLocationWidgetShowState
   )
-  const setShowModelInfo = useSetRecoilState(isModelInfoShowState)
+
+  const setRasterGroup = useSetRecoilState(rasterGroupState)
 
   const toolMenuList: any[] = [
     <IonFabButton
-      title="Choose Rasters"
+      title="Rasters"
       key={'tool-menu-button' + 1}
       onClick={() => {
         setRasterMenuPageShow(true)
+        setRasterGroup(RasterGroup.present)
       }}
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={earthOutline} />
     </IonFabButton>,
+    //--------------------------------------
     <IonFabButton
-      title="Settings"
-      key={'tool-menu-button' + 0}
+      title="Paleo-rasters"
+      key={'tool-menu-button' + 7}
       onClick={() => {
-        setMenuPageShow(true)
+        setRasterMenuPageShow(true)
+        setRasterGroup(RasterGroup.paleo)
       }}
     >
-      <IonIcon style={{ pointerEvents: 'none' }} icon={cogOutline} />
+      <IonIcon
+        style={{ pointerEvents: 'none', transform: 'rotate(90deg)' }}
+        icon={earthSharp}
+      />
     </IonFabButton>,
-    <IonFabButton
+
+    //--------------------------------------
+    /*<IonFabButton
       title="Share Screenshot"
       key={'tool-menu-button' + 2}
       onClick={async () => {
@@ -76,7 +83,8 @@ export const ToolMenu = () => {
         style={{ pointerEvents: 'none' }}
         icon={shareSocialOutline}
       ></IonIcon>
-    </IonFabButton>,
+    </IonFabButton>,*/
+    //--------------------------------------
     <IonFabButton
       title="Add Layers"
       key={'tool-menu-button' + 3}
@@ -86,7 +94,8 @@ export const ToolMenu = () => {
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={layersOutline} />
     </IonFabButton>,
-    <IonFabButton
+    //--------------------------------------
+    /*<IonFabButton
       title="Model Info"
       key={'tool-menu-button' + 4}
       onClick={() => {
@@ -97,7 +106,8 @@ export const ToolMenu = () => {
         style={{ pointerEvents: 'none' }}
         icon={informationCircleOutline}
       />
-    </IonFabButton>,
+    </IonFabButton>,*/
+    //--------------------------------------
     <IonFabButton
       title="Show Graphs"
       key={'tool-menu-button' + 5}
@@ -107,6 +117,7 @@ export const ToolMenu = () => {
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={statsChartOutline} />
     </IonFabButton>,
+    //--------------------------------------
     <IonFabButton
       title="Add Locations"
       key={'tool-menu-button' + 6}
@@ -126,12 +137,22 @@ export const ToolMenu = () => {
     >
       <IonIcon style={{ pointerEvents: 'none' }} icon={locateOutline} />
     </IonFabButton>,
+    //--------------------------------------
+    <IonFabButton
+      title="Settings"
+      key={'tool-menu-button' + 0}
+      onClick={() => {
+        setMenuPageShow(true)
+      }}
+    >
+      <IonIcon style={{ pointerEvents: 'none' }} icon={cogOutline} />
+    </IonFabButton>,
   ]
 
   const toolMenuTopList: any[] = []
   const toolMenuEndList: any[] = []
 
-  let buttonSize = 58
+  let buttonSize = 80
   let mainButtonSize = 56 + 10 + 10 // button size + left margin + right margin
   let count = 0
   for (let idx = 0; idx < screen.width - mainButtonSize; idx += buttonSize) {
@@ -153,6 +174,7 @@ export const ToolMenu = () => {
           setRasterMenuPageShow(false)
           setIsGraphPanelShow(false)
           setShowAddLocationWidget(false)
+          setIsVectorDataLayerMenuShow(false)
         }}
       >
         <IonIcon

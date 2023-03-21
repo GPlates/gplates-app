@@ -18,7 +18,7 @@ import {
   playForwardOutline,
   timeOutline,
 } from 'ionicons/icons'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -27,7 +27,7 @@ import {
   animatePlaying,
   isSettingsMenuShow,
   settingsPath,
-  currentRasterMapIndexState,
+  currentRasterIDState,
   appDarkMode,
   isAgeSliderShown,
   animateRange,
@@ -39,7 +39,7 @@ import {
   setStatusBarTheme,
   statusBarListener,
 } from '../functions/darkMode'
-import rasterMaps from '../functions/rasterMaps'
+import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
 
 interface AgeSliderProps {
   buttons: any
@@ -55,9 +55,10 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   const setMenuState = useSetRecoilState(isSettingsMenuShow)
   const [shown, setShown] = useRecoilState(isAgeSliderShown)
   const [presentToast, dismissToast] = useIonToast()
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
   const range = useRecoilValue(animateRange)
   const showTimeStamp = useRecoilValue(showTimeStampState)
+  const [showTimeButton, setShowTimeButton] = useState(false) //the button to open time slider
 
   const openMenu = () => {
     setMenuPath('animation')
@@ -65,10 +66,9 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   }
 
   const showAgeSliderWidget = () => {
-    if (
-      rasterMaps[currentRasterMapIndex].endTime === 0 &&
-      rasterMaps[currentRasterMapIndex].startTime === 0
-    ) {
+    let raster = getRasterByID(currentRasterID)
+    if (!raster) return
+    if (raster.endTime === 0 && raster.startTime === 0) {
       setShown(false)
       presentToast({
         buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
@@ -82,6 +82,9 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
     }
   }
 
+  //
+  //
+  //
   useEffect(() => {
     if (shown) {
       setStatusBarTheme(darkMode)
@@ -92,34 +95,39 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
     }
   }, [shown])
 
+  //
+  //
+  //
+  useEffect(() => {
+    let raster = getRasterByID(currentRasterID)
+    if (!raster) return
+    if (raster?.startTime == raster.endTime && raster?.startTime == 0) {
+      setShowTimeButton(false)
+    } else {
+      setShowTimeButton(true)
+    }
+  }, [currentRasterID])
+
+  let raster = getRasterByID(currentRasterID)
+  if (!raster) return null
+
   return (
     <div>
       <div className={shown ? 'container' : 'container hidden'}>
         <IonItem className="time-input" lines="none">
           <IonInput
             inputMode="numeric"
-            min={
-              rasterMaps.length > 0
-                ? rasterMaps[currentRasterMapIndex].endTime
-                : 0
-            }
-            max={
-              rasterMaps.length > 0
-                ? rasterMaps[currentRasterMapIndex].startTime
-                : 0
-            }
-            onIonChange={(e) =>
+            min={rasterMaps.length > 0 ? raster.endTime : 0}
+            max={rasterMaps.length > 0 ? raster.startTime : 0}
+            onIonChange={(e) => {
+              if (!raster) return null
               setNumber(
                 setAge,
                 e.detail.value,
-                rasterMaps.length > 0
-                  ? rasterMaps[currentRasterMapIndex].endTime
-                  : 0,
-                rasterMaps.length > 0
-                  ? rasterMaps[currentRasterMapIndex].startTime
-                  : 0
+                rasterMaps.length > 0 ? raster.endTime : 0,
+                rasterMaps.length > 0 ? raster.startTime : 0
               )
-            }
+            }}
             value={_age}
           />
           Ma
@@ -193,8 +201,10 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
         </div>
         <div>
           {buttons}
+          {/* the button to show or hide time slider */}
           <IonButton
             className="round-button show-button"
+            style={{ display: showTimeButton ? '' : 'none' }}
             onClick={() => showAgeSliderWidget()}
             size="default"
           >

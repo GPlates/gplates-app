@@ -13,16 +13,19 @@ import {
 } from '@ionic/react'
 import { Preferences } from '@capacitor/preferences'
 import { setNumber } from '../functions/input'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
+  age,
   animateExact,
   animateFps,
   animateIncrement,
   animateLoop,
   animateRange,
-  currentRasterMapIndexState,
+  currentRasterIDState,
+  isCacheInfoShowState,
 } from '../functions/atoms'
-import RasterMaps from '../functions/rasterMaps'
+import RasterMaps, { getRasterByID } from '../functions/rasterMaps'
+import { getCacheStatsData } from './CacheInfo'
 
 //
 interface ContainerProps {}
@@ -35,7 +38,9 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const [increment, setIncrement] = useRecoilState(animateIncrement)
   const [loop, setLoop] = useRecoilState(animateLoop)
   const [range, setRange] = useRecoilState(animateRange)
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
+  const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
+  const [currentAge, setCurrentAge] = useRecoilState(age)
 
   // Animation constants
   const minIncrement = 1
@@ -43,12 +48,19 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const minFps = 1
   const maxFps = 60
 
+  //
+  //
+  //
   const reverseAnimation = () => {
     const lower = range.upper
     const upper = range.lower
     setRange({ lower, upper })
+    setCurrentAge(lower)
   }
 
+  //
+  //
+  //
   useEffect(() => {
     const settings = {
       exact,
@@ -63,7 +75,9 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
     })
   }, [exact, fps, increment, loop, range])
 
+  //
   // Hack to get IonRange knobs to show the correct position on component mount
+  //
   useEffect(() => {
     setTimeout(() => {
       const old = Object.assign({}, range)
@@ -72,55 +86,54 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
     }, 100)
   }, [])
 
-  let minTime =
-    RasterMaps.length > 0 ? RasterMaps[currentRasterMapIndex].endTime : 0
-  let maxTime =
-    RasterMaps.length > 0 ? RasterMaps[currentRasterMapIndex].startTime : 1000
-
+  let raster = getRasterByID(currentRasterID)
+  let minTime = 0
+  let maxTime = 0
+  if (raster) {
+    minTime = RasterMaps.length > 0 ? raster.endTime : 0
+    maxTime = RasterMaps.length > 0 ? raster.startTime : 1000
+  }
   return (
     <div>
       <IonList className={'settings-list'}>
         <IonGrid className="animation-settings">
           <IonRow>
             <IonCol>
-              <IonItem lines="none">
-                <h5>Range</h5>
+              <IonItem>
+                <IonLabel>Range</IonLabel>
+                <IonRange
+                  dir={range.lower > range.upper ? 'rtl' : 'ltr'}
+                  dualKnobs={true}
+                  min={minTime}
+                  max={maxTime}
+                  onIonKnobMoveEnd={(e) => {
+                    //console.log(e.detail.value)
+                    let rangeValue = e.detail.value as {
+                      lower: number
+                      upper: number
+                    }
+                    if (range.lower > range.upper) {
+                      setRange({
+                        lower: rangeValue.upper,
+                        upper: rangeValue.lower,
+                      })
+                    } else {
+                      setRange({
+                        lower: rangeValue.lower,
+                        upper: rangeValue.upper,
+                      })
+                    }
+                  }}
+                  value={range}
+                />
               </IonItem>
             </IonCol>
           </IonRow>
-          <IonRow>
-            <IonCol>
-              <IonRange
-                dir={range.lower > range.upper ? 'rtl' : 'ltr'}
-                dualKnobs={true}
-                min={minTime}
-                max={maxTime}
-                onIonKnobMoveEnd={(e) => {
-                  //console.log(e.detail.value)
-                  let rangeValue = e.detail.value as {
-                    lower: number
-                    upper: number
-                  }
-                  if (range.lower > range.upper) {
-                    setRange({
-                      lower: rangeValue.upper,
-                      upper: rangeValue.lower,
-                    })
-                  } else {
-                    setRange({
-                      lower: rangeValue.lower,
-                      upper: rangeValue.upper,
-                    })
-                  }
-                }}
-                value={range}
-              />
-            </IonCol>
-          </IonRow>
+          {/********************************************/}
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>From:</IonLabel>
+                <IonLabel>From age</IonLabel>
                 <IonInput
                   inputMode="numeric"
                   min={minTime}
@@ -136,9 +149,12 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                 Ma
               </IonItem>
             </IonCol>
+          </IonRow>
+          {/********************************************/}
+          <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>To:</IonLabel>
+                <IonLabel>To age</IonLabel>
                 <IonInput
                   inputMode="numeric"
                   min={minTime}
@@ -155,17 +171,22 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
               </IonItem>
             </IonCol>
           </IonRow>
+          {/********************************************/}
           <IonRow>
-            <IonCol className="reverse-col">
-              <IonButton onClick={reverseAnimation} size="small">
-                Reverse the Animation
-              </IonButton>
+            <IonCol>
+              <IonItem>
+                <IonLabel>Swap</IonLabel>
+                <IonButton onClick={reverseAnimation} size="small">
+                  Swap &quot;FROM age&quot; and &quot;TO age&quot;
+                </IonButton>
+              </IonItem>
             </IonCol>
           </IonRow>
+          {/********************************************/}
           <IonRow>
             <IonCol className="increment-col">
               <IonItem>
-                <IonLabel>Increment:</IonLabel>
+                <IonLabel>Increment</IonLabel>
                 <IonInput
                   inputMode="numeric"
                   min={minIncrement}
@@ -184,13 +205,12 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
               </IonItem>
             </IonCol>
           </IonRow>
-
+          {/********************************************/}
           <IonRow>
             <IonCol>
               <IonItem>
                 <IonLabel class="frames-per-second-label">
-                  <h2>Frames per second:</h2>
-                  <p>(best effort)</p>
+                  FPS (best effort)
                 </IonLabel>
                 <IonInput
                   slot="end"
@@ -209,11 +229,11 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
               </IonItem>
             </IonCol>
           </IonRow>
-
+          {/********************************************/}
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Finish animation exactly on end time:</IonLabel>
+                <IonLabel>Finish exactly on end age</IonLabel>
                 <IonToggle
                   checked={exact}
                   onIonChange={(e) => setExact(e.detail.checked)}
@@ -221,15 +241,33 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
               </IonItem>
             </IonCol>
           </IonRow>
-
+          {/********************************************/}
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Loop:</IonLabel>
+                <IonLabel>Loop</IonLabel>
                 <IonToggle
                   checked={loop}
                   onIonChange={(e) => setLoop(e.detail.checked)}
                 />
+              </IonItem>
+            </IonCol>
+          </IonRow>
+          {/********************************************/}
+          <IonRow>
+            <IonCol>
+              <IonItem>
+                <IonLabel>Caching</IonLabel>
+
+                <IonButton
+                  onClick={async () => {
+                    await getCacheStatsData()
+                    setCacheInfoShow(true)
+                  }}
+                  size="small"
+                >
+                  Open Caching Dialog
+                </IonButton>
               </IonItem>
             </IonCol>
           </IonRow>

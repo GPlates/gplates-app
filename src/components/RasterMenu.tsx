@@ -4,101 +4,147 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  useIonLoading,
+  IonIcon,
 } from '@ionic/react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperType, { FreeMode, Navigation } from 'swiper'
 
 import './RasterMenu.scss'
-import { SetterOrUpdater, useRecoilState, useSetRecoilState } from 'recoil'
 import {
-  currentRasterMapIndexState,
+  SetterOrUpdater,
+  useRecoilState,
+  useSetRecoilState,
+  useRecoilValue,
+} from 'recoil'
+import {
   isRasterMenuShow,
   age,
   animateRange,
   showTimeStampState,
+  rasterGroupState,
+  currentRasterIDState,
 } from '../functions/atoms'
-import rasterMaps, { setCurrentRasterIndex } from '../functions/rasterMaps'
-import { cesiumViewer } from '../functions/cesiumViewer'
-import { WebMapTileServiceImageryProvider } from 'cesium'
-import { timeout, timeRange } from '../functions/util'
+import { getRasters, getRasterByID } from '../functions/rasterMaps'
+import { cesiumViewer, pruneLayers } from '../functions/cesiumViewer'
+import { timeRange } from '../functions/util'
+import { raiseGraticuleLayerToTop } from '../functions/graticule'
 import RotationModel, {
   rotationModels,
   setCurrentModel,
 } from '../functions/rotationModel'
-import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
+import {
+  loadVectorLayers,
+  getVectorLayers,
+  getEnabledLayers,
+} from '../functions/vectorLayers'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
+import { AnimationService } from '../functions/animation'
+import { RasterCfg, RasterGroup } from '../functions/types'
+import { closeCircleOutline } from 'ionicons/icons'
 
 interface ContainerProps {
   isViewerLoading: Function
   isCesiumViewerReady: boolean
   setAgeSliderShown: SetterOrUpdater<boolean>
+  animationService: AnimationService
 }
 
+//
+// RasterMenu funtional component
+//
 export const RasterMenu: React.FC<ContainerProps> = ({
   isCesiumViewerReady,
   setAgeSliderShown,
+  animationService,
 }) => {
-  const [currentRasterMapIndex, setCurrentRasterMapIndex] = useRecoilState(
-    currentRasterMapIndexState
-  )
+  const [currentRasterID, setCurrentRasterID] =
+    useRecoilState(currentRasterIDState)
+
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
   const setAge = useSetRecoilState(age)
-  const [range, setRange] = useRecoilState(animateRange)
+  const setRange = useSetRecoilState(animateRange)
   const setShowTimeStampState = useSetRecoilState(showTimeStampState)
 
   const [swiper, setSwiper] = useState<SwiperType>()
+  const rasterGroup = useRecoilValue(rasterGroupState)
 
   //
-  const switchLayer = (provider: WebMapTileServiceImageryProvider) => {
+  // switch to another raster
+  //
+  const switchRaster = (raster: RasterCfg) => {
+    //stop the animation if necessary
+    animationService.setPlaying(false)
+
+    //draw the raster
+    let provider = createCesiumImageryProvider(raster)
     cesiumViewer.imageryLayers.addImageryProvider(provider)
+
+    raiseGraticuleLayerToTop() //raise graticlue layer if enabled
+
     // we don't remove the old layer immediately.
     // the "remove" is very fast to complete, but the "add" is slow.
     // if we remove the old layer immediately, user will see something underneath.
     // sometimes, we don't want to show user that.
-    if (cesiumViewer.imageryLayers.length > 8) {
-      cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
-    }
+    pruneLayers()
   }
 
   //
-  useEffect(() => {
-    //by default, select the raster icon in the middle.
-    let middle = Math.floor(rasterMaps.length / 2)
-    select(middle)
-    swiper?.slideTo(middle)
-  }, [isCesiumViewerReady]) //initial selection
+  //
+  //
+  useEffect(() => {}, [isCesiumViewerReady]) //initial selection
 
   //
-  useEffect(() => {
-    setCurrentRasterIndex(currentRasterMapIndex)
-  }, [currentRasterMapIndex]) //update current raster index
+  //
+  //
+  useEffect(() => {}, [rasterGroup])
+
+  //
+  //
+  //
+  useEffect(() => {}, [currentRasterID]) // current raster ID changed
 
   let optionList = []
-  for (let i = 0; i < rasterMaps.length; i++) {
+  let rasters = getRasters(rasterGroup)
+  //console.log(rasters)
+  for (let i = 0; i < rasters.length; i++) {
+    //if present-day raster,
+    //skip all rasters with a rotation model
+    if (rasterGroup == RasterGroup.present) {
+      if (rasters[i].model) {
+        continue
+      }
+    } else {
+      //if paleo-rasters,
+      //skip all rasters without a rotation model
+      if (!rasters[i].model) {
+        continue
+      }
+    }
     optionList.push(
-      <SwiperSlide style={{ width: 'auto' }} key={i}>
+      <SwiperSlide style={{ width: 'auto' }} key={rasters[i].id}>
         <IonCard
-          key={'raster-menu-element-' + i}
+          key={'raster-menu-element-' + rasters[i].id}
           className={
-            currentRasterMapIndex === i ? 'selected-opt' : 'unselected-opt'
+            currentRasterID === rasters[i].id
+              ? 'selected-opt'
+              : 'unselected-opt'
           }
           onClick={async (e) => {
-            if (currentRasterMapIndex !== i) {
-              select(i)
-              switchLayer(createCesiumImageryProvider(rasterMaps[i]))
+            if (currentRasterID !== rasters[i].id) {
+              select(rasters[i].id)
+              switchRaster(rasters[i])
             }
           }}
         >
           <img
-            src={rasterMaps[i].icon}
-            className={'map-icon'}
-            alt={'global icon'}
+            src={rasters[i].icon}
+            className={'raster-icon'}
+            alt={rasters[i].title}
           />
           <IonCardHeader>
-            <IonCardTitle>{rasterMaps[i].title}</IonCardTitle>
-            <IonCardSubtitle>{rasterMaps[i].subTitle}</IonCardSubtitle>
+            <IonCardTitle>{rasters[i].title}</IonCardTitle>
+            <IonCardSubtitle>{rasters[i].subTitle}</IonCardSubtitle>
           </IonCardHeader>
           <div />
         </IonCard>
@@ -106,14 +152,18 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     )
   }
 
-  // select the target one and unselect rest all
-  const select = async (index: number) => {
-    setCurrentRasterMapIndex(index)
-    setCurrentRasterIndex(index)
+  //
+  // select the current raster and deselect all others
+  //
+  const select = async (rasterID: string) => {
+    setCurrentRasterID(rasterID)
+
     setAge(0)
-    if (rasterMaps.length > index) {
-      const endTime = rasterMaps[index].endTime
-      const startTime = rasterMaps[index].startTime
+
+    let raster = getRasterByID(rasterID)
+    if (raster) {
+      const endTime = raster.endTime
+      const startTime = raster.startTime
       setRange({
         lower: endTime,
         upper: startTime,
@@ -130,34 +180,46 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
     //find out if the rotation model has been created
     //if not, create one
-    if (index < rasterMaps.length) {
-      let currentRaster = rasterMaps[index]
-      let modelName = currentRaster.model
+    if (raster) {
+      if (!getVectorLayers(raster.id)) await loadVectorLayers(raster.id)
+      let modelName = raster.model
       if (modelName) {
         let m = rotationModels.get(modelName)
         if (!m) {
-          let times = timeRange(
-            currentRaster.startTime,
-            currentRaster.endTime,
-            currentRaster.step
-          )
-          await loadVectorLayers(modelName)
+          let times = timeRange(raster.startTime, raster.endTime, raster.step)
+
           m = new RotationModel(modelName, times, getVectorLayers(modelName))
           rotationModels.set(modelName, m)
         }
         setCurrentModel(m)
+      } else {
+        setCurrentModel(undefined) //present-day only raster, no reconstruction model
       }
     }
-  }
+  } //end of select()
 
+  //swiper?.destroy(true, false) //destroy the old swiper instance. a new one will be created.
+  //
+  //
+  //
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
-      <div
+      {/*<div
         className={'raster-menu-backdrop'}
         onClick={() => {
           setIsShow(false)
         }}
+      />*/}
+
+      <IonIcon
+        className="raster-menu-close-button"
+        icon={closeCircleOutline}
+        size="large"
+        onClick={() => {
+          setIsShow(false)
+        }}
       />
+
       <Swiper
         slidesPerView={'auto'}
         spaceBetween={30}

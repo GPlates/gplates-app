@@ -17,16 +17,19 @@ import {
 } from '@ionic/react'
 import { trashOutline } from 'ionicons/icons'
 import { cachingServant } from '../functions/cache'
-import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
-import { isCacheInfoShowState } from '../functions/atoms'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { isCacheInfoShowState, currentRasterIDState } from '../functions/atoms'
 import { getEnabledLayers, vectorLayers } from '../functions/vectorLayers'
-import rasterMaps, { currentRasterIndex } from '../functions/rasterMaps'
+import rasterMaps, { getRasterIndexByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
-import { buildAnimationURL } from '../functions/util'
+import { getLowResImageUrlForGeosrv } from '../functions/util'
 
-export let cacheStatsList: Map<string, number> = new Map<string, number>()
+export let cacheStatsMap: Map<string, number> = new Map<string, number>()
 let total = 0
 
+//
+//
+//
 export const getCacheStatsData = async () => {
   //do not remove the code below
   //for future reference
@@ -38,32 +41,37 @@ export const getCacheStatsData = async () => {
     })
   )
   */
-  cacheStatsList = await cachingServant.getLayerCountMap()
+  cacheStatsMap = await cachingServant.getRasterLayerCount()
   total = 0
-  cacheStatsList.forEach((value, key) => {
+  cacheStatsMap.forEach((value, key) => {
     total += value
   })
 }
 
 //
-const CacheCurrentRasterAndOverlays = async () => {
+// Cache the current raster and overlays
+// for now, only work for geoserver
+//
+const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
   let overlays: string[] = []
-  let enabledLayers = getEnabledLayers(currentRasterIndex)
+  let enabledLayers = getEnabledLayers(currentRasterID)
   enabledLayers.forEach((layer) => {
     if (layer !== 'cities') {
-      overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
+      overlays.push(vectorLayers.get(currentRasterID)[layer].layerName)
     }
   })
-  let url = buildAnimationURL(
-    rasterMaps[currentRasterIndex].wmsUrl,
-    rasterMaps[currentRasterIndex].layerName,
+  let index = getRasterIndexByID(currentRasterID)
+  if (!index) return
+  let url = getLowResImageUrlForGeosrv(
+    rasterMaps[index].wmsUrl,
+    rasterMaps[index].layerName,
     overlays
   )
   console.log(url)
   let allUrls = await cachingServant.getAllUrls()
   let count = 0
   console.log(allUrls)
-  currentModel.times.forEach((time) => {
+  currentModel?.times.forEach((time) => {
     console.log(time)
     let newUrl = url.replaceAll('{{time}}', time.toString())
     if (!allUrls?.includes(newUrl)) {
@@ -80,11 +88,17 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
   const [cacheInfoShow, setCacheInfoShow] = useRecoilState(isCacheInfoShowState)
   const [refresh, setRefresh] = useState(true)
   const [presentAlert] = useIonAlert()
+  const currentRasterID = useRecoilValue(currentRasterIDState)
+
+  let cacheStatsList = Array.from(cacheStatsMap, (entry) => {
+    let nameAndUrlPattern = entry[0].split('{{sep}}')
+    return [nameAndUrlPattern[0], nameAndUrlPattern[1], entry[1]]
+  })
 
   return (
     <IonModal isOpen={cacheInfoShow} animated backdropDismiss={false}>
       <IonToolbar>
-        <IonTitle>Cache Information</IonTitle>
+        <IonTitle>Caching</IonTitle>
         <IonButtons slot={'end'}>
           <IonButton
             onClick={() => {
@@ -99,11 +113,14 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
       </IonToolbar>
       <IonContent>
         <IonItem>
-          <IonLabel class="cache-db-label">Cache Database Name </IonLabel>
+          <IonLabel class="cache-db-label">Database Name </IonLabel>
           <IonNote slot="end">{cachingServant.getDBName()}</IonNote>
         </IonItem>
         <IonList>
-          {Array.from(cacheStatsList).map((value, index) => (
+          <IonItem key={9999997}>
+            <IonLabel>Cached Rasters </IonLabel>
+          </IonItem>
+          {cacheStatsList.map((value, index) => (
             <IonItem key={index}>
               <IonIcon
                 icon={trashOutline}
@@ -124,10 +141,13 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                         text: 'Yes',
                         role: 'confirm',
                         handler: () => {
-                          cachingServant.purge(value[0], async () => {
-                            await getCacheStatsData()
-                            setRefresh(!refresh)
-                          })
+                          cachingServant.purge(
+                            value[1].toString(),
+                            async () => {
+                              await getCacheStatsData()
+                              setRefresh(!refresh)
+                            }
+                          )
                         },
                       },
                     ],
@@ -137,16 +157,17 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                 }}
               />
               <IonLabel>{value[0]} </IonLabel>
-              <IonNote slot="end">{value[1]}</IonNote>
+              <IonNote slot="end">{value[2]}</IonNote>
             </IonItem>
           ))}
           <IonItem key={999999}>
-            <IonLabel>{'Total:'} </IonLabel>
+            <IonLabel>Total </IonLabel>
             <IonNote slot="end">{total}</IonNote>
           </IonItem>
         </IonList>
         <br></br>
         <div className="cache-info-buttons-div">
+          {/* the refresh button */}
           <IonButton
             shape="round"
             onClick={async () => {
@@ -159,6 +180,43 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             <IonRippleEffect />
           </IonButton>
 
+          {/* the purge button */}
+          <IonButton
+            shape="round"
+            onClick={() => {
+              presentAlert({
+                header: `Purge All Cache Files?`,
+                cssClass: 'purge-cache-alert',
+                buttons: [
+                  {
+                    text: 'No',
+                    role: 'cancel',
+                    handler: () => {
+                      console.log('Info: cache purge cancelled!')
+                    },
+                  },
+                  {
+                    text: 'Yes',
+                    role: 'confirm',
+                    handler: () => {
+                      cachingServant.clearCachedData(async () => {
+                        await getCacheStatsData()
+                        setRefresh(!refresh)
+                      })
+                    },
+                  },
+                ],
+                onDidDismiss: (e: CustomEvent) =>
+                  console.log(`Dismissed with role: ${e.detail.role}`),
+              })
+            }}
+            color={'danger'}
+          >
+            Purge
+            <IonRippleEffect />
+          </IonButton>
+
+          {/* the Download button */}
           <IonButton
             shape="round"
             onClick={() => {
@@ -179,7 +237,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                     text: 'Yes',
                     role: 'confirm',
                     handler: () => {
-                      CacheCurrentRasterAndOverlays()
+                      CacheCurrentRasterAndOverlays(currentRasterID)
                     },
                   },
                 ],
@@ -189,13 +247,13 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             }}
             color={'secondary'}
           >
-            Populate
+            Download
             <IonRippleEffect />
           </IonButton>
         </div>
         <div className="cache-info-note">
-          Note: Press the &quot;POPULATE&quot; button to precache the current
-          raster and overlays for animation. Press the red bin to purge cache.
+          Note: Press the &quot;DOWNLOAD&quot; button to cache the current
+          raster and overlays for animation.
         </div>
         <br />
         <br />

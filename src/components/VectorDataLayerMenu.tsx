@@ -6,17 +6,19 @@ import {
   IonLabel,
   IonAccordionGroup,
   IonAccordion,
+  IonIcon,
 } from '@ionic/react'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { closeCircleOutline } from 'ionicons/icons'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  currentRasterMapIndexState,
+  currentRasterIDState,
   isVectorMenuShow,
   age,
   showCities,
 } from '../functions/atoms'
-import rasterMaps from '../functions/rasterMaps'
+
 import { VectorLayerType } from '../functions/types'
 import {
   getVectorLayers,
@@ -32,7 +34,9 @@ let vectorLayers: VectorLayerType[] = []
 
 let cityEnabledFlag = false
 
-//given the layer's ID, update the cesium ImageryLayer object
+//
+// given the layer's ID, update the cesium ImageryLayer object
+//
 export const updateImageryLayer = (layerID: string, imageryLayer: any) => {
   let layer: any = null
   for (let i = 0; i < vectorLayers.length; i++) {
@@ -41,6 +45,7 @@ export const updateImageryLayer = (layerID: string, imageryLayer: any) => {
       break
     }
   }
+  //console.log(layer)
   if (layer) {
     if (layer.imageryLayer) {
       cesiumViewer.imageryLayers.remove(layer.imageryLayer)
@@ -53,124 +58,134 @@ interface ContainerProps {}
 
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
   const rAge = useRecoilValue(age)
   const setShowCities = useSetRecoilState(showCities)
-  const [refresh, setRefresh] = useState(true)
 
-  //get vector layers and draw them on Cesium globe
-  const getVecInfoByRaster = async (rasterModel: string) => {
-    let layers = getVectorLayers(rasterModel)
+  //
+  // draw all enabled vector layers
+  //
+  const drawEnabledVectorLayers = () => {
+    let enabledLayers = getEnabledLayers(currentRasterID)
+
+    for (let i = 0; i < vectorLayers.length; i++) {
+      if (enabledLayers.includes(vectorLayers[i].id)) {
+        let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
+          createCesiumImageryProvider(vectorLayers[i], 0) //time=0
+        )
+        vectorLayers[i].imageryLayer = imageryLayer
+      }
+    }
+  }
+
+  //
+  // prepare the vectorLayers array
+  //
+  const prepareVectorLayers = () => {
+    //find out all the vector layers defined for the current raster
+    let layers = getVectorLayers(currentRasterID)
     vectorLayers = []
     for (let key in layers) {
       let layer = {
+        id: key,
         displayName: layers[key].displayName,
         imageryLayer: null as unknown as ImageryLayer,
-        id: key,
         layerName: layers[key].layerName,
         url: layers[key].url,
         wmsUrl: layers[key].wmsUrl,
         style: layers[key].style,
         checked: false,
       }
-
-      let checkedLayers = getEnabledLayers(currentRasterMapIndex)
-      if (checkedLayers.includes(layer.layerName)) {
+      //find out all enabled vector layers and set the flags
+      let checkedLayers = getEnabledLayers(currentRasterID)
+      if (checkedLayers.includes(layer.id)) {
         layer.checked = true
-        layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-          createCesiumImageryProvider(layers[key], rAge)
-        )
+      } else {
+        layer.checked = false
       }
       if (checkedLayers.includes('cities')) {
         cityEnabledFlag = true
+      } else {
+        cityEnabledFlag = false
       }
-      vectorLayers.push(layer) //add the new layer into the vector layer list
+
+      vectorLayers.push(layer)
     }
-    //console.log(vectorLayers)
   }
 
   //
-  function removeAllVectorLayer() {
-    vectorLayers.forEach((layer) => {
-      cesiumViewer.imageryLayers.remove(layer.imageryLayer)
-      layer.imageryLayer = null
-    })
-    vectorLayers = []
-  }
-
-  //update the vector layer list when the current raster has changed
-  function updateVectorDataInformation() {
-    //get the current model name. if no avaible, give it a default model
-    let model = rasterMaps[currentRasterMapIndex]?.model ?? 'MERDITH2021'
-
-    removeAllVectorLayer()
-
-    getVecInfoByRaster(model)
-  }
-
-  // update to corresponding vector layer when raster map changes
+  // when current raster is changed, populate the vectorLayers array
+  //
   useEffect(() => {
-    vectorLayers = []
-    cityEnabledFlag = false
-    setRefresh(!refresh)
-  }, [currentRasterMapIndex])
+    prepareVectorLayers()
+    drawEnabledVectorLayers()
+  }, [currentRasterID])
 
+  //
   // initializing
-  useEffect(() => {
-    //updateVectorDataInformation()
-  }, [])
+  //
+  useEffect(() => {}, [])
 
-  useEffect(() => {
-    updateVectorLayers(rAge)
-  }, [rAge])
+  //
+  // when any vector layer checkbox changed
+  //
+  const onCheckBoxChange = (checkbox: any) => {
+    let layer = vectorLayers[checkbox.detail.value]
+    layer.checked = checkbox.detail.checked
 
-  // check or uncheck target vector layer
-  const checkLayer = (layer: VectorLayerType, isChecked: boolean) => {
+    let isChecked = layer.checked
     if (isChecked) {
       if (layer.imageryLayer === null) {
         layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
           createCesiumImageryProvider(layer, rAge)
         )
       }
-      enableLayer(currentRasterMapIndex, layer.id)
+      enableLayer(currentRasterID, layer.id)
     } else {
       if (layer.imageryLayer) {
         cesiumViewer.imageryLayers.remove(layer.imageryLayer)
         layer.imageryLayer = null
       }
-      disableLayer(currentRasterMapIndex, layer.id)
+      disableLayer(currentRasterID, layer.id)
     }
   }
 
   //
-  const onCheckBoxChange = (val: any) => {
-    let layer = vectorLayers[val.detail.value]
-    layer.checked = val.detail.checked
-    checkLayer(layer, layer.checked)
-  }
-
+  // callback when cities checkbox changed
   //
-  const onCitiesCheckBoxChange = (val: any) => {
-    setShowCities(val.detail.checked)
-    if (val.detail.checked) {
-      enableLayer(currentRasterMapIndex, 'cities')
+  const onCitiesCheckBoxChange = (checkbox: any) => {
+    setShowCities(checkbox.detail.checked)
+
+    if (checkbox.detail.checked) {
+      enableLayer(currentRasterID, 'cities')
     } else {
-      disableLayer(currentRasterMapIndex, 'cities')
+      disableLayer(currentRasterID, 'cities')
     }
-    cityEnabledFlag = val.detail.checked
+    cityEnabledFlag = checkbox.detail.checked
   }
 
-  if (isShow && vectorLayers.length === 0) updateVectorDataInformation()
+  // in case vectorLayers was not ready, but the widget wants to show ifself
+  if (isShow && vectorLayers.length === 0) prepareVectorLayers()
 
   return (
     <div
       className={isShow ? 'overlay-container show' : 'overlay-container hide'}
     >
       <div className={isShow ? 'overlay-widget show' : 'overlay-widget hide'}>
+        <div className="overlay-close-button-container">
+          <IonIcon
+            className="overlay-close-button"
+            icon={closeCircleOutline}
+            size="large"
+            onClick={() => {
+              setIsShow(false)
+            }}
+          />
+        </div>
         <IonAccordionGroup value="first">
           <IonAccordion value="first">
             <IonItem slot="header" color="light">
-              <IonLabel>Add Overlays</IonLabel>
+              <IonLabel>Overlays</IonLabel>
             </IonItem>
             <div slot="content">
               <IonItem>
@@ -200,7 +215,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
             })}
           </IonAccordion>
         </IonAccordionGroup>
-        <IonButton
+        {/*<IonButton
           expand="full"
           className="close-button"
           slot={'end'}
@@ -211,37 +226,8 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
           }}
         >
           Close
-        </IonButton>
+        </IonButton>*/}
       </div>
     </div>
   )
-}
-
-//do not remove the code below
-//keep these code commented here for future reference
-const updateVectorLayers = (rAge: number) => {
-  try {
-    //not working this way
-    //try request multiple layers in one request
-    //the layers need to be in the same workspace
-    /*
-    vectorLayers.forEach(async (layer) => {
-      if (layer.checked) {
-        let url = buildAnimationURL(layer.wmsUrl, layer.layer)
-        let dataURL: string = await cachingServant.getCachedRequest(
-          url.replace('{{time}}', String(rAge)) + '&transparent=true'
-        )
-        console.log(url.replace('{{time}}', String(rAge)))
-        //only do this when the dataURL is valid
-        if (dataURL.length > 0) {
-          const provider = new SingleTileImageryProvider({
-            url: dataURL,
-          })
-          cesiumViewer.imageryLayers.addImageryProvider(provider)
-        }
-      }
-    })*/
-  } catch (err) {
-    console.log(err)
-  }
 }

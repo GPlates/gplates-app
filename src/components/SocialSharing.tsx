@@ -350,7 +350,10 @@ export const SocialSharing = async (
   if (getPlatforms().includes('desktop')) canShare = false
   if (canShare) {
     try {
-      loadingPresent({ message: 'Taking screenshot...' })
+      loadingPresent({
+        message: 'Taking screenshot...',
+        cssClass: 'screenshot-loading',
+      })
       //let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
       let screenShot = await getScreenShot()
       //console.log(screenShot)

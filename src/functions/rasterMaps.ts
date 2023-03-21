@@ -1,4 +1,4 @@
-import { RasterCfg } from './types'
+import { RasterCfg, RasterGroup } from './types'
 import { createCesiumImageryProvider } from './dataLoader'
 import { serverURL, DEBUG } from './settings'
 import { getDefaultStore } from './storage'
@@ -8,6 +8,7 @@ export const failSafeRasterMaps: RasterCfg[] = [
     id: 'geology',
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
+    paleoMapUrl: '',
     layerName: 'gplates:cgmw_2010_3rd_ed_gplates_clipped_edge_ref',
     style: '',
     title: 'Geology',
@@ -16,12 +17,12 @@ export const failSafeRasterMaps: RasterCfg[] = [
     startTime: 0,
     endTime: 0,
     step: 0,
-    model: 'MULLER2019',
   },
   {
     id: 'agegrid',
     url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
     wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
+    paleoMapUrl: '',
     layerName: 'gplates:agegrid',
     style: '',
     title: 'Agegrid',
@@ -32,35 +33,79 @@ export const failSafeRasterMaps: RasterCfg[] = [
     step: 0,
     model: 'SETON2012',
   },
-  {
-    id: 'topography',
-    url: 'https://geosrv.earthbyte.org/geoserver/gwc/service/wmts',
-    wmsUrl: 'https://geosrv.earthbyte.org/geoserver/gplates/wms',
-    layerName: 'gplates:topography',
-    style: '',
-    title: 'Topography',
-    subTitle: 'present day',
-    icon: 'assets/raster_menu/topography-256x256.png',
-    startTime: 0,
-    endTime: 0,
-    step: 0,
-    model: 'MERDITH2021',
-  },
 ]
 
 const rasterMaps: RasterCfg[] = []
 export default rasterMaps
-export let currentRasterIndex: number = 0
 
-export const setCurrentRasterIndex = (idx: number) => {
-  if (rasterMaps.length > idx) {
-    currentRasterIndex = idx
+const presentDayRasters: RasterCfg[] = []
+const paleoRasters: RasterCfg[] = []
+
+//
+// find raster config by ID
+//
+export const getRasterByID = (id: string) => {
+  for (let i = 0; i < rasterMaps.length; i++) {
+    if (rasterMaps[i].id === id) return rasterMaps[i]
+  }
+  return undefined
+}
+
+//
+// find raster index config by ID
+//
+export const getRasterIndexByID = (id: string) => {
+  for (let i = 0; i < rasterMaps.length; i++) {
+    if (rasterMaps[i].id === id) return i
+  }
+  return undefined
+}
+
+//
+// return the rasters according to which raster group is in use
+//
+export const getRasters = (rasterGroup: RasterGroup) => {
+  if (rasterGroup == RasterGroup.present) {
+    return getPresentDayRasters()
+  } else if (rasterGroup == RasterGroup.paleo) {
+    return getPaleoRasters()
   } else {
-    if (DEBUG)
-      console.log(
-        'DEBUG: setCurrentRasterIndex() try to set an invalid index.' +
-          `(${rasterMaps.length}:${idx})`
-      )
+    return [] //should never happen
+  }
+}
+//
+//
+//
+export const getPresentDayRasters = () => {
+  if (presentDayRasters.length == 0) {
+    groupRasters()
+  }
+  return presentDayRasters
+}
+
+//
+//
+//
+export const getPaleoRasters = () => {
+  if (presentDayRasters.length == 0) {
+    groupRasters()
+  }
+  return paleoRasters
+}
+
+//
+//
+//
+const groupRasters = () => {
+  for (let i = 0; i < rasterMaps.length; i++) {
+    //without a rotation model, it means present-day raster
+
+    if (!rasterMaps[i].model) {
+      presentDayRasters.push(rasterMaps[i])
+    } else {
+      // with a rotation model, it means paleo-raster
+      paleoRasters.push(rasterMaps[i])
+    }
   }
 }
 
@@ -148,6 +193,9 @@ export const loadRasterMaps = (callback: Function) => {
 }
 
 //
+//this function convert the JSON data retrieved from server to a
+//list of RasterCfg objects
+//
 const convertJsonToRasterMaps = (jsonData: any) => {
   let maps = []
   for (let key in jsonData) {
@@ -160,6 +208,7 @@ const convertJsonToRasterMaps = (jsonData: any) => {
       layerName: jsonData[key].layerName,
       url: jsonData[key].url,
       wmsUrl: jsonData[key].wmsUrl,
+      paleoMapUrl: jsonData[key].paleoMapUrl,
       style: jsonData[key].style,
       title: jsonData[key].title,
       subTitle: jsonData[key].subTitle,

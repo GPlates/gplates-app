@@ -15,6 +15,10 @@ $raster-menu-height: $icon-size + $card-top-margin + $card-bottom-margin +
 $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   $raster-menu-bottom;
 
+//.raster-menu-scroll .swiper-wrapper {
+//justify-content: center;
+//}
+
 .raster-menu-scroll {
   text-align: center;
   white-space: break-spaces;
@@ -22,7 +26,8 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   bottom: $raster-menu-bottom;
   width: 100%;
   height: $raster-menu-height;
-  background: rgba(var(--ion-color-light-rgb), 0.85);
+  //background: rgba(var(--ion-color-light-rgb), 0.85);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1));
 
   ion-card {
     display: inline-block;
@@ -41,14 +46,16 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   ion-card-title {
     font-size: $title-font-size;
     --font-color: var(--ion-text-color);
+    color: white;
   }
 
   ion-card-subtitle {
     font-size: $subtitle-font-size;
+    color: grey;
   }
 }
 
-.map-icon {
+.raster-icon {
   height: $icon-size;
   width: $icon-size;
 }
@@ -84,6 +91,18 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   height: 100vh;
 }
 
+.raster-menu-close-button {
+  position: absolute;
+  bottom: 3rem;
+  z-index: 10;
+  left: 50%;
+  //background-color: grey;
+  background-image: linear-gradient(0deg, black, transparent);
+  border-radius: 1rem;
+  color: whitesmoke;
+  transform: translate(-50%, -50%);
+}
+
 .raster-menu-loading {
   position: absolute;
   bottom: 0;
@@ -103,8 +122,10 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   }
 }
 
+/*
 @media (prefers-color-scheme: light) {
   .raster-menu-scroll {
     background: rgba(var(--ion-color-light-rgb), 0.25);
   }
 }
+*/

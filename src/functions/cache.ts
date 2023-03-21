@@ -5,11 +5,13 @@ import {
 } from '@capacitor-community/sqlite'
 import { Capacitor } from '@capacitor/core'
 import RotationModel from './rotationModel'
-import { buildAnimationURL } from './util'
+import { getLowResImageUrlForGeosrv } from './util'
 import { canDownload, presentDataAlert } from './network'
 import { Preferences } from '@capacitor/preferences'
 import { SQLiteHook } from 'react-sqlite-hook'
 import { DEBUG } from './settings'
+import rasterMaps from './rasterMaps'
+import { vectorLayers } from './vectorLayers'
 
 // https://github.com/capacitor-community/sqlite/blob/c7cc541568e6134e77c0c1c5fa03f7a79b1f9150/docs/Ionic-React-Usage.md
 
@@ -32,6 +34,7 @@ export class CachingService {
 
   hasPresented = false
 
+  //
   // Store request data
   // ttl = time to live (in seconds). Values <= 0 will be ignored (data will live forever)
   cacheRequest(url: string, data: any, ttl?: number): Promise<any> {
@@ -47,7 +50,9 @@ export class CachingService {
     return this.db!.run(command, values)
   }
 
+  //
   // Try to load cached data
+  //
   async getCachedRequest(url: string): Promise<any> {
     const currentTime = new Date().getTime()
     let data
@@ -79,6 +84,7 @@ export class CachingService {
     }
   }
 
+  //
   //  SQLite Capacitor doesn't support blobs, so we have to convert to string (base64)
   //  https://github.com/capacitor-community/sqlite/issues/266
   async getBlobAsString(url: string) {
@@ -95,7 +101,9 @@ export class CachingService {
       )
   }
 
+  //
   //fetch url and return a blob
+  //
   async getBlob(url: string) {
     // TODO: Get from recoil store
     const downloadOnCellular = await Preferences.get({
@@ -112,7 +120,9 @@ export class CachingService {
     }
   }
 
+  //
   //convert a blob to data URL
+  //
   convertBlobToDataURL(blob?: Blob) {
     if (blob) {
       return new Promise((resolve, reject) => {
@@ -128,18 +138,27 @@ export class CachingService {
     }
   }
 
+  //
   // Remove all cached data & files
-  clearCachedData() {
-    this.db!.run(`DELETE FROM cache`)
+  //
+  clearCachedData(callback: Function = () => {}) {
+    this.db!.run(`DELETE FROM cache`).then((ret) => {
+      console.log(ret)
+      callback()
+    })
   }
 
+  //
+  //
   //
   print() {
     //this.db.getUrl().then((data) => console.log(data))
     this.db!.query('SELECT * FROM cache').then((data) => console.log(data))
   }
 
+  //
   // insert the data from URL into cache
+  //
   async cacheURL(url: string) {
     let exist = await this.checkExist(url)
     //console.log(`exist: ${exist}`)
@@ -160,19 +179,25 @@ export class CachingService {
     }
   }
 
+  //
   // Example to remove one cached URL
+  //
   invalidateCacheEntry(url: string) {
     return this.db!.run('DELETE FROM cache WHERE url == ?', [url])
   }
 
+  //
   //clean up
+  //
   async cleanup() {
     await this.saveToWebStore()
     await this.db!.close()
     await sqlite.closeConnection(this.dbName)
   }
 
+  //
   //on "web" platform, save the DB data to disk
+  //
   async saveToWebStore() {
     const platform = Capacitor.getPlatform()
     //on "web" platform, you need to saveToStore. otherwise the DB is in memory
@@ -183,11 +208,17 @@ export class CachingService {
   }
 
   //
-  async cacheLayer(model: RotationModel, wmsUrl: string, layerName: string) {
+  // cache low resolution images from geoserver
+  //
+  async cacheRasterLayer(
+    model: RotationModel,
+    wmsUrl: string,
+    layerName: string
+  ) {
     let rowNum = await this.getCount(layerName)
     //check if the layer has been cached.
     if (rowNum < model.times.length) {
-      let url = buildAnimationURL(wmsUrl, layerName)
+      let url = getLowResImageUrlForGeosrv(wmsUrl, layerName)
       let count = 0
       //console.log('caching ' + layerName)
       model.times.forEach((time) => {
@@ -200,6 +231,8 @@ export class CachingService {
     }
   }
 
+  //
+  //
   //
   async checkExist(url: string) {
     let ret = await this.db!.query('SELECT 1 FROM cache WHERE url == ?', [url])
@@ -228,7 +261,9 @@ export class CachingService {
     } else return 0
   }
 
+  //
   //must be called after new CachingService('db_main')
+  //
   async init() {
     const platform = Capacitor.getPlatform()
     const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite)
@@ -261,6 +296,7 @@ export class CachingService {
 
       await db.open()
 
+      //create cache table
       let query = `CREATE TABLE IF NOT EXISTS cache (
       url STRING PRIMARY KEY NOT NULL,
       data BLOB NOT NULL,
@@ -286,11 +322,15 @@ export class CachingService {
   }
 
   //
+  //
+  //
   getDBName() {
     return this.dbName
   }
 
+  //
   //return a Map, for example {"layer-1":1000, "layer-2":20}
+  //
   async getLayerCountMap() {
     const layerCount = new Map<string, number>()
 
@@ -338,7 +378,7 @@ export class CachingService {
         })
 
       //count the number for each  workspacename+layers
-      //basically, this group cache entries into groups
+      //basically, this puts cache entries into groups
       let keyStr = workspaceName + ':' + layers.slice(0, -1)
       let num = layerCount.get(keyStr)
       if (num) {
@@ -352,19 +392,12 @@ export class CachingService {
   }
 
   //
-  purge(layers: string, callback: Function) {
-    console.log(`purging ${layers}`)
-    let queryStr = ''
-    let workspaceAndLayers = layers.split(',')
-    workspaceAndLayers.forEach((keyword) => {
-      if (queryStr.length === 0) {
-        queryStr += "url LIKE '%" + keyword + "%'"
-      } else {
-        queryStr += " AND url LIKE '%" + keyword + "%'"
-      }
-    })
+  // remove cache for given layers
+  //
+  purge(queryStr: string, callback: Function) {
+    console.log(`purging ${queryStr}`)
 
-    queryStr = 'DELETE FROM cache WHERE ' + queryStr
+    queryStr = "DELETE FROM cache WHERE url like '" + queryStr + "'"
     console.log(queryStr)
     this.db!.run(queryStr).then(async (ret) => {
       console.log(ret)
@@ -380,9 +413,156 @@ export class CachingService {
   }
 
   //
+  //
+  //
   async getAllUrls() {
     const ret = await this.db!.query('SELECT url FROM cache ')
     return ret.values?.map((value) => value)
   }
+
   //
+  // return a map
+  // for example, {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
+  //
+  async getRasterLayerCount() {
+    let urlMap = new Map<string, number>()
+    const allUrls = await this.getAllUrls()
+    if (!allUrls) return urlMap
+
+    rasterMaps.forEach((raster) => {
+      allUrls.forEach((row) => {
+        let url = row['url']
+        //when the images are kept on gplates web service server
+        if (raster.paleoMapUrl) {
+          //console.log(url)
+          if (url.startsWith(raster.paleoMapUrl)) {
+            //find layers and build key string, such as agegrid(coastlines, topologies)
+            let startIdx = url.indexOf('layers=')
+            startIdx = url.indexOf(',', startIdx)
+            let endIdx = url.indexOf('&', startIdx)
+            let layersStr = ''
+            if (startIdx > 0 && startIdx < endIdx) {
+              layersStr = url.slice(startIdx + 1, endIdx)
+            }
+
+            setCountNumber(
+              raster.title,
+              layersStr,
+              raster.paleoMapUrl + '%' + layersStr,
+              urlMap
+            )
+          }
+        }
+        //when the images are on geoserver
+        else {
+          if (url.startsWith(raster.wmsUrl)) {
+            let queryStr = raster.wmsUrl
+            //find layers and build key string, such as agegrid(coastlines, topologies)
+            let startIdx = url.indexOf('layers=') + 'layers='.length
+            let endIdx = url.indexOf('&', startIdx)
+            let layersStr = ''
+            if (startIdx > 0 && startIdx < endIdx) {
+              layersStr = url.slice(startIdx, endIdx)
+            }
+            //console.log(layersStr)
+            //the layer string should be something like MULLER2019:paleo-age-grid-3-Ma,MULLER2019:coastlines_3Ma
+            let layers = layersStr.split(',')
+            if (layers.length == 0) {
+              console.log('No layer found! Something is wrong!' + layersStr)
+            }
+            let rasterName = layers[0]
+            const regStr = raster.layerName.replace('{{time}}', '.*') //build the regexp searh string
+            const regex = new RegExp(regStr)
+
+            //check if the raster name match the regexp
+            if (regex.test(rasterName)) {
+              queryStr += '%' + raster.layerName.replace('{{time}}', '%')
+              layersStr = '' //reuse the layersStr variable
+              let vectorLayersInUrl = layers.slice(1) //remove the raster layer
+              let allVectorLayersOfThisRaster = vectorLayers.get(raster.id)
+
+              //loop through all layers in the url
+              for (let i = 0; i < vectorLayersInUrl.length; i++) {
+                let layerInUrl = vectorLayersInUrl[i]
+                let queryObj = { query: queryStr }
+                let layerDisplayName = getDisplayNameFromRasterCfg(
+                  layerInUrl,
+                  allVectorLayersOfThisRaster,
+                  queryObj
+                )
+                if (!layerDisplayName) {
+                  //the layer in url cannot be found in raster config
+                  //this url does not belong to this raster
+                  //do not increase the count
+                  //return to try next url
+                  return
+                } else {
+                  layersStr += layerDisplayName + ','
+                }
+              } //end of for (let i = 0; i < vectorLayersInUrl.length; i++)
+
+              //remove the last ','
+              if (layersStr.length > 0) {
+                layersStr = layersStr.slice(0, -1)
+              }
+              setCountNumber(raster.title, layersStr, queryStr, urlMap)
+            } else {
+              return //if the raster name does not match, do nothing and go to next url
+            }
+          } //end of if (url.startsWith(raster.wmsUrl))
+        } // end of if (raster.paleoMapUrl)
+      }) // end of allUrls.forEach() loop
+    }) //end of rasterMaps.forEach loop
+    return urlMap
+  }
+}
+
+//
+// find displayName in raster config for given layer name
+// if the given layer name does not exist in raster config, return undefined
+//
+const getDisplayNameFromRasterCfg = (
+  layerInUrl: string,
+  allVectorLayersOfThisRaster: any[],
+  queryObj: any
+) => {
+  //loop through all vector layers in the raster config
+  //allVectorLayersOfThisRaster is a javascript Object
+  for (const j in allVectorLayersOfThisRaster) {
+    let layerOfThisRaster = allVectorLayersOfThisRaster[j]
+    const regStr = layerOfThisRaster.layerName.replace('{{time}}', '.*') //build the regexp searh string
+    const regex = new RegExp(regStr)
+    if (regex.test(layerInUrl)) {
+      queryObj['query'] +=
+        '%' + layerOfThisRaster.layerName.replace('{{time}}', '%')
+      return layerOfThisRaster.displayName
+    }
+  }
+  return undefined
+}
+
+//
+// helper function to set the number in url count map
+// mainly used in getRasterLayerCount()
+// the map looks like something {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
+//
+const setCountNumber = (
+  rasterName: string,
+  layersStr: string,
+  queryStr: string,
+  urlMap: Map<string, number>
+) => {
+  let keyStr = rasterName
+  //now set the count number
+  if (layersStr) {
+    keyStr += '(' + layersStr + ')'
+  }
+  keyStr += '{{sep}}' + queryStr + '%'
+  //count the number
+  let num = urlMap.get(keyStr)
+  if (num) {
+    urlMap.set(keyStr, num + 1)
+  } else {
+    urlMap.set(keyStr, 1)
+  }
 }

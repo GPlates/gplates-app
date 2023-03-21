@@ -3,7 +3,8 @@ export type RasterCfg = {
   //layer: any
   layerName: string
   url: string
-  wmsUrl: string
+  wmsUrl: string //get paleomap image from geoserver
+  paleoMapUrl?: string //get paleomap image from gplates web service
   style: string
   title: string
   subTitle: string
@@ -29,4 +30,9 @@ export type VectorLayerType = {
   wmsUrl: string //wms url(not tiled)
   style: string //geoserver style name
   checked: boolean //if the layer has been enabled in GUI
+}
+
+export enum RasterGroup {
+  present,
+  paleo,
 }

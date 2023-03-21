@@ -3,12 +3,15 @@ import { serverURL } from '../functions/settings'
 
 let store: Storage | null = null
 
-//model name : layer object
+//raster ID : layers config data in json format
+//each raster can have several vector layers
 export let vectorLayers: Map<string, any> = new Map<string, any>()
 
-//raster index : layer names(array)
-export let enabledLayers: Map<number, string[]> = new Map<number, string[]>()
+//raster ID : vector layer names(array)
+const enabledLayers: Map<string, string[]> = new Map<string, string[]>()
 
+//
+// get vector-layers local storage object
 //
 export const getVectorLayerStore = async () => {
   if (store === null) {
@@ -20,42 +23,58 @@ export const getVectorLayerStore = async () => {
 }
 
 //
-export const loadVectorLayers = async (rasterModel: string) => {
+// fetch the vector-layer configurate for a given raster ID from server
+//
+export const loadVectorLayers = async (rasterID: string) => {
   try {
     let response = await fetch(
       serverURL.replace(/\/+$/, '') +
-        '/mobile/get_vector_layers?model=' +
-        rasterModel
+        '/mobile/get_vector_layers?raster=' +
+        rasterID
     )
     let json = await response.json()
-    vectorLayers.set(rasterModel, json)
-    ;(await getVectorLayerStore()).set(rasterModel, json)
+    //console.log(json)
+    vectorLayers.set(rasterID, json)
+    let vectorLayerStore = await getVectorLayerStore()
+    vectorLayerStore.set(rasterID, json)
+    //console.log(json)
   } catch (error) {
     console.log(error) //handle the promise rejection
     //if the network is down, try to get data from local storage
-    let data = await (await getVectorLayerStore()).get(rasterModel)
-    vectorLayers.set(rasterModel, data)
+    let data = await (await getVectorLayerStore()).get(rasterID)
+    vectorLayers.set(rasterID, data)
   }
 }
 
 //
-export const getVectorLayers = (rasterModel: string) => {
-  return vectorLayers.get(rasterModel)
+// get all vector layers for a raster
+//
+export const getVectorLayers = (rasterID: string) => {
+  return vectorLayers.get(rasterID)
 }
 
 //
-export const enableLayer = (rasterIndex: number, layerName: string) => {
-  let layers = enabledLayers.get(rasterIndex)
+// add a new vector layer name into enabledLayers
+//
+export const enableLayer = (rasterID: string, layerName: string) => {
+  let layers = enabledLayers.get(rasterID)
+  //console.log('enableLayer')
+  //console.log(layers)
   if (layers === undefined) {
-    enabledLayers.set(rasterIndex, [layerName])
+    enabledLayers.set(rasterID, [layerName])
   } else {
-    layers.push(layerName)
+    if (layers.indexOf(layerName) == -1) {
+      layers.push(layerName)
+    }
   }
+  console.log(enabledLayers)
 }
 
 //
-export const disableLayer = (rasterIndex: number, layerName: string) => {
-  let layers = enabledLayers.get(rasterIndex)
+// remove a vector layer name from enabledLayers
+//
+export const disableLayer = (rasterID: string, layerName: string) => {
+  let layers = enabledLayers.get(rasterID)
   if (layers !== undefined) {
     const index = layers.indexOf(layerName)
     // only remove when item is found
@@ -66,6 +85,9 @@ export const disableLayer = (rasterIndex: number, layerName: string) => {
 }
 
 //
-export const getEnabledLayers = (rasterIndex: number) => {
-  return enabledLayers.get(rasterIndex) ?? []
+// get enable the vector layer names
+//
+export const getEnabledLayers = (rasterID: string) => {
+  //console.log(enabledLayers)
+  return enabledLayers.get(rasterID) ?? []
 }

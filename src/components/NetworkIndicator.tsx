@@ -55,10 +55,11 @@ const NetworkIndicator: React.FC = () => {
   //
   const showAlert = () => {
     presentAlert({
-      header:
-        'This is a network indicator. ' +
-        'The App needs to download data from our server. ' +
-        'Switch to WiFi to avoid using too much of your cellular data.',
+      header: 'Network Indicator ',
+      subHeader: 'Using WiFi or Cellular networks',
+      message:
+        'Be aware this app needs to download data from servers.' +
+        'It will comsume your mobile data quota if being used with Cellular networks.',
       cssClass: 'network-indicator-alert',
       buttons: [
         {

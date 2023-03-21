@@ -40,12 +40,18 @@ import {
   backgroundColor,
   appDarkMode,
   isAddLocationWidgetShowState,
-  currentRasterMapIndexState,
   networkDownloadOnCellular,
   isAgeSliderShown,
+  rasterGroupState,
+  currentRasterIDState,
+  showTimeStampState,
 } from '../functions/atoms'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
-import rasterMaps, { loadRasterMaps } from '../functions/rasterMaps'
+import rasterMaps, {
+  loadRasterMaps,
+  getPaleoRasters,
+  getPresentDayRasters,
+} from '../functions/rasterMaps'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 import { setDarkMode } from '../functions/darkMode'
@@ -104,7 +110,10 @@ const Main: React.FC = () => {
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
 
-  const currentRasterMapIndex = useRecoilValue(currentRasterMapIndexState)
+  const [currentRasterID, setCurrentRasterID] =
+    useRecoilState(currentRasterIDState)
+  const rasterGroup = useRecoilValue(rasterGroupState)
+  const setShowTimeStamp = useSetRecoilState(showTimeStampState)
   const [isOffline, setIsOffline] = useState(false)
   //we don't show message if the app is online at startup
   const isStartupOnline = useRef(true)
@@ -122,7 +131,8 @@ const Main: React.FC = () => {
     _setPlaying,
     range,
     cesiumViewer,
-    currentRasterMapIndex
+    currentRasterID,
+    rasterGroup
   )
 
   backgroundService = new BackgroundService(
@@ -152,8 +162,17 @@ const Main: React.FC = () => {
     } else {
       if (!isStartupOnline.current) {
         presentToast({
-          buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
-          duration: 5000,
+          buttons: [
+            {
+              text: 'Reload App',
+              role: 'reload',
+              handler: () => {
+                window.location.reload()
+              },
+            },
+            { text: 'Dismiss', handler: () => dismissToast() },
+          ],
+          duration: 15000,
           message: 'Back online',
           onDidDismiss: () => {},
         })
@@ -190,11 +209,16 @@ const Main: React.FC = () => {
 
       //init Ceium viewer if has not been done yet
       if (document.getElementsByClassName('cesium-viewer').length === 0) {
-        initCesiumViewer(
-          createCesiumImageryProvider(
-            rasterMaps[Math.floor(rasterMaps.length / 2)]
-          )
-        )
+        let rasters = getPresentDayRasters()
+        if (rasters.length == 0) {
+          rasters = getPaleoRasters()
+        } else {
+          setShowTimeStamp(false)
+        }
+        if (rasters.length > 0) {
+          initCesiumViewer(createCesiumImageryProvider(rasters[0]))
+          setCurrentRasterID(rasters[0].id)
+        }
 
         setIsCesiumViewerReady(true) //notify the Ceium viewer is ready
         if (DEBUG) console.log('DEBUG: Ceium viewer is ready!')
@@ -248,6 +272,8 @@ const Main: React.FC = () => {
 
       //create a rotation model for each raster
       rasterMaps.forEach(async (raster) => {
+        if (!getVectorLayers(raster.id)) await loadVectorLayers(raster.id)
+
         let modelName = raster.model
         if (modelName) {
           let m = rotationModels.get(modelName)
@@ -256,7 +282,7 @@ const Main: React.FC = () => {
             if (Math.abs(raster.step) > 0) {
               times = timeRange(raster.startTime, raster.endTime, raster.step)
             }
-            await loadVectorLayers(modelName)
+
             m = new RotationModel(modelName, times, getVectorLayers(modelName))
             //console.log(getVectorLayers(modelName))
             rotationModels.set(modelName, m)
@@ -318,6 +344,7 @@ const Main: React.FC = () => {
             isViewerLoading={isViewerLoading}
             isCesiumViewerReady={isCesiumViewerReady}
             setAgeSliderShown={setAgeSliderShown}
+            animationService={animationService}
           />
           <AboutPage />
           <ModelInfo />

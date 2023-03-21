@@ -62,7 +62,7 @@ ion-item::part(native) {
   border-radius: 16px;
 
   ion-col {
-    min-width: min(240px, var(--min-column-width));
+    //min-width: min(240px, var(--min-column-width));
     width: 100% !important;
   }
   ion-input {

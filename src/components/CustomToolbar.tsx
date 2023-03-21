@@ -6,9 +6,15 @@ import {
   IonList,
   IonPopover,
   getPlatforms,
+  useIonLoading,
+  useIonToast,
 } from '@ionic/react'
-import { Cartesian3, Color, Rectangle, Scene, SceneMode } from 'cesium'
-import { homeOutline, helpOutline } from 'ionicons/icons'
+import { Cartesian3, Color, Scene, SceneMode } from 'cesium'
+import {
+  homeOutline,
+  shareSocialOutline,
+  informationOutline,
+} from 'ionicons/icons'
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
 import React, { Fragment, useState } from 'react'
@@ -19,13 +25,15 @@ import {
   HOME_LATITUDE,
   DEFAULT_CAMERA_HEIGHT,
 } from '../functions/cesiumViewer'
-import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
-import { Pagination } from 'swiper'
 import { Geolocation } from '@capacitor/geolocation'
-import { isAddLocationWidgetShowState } from '../functions/atoms'
+import {
+  isAddLocationWidgetShowState,
+  isModelInfoShowState,
+} from '../functions/atoms'
+import { SocialSharing } from './SocialSharing'
 
 interface ToolbarProps {
   scene: Scene
@@ -35,6 +43,10 @@ let lat: number
 let lon: number
 
 const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
+  const setShowModelInfo = useSetRecoilState(isModelInfoShowState)
+  const [presentToast, dismissToast] = useIonToast()
+  const [present, dismiss] = useIonLoading()
+
   const sceneModes = [
     {
       id: SceneMode.SCENE3D,
@@ -125,19 +137,10 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     }
   }
 
-  // Swiper page indicator
-  const pagination = {
-    clickable: true,
-    renderBullet: function (index: number, className: string) {
-      return (
-        '<span class="' +
-        className +
-        '">' +
-        (index ? 'Mouse' : 'Touch') +
-        '</span>'
-      )
-    },
-  }
+  //do not show social sharing button on desktop/web browser
+  let showSocialSharingButton = getPlatforms().includes('desktop')
+    ? false
+    : true
 
   return (
     <Fragment>
@@ -173,151 +176,27 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           </IonContent>
         </IonPopover>
       </IonButton>
-      <IonButton className="round-button" id="help-button">
-        <IonIcon icon={helpOutline} />
-        <IonPopover className="popover" trigger="help-button">
-          <IonContent>
-            <Swiper
-              pagination={pagination}
-              modules={[Pagination]}
-              className="help-swiper"
-            >
-              <SwiperSlide>
-                <div className="help">
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <img
-                            alt="touch-drag"
-                            className="drop-shadow"
-                            src="cesium/Widgets/Images/NavigationHelp/TouchDrag.svg"
-                          />
-                        </td>
-                        <td>
-                          <div className="cesium-navigation-help-pan">
-                            Pan view
-                          </div>
-                          <div className="cesium-navigation-help-details">
-                            One finger drag
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img
-                            alt="touch-zoom"
-                            className="drop-shadow"
-                            src="cesium/Widgets/Images/NavigationHelp/TouchZoom.svg"
-                          />
-                        </td>
-                        <td>
-                          <div className="cesium-navigation-help-zoom">
-                            Zoom view
-                          </div>
-                          <div className="cesium-navigation-help-details">
-                            Two finger pinch
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img
-                            alt="touch-tilt"
-                            className="drop-shadow"
-                            src="cesium/Widgets/Images/NavigationHelp/TouchTilt.svg"
-                          />
-                        </td>
-                        <td>
-                          <div className="cesium-navigation-help-rotate">
-                            Tilt view
-                          </div>
-                          <div className="cesium-navigation-help-details">
-                            Two finger drag, same direction
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img
-                            alt="touch-rotate"
-                            className="drop-shadow"
-                            src="cesium/Widgets/Images/NavigationHelp/TouchRotate.svg"
-                          />
-                        </td>
-                        <td>
-                          <div className="cesium-navigation-help-tilt">
-                            Rotate view
-                          </div>
-                          <div className="cesium-navigation-help-details">
-                            Two finger drag, opposite direction
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className="help">
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <img
-                            alt="mouse-left"
-                            src="cesium/Widgets/Images/NavigationHelp/MouseLeft.svg"
-                          />
-                        </td>
-                        <td>
-                          <div className="cesium-navigation-help-pan">
-                            Pan view
-                          </div>
-                          <div className="cesium-navigation-help-details">
-                            Left click + drag
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img
-                            alt="mouse-right"
-                            src="cesium/Widgets/Images/NavigationHelp/MouseRight.svg"
-                          />
-                        </td>
-                        <td>
-                          <div className="cesium-navigation-help-zoom">
-                            Zoom view
-                          </div>
-                          <div className="cesium-navigation-help-details">
-                            Right click + drag, or Mouse wheel scroll
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img
-                            alt="mouse-middle"
-                            src="cesium/Widgets/Images/NavigationHelp/MouseMiddle.svg"
-                          />
-                        </td>
-                        <td>
-                          <div className="cesium-navigation-help-rotate">
-                            Rotate view
-                          </div>
-                          <div className="cesium-navigation-help-details">
-                            Middle click + drag, or CTRL + Left/Right click +
-                            drag
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </SwiperSlide>
-            </Swiper>
-          </IonContent>
-        </IonPopover>
+
+      <IonButton
+        className="round-button"
+        id="help-button"
+        onClick={() => {
+          setShowModelInfo(true)
+        }}
+      >
+        <IonIcon icon={informationOutline} />
+      </IonButton>
+
+      {/* social sharing button */}
+      <IonButton
+        className="round-button"
+        style={{ display: showSocialSharingButton ? '' : 'none' }}
+        id="screenshot-button"
+        onClick={async () => {
+          await SocialSharing(present, dismiss, presentToast, dismissToast)
+        }}
+      >
+        <IonIcon icon={shareSocialOutline} />
       </IonButton>
     </Fragment>
   )

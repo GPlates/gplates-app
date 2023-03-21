@@ -1,12 +1,13 @@
 import { SingleTileImageryProvider, Viewer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
-import rasterMaps from './rasterMaps'
+import { getRasters, getRasterByID, getRasterIndexByID } from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
-import { buildAnimationURL } from './util'
+import { getLowResImageUrlForGeosrv } from './util'
 import { currentModel } from './rotationModel'
 import { drawLayers } from './cesiumViewer'
 import { raiseGraticuleLayerToTop } from './graticule'
+import { RasterGroup } from './types'
 
 let animateFrame = 0 //current age
 let animateNext = false
@@ -28,7 +29,8 @@ export class AnimationService {
     public _setPlaying: SetterOrUpdater<boolean>,
     public range: { lower: number; upper: number },
     public viewer: Viewer,
-    public currentRasterMapIndex: number
+    public currentRasterID: string,
+    public rasterGroup: RasterGroup
   ) {
     this.from = range.lower
     this.to = range.upper
@@ -123,14 +125,11 @@ export class AnimationService {
     }
 
     //make sure the animateFrame(age) does not go out of valid range
-    animateFrame = Math.min(
-      animateFrame,
-      rasterMaps[this.currentRasterMapIndex].startTime
-    )
-    animateFrame = Math.max(
-      animateFrame,
-      rasterMaps[this.currentRasterMapIndex].endTime
-    )
+    let raster = getRasterByID(this.currentRasterID)
+    if (raster) {
+      animateFrame = Math.min(animateFrame, raster.startTime)
+      animateFrame = Math.max(animateFrame, raster.endTime)
+    }
 
     return animateFrame
   }
@@ -161,7 +160,7 @@ export class AnimationService {
       nextNumber = this.loop || this.exact ? small : animateFrame
     }
 
-    return currentModel.getNearestTime(nextNumber)
+    return currentModel ? currentModel.getNearestTime(nextNumber) : 0
   }
 
   //
@@ -189,7 +188,7 @@ export class AnimationService {
     if (prevNumber < small) {
       prevNumber = this.loop || this.exact ? small : animateFrame
     }
-    return currentModel.getNearestTime(prevNumber)
+    return currentModel ? currentModel.getNearestTime(prevNumber) : 0
   }
 
   //
@@ -198,7 +197,10 @@ export class AnimationService {
   onAgeSliderChange = (value: number) => {
     if (!this.playing) {
       animateFrame = value
-      this.drawTiles()
+      let raster = getRasterByID(this.currentRasterID)
+      if (raster) {
+        drawLayers(animateFrame, raster)
+      }
     }
   }
 
@@ -209,7 +211,10 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.range.lower
     this.setAge(animateFrame)
-    this.drawTiles()
+    let raster = getRasterByID(this.currentRasterID)
+    if (raster) {
+      drawLayers(animateFrame, raster)
+    }
   }
 
   //
@@ -217,15 +222,15 @@ export class AnimationService {
   //
   movePlayHead = (value: number) => {
     this.setPlaying(false)
-    animateFrame = Math.min(
-      Math.max(
-        animateFrame + value,
-        rasterMaps[this.currentRasterMapIndex].endTime
-      ),
-      rasterMaps[this.currentRasterMapIndex].startTime
-    )
+    let raster = getRasterByID(this.currentRasterID)
+    if (raster) {
+      animateFrame = Math.min(
+        Math.max(animateFrame + value, raster.endTime),
+        raster.startTime
+      )
+    }
     this.setAge(animateFrame)
-    this.drawTiles()
+    if (raster) drawLayers(animateFrame, raster)
   }
 
   //
@@ -235,7 +240,10 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.getNextFrameNumber()
     this.setAge(animateFrame)
-    this.drawTiles()
+    let raster = getRasterByID(this.currentRasterID)
+    if (raster) {
+      drawLayers(animateFrame, raster)
+    }
   }
 
   //
@@ -245,7 +253,10 @@ export class AnimationService {
     this.setPlaying(false)
     animateFrame = this.getPrevFrameNumber()
     this.setAge(animateFrame)
-    this.drawTiles()
+    let raster = getRasterByID(this.currentRasterID)
+    if (raster) {
+      drawLayers(animateFrame, raster)
+    }
   }
 
   //
@@ -263,37 +274,58 @@ export class AnimationService {
     animateNext = value
     if (value) {
       animateFrame = this.getNextFrameNumber()
-      this.scheduleFrame(this.getCurrentRasterAnimationURL())
+      let url = this.getLowResImageUrl()
+      if (url) this.scheduleFrame(url)
     } else {
       clearTimeout(animateTimeout)
-      this.drawTiles()
+      let raster = getRasterByID(this.currentRasterID)
+      if (raster) {
+        drawLayers(animateFrame, raster)
+      }
     }
   }
 
   //
-  // return the low-resolution map url for the current selected raster
-  // TODO: do the similar thing for vector layers(overlays)
+  // return the low-resolution map url of the current selected raster for animation
+  // The {{time}} will be replaced by real value of time in function drawFrame()
   //
-  getCurrentRasterAnimationURL = () => {
+  getLowResImageUrl = () => {
+    // get overlays
     let overlays: string[] = []
-    let enabledLayers = getEnabledLayers(this.currentRasterMapIndex)
-    enabledLayers.forEach((layer) => {
-      if (layer !== 'cities') {
-        console.log(vectorLayers.get(currentModel.name)[layer])
-        overlays.push(vectorLayers.get(currentModel.name)[layer].layerName)
-      }
-    })
-    return buildAnimationURL(
-      rasterMaps[this.currentRasterMapIndex].wmsUrl,
-      rasterMaps[this.currentRasterMapIndex].layerName,
-      overlays
-    )
-  }
+    let layerIDs: string[] = []
+    let enabledLayers: string[] = []
 
-  //
-  //
-  //
-  drawTiles = () => {
-    drawLayers(animateFrame)
+    enabledLayers = getEnabledLayers(this.currentRasterID).sort()
+
+    let raster = getRasterByID(this.currentRasterID)
+    if (raster) {
+      enabledLayers.forEach((layer) => {
+        if (layer !== 'cities') {
+          if (!raster) return
+          console.log(vectorLayers.get(raster.id))
+          overlays.push(vectorLayers.get(raster.id)[layer].layerName)
+          layerIDs.push(layer)
+        }
+      })
+
+      //build the URL
+      let url = raster.paleoMapUrl
+      if (url) {
+        // URL for gplates web service
+        layerIDs.forEach((id) => {
+          url = url + ',' + id
+        })
+        url += '&time={{time}}&model=' + currentModel?.name + '&bg=211,211,211'
+        console.log(url)
+        return url
+      } else {
+        //URL for geosever
+        return getLowResImageUrlForGeosrv(
+          raster.wmsUrl,
+          raster.layerName,
+          overlays
+        )
+      }
+    }
   }
 }

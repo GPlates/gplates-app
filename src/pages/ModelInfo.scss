@@ -11,6 +11,52 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 50%;
+    margin-top: 5px;
+    text-align: center;
+    //width: 50%;
   }
+}
+
+.info-fade-enter {
+  opacity: 0;
+  transform: scale(0.1);
+}
+
+.info-fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+
+  transition: transform 2000ms, opacity 2000ms;
+}
+
+.info-fade-exit {
+  opacity: 0;
+}
+
+.info-fade-exit-active {
+  opacity: 0;
+  transition: opacity 100ms;
+}
+
+.how-fade-enter {
+  opacity: 0;
+}
+
+.how-fade-enter-active {
+  opacity: 1;
+
+  transition: opacity 4000ms;
+}
+
+.how-fade-exit {
+  opacity: 0;
+}
+
+.how-fade-exit-active {
+  opacity: 0;
+  transition: opacity 100ms;
+}
+
+.info-small-label {
+  font-size: 80% !important;
 }

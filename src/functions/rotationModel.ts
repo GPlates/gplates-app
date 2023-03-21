@@ -3,10 +3,10 @@ import { serverURL } from './settings'
 import { LonLatPid } from './types'
 import { rotate } from './quaternions'
 
-export let currentModel: RotationModel
+export let currentModel: RotationModel | undefined
 export let currentTimeIndex: number
 
-export const setCurrentModel = (c: RotationModel) => {
+export const setCurrentModel = (c: RotationModel | undefined) => {
   currentModel = c
 }
 
