@@ -88,6 +88,6 @@ export const disableLayer = (rasterID: string, layerName: string) => {
 // get enable the vector layer names
 //
 export const getEnabledLayers = (rasterID: string) => {
-  console.log(enabledLayers)
+  //console.log(enabledLayers)
   return enabledLayers.get(rasterID) ?? []
 }

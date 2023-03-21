@@ -152,7 +152,7 @@ export const ToolMenu = () => {
   const toolMenuTopList: any[] = []
   const toolMenuEndList: any[] = []
 
-  let buttonSize = 58
+  let buttonSize = 80
   let mainButtonSize = 56 + 10 + 10 // button size + left margin + right margin
   let count = 0
   for (let idx = 0; idx < screen.width - mainButtonSize; idx += buttonSize) {

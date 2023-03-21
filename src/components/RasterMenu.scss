@@ -15,9 +15,9 @@ $raster-menu-height: $icon-size + $card-top-margin + $card-bottom-margin +
 $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   $raster-menu-bottom;
 
-.raster-menu-scroll .swiper-wrapper {
-  justify-content: center;
-}
+//.raster-menu-scroll .swiper-wrapper {
+//justify-content: center;
+//}
 
 .raster-menu-scroll {
   text-align: center;

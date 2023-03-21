@@ -198,7 +198,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     }
   } //end of select()
 
-  swiper?.destroy(true, false) //destroy the old swiper instance. a new one will be created.
+  //swiper?.destroy(true, false) //destroy the old swiper instance. a new one will be created.
   //
   //
   //
