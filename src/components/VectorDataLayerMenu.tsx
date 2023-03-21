@@ -96,13 +96,17 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
         style: layers[key].style,
         checked: false,
       }
-      //find out all selected vector layers and create
+      //find out all enabled vector layers and set the flags
       let checkedLayers = getEnabledLayers(currentRasterID)
       if (checkedLayers.includes(layer.id)) {
         layer.checked = true
+      } else {
+        layer.checked = false
       }
       if (checkedLayers.includes('cities')) {
         cityEnabledFlag = true
+      } else {
+        cityEnabledFlag = false
       }
 
       vectorLayers.push(layer)

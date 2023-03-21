@@ -2,6 +2,12 @@
 
 Some of these instructions might be a little wrong since I've never set up a new project in the Google Play Console or App Store Connect (and both have fees preventing me from testing myself). Please refer to the official documentation (linked throughout) if you get stuck. Edits to better reflect the actual process are welcome.
 
+Note:
+
+Michael Chin verified the iOS steps on 29/12/2022.
+
+Michael Chin verified the Android steps on 22/03/2023.
+
 ## Important
 
 A Play Console developer account costs a one-time registration fee of **25 USD**
@@ -116,5 +122,3 @@ For more detailed instructions on the following section, refer to [Prepare and r
 15. Review the summary and click **Upload**
 16. Do the rest in [App Store Connect](https://appstoreconnect.apple.com/apps)
 17. See [Create a new version](https://help.apple.com/app-store-connect/#/dev480217e79)
-
-Note: Michael Chin verified the iOS steps on 29/12/2022.

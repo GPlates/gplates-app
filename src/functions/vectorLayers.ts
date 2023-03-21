@@ -58,8 +58,8 @@ export const getVectorLayers = (rasterID: string) => {
 //
 export const enableLayer = (rasterID: string, layerName: string) => {
   let layers = enabledLayers.get(rasterID)
-  console.log('enableLayer')
-  console.log(layers)
+  //console.log('enableLayer')
+  //console.log(layers)
   if (layers === undefined) {
     enabledLayers.set(rasterID, [layerName])
   } else {
