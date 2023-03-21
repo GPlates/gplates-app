@@ -99,6 +99,7 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
   //background-color: grey;
   background-image: linear-gradient(0deg, black, transparent);
   border-radius: 1rem;
+  color: whitesmoke;
   transform: translate(-50%, -50%);
 }
 

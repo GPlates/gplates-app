@@ -6,9 +6,11 @@ import {
   IonLabel,
   IonAccordionGroup,
   IonAccordion,
+  IonIcon,
 } from '@ionic/react'
 import { createCesiumImageryProvider } from '../functions/dataLoader'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { closeCircleOutline } from 'ionicons/icons'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   currentRasterIDState,
@@ -16,10 +18,7 @@ import {
   age,
   showCities,
 } from '../functions/atoms'
-import rasterMaps, {
-  getRasterByID,
-  getRasterIndexByID,
-} from '../functions/rasterMaps'
+
 import { VectorLayerType } from '../functions/types'
 import {
   getVectorLayers,
@@ -46,7 +45,7 @@ export const updateImageryLayer = (layerID: string, imageryLayer: any) => {
       break
     }
   }
-  console.log(layer)
+  //console.log(layer)
   if (layer) {
     if (layer.imageryLayer) {
       cesiumViewer.imageryLayers.remove(layer.imageryLayer)
@@ -169,10 +168,20 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
       className={isShow ? 'overlay-container show' : 'overlay-container hide'}
     >
       <div className={isShow ? 'overlay-widget show' : 'overlay-widget hide'}>
+        <div className="overlay-close-button-container">
+          <IonIcon
+            className="overlay-close-button"
+            icon={closeCircleOutline}
+            size="large"
+            onClick={() => {
+              setIsShow(false)
+            }}
+          />
+        </div>
         <IonAccordionGroup value="first">
           <IonAccordion value="first">
             <IonItem slot="header" color="light">
-              <IonLabel>Add Overlays</IonLabel>
+              <IonLabel>Overlays</IonLabel>
             </IonItem>
             <div slot="content">
               <IonItem>
@@ -202,7 +211,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
             })}
           </IonAccordion>
         </IonAccordionGroup>
-        <IonButton
+        {/*<IonButton
           expand="full"
           className="close-button"
           slot={'end'}
@@ -213,7 +222,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
           }}
         >
           Close
-        </IonButton>
+        </IonButton>*/}
       </div>
     </div>
   )

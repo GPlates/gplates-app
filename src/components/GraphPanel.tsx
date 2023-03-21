@@ -17,6 +17,7 @@ import { serverURL } from '../functions/settings'
 
 let graphChart: echarts.EChartsType
 let graphOptions: any
+let isGraphLoaded = false
 
 //cut the xData and yData according to the give range(lower, upper)
 const sliceData = (
@@ -114,13 +115,10 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const [showGraphPanel, setShowGraphPanel] = useRecoilState(
     isGraphPanelShowState
   )
-  const [_age, setAge] = useRecoilState(age)
-  const rasterMapAnimateRange = useRecoilValue(animateRange)
+  const _age = useRecoilValue(age)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [graphList, setGraphList] = useState([] as string[][])
   const [curGraphName, setCurGraphName] = useState('')
-
-  let isGraphLoaded = false
 
   //
   const loadGraph = async (instantCurGraphIdx: number) => {

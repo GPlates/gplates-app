@@ -3,7 +3,7 @@ import {
   locateOutline,
   trashOutline,
   informationOutline,
-  closeOutline,
+  closeCircleOutline,
 } from 'ionicons/icons'
 import {
   IonIcon,
@@ -357,6 +357,16 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
       <div
         className={show ? 'location-container show' : 'location-container hide'}
       >
+        <div className="add-location-close-button-container">
+          <IonIcon
+            className="add-location-close-button"
+            icon={closeCircleOutline}
+            size="large"
+            onClick={() => {
+              setShow(false)
+            }}
+          />
+        </div>
         <div
           className={show ? 'add-locate-widget show' : 'add-locate-widget hide'}
         >
@@ -453,16 +463,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             >
               Insert
             </IonButton>
-            <IonIcon
-              icon={closeOutline}
-              className="close-button"
-              slot={'end'}
-              color="secondary"
-              size="small"
-              onClick={() => {
-                setShow(false)
-              }}
-            ></IonIcon>
           </IonItem>
         </div>
 
