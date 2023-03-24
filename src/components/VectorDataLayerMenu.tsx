@@ -1,6 +1,5 @@
 import { ImageryLayer } from 'cesium'
 import {
-  IonButton,
   IonCheckbox,
   IonItem,
   IonLabel,

@@ -113,7 +113,13 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
 
   return (
     <div>
-      <div className={shown ? 'container' : 'container hidden'}>
+      <div
+        className={
+          shown
+            ? 'age-play-controls-container'
+            : 'age-play-controls-container hidden'
+        }
+      >
         <IonItem className="time-input" lines="none">
           <IonInput
             inputMode="numeric"
@@ -191,7 +197,13 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
           />
         </IonItem>
       </div>
-      <div className={shown ? 'buttons container' : 'buttons container hidden'}>
+      <div
+        className={
+          shown
+            ? 'buttons top-buttons-container'
+            : 'buttons top-buttons-container hidden'
+        }
+      >
         <div
           className="time"
           id={'timeStamp'} // screenshot need time information, using id to locate element
