@@ -69,7 +69,6 @@ To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how
 
 ### Upgrade @capacitor-community/sqlite
 
-**Important:**
 ⚠ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
 
 ### Firebase Deploy
@@ -77,3 +76,7 @@ To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how
 <https://gplates-app-5e092.web.app> @gplatesearthbyte@gmail.com
 
 #### use chrome inspect to debug android chrome://inspect/#devices
+
+### Change project name in XCode
+
+⚠ DO NOT DO THAT!! The Capacitor hardcoded "App" as the name. If you change the name, some Capacitor commands will not work.

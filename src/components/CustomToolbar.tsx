@@ -24,6 +24,7 @@ import {
   HOME_LONGITUDE,
   HOME_LATITUDE,
   DEFAULT_CAMERA_HEIGHT,
+  getDefaultCameraHeight,
 } from '../functions/cesiumViewer'
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -58,7 +59,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
             destination: Cartesian3.fromDegrees(
               HOME_LONGITUDE,
               HOME_LATITUDE,
-              DEFAULT_CAMERA_HEIGHT
+              getDefaultCameraHeight()
             ),
           })
         }, 2500) //wait for the morphTo3D to finish(by default 2 seconds morphTo3D to finish)
@@ -90,7 +91,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
         destination: Cartesian3.fromDegrees(
           HOME_LONGITUDE,
           HOME_LATITUDE,
-          DEFAULT_CAMERA_HEIGHT
+          getDefaultCameraHeight()
         ),
       })
       return
@@ -124,14 +125,14 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
         },
       })
       scene.camera.flyTo({
-        destination: Cartesian3.fromDegrees(lon, lat, DEFAULT_CAMERA_HEIGHT),
+        destination: Cartesian3.fromDegrees(lon, lat, getDefaultCameraHeight()),
       })
     } else {
       scene.camera.flyTo({
         destination: Cartesian3.fromDegrees(
           HOME_LONGITUDE,
           HOME_LATITUDE,
-          DEFAULT_CAMERA_HEIGHT
+          getDefaultCameraHeight()
         ),
       })
     }
