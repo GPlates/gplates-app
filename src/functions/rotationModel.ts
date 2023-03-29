@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { serverURL } from './settings'
 import { LonLatPid } from './types'
-import { rotate } from './quaternions'
+import { rotate } from './rotation-model'
 
 export let currentModel: RotationModel | undefined
 export let currentTimeIndex: number
