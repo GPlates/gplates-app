@@ -36,7 +36,7 @@ import {
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { useRecoilValue } from 'recoil'
-import { age, currentRasterIDState } from '../functions/atoms'
+import { ageState, currentRasterIDState } from '../functions/atoms'
 import { serverURL } from '../functions/settings'
 import { getRasterByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
@@ -135,7 +135,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   )
   const [showLocationDetails, setShowLocationDetails] = useState(false)
   const [showLocationIndex, setShowLocationIndex] = useState(0)
-  const paleoAge = useRecoilValue(age)
+  const paleoAge = useRecoilValue(ageState)
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const [presentToast, dismissToast] = useIonToast()
 

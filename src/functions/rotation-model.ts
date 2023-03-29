@@ -168,6 +168,11 @@ export class RotationSequence {
         let v1 = latLonToCart(lat1, lon1)
         let q1 = axisAngleToQuat(v1, angle1)
 
+        //the time is on the boundary
+        if (Math.abs(time - this.times[timeIdx]) < Number.EPSILON) {
+          return q1
+        }
+
         let lat2 = radians(this.poleLats[timeIdx + 1])
         let lon2 = radians(this.poleLons[timeIdx + 1])
         let angle2 = radians(this.angles[timeIdx + 1])
@@ -463,6 +468,7 @@ export default class RotationModel {
    */
   public rotate(point: LatLon, pid: number, time: number) {
     let axisAngle = this.getRotation(pid, time)
+    console.log(axisAngle)
     if (axisAngle) {
       return rotate(
         point,

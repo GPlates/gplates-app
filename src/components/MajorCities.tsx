@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import * as Cesium from 'cesium'
 import { useRecoilValue } from 'recoil'
-import { age, showCities, currentRasterIDState } from '../functions/atoms'
+import { ageState, showCities, currentRasterIDState } from '../functions/atoms'
 import { serverURL } from '../functions/settings'
 import { currentModel } from '../functions/rotationModel'
 import { cesiumViewer } from '../functions/cesiumViewer'
@@ -119,7 +119,7 @@ interface MajorCitiesProps {}
 //
 //
 const MajorCities: React.FC<MajorCitiesProps> = () => {
-  const paleoAge = useRecoilValue(age)
+  const paleoAge = useRecoilValue(ageState)
   const showCitiesFlag = useRecoilValue(showCities)
   const currentRasterID = useRecoilValue(currentRasterIDState)
 

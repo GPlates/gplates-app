@@ -15,7 +15,7 @@ import { Preferences } from '@capacitor/preferences'
 import { setNumber } from '../functions/input'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  age,
+  ageState,
   animateExact,
   animateFps,
   animateIncrement,
@@ -40,7 +40,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const [range, setRange] = useRecoilState(animateRange)
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
-  const [currentAge, setCurrentAge] = useRecoilState(age)
+  const [currentAge, setCurrentAge] = useRecoilState(ageState)
 
   // Animation constants
   const minIncrement = 1

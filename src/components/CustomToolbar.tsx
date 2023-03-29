@@ -17,13 +17,12 @@ import {
 } from 'ionicons/icons'
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
-import React, { Fragment, useState } from 'react'
-import { useSetRecoilState } from 'recoil'
+import React, { Fragment, useState, useEffect } from 'react'
+import { useSetRecoilState, useRecoilValue } from 'recoil'
 import {
   cesiumViewer,
   HOME_LONGITUDE,
   HOME_LATITUDE,
-  DEFAULT_CAMERA_HEIGHT,
   getDefaultCameraHeight,
 } from '../functions/cesiumViewer'
 import 'swiper/css'
@@ -31,20 +30,32 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import { Geolocation } from '@capacitor/geolocation'
 import {
+  ageState,
   isAddLocationWidgetShowState,
   isModelInfoShowState,
+  currentRasterIDState,
 } from '../functions/atoms'
 import { SocialSharing } from './SocialSharing'
+import { currentModel } from '../functions/rotationModel'
 
 interface ToolbarProps {
   scene: Scene
 }
 
-let lat: number
-let lon: number
+let currentLocationLat: number | undefined = undefined
+let currentLocationLon: number | undefined = undefined
+let paleoCurrentLocationLat: number | undefined = undefined
+let paleoCurrentLocationLon: number | undefined = undefined
 
+/**
+ *
+ * @param param0
+ * @returns
+ */
 const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   const setShowModelInfo = useSetRecoilState(isModelInfoShowState)
+  const paleoAge = useRecoilValue(ageState)
+  const currentRasterID = useRecoilValue(currentRasterIDState)
   const [presentToast, dismissToast] = useIonToast()
   const [present, dismiss] = useIonLoading()
 
@@ -84,39 +95,23 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     isAddLocationWidgetShowState
   )
 
-  const goHome = async () => {
-    //when run in a web browser, cannot request geolocation permission
-    if (getPlatforms().includes('desktop')) {
-      scene.camera.flyTo({
-        destination: Cartesian3.fromDegrees(
-          HOME_LONGITUDE,
-          HOME_LATITUDE,
-          getDefaultCameraHeight()
-        ),
-      })
-      return
-    }
-
-    if (!lat && !lon) {
-      const permissions = await Geolocation.checkPermissions()
-      if (permissions.location !== 'denied') {
-        try {
-          const location = await Geolocation.getCurrentPosition()
-          // Only get location once to speed up home button response
-          lon = location.coords.longitude
-          lat = location.coords.latitude
-        } catch (err) {
-          console.log(err)
-        }
-      }
-    }
-
-    if (lat && lon) {
+  /**
+   * update the current location point on Cesium globe
+   */
+  const updateCurrentLocationEntity = (newLat: number, newLon: number) => {
+    if (
+      newLat !== undefined &&
+      newLon !== undefined &&
+      !isNaN(newLat) &&
+      !isNaN(newLon)
+    ) {
+      //console.log(newLat)
+      //console.log(newLon)
       cesiumViewer.entities.removeById('userLocation')
       cesiumViewer.entities.add({
         id: 'userLocation',
         name: 'User Location',
-        position: Cartesian3.fromDegrees(lon, lat),
+        position: Cartesian3.fromDegrees(newLon, newLat),
         point: {
           color: Color.DODGERBLUE,
           pixelSize: 10,
@@ -124,19 +119,104 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           outlineWidth: 3,
         },
       })
-      scene.camera.flyTo({
-        destination: Cartesian3.fromDegrees(lon, lat, getDefaultCameraHeight()),
-      })
-    } else {
-      scene.camera.flyTo({
-        destination: Cartesian3.fromDegrees(
-          HOME_LONGITUDE,
-          HOME_LATITUDE,
-          getDefaultCameraHeight()
-        ),
-      })
     }
   }
+
+  /**
+   *
+   */
+  const goHome = async () => {
+    //when run in a web browser, cannot request geolocation permission
+    if (getPlatforms().includes('desktop')) {
+      currentLocationLat = HOME_LATITUDE
+      currentLocationLon = HOME_LONGITUDE
+    } else if (
+      currentLocationLat === undefined ||
+      currentLocationLon === undefined
+    ) {
+      const permissions = await Geolocation.checkPermissions()
+      if (permissions.location !== 'denied') {
+        try {
+          const location = await Geolocation.getCurrentPosition()
+          // Only get location once to speed up home button response
+          currentLocationLon = location.coords.longitude
+          currentLocationLat = location.coords.latitude
+        } catch (err) {
+          console.log(err)
+        }
+      }
+    }
+
+    if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
+      if (paleoAge === 0) {
+        updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
+        scene.camera.flyTo({
+          destination: Cartesian3.fromDegrees(
+            currentLocationLon,
+            currentLocationLat,
+            getDefaultCameraHeight()
+          ),
+        })
+      } else {
+        if (currentModel !== undefined) {
+          let newLatLon = currentModel.rotate(
+            { lat: currentLocationLat, lon: currentLocationLon, pid: 801 },
+            paleoAge
+          )
+          //console.log(newLatLon)
+          if (newLatLon !== undefined) {
+            paleoCurrentLocationLat = newLatLon.lat
+            paleoCurrentLocationLon = newLatLon.lon
+            updateCurrentLocationEntity(
+              paleoCurrentLocationLat,
+              paleoCurrentLocationLon
+            )
+            scene.camera.flyTo({
+              destination: Cartesian3.fromDegrees(
+                paleoCurrentLocationLon,
+                paleoCurrentLocationLat,
+                getDefaultCameraHeight()
+              ),
+            })
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   *
+   */
+  useEffect(() => {
+    if (
+      currentModel !== undefined &&
+      currentLocationLat !== undefined &&
+      currentLocationLon !== undefined
+    ) {
+      let newLatLon = currentModel.rotate(
+        { lat: currentLocationLat, lon: currentLocationLon, pid: 801 },
+        paleoAge
+      )
+      console.log(newLatLon)
+      if (newLatLon !== undefined) {
+        paleoCurrentLocationLat = newLatLon.lat
+        paleoCurrentLocationLon = newLatLon.lon
+        updateCurrentLocationEntity(
+          paleoCurrentLocationLat,
+          paleoCurrentLocationLon
+        )
+      }
+    }
+  }, [paleoAge])
+
+  /**
+   *
+   */
+  useEffect(() => {
+    if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
+      updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
+    }
+  }, [currentRasterID])
 
   //do not show social sharing button on desktop/web browser
   let showSocialSharingButton = getPlatforms().includes('desktop')

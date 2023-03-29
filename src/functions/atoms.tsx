@@ -1,7 +1,7 @@
 import { atom } from 'recoil'
 import { RasterGroup } from './types'
 
-export const age = atom({ key: 'age', default: 0 })
+export const ageState = atom({ key: 'ageState', default: 0 })
 export const animateExact = atom({ key: 'animateExact', default: true })
 export const animateFps = atom({ key: 'animateFps', default: 3 })
 export const animateIncrement = atom({ key: 'animateIncrement', default: 1 })

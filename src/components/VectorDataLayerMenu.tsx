@@ -14,7 +14,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   currentRasterIDState,
   isVectorMenuShow,
-  age,
+  ageState,
   showCities,
 } from '../functions/atoms'
 
@@ -58,7 +58,7 @@ interface ContainerProps {}
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const currentRasterID = useRecoilValue(currentRasterIDState)
-  const rAge = useRecoilValue(age)
+  const rAge = useRecoilValue(ageState)
   const setShowCities = useSetRecoilState(showCities)
 
   //
