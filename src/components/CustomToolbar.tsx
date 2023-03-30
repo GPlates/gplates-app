@@ -37,6 +37,7 @@ import {
 } from '../functions/atoms'
 import { SocialSharing } from './SocialSharing'
 import { currentModel } from '../functions/rotationModel'
+import { serverURL } from '../functions/settings'
 
 interface ToolbarProps {
   scene: Scene
@@ -46,6 +47,8 @@ let currentLocationLat: number | undefined = undefined
 let currentLocationLon: number | undefined = undefined
 let paleoCurrentLocationLat: number | undefined = undefined
 let paleoCurrentLocationLon: number | undefined = undefined
+//model name -> plate id
+let plateIDMap: Map<string, number> = new Map<string, number>()
 
 /**
  *
@@ -122,6 +125,27 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     }
   }
 
+  const getPlateID = async () => {
+    if (currentModel !== undefined) {
+      let pid = plateIDMap.get(currentModel.name)
+      console.log(plateIDMap)
+      if (pid === undefined) {
+        let result = await fetch(
+          serverURL +
+            '/reconstruct/assign_points_plate_ids/' +
+            '?points=' +
+            currentLocationLon +
+            ',' +
+            currentLocationLat +
+            '&model=' +
+            currentModel!.name
+        )
+        let jsonData = await result.json()
+        plateIDMap.set(currentModel!.name, jsonData[0])
+      }
+    }
+  }
+
   /**
    *
    */
@@ -148,6 +172,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     }
 
     if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
+      await getPlateID()
       if (paleoAge === 0) {
         updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
         scene.camera.flyTo({
@@ -159,25 +184,28 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
         })
       } else {
         if (currentModel !== undefined) {
-          let newLatLon = currentModel.rotate(
-            { lat: currentLocationLat, lon: currentLocationLon, pid: 801 },
-            paleoAge
-          )
-          //console.log(newLatLon)
-          if (newLatLon !== undefined) {
-            paleoCurrentLocationLat = newLatLon.lat
-            paleoCurrentLocationLon = newLatLon.lon
-            updateCurrentLocationEntity(
-              paleoCurrentLocationLat,
-              paleoCurrentLocationLon
+          let pid = plateIDMap.get(currentModel.name)
+          if (pid !== undefined) {
+            let newLatLon = currentModel.rotate(
+              { lat: currentLocationLat, lon: currentLocationLon, pid: pid },
+              paleoAge
             )
-            scene.camera.flyTo({
-              destination: Cartesian3.fromDegrees(
-                paleoCurrentLocationLon,
+            //console.log(newLatLon)
+            if (newLatLon !== undefined) {
+              paleoCurrentLocationLat = newLatLon.lat
+              paleoCurrentLocationLon = newLatLon.lon
+              updateCurrentLocationEntity(
                 paleoCurrentLocationLat,
-                getDefaultCameraHeight()
-              ),
-            })
+                paleoCurrentLocationLon
+              )
+              scene.camera.flyTo({
+                destination: Cartesian3.fromDegrees(
+                  paleoCurrentLocationLon,
+                  paleoCurrentLocationLat,
+                  getDefaultCameraHeight()
+                ),
+              })
+            }
           }
         }
       }
@@ -193,18 +221,21 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
       currentLocationLat !== undefined &&
       currentLocationLon !== undefined
     ) {
-      let newLatLon = currentModel.rotate(
-        { lat: currentLocationLat, lon: currentLocationLon, pid: 801 },
-        paleoAge
-      )
-      console.log(newLatLon)
-      if (newLatLon !== undefined) {
-        paleoCurrentLocationLat = newLatLon.lat
-        paleoCurrentLocationLon = newLatLon.lon
-        updateCurrentLocationEntity(
-          paleoCurrentLocationLat,
-          paleoCurrentLocationLon
+      let pid = plateIDMap.get(currentModel.name)
+      if (pid !== undefined) {
+        let newLatLon = currentModel.rotate(
+          { lat: currentLocationLat, lon: currentLocationLon, pid: pid },
+          paleoAge
         )
+
+        if (newLatLon !== undefined) {
+          paleoCurrentLocationLat = newLatLon.lat
+          paleoCurrentLocationLon = newLatLon.lon
+          updateCurrentLocationEntity(
+            paleoCurrentLocationLat,
+            paleoCurrentLocationLon
+          )
+        }
       }
     }
   }, [paleoAge])
@@ -215,6 +246,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   useEffect(() => {
     if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
       updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
+      getPlateID()
     }
   }, [currentRasterID])
 

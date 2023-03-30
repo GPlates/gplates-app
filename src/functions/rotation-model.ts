@@ -468,7 +468,7 @@ export default class RotationModel {
    */
   public rotate(point: LatLon, pid: number, time: number) {
     let axisAngle = this.getRotation(pid, time)
-    console.log(axisAngle)
+
     if (axisAngle) {
       return rotate(
         point,
