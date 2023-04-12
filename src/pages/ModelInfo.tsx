@@ -130,8 +130,10 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
               <IonNote slot="end">{currentRaster?.subTitle}</IonNote>
             </IonItem>
 
-            <IonItem key={'raster-id'}>
-              <IonLabel className={'info-small-label'}>{'Raster ID'} </IonLabel>
+            <IonItem key={'basemap-id'}>
+              <IonLabel className={'info-small-label'}>
+                {'Basemap ID'}{' '}
+              </IonLabel>
               <IonNote slot="end">{currentRaster?.id}</IonNote>
             </IonItem>
 

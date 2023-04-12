@@ -43,6 +43,13 @@ export default class RotationModel {
     //this.fetchAllFiniteRotations()//big performace impact at start up
   }
 
+  /**
+   * rotate a location to a given time
+   *
+   * @param lonLatPid
+   * @param time
+   * @returns
+   */
   rotate(lonLatPid: LonLatPid, time: number) {
     if (this.newRotationModelImpl === undefined) {
       console.log('newRotationModelImpl is not ready yet!')
