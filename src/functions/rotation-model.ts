@@ -1,3 +1,7 @@
+/*
+ * LOOK HERE!!!
+ * This should be replaced with https://www.npmjs.com/package/gplates
+ */
 import {
   QuatType,
   quatMult,
@@ -217,6 +221,9 @@ export default class RotationModel {
         .then((json_data: any) => {
           RotationModel.loadRotationFromJson(json_data, this)
         })
+        .catch(() => {
+          console.log('Failed to load rotation map')
+        })
     }
   }
 
@@ -240,6 +247,9 @@ export default class RotationModel {
       .then((json_data: any) => {
         RotationModel.loadRotationFromJson(json_data, instance)
         callback(instance)
+      })
+      .catch(() => {
+        console.log('Failed to load rotation model.')
       })
   }
 

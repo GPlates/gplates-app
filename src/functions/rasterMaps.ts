@@ -114,7 +114,7 @@ const groupRasters = () => {
 /*const getRasters = async () => {
   try {
     let rasterMap: RasterCfg[] = []
-    let res = await fetch('https://gws.gplates.org/mobile/get_rasters')
+    let res = await fetch('https://gws.gplates.org/mobile/get_basemaps')
     let json_data = await res.json()
 
     //console.log(json_data)
@@ -155,7 +155,7 @@ function getStartLayerName(layerData: any) {
 //load rasters from gplates web service
 //
 export const loadRasterMaps = (callback: Function) => {
-  fetch(serverURL.replace(/\/+$/, '') + '/mobile/get_rasters')
+  fetch(serverURL.replace(/\/+$/, '') + '/mobile/get_basemaps')
     .then((response) => response.json())
     .then((jsonData) => {
       //console.log(json_data)

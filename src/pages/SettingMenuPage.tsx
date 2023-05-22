@@ -327,17 +327,18 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           {/*--------------------------------------------*/}
           <IonItemDivider>Network Settings</IonItemDivider>
           <IonItem>
-            <IonLabel>Use Mobile Data</IonLabel>
             <IonToggle
               class={'single-setting-option'}
               checked={downloadOnCellular}
               onIonChange={(e) => setDownloadOnCellular(e.detail.checked)}
-            />
+            >
+              Use Mobile Data
+            </IonToggle>
           </IonItem>
           {/*--------------------------------------------*/}
           <IonItem>
-            <IonLabel class="server-url-label">Server URL </IonLabel>
             <IonInput
+              label="Server URL"
               class="server-url-input"
               value={serverURL}
               onIonBlur={async (e) => {
@@ -356,7 +357,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           {/*--------------------------------------------*/}
           <IonItemDivider>Graticules</IonItemDivider>
           <IonItem>
-            <IonLabel>Show Graticules</IonLabel>
             <IonToggle
               class={'single-setting-option'}
               checked={showGraticuleFlag}
@@ -374,7 +374,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   value: JSON.stringify(e.detail.checked),
                 })
               }}
-            />
+            >
+              Show Graticules
+            </IonToggle>
           </IonItem>
           {/*--------------------------------------------*/}
         </IonList>

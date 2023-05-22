@@ -100,7 +100,6 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Range</IonLabel>
                 <IonRange
                   dir={range.lower > range.upper ? 'rtl' : 'ltr'}
                   dualKnobs={true}
@@ -125,7 +124,9 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                     }
                   }}
                   value={range}
-                />
+                >
+                  <div slot="label">Range</div>
+                </IonRange>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -133,8 +134,8 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>From age</IonLabel>
                 <IonInput
+                  label="From age"
                   inputMode="numeric"
                   min={minTime}
                   max={maxTime}
@@ -154,8 +155,8 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>To age</IonLabel>
                 <IonInput
+                  label="To age"
                   inputMode="numeric"
                   min={minTime}
                   max={maxTime}
@@ -186,8 +187,8 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol className="increment-col">
               <IonItem>
-                <IonLabel>Increment</IonLabel>
                 <IonInput
+                  label="Increment"
                   inputMode="numeric"
                   min={minIncrement}
                   max={maxIncrement}
@@ -209,11 +210,8 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel class="frames-per-second-label">
-                  FPS (best effort)
-                </IonLabel>
                 <IonInput
-                  slot="end"
+                  label="FPS (best effort)"
                   inputMode="numeric"
                   min={minFps}
                   max={maxFps}
@@ -233,11 +231,12 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Finish exactly on end age</IonLabel>
                 <IonToggle
                   checked={exact}
                   onIonChange={(e) => setExact(e.detail.checked)}
-                />
+                >
+                  Finish exactly on end age
+                </IonToggle>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -245,11 +244,12 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Loop</IonLabel>
                 <IonToggle
                   checked={loop}
                   onIonChange={(e) => setLoop(e.detail.checked)}
-                />
+                >
+                  Loop
+                </IonToggle>
               </IonItem>
             </IonCol>
           </IonRow>

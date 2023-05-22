@@ -38,7 +38,7 @@ $transition: all 150ms;
 
 .age-play-controls-container {
   &:not(.buttons) {
-    background-color: var(--ion-color-dark-contrast);
+    background-color: #000000;
   }
   ion-item {
     &::part(native) {
@@ -46,6 +46,7 @@ $transition: all 150ms;
     }
     flex-grow: 1;
   }
+  --ion-item-background: black;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -91,6 +92,9 @@ $transition: all 150ms;
 }
 
 .slider {
+  ion-range {
+    padding-left: 10px;
+  }
   ion-button {
     &::part(native) {
       padding: 0;
@@ -124,6 +128,7 @@ $transition: all 150ms;
   --padding-start: 16px;
   --padding-end: 16px;
   --ion-safe-area-right: 0;
+  --color: white;
   min-height: 48px;
   width: 100px;
 }

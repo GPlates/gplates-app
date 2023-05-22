@@ -51,18 +51,18 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
   return (
     <div>
       <IonItem>
-        <IonLabel>Customized Background</IonLabel>
         <IonToggle
           checked={isBackgroundSettingEnable}
           onIonChange={(e) => {
             setIsBackgroundSettingEnable(!isBackgroundSettingEnable)
           }}
-        />
+        >
+          Customized Background
+        </IonToggle>
       </IonItem>
       <IonItem
         disabled={!isBackgroundSettingEnable || isStarryBackgroundEnable}
       >
-        <IonLabel>Single Colour Background</IonLabel>
         <IonToggle
           checked={isCustomisedColorBackgroundEnable}
           onIonChange={() => {
@@ -70,7 +70,9 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
               !isCustomisedColorBackgroundEnable
             )
           }}
-        />
+        >
+          Single Colour Background
+        </IonToggle>
       </IonItem>
       <IonItem
         disabled={
@@ -88,13 +90,14 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
         />
       </IonItem>
       <IonItem disabled={!isBackgroundSettingEnable}>
-        <IonLabel>Starry Background</IonLabel>
         <IonToggle
           checked={isStarryBackgroundEnable}
           onIonChange={() => {
             setIsStarryBackgroundEnable(!isStarryBackgroundEnable)
           }}
-        />
+        >
+          Starry Background
+        </IonToggle>
       </IonItem>
     </div>
   )

@@ -420,15 +420,15 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                   return (
                     <div slot="content" key={index}>
                       <IonItem>
-                        <IonLabel>Longitude:</IonLabel>
                         <IonInput
                           readonly
+                          label="Longitude:"
                           value={location.lon.toFixed(4)}
                         ></IonInput>
 
-                        <IonLabel>Latitude:</IonLabel>
                         <IonInput
                           readonly
+                          label="Latitude:"
                           value={location.lat.toFixed(4)}
                         ></IonInput>
                         <IonButton
@@ -483,15 +483,15 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
 
           <IonItemDivider>Insert Location</IonItemDivider>
           <IonItem>
-            <IonLabel>Longitude:</IonLabel>
             <IonInput
+              label="Longitude:"
               type="number"
               value={lonLat.current.lon.toFixed(4)}
               ref={lonInput}
             ></IonInput>
 
-            <IonLabel>Latitude:</IonLabel>
             <IonInput
+              label="Latitude:"
               type="number"
               value={lonLat.current.lat.toFixed(4)}
               ref={latInput}
@@ -526,8 +526,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           <IonContent>
             {currentModel && (
               <IonItem>
-                <IonLabel>Paleo-age:</IonLabel>
                 <IonInput
+                  label="Paleo-age:"
                   slot="end"
                   readonly
                   value={paleoAge + ' Ma'}
@@ -536,8 +536,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             )}
             {currentModel && (
               <IonItem>
-                <IonLabel>Paleo-longitude:</IonLabel>
                 <IonInput
+                  label="Paleo-longitude:"
                   slot="end"
                   readonly
                   value={
@@ -550,8 +550,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             )}
             {currentModel && (
               <IonItem>
-                <IonLabel>Paleo-latitude:</IonLabel>
                 <IonInput
+                  label="Paleo-latitude:"
                   slot="end"
                   readonly
                   value={
@@ -563,8 +563,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               </IonItem>
             )}
             <IonItem>
-              <IonLabel>Present-day Longitude:</IonLabel>
               <IonInput
+                label="Present-day Longitude:"
                 slot="end"
                 readonly
                 value={
@@ -575,8 +575,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               ></IonInput>
             </IonItem>
             <IonItem>
-              <IonLabel>Present-day Latitude:</IonLabel>
               <IonInput
+                label="Present-day Latitude:"
                 slot="end"
                 readonly
                 value={
@@ -588,8 +588,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             </IonItem>
             {currentModel && (
               <IonItem>
-                <IonLabel>Plate ID:</IonLabel>
                 <IonInput
+                  label="Plate ID:"
                   slot="end"
                   readonly
                   value={
@@ -602,8 +602,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             )}
             {currentModel && (
               <IonItem>
-                <IonLabel>Rotation Model:</IonLabel>
                 <IonInput
+                  label="Rotation Model:"
                   readonly
                   slot="end"
                   value={currentModel.name}

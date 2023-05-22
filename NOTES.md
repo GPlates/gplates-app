@@ -1,0 +1,1 @@
+append "&BGCOLOR=0x0000FF" to WMS request to get a background
