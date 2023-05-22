@@ -10,8 +10,12 @@ import { Share } from '@capacitor/share'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { timeout } from '../functions/util'
 
-//
-// get screenshot blob from cesium canvas
+/**
+ * get screenshot blob from cesium canvas/
+ *
+ * @param viewer
+ * @returns
+ */
 const getCesiumScreenShotBlob = async (viewer: Viewer) => {
   let result = null
   const scene = viewer.scene
@@ -93,8 +97,13 @@ const dataUrltoBlob = async (url: string) => {
   return await (await fetch(url)).blob()
 }
 */
-//
-//
+
+/**
+ *
+ * @param img
+ * @param fileName
+ * @returns
+ */
 const saveImgToFileSystem = async (img: string, fileName: string) => {
   await Filesystem.requestPermissions()
   return (
@@ -155,13 +164,18 @@ const getScreenShot = async (
   return result
 }
 */
-//
-//
+
+/**
+ *
+ * @param img
+ * @returns
+ */
 const saveImage = async (img: string) => {
   let savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
   const albumName = 'GPlates App'
   //let albums = await Media.getAlbums()
   //console.log(albums)
+  //for ios
   if (isPlatform('ios')) {
     let albumID =
       (await Media.getAlbums()).albums.find((a) => a.name === albumName)
@@ -172,17 +186,19 @@ const saveImage = async (img: string) => {
       await Media.createAlbum({ name: albumName })
       await Media.savePhoto({
         path: savedPath,
-        album: (
+        albumIdentifier: (
           await Media.getAlbums()
         ).albums.find((a) => a.name === albumName)?.identifier,
       })
     } else {
       await Media.savePhoto({
         path: savedPath,
-        album: albumID,
+        albumIdentifier: albumID,
       })
     }
-  } else if (isPlatform('android')) {
+  }
+  // for android
+  else if (isPlatform('android')) {
     const media = await Media.getAlbums().catch((err) => {
       console.log(err)
     })
@@ -193,15 +209,20 @@ const saveImage = async (img: string) => {
       }
       await Media.savePhoto({
         path: savedPath,
-        album: albumName,
+        albumIdentifier: media.albums.find((a) => a.name === albumName)
+          ?.identifier,
       })
     }
   }
   return savedPath
 }
 
-//
-//
+/**
+ *
+ * @param dataUrl
+ * @param fileName
+ * @returns
+ */
 const dataURLtoFile = (dataUrl: string, fileName: string) => {
   let arr = dataUrl.split(',')
   // @ts-ignore
@@ -249,8 +270,11 @@ const shareImageIosAndAndroid = async (imgDataUrl: string) => {
   )
 }
 */
-//
-//
+
+/**
+ *
+ * @returns
+ */
 const getScreenShot = async () => {
   //get cesium viewer screenshot
   let cesiumBlob = await getCesiumScreenShotBlob(cesiumViewer)
@@ -336,7 +360,14 @@ const getScreenShot = async () => {
   return canvas.toDataURL('image/png')
 }
 
-//take screenshot and share it
+/**
+ * take screenshot and share it
+ *
+ * @param loadingPresent
+ * @param loadingDismiss
+ * @param presentToast
+ * @param dismissToast
+ */
 export const SocialSharing = async (
   loadingPresent: Function,
   loadingDismiss: Function,
@@ -345,8 +376,7 @@ export const SocialSharing = async (
 ) => {
   let isFail = false
   let canShare: boolean = (await Share.canShare()).value
-  //console.log(canShare)
-  //console.log(getPlatforms())
+
   if (getPlatforms().includes('desktop')) canShare = false
   if (canShare) {
     try {
@@ -354,9 +384,9 @@ export const SocialSharing = async (
         message: 'Taking screenshot...',
         cssClass: 'screenshot-loading',
       })
-      //let screenShot = await getScreenShot(viewer, isStarryBackgroundEnable)
+
       let screenShot = await getScreenShot()
-      //console.log(screenShot)
+
       let filepath = await saveImage(screenShot)
       await Share.share({
         title: 'GPlates App Screenshot',

@@ -511,7 +511,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           isOpen={showLocationDetails}
           animated
           backdropDismiss={false}
-          class="location-details"
+          className="location-details"
         >
           <IonHeader>
             <IonToolbar>
