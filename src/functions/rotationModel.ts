@@ -1,7 +1,7 @@
 import assert from 'assert'
+import { RotationModel as RotationModelEx, rotate } from 'gplates'
 import { serverURL } from './settings'
 import { LonLatPid } from './types'
-import RotationModelEx, { rotate } from './rotation-model'
 
 export let currentModel: RotationModel | undefined
 export let currentTimeIndex: number
