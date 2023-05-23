@@ -6,7 +6,7 @@
   "dependencies": {
     "@awesome-cordova-plugins/core": "^6.0.1",
     "@capacitor-community/media": "^5.0.0",
-    "@capacitor-community/sqlite": "^4.2.1",
+    "@capacitor-community/sqlite": "^4.8.0-1",
     "@capacitor/android": "^5.0.3",
     "@capacitor/app": "^5.0.2",
     "@capacitor/browser": "^5.0.2",
@@ -24,7 +24,7 @@
     "@craco/craco": "^7.0.0",
     "@ionic/react": "^7.0.5",
     "@ionic/react-router": "^7.0.5",
-    "@ionic/storage": "^3.0.6",
+    "@ionic/storage": "^4.0.0",
     "cesium": "1.95.0",
     "echarts": "^5.3.3",
     "es6-promise-plugin": "^4.2.2",
@@ -111,7 +111,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "jeep-sqlite": "^1.6.5",
+    "jeep-sqlite": "^2.3.4",
     "prettier": "^2.7.1",
     "react-scripts": "^5.0.1",
     "webpack": "^5.74.0"
