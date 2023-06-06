@@ -73,7 +73,9 @@ export class CachingService {
       data = await this.convertBlobToDataURL(blob)
       //it is possible that the return data is invalid
       if (blob && data) {
-        this.cacheRequest(url, data)
+        this.cacheRequest(url, data).catch((error) => {
+          console.log(error) //handle the promise rejection
+        })
         //TODO: on "web" platform, you need to saveToStore. otherwise the DB is in memory
         //await sqlite.saveToStore('db_main') //LOOK HERE
         return URL.createObjectURL(blob)
@@ -168,7 +170,9 @@ export class CachingService {
         .then((data) => {
           if (data) {
             //console.log(`insert ${url}`)
-            this.cacheRequest(url, data, -1)
+            this.cacheRequest(url, data, -1).catch((error) => {
+              console.log(error) //handle the promise rejection
+            })
           } else {
             console.log('warning cacheURL: the data from this url is empty')
           }
