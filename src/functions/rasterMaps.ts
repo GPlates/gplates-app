@@ -1,8 +1,11 @@
 import { RasterCfg, RasterGroup } from './types'
-import { createCesiumImageryProvider } from './dataLoader'
-import { serverURL, DEBUG } from './settings'
+import { serverURL } from './settings'
 import { getDefaultStore } from './storage'
 
+/**
+ * hardcode configuration in case the network is not working and
+ * there is no local cache available.
+ */
 export const failSafeRasterMaps: RasterCfg[] = [
   {
     id: 'geology',
@@ -41,9 +44,12 @@ export default rasterMaps
 const presentDayRasters: RasterCfg[] = []
 const paleoRasters: RasterCfg[] = []
 
-//
-// find raster config by ID
-//
+/**
+ * find basemap configuration by ID
+ *
+ * @param id - basemap ID
+ * @returns - basemap configuration
+ */
 export const getRasterByID = (id: string) => {
   for (let i = 0; i < rasterMaps.length; i++) {
     if (rasterMaps[i].id === id) return rasterMaps[i]
@@ -51,9 +57,12 @@ export const getRasterByID = (id: string) => {
   return undefined
 }
 
-//
-// find raster index config by ID
-//
+/**
+ * find basemap index config by ID
+ *
+ * @param id - basemap ID
+ * @returns - basemap index
+ */
 export const getRasterIndexByID = (id: string) => {
   for (let i = 0; i < rasterMaps.length; i++) {
     if (rasterMaps[i].id === id) return i
@@ -61,9 +70,12 @@ export const getRasterIndexByID = (id: string) => {
   return undefined
 }
 
-//
-// return the rasters according to which raster group is in use
-//
+/**
+ * return the basemaps according to which basemap group is in use
+ *
+ * @param rasterGroup - basemap group
+ * @returns - a list of basemap configuration
+ */
 export const getRasters = (rasterGroup: RasterGroup) => {
   if (rasterGroup == RasterGroup.present) {
     return getPresentDayRasters()
@@ -73,9 +85,11 @@ export const getRasters = (rasterGroup: RasterGroup) => {
     return [] //should never happen
   }
 }
-//
-//
-//
+
+/**
+ * get present-day basemaps
+ * @returns present day basemaps
+ */
 export const getPresentDayRasters = () => {
   if (presentDayRasters.length == 0) {
     groupRasters()
@@ -83,9 +97,10 @@ export const getPresentDayRasters = () => {
   return presentDayRasters
 }
 
-//
-//
-//
+/**
+ * get paleo-basemaps
+ * @returns paleo-basemaps
+ */
 export const getPaleoRasters = () => {
   if (presentDayRasters.length == 0) {
     groupRasters()
@@ -93,9 +108,9 @@ export const getPaleoRasters = () => {
   return paleoRasters
 }
 
-//
-//
-//
+/**
+ * divide the basemaps into two groups, present-day and paleo
+ */
 const groupRasters = () => {
   for (let i = 0; i < rasterMaps.length; i++) {
     //without a rotation model, it means present-day raster
@@ -109,9 +124,12 @@ const groupRasters = () => {
   }
 }
 
-//async version. (NOT IN USE FOR NOW)
-//keep the code here, may be useful in the future
-/*const getRasters = async () => {
+/**
+ *  async version. (NOT IN USE FOR NOW)
+ *  keep the code here, may be useful in the future
+ */
+/*
+const getRasters = async () => {
   try {
     let rasterMap: RasterCfg[] = []
     let res = await fetch('https://gws.gplates.org/mobile/get_basemaps')
@@ -136,24 +154,14 @@ const groupRasters = () => {
   } catch (err) {
     return failSafeRasterMaps
   }
-}*/
-
-//
-// when layer is time-dependent, the layerName is a template.
-// the {{time}} is the placeholder for the real time
-// replace {{time}} with the startTime
-//
-function getStartLayerName(layerData: any) {
-  let layerName = layerData.layerName
-  if (layerData.startTime > layerData.endTime) {
-    layerName = layerName.replace('{{time}}', layerData.endTime.toString())
-  }
-  return layerName
 }
+*/
 
-//
-//load rasters from gplates web service
-//
+/**
+ * load rasters from gplates web service
+ *
+ * @param callback - the callback function when done loading
+ */
 export const loadRasterMaps = (callback: Function) => {
   fetch(serverURL.replace(/\/+$/, '') + '/mobile/get_basemaps')
     .then((response) => response.json())
@@ -192,10 +200,13 @@ export const loadRasterMaps = (callback: Function) => {
     })
 }
 
-//
-//this function convert the JSON data retrieved from server to a
-//list of RasterCfg objects
-//
+/**
+ * this function convert the JSON data retrieved from server to a
+ * list of RasterCfg objects
+ *
+ * @param jsonData - data in JSON format
+ * @returns
+ */
 const convertJsonToRasterMaps = (jsonData: any) => {
   let maps = []
   for (let key in jsonData) {
