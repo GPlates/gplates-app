@@ -49,7 +49,7 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
   ])
 
   return (
-    <div>
+    <div style={{ height: '100%' }}>
       <IonItem>
         <IonToggle
           checked={isBackgroundSettingEnable}
