@@ -1,6 +1,5 @@
 import { ImageryLayer } from 'cesium'
 import {
-  IonButton,
   IonCheckbox,
   IonItem,
   IonLabel,
@@ -15,7 +14,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   currentRasterIDState,
   isVectorMenuShow,
-  age,
+  ageState,
   showCities,
 } from '../functions/atoms'
 
@@ -59,7 +58,7 @@ interface ContainerProps {}
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const currentRasterID = useRecoilValue(currentRasterIDState)
-  const rAge = useRecoilValue(age)
+  const rAge = useRecoilValue(ageState)
   const setShowCities = useSetRecoilState(showCities)
 
   //
@@ -189,26 +188,26 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
             </IonItem>
             <div slot="content">
               <IonItem>
-                <IonLabel>Major Cities</IonLabel>
                 <IonCheckbox
-                  slot="end"
                   value="0"
                   checked={cityEnabledFlag}
                   onIonChange={onCitiesCheckBoxChange}
-                />
+                >
+                  Major Cities
+                </IonCheckbox>
               </IonItem>
             </div>
             {vectorLayers.map((layer, index) => {
               return (
                 <div slot="content" key={index}>
                   <IonItem>
-                    <IonLabel>{layer.displayName}</IonLabel>
                     <IonCheckbox
-                      slot="end"
                       value={index}
                       checked={layer.checked}
                       onIonChange={onCheckBoxChange}
-                    />
+                    >
+                      {layer.displayName}
+                    </IonCheckbox>
                   </IonItem>
                 </div>
               )

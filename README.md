@@ -1,6 +1,39 @@
+<p align="center">
+  <img width="600"  src="https://github.com/GPlates/gplates-app/assets/2688316/63fd5c22-e28c-484b-8204-a3af4e240c45">
+</p>
+
+![build workflow](https://github.com/gplates/gplates-app/actions/workflows/build.yml/badge.svg)
+
 # GPlates App
 
 The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.org.au/), comprising a GPlates app with integrated lesson plans, to provide an Earth Science-focused education engagement initiative.
+
+## Screenshots
+
+### Topography globe with G20 capital cities
+
+<img width="600" alt="Topography" src="https://github.com/GPlates/gplates-app/assets/2688316/b86c953e-bd4f-4081-9753-fb45055242fb">
+
+### Paleo-bathymetry at 100Ma
+
+<img width="600" alt="Paleo-bathymetry" src="https://github.com/GPlates/gplates-app/assets/2688316/3279f7ae-9d7b-4d29-96d1-1df8fe0fd211">
+
+### Built-in Tutorial
+
+<img width="600" alt="Built-in Tutorial" src="https://github.com/GPlates/gplates-app/assets/2688316/8efae96b-7f56-4490-a408-da8d436ca28e">
+
+## Troubleshooting
+
+### Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
+
+- Step 1: open the "Settings" window
+
+<img width="437" alt="Settings" src="https://github.com/GPlates/gplates-app/assets/2688316/01c385fd-229d-4233-9cd7-c9ebfbb0fdf9">
+
+- Step 2: hit the "Reload App" button
+
+<img width="593" alt="Reload App" src="https://github.com/GPlates/gplates-app/assets/2688316/c34ed7fa-2bbd-4b51-a370-b2586b0593ac">
+
 
 ## How to contribute code
 
@@ -9,71 +42,3 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 - Work on the new branch
 - Create a pull request for code review and merge
 - Remove the branch
-
-## Run the app in the simulators
-
-You need Java 11 and Android studio 2021.2.1 or newer.
-
-**Important: You need to export the correct JAVA_HOME and ANDROID_SDK_ROOT in set-env.sh**
-
-The following steps worked on my Macbook Pro.
-
-- `nvm use 18`
-- `npm install`
-- `source ./set-env.sh`
-- `ionic capacitor run android`
-- `ionic capacitor run ios`
-
-## Serve as a web page
-
-- `npm start`/`ionic serve`
-
-or
-
-- `npm install -g serve`
-- `serve -s build`
-
-## Deploy on Android device
-
-- `ionic build --prod`
-- `npx cap sync`
-- `npx cap open android`
-- choose your device and click the "run" button in Android Studio
-
-Or
-
-- Run `ionic capacitor run android` and select your device
-
-## Deploy on ios device
-
-- `ionic capacitor copy ios`
-- `npx cap sync`
-- install pods (see below for notes on how to install CocoaPods): `cd ios/App/; pod install; cd ../..`
-- Open XCode with `npx cap open ios`
-- Add an account with your Apple ID and choose the team under "signing&capabilities" in XCode
-  <img width="800" alt="add account" src="https://user-images.githubusercontent.com/2688316/167048512-49d68826-ff34-4b48-8a89-45f6ae194f04.png">
-  <img width="800" alt="select team" src="https://user-images.githubusercontent.com/2688316/167048695-05d4bc9c-eb0f-4c6a-a109-b0f02c43a281.png">
-  If you get a profile error, select the device can fix the error.
-  <img width="800" alt="select device" src="https://user-images.githubusercontent.com/2688316/167048749-1cda74f4-4551-4a70-b431-f515d3ec4bf8.png">
-
-- Run the app in XCode or run this command `ionic capacitor run ios -l --external`
-- On your ios device, go to "Settings > General > Device Management" to trust the developer
-
-### CocoaPods on macs
-
-CocoaPods is required to create the 'ios/App/Pods' folder, and the XCode build will fail without this.
-
-You can try `sudo gem install cocoapods` to install [CocoaPods](https://cocoapods.org) on your Mac. However, this [**does not**](https://github.com/CocoaPods/CocoaPods/issues/11056) work on an M1 chip.
-
-To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how-to-run-cocoapods-on-apple-silicon-m1) mac, use HomeBrew: `brew install cocoapods`
-
-### Upgrade @capacitor-community/sqlite
-
-**Important:**
-⚠ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
-
-### Firebase Deploy
-
-<https://gplates-app-5e092.web.app> @gplatesearthbyte@gmail.com
-
-#### use chrome inspect to debug android chrome://inspect/#devices

@@ -1,6 +1,5 @@
 import * as Cesium from 'cesium'
 import { getLowResImageUrlForGeosrv } from './util'
-import { RasterCfg } from './types'
 import { cachingServant } from './cache'
 import { cesiumViewer } from './cesiumViewer'
 
@@ -30,8 +29,22 @@ var gridNames = [
   'EPSG:4326:21',
 ]
 
-//the input "image:any" must have properties: "url", "layerName", "style", "wmsUrl"
+/**
+ *
+ * @param image - the input "image:any" must have properties: "url", "layerName", "style", "wmsUrl"
+ * @param time - the paleo-age for paleo-maps
+ * @returns
+ */
 export const createCesiumImageryProvider = (image: any, time = 0) => {
+  if (image.layerName == 'bing-map') {
+    const bing = new Cesium.BingMapsImageryProvider({
+      url: image.url,
+      key: image.style,
+      mapStyle: Cesium.BingMapsStyle.AERIAL,
+    })
+    return bing
+  }
+
   let url_str = image.url
   let layer_name = image.layerName
   let style_name = image.style
@@ -74,5 +87,3 @@ export const createCesiumImageryProvider = (image: any, time = 0) => {
   cachingServant?.cacheURL(url.replace('{{time}}', String(time)))
   return provider
 }
-
-//

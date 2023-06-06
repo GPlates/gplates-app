@@ -23,7 +23,7 @@ import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  age,
+  ageState,
   animatePlaying,
   isSettingsMenuShow,
   settingsPath,
@@ -47,7 +47,7 @@ interface AgeSliderProps {
 }
 
 const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
-  const [_age, setAge] = useRecoilState(age)
+  const [age, setAge] = useRecoilState(ageState)
   const darkMode = useRecoilValue(appDarkMode)
   const increment = useRecoilValue(animateIncrement)
   const playing = useRecoilValue(animatePlaying)
@@ -113,7 +113,13 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
 
   return (
     <div>
-      <div className={shown ? 'container' : 'container hidden'}>
+      <div
+        className={
+          shown
+            ? 'age-play-controls-container'
+            : 'age-play-controls-container hidden'
+        }
+      >
         <IonItem className="time-input" lines="none">
           <IonInput
             inputMode="numeric"
@@ -128,7 +134,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
                 rasterMaps.length > 0 ? raster.startTime : 0
               )
             }}
-            value={_age}
+            value={age}
           />
           Ma
         </IonItem>
@@ -187,17 +193,23 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
               setAge(e.detail.value as number)
               animationService.onAgeSliderChange(e.detail.value as number)
             }}
-            value={_age}
+            value={age}
           />
         </IonItem>
       </div>
-      <div className={shown ? 'buttons container' : 'buttons container hidden'}>
+      <div
+        className={
+          shown
+            ? 'buttons top-buttons-container'
+            : 'buttons top-buttons-container hidden'
+        }
+      >
         <div
           className="time"
           id={'timeStamp'} // screenshot need time information, using id to locate element
           onClick={() => showAgeSliderWidget()}
         >
-          {showTimeStamp && <span>{_age} Ma</span>}
+          {showTimeStamp && <span>{age} Ma</span>}
         </div>
         <div>
           {buttons}

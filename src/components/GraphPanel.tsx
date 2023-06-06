@@ -1,7 +1,11 @@
 import * as echarts from 'echarts'
 import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { age, animateRange, isGraphPanelShowState } from '../functions/atoms'
+import {
+  ageState,
+  animateRange,
+  isGraphPanelShowState,
+} from '../functions/atoms'
 import './GraphPanel.scss'
 import {
   getPlatforms,
@@ -115,7 +119,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   const [showGraphPanel, setShowGraphPanel] = useRecoilState(
     isGraphPanelShowState
   )
-  const _age = useRecoilValue(age)
+  const age = useRecoilValue(ageState)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [graphList, setGraphList] = useState([] as string[][])
   const [curGraphName, setCurGraphName] = useState('')
@@ -164,7 +168,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     }*/
 
     //find the axisPointer location according to the age
-    let index = findIndexes(xData, _age)
+    let index = findIndexes(xData, age)
     if (!index) {
       index = { first: 0, second: 0 }
     }
@@ -274,12 +278,12 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     if (graphOptions === undefined) {
       return
     }
-    let index = findIndexes(graphOptions.xAxis.data, _age)
+    let index = findIndexes(graphOptions.xAxis.data, age)
     if (index) {
       graphOptions.xAxis!.axisPointer.value = index.first
       graphChart.setOption(graphOptions)
     }
-  }, [_age])
+  }, [age])
 
   //safe guard
   //in case the graph chart has not been loaded for the first time yet.

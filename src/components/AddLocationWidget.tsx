@@ -36,7 +36,7 @@ import {
 import './AddLocationWidget.scss'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { useRecoilValue } from 'recoil'
-import { age, currentRasterIDState } from '../functions/atoms'
+import { ageState, currentRasterIDState } from '../functions/atoms'
 import { serverURL } from '../functions/settings'
 import { getRasterByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
@@ -51,25 +51,54 @@ var locationCartesian: Cartesian3 | undefined = Cartesian3.fromDegrees(0, 0)
 
 let presentDayLonLatList: LonLatPid[] = []
 
-//
-//move the locations to the new positions
-//
+/**
+ * move the locations to the new positions
+ *
+ * @param coords
+ */
 const updateLocationEntities = (coords: { lon: number; lat: number }[]) => {
+  locationEntities.forEach((location) => {
+    cesiumViewer.entities.remove(location)
+  })
+  coords.forEach((coord, index) => {
+    //draw the location on Cesium globe
+    let pe = cesiumViewer.entities.add({
+      name:
+        'Index(' +
+        String(index) +
+        ') Lon: ' +
+        String(coord.lon) +
+        ' Lat: ' +
+        String(coord.lat),
+      position: Cartesian3.fromDegrees(coord.lon, coord.lat),
+      point: {
+        color: Color.BLACK,
+        pixelSize: 10,
+        outlineColor: Color.YELLOW,
+        outlineWidth: 3,
+      },
+    })
+    locationEntities.push(pe)
+  })
   //change the position property for the entities
+  //keep below code commented out for future reference
+  /*
   locationEntities.forEach((entity, index) => {
-    //console.log('updateLocationEntities')
-    //console.log(coords)
     if (coords && coords.length > index) {
       entity.position = new ConstantPositionProperty(
         Cartesian3.fromDegrees(coords[index].lon, coords[index].lat)
       )
     }
-  })
+  })*/
 }
 
-//
-//reverse reconstruction the coordinates to find the present day coordinates
-//
+/**
+ * reverse reconstruction the coordinates to find the present day coordinates
+ *
+ * @param age
+ * @param lonLat
+ * @param modelName
+ */
 const setPresentDayLonLatPid = (
   age: number,
   lonLat: React.MutableRefObject<{
@@ -78,6 +107,7 @@ const setPresentDayLonLatPid = (
   }>,
   modelName: string | undefined
 ) => {
+  //present-day only basemap, PIDs are not needed.
   if (!modelName) {
     presentDayLonLatList = presentDayLonLatList.concat([
       {
@@ -112,16 +142,19 @@ const setPresentDayLonLatPid = (
   }
 }
 
-//
-//
+/**
+ *
+ */
 interface AddLocationWidgetProps {
   show: boolean
   setShow: Function
 }
 
-//
-//
-//
+/**
+ *
+ * @param param0
+ * @returns
+ */
 const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   show,
   setShow,
@@ -130,18 +163,20 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const lonInput = useRef(null)
   const latInput = useRef(null)
   const [updateLonLat, setUpdateLonLat] = useState(false) //triger re-render when lonLat changed
+  //the coordinates for the current age
   const [lonLatList, setLonLatlist] = useState<{ lon: number; lat: number }[]>(
     []
   )
   const [showLocationDetails, setShowLocationDetails] = useState(false)
   const [showLocationIndex, setShowLocationIndex] = useState(0)
-  const paleoAge = useRecoilValue(age)
+  const paleoAge = useRecoilValue(ageState)
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const [presentToast, dismissToast] = useIonToast()
 
-  //
-  //insert the current locatoin into the location list
-  //
+  /**
+   * insert the current locatoin into the location list
+   * @returns
+   */
   const insertLocation = () => {
     if (cesiumViewer.scene.mode != SceneMode.SCENE3D) {
       presentToast({
@@ -192,7 +227,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     })
     locationEntities.push(pe)
 
-    //move to user input location
+    //move to the new location when user type in the coordinates in the input boxes
     if (
       Math.abs(inputLon - lonLat.current.lon) > 1 ||
       Math.abs(inputLat - lonLat.current.lat) > 1
@@ -207,9 +242,12 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     }
   }
 
-  //
-  //reconstruct the present day coordinate back in time
-  //
+  /**
+   * reconstruct the present day coordinate back in time
+   *
+   * @param paleoAge
+   * @returns
+   */
   const reconstructPresentDayLocations = async (paleoAge: number) => {
     if (
       currentModel === undefined ||
@@ -227,21 +265,21 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
 
     presentDayLonLatList.forEach((point) => {
       if (currentModel) {
-        let rp = currentModel.rotateLonLatPid(
-          currentModel.getTimeIndex(paleoAge),
-          point
-        )
+        let rp = currentModel.rotate(point, paleoAge)
         //console.log(rp)
-        paleoCoords.push(rp)
+        if (rp !== undefined) {
+          paleoCoords.push(rp)
+        }
       }
     })
 
     return paleoCoords
   }
 
-  //
-  //
-  //
+  /**
+   * reconstruct the present-day coordinates to paleo-coordinates
+   * and redraw the points on Cesium
+   */
   const reconstructAndUpdateLocations = async () => {
     const paleoCoords = await reconstructPresentDayLocations(paleoAge)
     if (paleoCoords.length > 0) {
@@ -250,16 +288,16 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     }
   }
 
-  //
-  //
-  //
+  /**
+   * when the age is changed
+   */
   useEffect(() => {
     reconstructAndUpdateLocations()
   }, [paleoAge])
 
-  //
-  //the current raster is changed
-  //
+  /**
+   * when the current raster is changed
+   */
   useEffect(() => {
     locationEntities.forEach((location) => {
       cesiumViewer.entities.remove(location)
@@ -308,10 +346,12 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     }*/
   }, [currentRasterID]) //the current raster is changed
 
-  //
-  //handle the camera changed event
-  //calculate the coordinates of the center of camera lens
-  //
+  /**
+   * handle the camera changed event
+   * calculate the coordinates of the center of camera lens
+   *
+   * @param update
+   */
   const cameraHandler = (update = true) => {
     let ray = cesiumViewer.scene.camera.getPickRay(
       new Cartesian2(
@@ -380,15 +420,15 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                   return (
                     <div slot="content" key={index}>
                       <IonItem>
-                        <IonLabel>Longitude:</IonLabel>
                         <IonInput
                           readonly
+                          label="Longitude:"
                           value={location.lon.toFixed(4)}
                         ></IonInput>
 
-                        <IonLabel>Latitude:</IonLabel>
                         <IonInput
                           readonly
+                          label="Latitude:"
                           value={location.lat.toFixed(4)}
                         ></IonInput>
                         <IonButton
@@ -443,15 +483,15 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
 
           <IonItemDivider>Insert Location</IonItemDivider>
           <IonItem>
-            <IonLabel>Longitude:</IonLabel>
             <IonInput
+              label="Longitude:"
               type="number"
               value={lonLat.current.lon.toFixed(4)}
               ref={lonInput}
             ></IonInput>
 
-            <IonLabel>Latitude:</IonLabel>
             <IonInput
+              label="Latitude:"
               type="number"
               value={lonLat.current.lat.toFixed(4)}
               ref={latInput}
@@ -459,6 +499,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonButton
               id="open-modal"
               color="primary"
+              disabled={paleoAge != 0}
               onClick={() => insertLocation()}
             >
               Insert
@@ -470,7 +511,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           isOpen={showLocationDetails}
           animated
           backdropDismiss={false}
-          class="location-details"
+          className="location-details"
         >
           <IonHeader>
             <IonToolbar>
@@ -485,14 +526,18 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           <IonContent>
             {currentModel && (
               <IonItem>
-                <IonLabel>Paleo-age:</IonLabel>
-                <IonInput slot="end" readonly value={paleoAge}></IonInput>
+                <IonInput
+                  label="Paleo-age:"
+                  slot="end"
+                  readonly
+                  value={paleoAge + ' Ma'}
+                ></IonInput>
               </IonItem>
             )}
             {currentModel && (
               <IonItem>
-                <IonLabel>Paleo-longitude:</IonLabel>
                 <IonInput
+                  label="Paleo-longitude:"
                   slot="end"
                   readonly
                   value={
@@ -505,8 +550,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             )}
             {currentModel && (
               <IonItem>
-                <IonLabel>Paleo-latitude:</IonLabel>
                 <IonInput
+                  label="Paleo-latitude:"
                   slot="end"
                   readonly
                   value={
@@ -518,8 +563,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               </IonItem>
             )}
             <IonItem>
-              <IonLabel>Present-day Longitude:</IonLabel>
               <IonInput
+                label="Present-day Longitude:"
                 slot="end"
                 readonly
                 value={
@@ -530,8 +575,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               ></IonInput>
             </IonItem>
             <IonItem>
-              <IonLabel>Present-day Latitude:</IonLabel>
               <IonInput
+                label="Present-day Latitude:"
                 slot="end"
                 readonly
                 value={
@@ -543,8 +588,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             </IonItem>
             {currentModel && (
               <IonItem>
-                <IonLabel>Plate ID:</IonLabel>
                 <IonInput
+                  label="Plate ID:"
                   slot="end"
                   readonly
                   value={
@@ -557,8 +602,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             )}
             {currentModel && (
               <IonItem>
-                <IonLabel>Rotation Model:</IonLabel>
                 <IonInput
+                  label="Rotation Model:"
                   readonly
                   slot="end"
                   value={currentModel.name}

@@ -45,7 +45,7 @@
 }
 
 .toolbar-top {
-  top: 0;
+  top: env(safe-area-inset-top);
   left: 0;
   overflow: hidden;
   position: absolute;

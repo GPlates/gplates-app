@@ -3,11 +3,11 @@ import { serverURL } from '../functions/settings'
 
 let store: Storage | null = null
 
-//raster ID : layers config data in json format
+//raster/basemap ID : layers config data in json format
 //each raster can have several vector layers
 export let vectorLayers: Map<string, any> = new Map<string, any>()
 
-//raster ID : vector layer names(array)
+//raster/basemap ID : vector layer names(array)
 const enabledLayers: Map<string, string[]> = new Map<string, string[]>()
 
 //

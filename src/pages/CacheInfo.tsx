@@ -118,7 +118,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
         </IonItem>
         <IonList>
           <IonItem key={9999997}>
-            <IonLabel>Cached Rasters </IonLabel>
+            <IonLabel>Cached Basemaps </IonLabel>
           </IonItem>
           {cacheStatsList.map((value, index) => (
             <IonItem key={index}>
@@ -221,7 +221,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
             shape="round"
             onClick={() => {
               presentAlert({
-                header: `Cache current raster and overlays?`,
+                header: `Cache current basemap and overlays?`,
                 cssClass: 'populate-cache-alert',
                 buttons: [
                   {
@@ -229,7 +229,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                     role: 'cancel',
                     handler: () => {
                       console.log(
-                        'Info: Cache Current Raster And Overlays cancelled!'
+                        'Info: Cache Current Basemap And Overlays cancelled!'
                       )
                     },
                   },
@@ -253,7 +253,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
         </div>
         <div className="cache-info-note">
           Note: Press the &quot;DOWNLOAD&quot; button to cache the current
-          raster and overlays for animation.
+          basemap and overlays for animation.
         </div>
         <br />
         <br />

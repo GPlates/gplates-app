@@ -26,7 +26,7 @@ import { StarrySky } from '../components/StarrySky'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
-  age,
+  ageState,
   animateExact,
   animateFps,
   animateIncrement,
@@ -82,7 +82,7 @@ const Main: React.FC = () => {
   const ionAlert = useIonAlert()
 
   // Animation
-  const setAge = useSetRecoilState(age)
+  const setAge = useSetRecoilState(ageState)
   const [exact, setExact] = useRecoilState(animateExact)
   const [fps, setFps] = useRecoilState(animateFps)
   const [increment, setIncrement] = useRecoilState(animateIncrement)

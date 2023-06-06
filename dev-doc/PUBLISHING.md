@@ -101,10 +101,9 @@ For more detailed instructions on the following section, refer to [Prepare and r
    - `View > Navigators > Project`, or
    - Shortcut: `⌘ + 1`
 3. Open `App.xcodeproj` (i.e., click `App`)
-4. In the `General` tab, set the version numbers (see [Set the version number and build string](https://help.apple.com/xcode/mac/current/#/devba7f53ad4) for details)
-   - `Version` is the user-visible version number. Follows the `<major>.<minor>.<patch>` format
-   - `Build` is the machine-readable version number. Also follows the `<major>.<minor>.<patch>` format, but unused points can be dropped (e.g., `1` == `1.0.0` and `10.5` == `10.5.0`)
-   - Both are used by the App Store for versioning. See [this SO answer](https://stackoverflow.com/a/38009895/15379768)
+4. In the `Info` tab, set the version numbers
+   - Bundle version
+   - Bundle version string (short)
 5. If this is your first time building on this machine, assign a team in the `Signing & Capabilities` tab
    - See [Assign a project to a team](https://help.apple.com/xcode/mac/current/#/dev23aab79b4) for details
 6. Set the build destination to `Any iOS Device (arm64)`

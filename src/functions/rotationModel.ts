@@ -1,7 +1,7 @@
 import assert from 'assert'
+import { RotationModel as RotationModelEx, rotate } from 'gplates'
 import { serverURL } from './settings'
 import { LonLatPid } from './types'
-import { rotate } from './quaternions'
 
 export let currentModel: RotationModel | undefined
 export let currentTimeIndex: number
@@ -15,8 +15,8 @@ export const rotationModels: Map<string, RotationModel> = new Map<
   RotationModel
 >()
 
-/*
- * finiteRotations: The key is plate id string. The value is a list of pole-angles,
+/**
+ * * finiteRotations: The key is plate id string. The value is a list of pole-angles,
  * such as [[0, 90, 0], [-80.0171, 51.5165, -0.312], [-80.0171, 51.5165, -0.624] ], for each time in this.times.
  */
 export default class RotationModel {
@@ -24,6 +24,7 @@ export default class RotationModel {
   times: number[]
   finiteRotations!: Map<string, any>
   vectorLayers: any
+  newRotationModelImpl: RotationModelEx | undefined
 
   //
   constructor(name: string, times: number[], vLayers: any) {
@@ -31,8 +32,34 @@ export default class RotationModel {
     this.times = times
     this.vectorLayers = vLayers
     this.finiteRotations = new Map<string, any>()
+    RotationModelEx.loadRotationModel(
+      serverURL + '/rotation/get_rotation_map',
+      name,
+      (model: RotationModelEx) => {
+        this.newRotationModelImpl = model
+      }
+    )
     //this.fetchFiniteRotations(['701', '801'])
     //this.fetchAllFiniteRotations()//big performace impact at start up
+  }
+
+  /**
+   * rotate a location to a given time
+   *
+   * @param lonLatPid
+   * @param time
+   * @returns
+   */
+  rotate(lonLatPid: LonLatPid, time: number) {
+    if (this.newRotationModelImpl === undefined) {
+      console.log('newRotationModelImpl is not ready yet!')
+      return undefined
+    }
+    return this.newRotationModelImpl.rotate(
+      { lat: lonLatPid.lat, lon: lonLatPid.lon },
+      lonLatPid.pid,
+      time
+    )
   }
 
   //retrieve all Euler pole and angles for all plate ids in a rotation model from the server

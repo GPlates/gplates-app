@@ -9,7 +9,6 @@ import {
 } from './graticule'
 import { updateImageryLayer } from '../components/VectorDataLayerMenu'
 import { RasterCfg } from './types'
-import { getRasterIndexByID } from './rasterMaps'
 
 //singleton cersium viewer
 export let cesiumViewer: Viewer
@@ -18,9 +17,22 @@ export const HOME_LONGITUDE = 135.0
 export const HOME_LATITUDE = -25.0
 export const DEFAULT_CAMERA_HEIGHT = 15000000
 
-//
-//initialize the Cesium viewer
-//
+/**
+ *
+ * @returns
+ */
+export const getDefaultCameraHeight = () => {
+  if (window.innerWidth < 500 || window.innerHeight < 500) {
+    return 19000000
+  } else {
+    return DEFAULT_CAMERA_HEIGHT
+  }
+}
+
+/**
+ * initialize the Cesium viewer
+ * @param provider
+ */
 export const initCesiumViewer = (provider: ImageryProvider) => {
   let viewer: Viewer = new Viewer('cesiumContainer', {
     baseLayerPicker: false,
@@ -50,7 +62,7 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
     destination: Cartesian3.fromDegrees(
       HOME_LONGITUDE,
       HOME_LATITUDE,
-      DEFAULT_CAMERA_HEIGHT
+      getDefaultCameraHeight()
     ),
   })
   cesiumViewer = viewer
@@ -65,9 +77,11 @@ export const initCesiumViewer = (provider: ImageryProvider) => {
   })
 }
 
-//
-// draw raster layer and vector layers
-//
+/**
+ * draw raster layer and vector layers
+ * @param time
+ * @param rasterCfg
+ */
 export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
   //draw the raster layer
   const provider = createCesiumImageryProvider(rasterCfg, time)
@@ -89,10 +103,10 @@ export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
   pruneLayers()
 }
 
-//
-// get rid of some old layers
-// TODO: need a smarter way to do this
-//
+/**
+ * get rid of some old layers
+ * TODO: need a smarter way to do this
+ */
 export const pruneLayers = () => {
   while (cesiumViewer.imageryLayers.length > 7) {
     //console.log(cesiumViewer.imageryLayers.length)

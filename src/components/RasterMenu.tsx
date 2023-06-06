@@ -19,7 +19,7 @@ import {
 } from 'recoil'
 import {
   isRasterMenuShow,
-  age,
+  ageState,
   animateRange,
   showTimeStampState,
   rasterGroupState,
@@ -62,7 +62,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     useRecoilState(currentRasterIDState)
 
   const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
-  const setAge = useSetRecoilState(age)
+  const setAge = useSetRecoilState(ageState)
   const setRange = useSetRecoilState(animateRange)
   const setShowTimeStampState = useSetRecoilState(showTimeStampState)
 

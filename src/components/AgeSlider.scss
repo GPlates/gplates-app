@@ -18,8 +18,16 @@ $transition: all 150ms;
   }
 }
 
+/*
 .ios {
-  .container:not(.buttons:not(.hidden)) {
+  .age-play-controls-container:not(.buttons:not(.hidden)) {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+*/
+
+.ios {
+  .top-buttons-container:not(.buttons:not(.hidden)) {
     padding-top: env(safe-area-inset-top);
   }
 }
@@ -28,7 +36,24 @@ $transition: all 150ms;
   margin: 8px;
 }
 
-.container {
+.age-play-controls-container {
+  &:not(.buttons) {
+    background-color: #000000;
+  }
+  ion-item {
+    &::part(native) {
+      height: 100%;
+    }
+    flex-grow: 1;
+  }
+  --ion-item-background: black;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  transition: $transition;
+}
+
+.top-buttons-container {
   &:not(.buttons) {
     background-color: var(--ion-color-dark-contrast);
   }
@@ -67,6 +92,9 @@ $transition: all 150ms;
 }
 
 .slider {
+  ion-range {
+    padding-left: 10px;
+  }
   ion-button {
     &::part(native) {
       padding: 0;
@@ -100,6 +128,7 @@ $transition: all 150ms;
   --padding-start: 16px;
   --padding-end: 16px;
   --ion-safe-area-right: 0;
+  --color: white;
   min-height: 48px;
   width: 100px;
 }
