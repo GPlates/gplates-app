@@ -2,15 +2,14 @@ name: GPlates App Build
 
 on:
   workflow_dispatch:
-    branches: [mchin-test]
+
   push:
-    branches: [ mchin-test ]
+    branches: [mchin-test]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -26,5 +25,5 @@ jobs:
           cache: 'npm'
       - run: npm ci --legacy-peer-deps
       - run: npm install -g @ionic/cli
-      - run: npm run build --if-present
+      - run: CI=false npm run build --if-present
       - run: npm test
