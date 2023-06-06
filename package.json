@@ -120,8 +120,5 @@
   "bundledDependencies": [
     "ionicons/icons"
   ],
-  "description": "An Ionic project",
-  "bundleDependencies": [
-    "ionicons/icons"
-  ]
+  "description": "GPlates App",
 }
