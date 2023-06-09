@@ -68,7 +68,10 @@ export class CachingService {
       return URL.createObjectURL(blob)
     } else {
       //if cache does not hit, get the data from url and insert into cache
-      await this.db!.run('DELETE FROM cache WHERE url == ?', [url])
+      if (value) {
+        //if the cache hit, but expired, delete the expired data
+        await this.db!.run('DELETE FROM cache WHERE url == ?', [url])
+      }
       const blob: Blob | undefined = await this.getBlob(url)
       data = await this.convertBlobToDataURL(blob)
       //it is possible that the return data is invalid

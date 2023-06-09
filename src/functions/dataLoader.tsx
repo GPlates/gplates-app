@@ -70,10 +70,14 @@ export const createCesiumImageryProvider = (image: any, time = 0) => {
     cachingServant
       .getCachedRequest(url_.replace('{{time}}', String(time)))
       .then((dataURL) => {
-        const provider = new Cesium.SingleTileImageryProvider({
+        let stp = new Cesium.SingleTileImageryProvider({
           url: dataURL,
         })
-        cesiumViewer.imageryLayers.addImageryProvider(provider)
+        stp.errorEvent.addEventListener((err) => {
+          console.log(err)
+          err.provider.readyPromise.catch((err: any) => console.log(err))
+        })
+        cesiumViewer.imageryLayers.addImageryProvider(stp)
       })
       .catch((err) => {
         console.log('Error: createCesiumImageryProvider error handler')
