@@ -133,6 +133,11 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     let xData: string[] = []
     let yData: number[] = []
 
+    if (!dataMap) {
+      console.log('Failed to load Graph data!')
+      return
+    }
+
     //we need to sort by the keys first
     let dataArray = Object.entries(dataMap)
     dataArray.sort((a: any, b: any) => {
@@ -261,7 +266,13 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
       loadGraphList()
     }
     globalThis.addEventListener('resize', function () {
-      graphChart.resize()
+      if (graphChart) {
+        graphChart.resize()
+      } else {
+        console.log(
+          'Unable to resize the graphChart. The graphChart object is invalid.'
+        )
+      }
     })
   }, [])
 

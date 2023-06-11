@@ -528,7 +528,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Paleo-age:"
-                  slot="end"
                   readonly
                   value={paleoAge + ' Ma'}
                 ></IonInput>
@@ -538,7 +537,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Paleo-longitude:"
-                  slot="end"
                   readonly
                   value={
                     lonLatList.length > showLocationIndex
@@ -552,7 +550,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Paleo-latitude:"
-                  slot="end"
                   readonly
                   value={
                     lonLatList.length > showLocationIndex
@@ -565,7 +562,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonItem>
               <IonInput
                 label="Present-day Longitude:"
-                slot="end"
                 readonly
                 value={
                   presentDayLonLatList.length > showLocationIndex
@@ -577,7 +573,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonItem>
               <IonInput
                 label="Present-day Latitude:"
-                slot="end"
                 readonly
                 value={
                   presentDayLonLatList.length > showLocationIndex
@@ -590,7 +585,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Plate ID:"
-                  slot="end"
                   readonly
                   value={
                     presentDayLonLatList.length > showLocationIndex
@@ -605,7 +599,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                 <IonInput
                   label="Rotation Model:"
                   readonly
-                  slot="end"
                   value={currentModel.name}
                 ></IonInput>
               </IonItem>

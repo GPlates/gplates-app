@@ -136,6 +136,10 @@ export default class RotationModel {
   rotateLonLatPid = (timeIdx: number, lonLatPid: LonLatPid) => {
     let rotations = this.finiteRotations.get(String(lonLatPid.pid))
     let poleAndAngle = rotations ? rotations[timeIdx] : [0, 90, 0]
+    if (!poleAndAngle) {
+      console.log('Invalid poleAndAngle: ')
+      console.log(timeIdx, poleAndAngle)
+    }
     //console.log(timeIdx, poleAndAngle)
     return rotate(
       { lat: lonLatPid.lat, lon: lonLatPid.lon }, //location

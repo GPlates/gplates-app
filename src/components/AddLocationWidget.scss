@@ -72,3 +72,12 @@
   margin-bottom: -5px;
   border-radius: 5px 5px 0px 0px;
 }
+
+.location-details {
+  ion-input {
+    input {
+      padding-right: 8px !important;
+    }
+    text-align: right;
+  }
+}
