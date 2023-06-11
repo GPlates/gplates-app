@@ -26,6 +26,17 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 
 ### Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
 
+For example, if you see this blue ball
+
+<img width="300" alt="blue ball error" src="https://github.com/GPlates/gplates-app/assets/2688316/cdf74619-cb3d-4753-aef8-25bc9fb6a62e">
+
+Another example is the "Graph" data failed to load. See the empty graph chart screenshot.
+
+<img width="300" alt="graph chart no data" src="https://github.com/GPlates/gplates-app/assets/2688316/2ba17689-a312-431f-82a0-1deff3194e0a">
+
+
+To escape the "limbo", you can just reload the App by following the steps below.
+
 - Step 1: open the "Settings" window
 
 <img width="437" alt="Settings" src="https://github.com/GPlates/gplates-app/assets/2688316/01c385fd-229d-4233-9cd7-c9ebfbb0fdf9">
