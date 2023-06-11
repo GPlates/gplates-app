@@ -22,6 +22,14 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 
 <img width="600" alt="Built-in Tutorial" src="https://github.com/GPlates/gplates-app/assets/2688316/8efae96b-7f56-4490-a408-da8d436ca28e">
 
+## Animations
+
+### Built-in Tutorial
+
+
+https://github.com/GPlates/gplates-app/assets/2688316/71589c97-a55e-44de-b4b9-562a5f9a7b34
+
+
 ## Troubleshooting
 
 ### Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
