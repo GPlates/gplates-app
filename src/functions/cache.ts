@@ -108,9 +108,13 @@ export class CachingService {
     }
   }
 
-  //
-  //  SQLite Capacitor doesn't support blobs, so we have to convert to string (base64)
-  //  https://github.com/capacitor-community/sqlite/issues/266
+  /**
+   * SQLite Capacitor doesn't support blobs, so we have to convert to string (base64)
+   * https://github.com/capacitor-community/sqlite/issues/266
+   *
+   * @param url
+   * @returns
+   */
   async getBlobAsString(url: string) {
     return await fetch(url)
       .then((res) => res.blob())
@@ -125,9 +129,12 @@ export class CachingService {
       )
   }
 
-  //
-  //fetch url and return a blob
-  //
+  /**
+   * fetch url and return a blob
+   *
+   * @param url
+   * @returns
+   */
   async getBlob(url: string) {
     // TODO: Get from recoil store
     const downloadOnCellular = await Preferences.get({
@@ -144,9 +151,12 @@ export class CachingService {
     }
   }
 
-  //
-  //convert a blob to data URL
-  //
+  /**
+   * convert a blob to data URL
+   *
+   * @param blob
+   * @returns
+   */
   convertBlobToDataURL(blob?: Blob) {
     if (blob) {
       return new Promise((resolve, reject) => {
@@ -162,9 +172,11 @@ export class CachingService {
     }
   }
 
-  //
-  // Remove all cached data & files
-  //
+  /**
+   * Remove all cached data & files
+   *
+   * @param callback
+   */
   clearCachedData(callback: Function = () => {}) {
     this.db!.run(`DELETE FROM cache`)
       .then((ret) => {
@@ -176,17 +188,19 @@ export class CachingService {
       })
   }
 
-  //
-  //
-  //
+  /**
+   *
+   */
   print() {
     //this.db.getUrl().then((data) => console.log(data))
     this.db!.query('SELECT * FROM cache').then((data) => console.log(data))
   }
 
-  //
-  // insert the data from URL into cache
-  //
+  /**
+   * insert the data from URL into cache
+   *
+   * @param url
+   */
   async cacheURL(url: string) {
     let exist = await this.checkExist(url)
     //console.log(`exist: ${exist}`)
@@ -209,25 +223,28 @@ export class CachingService {
     }
   }
 
-  //
-  // Example to remove one cached URL
-  //
+  /**
+   * Example to remove one cached URL
+   *
+   * @param url
+   * @returns
+   */
   invalidateCacheEntry(url: string) {
     return this.db!.run('DELETE FROM cache WHERE url == ?', [url])
   }
 
-  //
-  //clean up
-  //
+  /**
+   * clean up
+   */
   async cleanup() {
     await this.saveToWebStore()
     await this.db!.close()
     await sqlite.closeConnection(this.dbName)
   }
 
-  //
-  //on "web" platform, save the DB data to disk
-  //
+  /**
+   * on "web" platform, save the DB data to disk
+   */
   async saveToWebStore() {
     const platform = Capacitor.getPlatform()
     //on "web" platform, you need to saveToStore. otherwise the DB is in memory
@@ -237,9 +254,13 @@ export class CachingService {
     }
   }
 
-  //
-  // cache low resolution images from geoserver
-  //
+  /**
+   * cache low resolution images from geoserver
+   *
+   * @param model
+   * @param wmsUrl
+   * @param layerName
+   */
   async cacheRasterLayer(
     model: RotationModel,
     wmsUrl: string,
@@ -261,9 +282,11 @@ export class CachingService {
     }
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @param url
+   * @returns
+   */
   async checkExist(url: string) {
     let ret = await this.db!.query('SELECT 1 FROM cache WHERE url == ?', [url])
     //console.log('check exist!')
@@ -271,7 +294,12 @@ export class CachingService {
     return ret.values?.length === 0 ? false : true
   }
 
-  //get the number of rows which the URLs contains the "keyword"
+  /**
+   * get the number of rows which the URLs contains the "keyword"
+   *
+   * @param keyword
+   * @returns
+   */
   async getCount(keyword: string = '') {
     let ret: any
     if (keyword.length === 0) {
@@ -291,9 +319,9 @@ export class CachingService {
     } else return 0
   }
 
-  //
-  //must be called after new CachingService('db_main')
-  //
+  /**
+   * must be called after new CachingService('db_main')
+   */
   async init() {
     const platform = Capacitor.getPlatform()
     const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite)
@@ -351,16 +379,19 @@ export class CachingService {
     }
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @returns
+   */
   getDBName() {
     return this.dbName
   }
 
-  //
-  //return a Map, for example {"layer-1":1000, "layer-2":20}
-  //
+  /**
+   * return a Map, for example {"layer-1":1000, "layer-2":20}
+   *
+   * @returns
+   */
   async getLayerCountMap() {
     const layerCount = new Map<string, number>()
 
@@ -421,9 +452,9 @@ export class CachingService {
     return layerCount
   }
 
-  //
-  // remove cache for given layers
-  //
+  /**
+   * remove cache for given layers
+   */
   purge(queryStr: string, callback: Function) {
     queryStr = "DELETE FROM cache WHERE url like '" + queryStr + "'"
     console.log(`purging: ${queryStr}`)
@@ -431,29 +462,25 @@ export class CachingService {
       .then(async (ret) => {
         console.log(ret)
         callback()
-        //enable the code below for web page
-        /*
-      const platform = Capacitor.getPlatform()
-      if (platform === 'web') {
-        await sqlite.saveToStore(this.dbName)
-      }
-      */
       })
       .catch((error) => console.log(error))
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @returns
+   */
   async getAllUrls() {
     const ret = await this.db!.query('SELECT url FROM cache ')
     return ret.values?.map((value) => value)
   }
 
-  //
-  // return a map
-  // for example, {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
-  //
+  /**
+   * return a map
+   * for example, {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
+   *
+   * @returns
+   */
   async getRasterLayerCount() {
     let urlMap = new Map<string, number>()
     const allUrls = await this.getAllUrls()
@@ -547,10 +574,15 @@ export class CachingService {
   }
 }
 
-//
-// find displayName in raster config for given layer name
-// if the given layer name does not exist in raster config, return undefined
-//
+/**
+ * find displayName in raster config for given layer name
+ * if the given layer name does not exist in raster config, return undefined
+ *
+ * @param layerInUrl
+ * @param allVectorLayersOfThisRaster
+ * @param queryObj
+ * @returns
+ */
 const getDisplayNameFromRasterCfg = (
   layerInUrl: string,
   allVectorLayersOfThisRaster: any[],
@@ -571,11 +603,16 @@ const getDisplayNameFromRasterCfg = (
   return undefined
 }
 
-//
-// helper function to set the number in url count map
-// mainly used in getRasterLayerCount()
-// the map looks like something {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
-//
+/**
+ * helper function to set the number in url count map
+ * mainly used in getRasterLayerCount()
+ * the map looks like something {'agegrid(coastlines,topologies)':124, 'paleo-topo(coastlines)':3}
+ *
+ * @param rasterName
+ * @param layersStr
+ * @param queryStr
+ * @param urlMap
+ */
 const setCountNumber = (
   rasterName: string,
   layersStr: string,
