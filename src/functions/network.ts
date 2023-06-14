@@ -6,6 +6,11 @@ import { Preferences } from '@capacitor/preferences'
 let ionAlert: UseIonAlertResult
 let setDownloadOnCellular: SetterOrUpdater<boolean>
 
+/**
+ *
+ * @param alert
+ * @param setter
+ */
 export const setPresentDataAlert = (
   alert: UseIonAlertResult,
   setter: SetterOrUpdater<boolean>
@@ -14,6 +19,11 @@ export const setPresentDataAlert = (
   setDownloadOnCellular = setter
 }
 
+/**
+ *
+ * @param downloadOnCellular
+ * @returns
+ */
 export const canDownload = async (downloadOnCellular: boolean) => {
   const status = await Network.getStatus()
 
@@ -25,6 +35,10 @@ export const canDownload = async (downloadOnCellular: boolean) => {
 
 let hasPresented = false
 
+/**
+ *
+ * @returns
+ */
 export const presentDataAlert = async () => {
   if (!hasPresented) {
     const [presentAlert] = ionAlert

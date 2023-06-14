@@ -94,6 +94,7 @@ $transition: all 150ms;
 .slider {
   ion-range {
     padding-left: 10px;
+    padding-right: 10px;
   }
   ion-button {
     &::part(native) {

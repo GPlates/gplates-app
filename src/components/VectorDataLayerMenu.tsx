@@ -193,7 +193,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
                   checked={cityEnabledFlag}
                   onIonChange={onCitiesCheckBoxChange}
                 >
-                  Major Cities
+                  Cities
                 </IonCheckbox>
               </IonItem>
             </div>

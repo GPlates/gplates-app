@@ -34,9 +34,14 @@ export class CachingService {
 
   hasPresented = false
 
-  //
-  // Store request data
-  // ttl = time to live (in seconds). Values <= 0 will be ignored (data will live forever)
+  /**
+   * cache request data
+   *
+   * @param url
+   * @param data
+   * @param ttl - time to live (in seconds). Values <= 0 will be ignored (data will live forever)
+   * @returns
+   */
   cacheRequest(url: string, data: any, ttl?: number): Promise<any> {
     if (ttl != null && ttl > 0) {
       ttl = new Date().getTime() + ttl * 1000
@@ -47,33 +52,47 @@ export class CachingService {
     const command =
       'INSERT INTO cache (url, data, ttl) VALUES (?, ?, ?) ON CONFLICT (url) DO NOTHING;'
     const values = [url, data, ttl]
-    return this.db!.run(command, values)
+    if (DEBUG) {
+      console.log('run query: ' + command)
+      console.log(values)
+    }
+    return this.db!.run(command, values).catch((error) => console.log(error))
   }
 
-  //
-  // Try to load cached data
-  //
+  /**
+   * load cached data
+   *
+   * @param url
+   * @returns
+   */
   async getCachedRequest(url: string): Promise<any> {
     const currentTime = new Date().getTime()
-    let data
-    const ret = await this.db!.query('SELECT * FROM cache WHERE url == ?', [
-      url,
-    ])
-    const value = ret.values && ret.values[0]
+    let value = null
+    try {
+      const ret = await this.db!.query('SELECT * FROM cache WHERE url == ?', [
+        url,
+      ])
+      value = ret.values && ret.values[0]
+    } catch (err) {
+      console.log('Error occurred during fetching cache data. ')
+      console.log(err)
+    }
 
     //if the cache has a success hit.
     if (value && (value.ttl == null || value.ttl >= currentTime)) {
-      data = value.data
+      let data = value.data
       const blob = await (await fetch(data)).blob()
       return URL.createObjectURL(blob)
     } else {
       //if cache does not hit, get the data from url and insert into cache
       if (value) {
         //if the cache hit, but expired, delete the expired data
-        await this.db!.run('DELETE FROM cache WHERE url == ?', [url])
+        await this.db!.run('DELETE FROM cache WHERE url == ?', [url]).catch(
+          (error) => console.log(error)
+        )
       }
       const blob: Blob | undefined = await this.getBlob(url)
-      data = await this.convertBlobToDataURL(blob)
+      let data = await this.convertBlobToDataURL(blob)
       //it is possible that the return data is invalid
       if (blob && data) {
         this.cacheRequest(url, data).catch((error) => {
@@ -147,10 +166,14 @@ export class CachingService {
   // Remove all cached data & files
   //
   clearCachedData(callback: Function = () => {}) {
-    this.db!.run(`DELETE FROM cache`).then((ret) => {
-      console.log(ret)
-      callback()
-    })
+    this.db!.run(`DELETE FROM cache`)
+      .then((ret) => {
+        console.log(ret)
+        callback()
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   //
@@ -402,21 +425,21 @@ export class CachingService {
   // remove cache for given layers
   //
   purge(queryStr: string, callback: Function) {
-    console.log(`purging ${queryStr}`)
-
     queryStr = "DELETE FROM cache WHERE url like '" + queryStr + "'"
-    console.log(queryStr)
-    this.db!.run(queryStr).then(async (ret) => {
-      console.log(ret)
-      callback()
-      //enable the code below for web page
-      /*
+    console.log(`purging: ${queryStr}`)
+    this.db!.run(queryStr)
+      .then(async (ret) => {
+        console.log(ret)
+        callback()
+        //enable the code below for web page
+        /*
       const platform = Capacitor.getPlatform()
       if (platform === 'web') {
         await sqlite.saveToStore(this.dbName)
       }
       */
-    })
+      })
+      .catch((error) => console.log(error))
   }
 
   //
