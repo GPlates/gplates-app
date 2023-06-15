@@ -29,6 +29,10 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 
 https://github.com/GPlates/gplates-app/assets/2688316/71589c97-a55e-44de-b4b9-562a5f9a7b34
 
+### Age Grid Reconstruction
+
+https://github.com/GPlates/gplates-app/assets/2688316/50f5a6a9-56e6-44fc-a667-e13d6422d8b3
+
 
 ## Troubleshooting
 
