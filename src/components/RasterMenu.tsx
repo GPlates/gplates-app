@@ -38,7 +38,7 @@ import {
   getVectorLayers,
   getEnabledLayers,
 } from '../functions/vectorLayers'
-import { createCesiumImageryProvider } from '../functions/dataLoader'
+import { createCesiumImageryProvider } from '../functions/cesiumViewer'
 import { AnimationService } from '../functions/animation'
 import { RasterCfg, RasterGroup } from '../functions/types'
 import { closeCircleOutline } from 'ionicons/icons'
@@ -162,8 +162,8 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
     let raster = getRasterByID(rasterID)
     if (raster) {
-      const endTime = raster.endTime
-      const startTime = raster.startTime
+      const endTime = raster.startTime
+      const startTime = raster.endTime
       setRange({
         lower: endTime,
         upper: startTime,

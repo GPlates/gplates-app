@@ -7,7 +7,7 @@ import {
   IonAccordion,
   IonIcon,
 } from '@ionic/react'
-import { createCesiumImageryProvider } from '../functions/dataLoader'
+import { createCesiumImageryProvider } from '../functions/cesiumViewer'
 import React, { useEffect } from 'react'
 import { closeCircleOutline } from 'ionicons/icons'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'

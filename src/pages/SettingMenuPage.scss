@@ -93,6 +93,10 @@ ion-item::part(native) {
     flex-wrap: wrap;
     //min-width: min(512px, var(--min-column-width));
   }
+  ion-range {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 
 .settings-list {
