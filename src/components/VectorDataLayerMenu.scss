@@ -12,6 +12,7 @@
   }
   &.show {
     display: block;
+    width: 100%;
   }
 }
 
@@ -22,7 +23,7 @@
   right: 0;
   text-align: center;
   bottom: 0;
-  min-width: 400px;
+  max-width: 540px;
   /*width: 600px;*/
   /*background-color: pink;*/
 

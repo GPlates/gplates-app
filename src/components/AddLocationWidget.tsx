@@ -423,13 +423,13 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                         <IonInput
                           readonly
                           label="Longitude:"
-                          value={location.lon.toFixed(4)}
+                          value={location.lon.toFixed(2)}
                         ></IonInput>
 
                         <IonInput
                           readonly
                           label="Latitude:"
-                          value={location.lat.toFixed(4)}
+                          value={location.lat.toFixed(2)}
                         ></IonInput>
                         <IonButton
                           color="tertiary"
@@ -486,14 +486,14 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonInput
               label="Longitude:"
               type="number"
-              value={lonLat.current.lon.toFixed(4)}
+              value={lonLat.current.lon.toFixed(2)}
               ref={lonInput}
             ></IonInput>
 
             <IonInput
               label="Latitude:"
               type="number"
-              value={lonLat.current.lat.toFixed(4)}
+              value={lonLat.current.lat.toFixed(2)}
               ref={latInput}
             ></IonInput>
             <IonButton

@@ -6,6 +6,7 @@
   height: auto;
   z-index: 1000;
   opacity: 0.85;
+  width: 100%;
   &.hide {
     display: none;
   }
@@ -33,9 +34,8 @@
   right: 0;
   text-align: center;
   bottom: 0;
-  /*width: 600px;*/
-  /*background-color: pink;*/
 
+  /*background-color: pink;*/
   &.hide {
     /*display: none;*/
     transform: translateY(1000px);
@@ -46,6 +46,11 @@
     /*display: none;*/
     transform: translateY(0);
     transition: transform 0.5s;
+  }
+  @media screen and (max-width: 420px) {
+    .label-text-wrapper {
+      max-width: 50px;
+    }
   }
 }
 /*.close-button {

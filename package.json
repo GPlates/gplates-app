@@ -27,7 +27,7 @@
     "cesium": "1.95.0",
     "echarts": "^5.3.3",
     "es6-promise-plugin": "^4.2.2",
-    "gplates": "^0.0.5",
+    "gplates": "^0.0.6",
     "html2canvas": "^1.4.1",
     "react": "^18.1.0",
     "react-colorful": "^5.5.1",
