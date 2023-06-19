@@ -28,7 +28,7 @@ $transition: all 150ms;
 
 .ios {
   .top-buttons-container:not(.buttons:not(.hidden)) {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(15px, env(safe-area-inset-top));
   }
 }
 

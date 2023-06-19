@@ -103,7 +103,8 @@ export const AboutPage: React.FC<ContainerProps> = () => {
         <br />
       </div>
       <div className={'about-page-copyright'}>
-        Copyright © 2022 The University of Sydney. All rights reserved.
+        <p>Copyright © 2022 The University of Sydney. </p>
+        <p>All rights reserved.</p>
       </div>
     </IonContent>
   )
