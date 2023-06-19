@@ -36,6 +36,10 @@ https://github.com/GPlates/gplates-app/assets/2688316/50f5a6a9-56e6-44fc-a667-e1
 
 ## Troubleshooting
 
+### App being stuck at the start-up screen
+
+**🔵 Clear the App storage data and cache, and then restart!!**
+
 ### Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
 
 For example, if you see this blue ball
