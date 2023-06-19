@@ -110,7 +110,7 @@ For more detailed instructions on the following section, refer to [Prepare and r
    - At the top of the window, or
    - in `Product > Destination`
 7. Select `Product > Archive`
-8. Wait for the build to finish
+8. Wait for the build to finish (⚠ You need cocoapods 1.12.1. The older version has a bug which causes the build fail.)
 9. A new `Archives` window should appear
    - You can also open it at any time with `Window > Organizer`
 10. Click `Distribute App`
