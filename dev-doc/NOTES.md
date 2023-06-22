@@ -70,3 +70,9 @@ To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how
 ⚠ DO NOT DO THAT!! The Capacitor hardcoded "App" as the name. If you change the name, some Capacitor commands will not work.
 
 ### append "&BGCOLOR=0x0000FF" to WMS request to get a background
+
+### App Store Preview
+
+`ffmpeg -i GPlates-App-preview-age-grid.mp4 -c:v libx264 -profile:v main -level:v 3.1 -c:a copy output.mp4`
+
+`ffprobe -loglevel error -show_streams GPlates-App-preview-age-grid.mp4`

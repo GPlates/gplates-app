@@ -57,7 +57,7 @@
     "react-error-overlay": "6.0.9"
   },
   "scripts": {
-    "start": "cross-env GENERATE_SOURCEMAP=false ionic serve --host=127.0.0.1",
+    "start": "cross-env GENERATE_SOURCEMAP=false ionic serve --host=0.0.0.0",
     "build": "ionic build",
     "test": "craco test --passWithNoTests",
     "eject": "react-scripts eject"

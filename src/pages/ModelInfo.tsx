@@ -31,7 +31,7 @@ import { HowToUse } from './HowToUse'
 const titles: { [key: string]: string } = {
   root: 'Info',
   model: 'Model Details',
-  about: 'About GPlates',
+  about: 'About',
   howtouse: 'How To Handle 3D Globe',
 }
 

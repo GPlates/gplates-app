@@ -1,15 +1,16 @@
-/*
- *
- */
 import { getDefaultStore } from './storage'
 
+/**
+ *
+ * @param time
+ */
 export const timeout = async (time: number) => {
   await new Promise((resolve) => setTimeout(resolve, time))
 }
 
-//
-//
-//
+/**
+ *
+ */
 export const timeRange = (begin: number, end: number, step: number) => {
   //I believe Number.EPSILON is good enough in this case
   if (Math.abs(step) < Number.EPSILON) {
@@ -46,27 +47,28 @@ export const timeRange = (begin: number, end: number, step: number) => {
   return ret
 }
 
-//
-// get the low resolution image URL for geoserver
-//
+/**
+ * get the low resolution image URL for geoserver
+ *
+ * @param wmsUrl
+ * @param layerName
+ * @param overlays
+ * @returns
+ */
 export const getLowResImageUrlForGeosrv = (
   wmsUrl: string,
   layerName: string,
   overlays: string[] = []
 ) => {
-  //experimental code to get overlay layers as well
-  //currently only works for MULLER2019 model
   let layerName_ = layerName
   let [workspaceName, _] = layerName.split(':')
-  if (workspaceName === 'MULLER2019') {
-    overlays.forEach((overlay: string) => {
-      let [wsn, _] = overlay.split(':')
-      if (wsn === workspaceName) {
-        layerName_ += ',' + overlay
-      }
-    })
-  }
-  //console.log(layerName_)
+
+  overlays.forEach((overlay: string) => {
+    let [wsn, _] = overlay.split(':')
+    if (wsn === workspaceName) {
+      layerName_ += ',' + overlay
+    }
+  })
 
   return (
     wmsUrl +
@@ -77,9 +79,11 @@ export const getLowResImageUrlForGeosrv = (
   )
 }
 
-//
-//
-//
+/**
+ *
+ * @param url
+ * @returns
+ */
 export const requestDataByUrl = async (url: string) => {
   if (!url) return null
 
