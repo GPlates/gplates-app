@@ -22,9 +22,36 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 
 <img width="600" alt="Built-in Tutorial" src="https://github.com/GPlates/gplates-app/assets/2688316/8efae96b-7f56-4490-a408-da8d436ca28e">
 
+## Animations
+
+### Built-in Tutorial
+
+
+https://github.com/GPlates/gplates-app/assets/2688316/71589c97-a55e-44de-b4b9-562a5f9a7b34
+
+### Age Grid Reconstruction
+
+https://github.com/GPlates/gplates-app/assets/2688316/50f5a6a9-56e6-44fc-a667-e13d6422d8b3
+
+
 ## Troubleshooting
 
+### App being stuck at the start-up screen
+
+**🔵 Clear the App storage data and cache, and then restart!!**
+
 ### Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
+
+For example, if you see this blue ball
+
+<img width="300" alt="blue ball error" src="https://github.com/GPlates/gplates-app/assets/2688316/cdf74619-cb3d-4753-aef8-25bc9fb6a62e">
+
+Another example is the "Graph" data failed to load. See the empty graph chart screenshot.
+
+<img width="300" alt="graph chart no data" src="https://github.com/GPlates/gplates-app/assets/2688316/2ba17689-a312-431f-82a0-1deff3194e0a">
+
+
+To escape the "limbo", you can just reload the App by following the steps below.
 
 - Step 1: open the "Settings" window
 

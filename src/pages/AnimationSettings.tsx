@@ -12,7 +12,6 @@ import {
   IonToggle,
 } from '@ionic/react'
 import { Preferences } from '@capacitor/preferences'
-import { setNumber } from '../functions/input'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   ageState,
@@ -25,12 +24,18 @@ import {
   isCacheInfoShowState,
 } from '../functions/atoms'
 import RasterMaps, { getRasterByID } from '../functions/rasterMaps'
+import { setAnimationFrame as setAnimationCurrentAge } from '../functions/animation'
 import { getCacheStatsData } from './CacheInfo'
 
 //
 interface ContainerProps {}
 
-// main component for setting menu
+/**
+ * main component for setting menu
+ *
+ * @param param0
+ * @returns
+ */
 export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const [exact, setExact] = useRecoilState(animateExact)
   const [fps, setFps] = useRecoilState(animateFps)
@@ -40,7 +45,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const [range, setRange] = useRecoilState(animateRange)
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
-  const [currentAge, setCurrentAge] = useRecoilState(ageState)
+  const setCurrentAge = useSetRecoilState(ageState)
 
   // Animation constants
   const minIncrement = 1
@@ -48,19 +53,20 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
   const minFps = 1
   const maxFps = 60
 
-  //
-  //
-  //
+  /**
+   *
+   */
   const reverseAnimation = () => {
     const lower = range.upper
     const upper = range.lower
     setRange({ lower, upper })
     setCurrentAge(lower)
+    setAnimationCurrentAge(lower, currentRasterID)
   }
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {
     const settings = {
       exact,
@@ -75,9 +81,9 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
     })
   }, [exact, fps, increment, loop, range])
 
-  //
-  // Hack to get IonRange knobs to show the correct position on component mount
-  //
+  /**
+   * Hack to get IonRange knobs to show the correct position on component mount
+   */
   useEffect(() => {
     setTimeout(() => {
       const old = Object.assign({}, range)
@@ -100,6 +106,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
+                <IonLabel>Range</IonLabel>
                 <IonRange
                   dir={range.lower > range.upper ? 'rtl' : 'ltr'}
                   dualKnobs={true}
@@ -124,9 +131,7 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                     }
                   }}
                   value={range}
-                >
-                  <div slot="label">Range</div>
-                </IonRange>
+                ></IonRange>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -192,14 +197,15 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                   inputMode="numeric"
                   min={minIncrement}
                   max={maxIncrement}
-                  onIonChange={(e) =>
-                    setNumber(
-                      setIncrement,
-                      e.detail.value,
-                      minIncrement,
-                      maxIncrement
-                    )
-                  }
+                  onIonChange={(e) => {
+                    let newIncrement = Number(e.detail.value)
+                    if (newIncrement > maxIncrement) {
+                      newIncrement = maxIncrement
+                    } else if (newIncrement < minIncrement) {
+                      newIncrement = minIncrement
+                    }
+                    setIncrement(newIncrement)
+                  }}
                   value={increment}
                 />
                 Myr
@@ -216,10 +222,17 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
                   min={minFps}
                   max={maxFps}
                   onIonBlur={() => {
-                    setNumber(setFps, tempFps, minFps, maxFps)
+                    if (!tempFps) return null
+                    let newFps = Number(tempFps)
+                    if (newFps > maxFps) {
+                      newFps = maxFps
+                    } else if (newFps < minFps) {
+                      newFps = minFps
+                    }
+                    setFps(newFps)
                   }}
                   onIonChange={(e) => {
-                    setNumber(setFps, e.detail.value)
+                    setFps(Number(e.detail.value))
                     setTempFps(e.detail.value)
                   }}
                   value={fps}

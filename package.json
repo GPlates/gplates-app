@@ -4,9 +4,8 @@
   "version": "0.1.1",
   "private": true,
   "dependencies": {
-    "@awesome-cordova-plugins/core": "^6.0.1",
     "@capacitor-community/media": "^5.0.0",
-    "@capacitor-community/sqlite": "^5.0.1",
+    "@capacitor-community/sqlite": "^5.0.3-1",
     "@capacitor/android": "^5.0.3",
     "@capacitor/app": "^5.0.2",
     "@capacitor/browser": "^5.0.2",
@@ -28,7 +27,7 @@
     "cesium": "1.95.0",
     "echarts": "^5.3.3",
     "es6-promise-plugin": "^4.2.2",
-    "gplates": "^0.0.5",
+    "gplates": "^0.0.6",
     "html2canvas": "^1.4.1",
     "react": "^18.1.0",
     "react-colorful": "^5.5.1",
@@ -58,7 +57,7 @@
     "react-error-overlay": "6.0.9"
   },
   "scripts": {
-    "start": "cross-env GENERATE_SOURCEMAP=false ionic serve --host=127.0.0.1",
+    "start": "cross-env GENERATE_SOURCEMAP=false ionic serve --host=0.0.0.0",
     "build": "ionic build",
     "test": "craco test --passWithNoTests",
     "eject": "react-scripts eject"
@@ -86,6 +85,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@capacitor/cli": "^5.0.3",
     "@ionic/lab": "^3.2.15",
     "@testing-library/jest-dom": "^5.16.4",

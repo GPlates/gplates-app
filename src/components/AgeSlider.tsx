@@ -12,14 +12,12 @@ import {
   cogOutline,
   pauseOutline,
   playOutline,
-  playSkipForwardOutline,
   playSkipBackOutline,
   playBackOutline,
   playForwardOutline,
   timeOutline,
 } from 'ionicons/icons'
 import React, { useEffect, useState } from 'react'
-import { setNumber } from '../functions/input'
 import { AnimationService } from '../functions/animation'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
@@ -40,6 +38,7 @@ import {
   statusBarListener,
 } from '../functions/darkMode'
 import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
+import { setAnimationFrame } from '../functions/animation'
 
 interface AgeSliderProps {
   buttons: any
@@ -126,13 +125,15 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
             min={rasterMaps.length > 0 ? raster.endTime : 0}
             max={rasterMaps.length > 0 ? raster.startTime : 0}
             onIonChange={(e) => {
-              if (!raster) return null
-              setNumber(
-                setAge,
-                e.detail.value,
-                rasterMaps.length > 0 ? raster.endTime : 0,
-                rasterMaps.length > 0 ? raster.startTime : 0
-              )
+              if (!raster || !e.detail.value) return null
+              let newAge = Number(e.detail.value)
+              if (newAge < raster.endTime) {
+                newAge = raster.endTime
+              } else if (newAge > raster.startTime) {
+                newAge = raster.startTime
+              }
+              setAge(newAge)
+              setAnimationFrame(newAge, raster.id)
             }}
             value={age}
           />

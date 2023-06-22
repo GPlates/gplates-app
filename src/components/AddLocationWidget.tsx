@@ -168,6 +168,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     []
   )
   const [showLocationDetails, setShowLocationDetails] = useState(false)
+  const [showLocationListState, setShowLocationListState] = useState(false)
   const [showLocationIndex, setShowLocationIndex] = useState(0)
   const paleoAge = useRecoilValue(ageState)
   const currentRasterID = useRecoilValue(currentRasterIDState)
@@ -187,6 +188,16 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
       })
       return
     }
+    if (paleoAge != 0) {
+      presentToast({
+        buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+        duration: 5000,
+        message: 'To insert a new location, the current time must be 0 Ma.',
+        onDidDismiss: () => {},
+      })
+      return
+    }
+
     let inputLon = lonInput.current ? parseFloat(lonInput.current['value']) : 0
     let inputLat = latInput.current ? parseFloat(latInput.current['value']) : 0
 
@@ -239,6 +250,17 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           cesiumViewer.scene.camera.positionCartographic.height
         ),
       })
+    }
+  }
+
+  /**
+   * show location list
+   */
+  const showLocationList = () => {
+    if (showLocationListState) {
+      setShowLocationListState(false)
+    } else {
+      setShowLocationListState(true)
     }
   }
 
@@ -394,6 +416,81 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
       <div className={`locate-indicator ${show ? '' : 'hide'}`}>
         <IonIcon icon={locateOutline} />
       </div>
+
+      <div
+        className={
+          showLocationListState
+            ? 'location-list-container show'
+            : 'location-list-container hide'
+        }
+      >
+        <div className="location-list-inner">
+          <IonItem slot="header" color="light">
+            <IonLabel>List of Locations ({lonLatList.length})</IonLabel>
+          </IonItem>
+          {lonLatList.map((location, index) => {
+            return (
+              <div slot="content" key={index}>
+                <IonItem>
+                  <IonInput
+                    readonly
+                    label="Longitude:"
+                    value={location.lon.toFixed(2)}
+                  ></IonInput>
+
+                  <IonInput
+                    readonly
+                    label="Latitude:"
+                    value={location.lat.toFixed(2)}
+                  ></IonInput>
+                  <IonButton
+                    color="tertiary"
+                    onClick={() => {
+                      const width = 40.9
+                      const height = 33.3
+                      const rectangle = Rectangle.fromDegrees(
+                        lonLatList[index].lon - width,
+                        lonLatList[index].lat - height,
+                        lonLatList[index].lon + width,
+                        lonLatList[index].lat + height
+                      )
+                      cesiumViewer.scene.camera.flyTo({
+                        destination: rectangle,
+                      })
+                      setTimeout(() => {
+                        setShowLocationIndex(index)
+                        setShowLocationDetails(true)
+                        setShowLocationListState(false)
+                      }, 1000)
+                    }}
+                  >
+                    <IonIcon icon={informationOutline} />
+                  </IonButton>
+                  <IonButton
+                    color="tertiary"
+                    onClick={() => {
+                      //remove the coordinates. this might be paleo-coordinates
+                      let a = [...lonLatList]
+                      a.splice(index, 1)
+                      setLonLatlist(a)
+                      //remove the present-day coordinates as well
+                      let b = [...presentDayLonLatList]
+                      b.splice(index, 1)
+                      presentDayLonLatList = b
+
+                      cesiumViewer.entities.remove(locationEntities[index])
+                      locationEntities.splice(index, 1)
+                    }}
+                  >
+                    <IonIcon icon={trashOutline} />
+                  </IonButton>
+                </IonItem>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
       <div
         className={show ? 'location-container show' : 'location-container hide'}
       >
@@ -403,6 +500,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             icon={closeCircleOutline}
             size="large"
             onClick={() => {
+              setShowLocationListState(false)
               setShow(false)
             }}
           />
@@ -410,100 +508,40 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
         <div
           className={show ? 'add-locate-widget show' : 'add-locate-widget hide'}
         >
-          <div className="location-list-container">
-            <IonAccordionGroup>
-              <IonAccordion value="first">
-                <IonItem slot="header" color="light">
-                  <IonLabel>Locations List ({lonLatList.length})</IonLabel>
-                </IonItem>
-                {lonLatList.map((location, index) => {
-                  return (
-                    <div slot="content" key={index}>
-                      <IonItem>
-                        <IonInput
-                          readonly
-                          label="Longitude:"
-                          value={location.lon.toFixed(4)}
-                        ></IonInput>
-
-                        <IonInput
-                          readonly
-                          label="Latitude:"
-                          value={location.lat.toFixed(4)}
-                        ></IonInput>
-                        <IonButton
-                          color="tertiary"
-                          onClick={() => {
-                            const width = 40.9
-                            const height = 33.3
-                            const rectangle = Rectangle.fromDegrees(
-                              lonLatList[index].lon - width,
-                              lonLatList[index].lat - height,
-                              lonLatList[index].lon + width,
-                              lonLatList[index].lat + height
-                            )
-                            cesiumViewer.scene.camera.flyTo({
-                              destination: rectangle,
-                            })
-                            setTimeout(() => {
-                              setShowLocationIndex(index)
-                              setShowLocationDetails(true)
-                            }, 1000)
-                          }}
-                        >
-                          <IonIcon icon={informationOutline} />
-                        </IonButton>
-                        <IonButton
-                          color="tertiary"
-                          onClick={() => {
-                            //remove the coordinates. this might be paleo-coordinates
-                            let a = [...lonLatList]
-                            a.splice(index, 1)
-                            setLonLatlist(a)
-                            //remove the present-day coordinates as well
-                            let b = [...presentDayLonLatList]
-                            b.splice(index, 1)
-                            presentDayLonLatList = b
-
-                            cesiumViewer.entities.remove(
-                              locationEntities[index]
-                            )
-                            locationEntities.splice(index, 1)
-                          }}
-                        >
-                          <IonIcon icon={trashOutline} />
-                        </IonButton>
-                      </IonItem>
-                    </div>
-                  )
-                })}
-              </IonAccordion>
-            </IonAccordionGroup>
-          </div>
-
-          <IonItemDivider>Insert Location</IonItemDivider>
           <IonItem>
             <IonInput
               label="Longitude:"
               type="number"
-              value={lonLat.current.lon.toFixed(4)}
+              value={lonLat.current.lon.toFixed(2)}
               ref={lonInput}
             ></IonInput>
 
             <IonInput
               label="Latitude:"
               type="number"
-              value={lonLat.current.lat.toFixed(4)}
+              value={lonLat.current.lat.toFixed(2)}
               ref={latInput}
             ></IonInput>
-            <IonButton
-              id="open-modal"
-              color="primary"
-              disabled={paleoAge != 0}
-              onClick={() => insertLocation()}
-            >
-              Insert
-            </IonButton>
+          </IonItem>
+          <IonItem>
+            <div className="insert-button-wrapper">
+              <IonButton
+                id="show-location-list-btn"
+                color="secondary"
+                onClick={() => showLocationList()}
+              >
+                {showLocationListState ? 'Hide List' : 'Show List'} (
+                {lonLatList.length})
+              </IonButton>
+              <IonButton
+                expand="block"
+                id="insert-new-location-btn"
+                color="primary"
+                onClick={() => insertLocation()}
+              >
+                Insert
+              </IonButton>
+            </div>
           </IonItem>
         </div>
 
@@ -517,7 +555,12 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonToolbar>
               <IonTitle>Location Details</IonTitle>
               <IonButtons slot="end">
-                <IonButton onClick={() => setShowLocationDetails(false)}>
+                <IonButton
+                  onClick={() => {
+                    setShowLocationDetails(false)
+                    setShowLocationListState(true)
+                  }}
+                >
                   Close
                 </IonButton>
               </IonButtons>
@@ -528,7 +571,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Paleo-age:"
-                  slot="end"
                   readonly
                   value={paleoAge + ' Ma'}
                 ></IonInput>
@@ -538,7 +580,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Paleo-longitude:"
-                  slot="end"
                   readonly
                   value={
                     lonLatList.length > showLocationIndex
@@ -552,7 +593,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Paleo-latitude:"
-                  slot="end"
                   readonly
                   value={
                     lonLatList.length > showLocationIndex
@@ -565,7 +605,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonItem>
               <IonInput
                 label="Present-day Longitude:"
-                slot="end"
                 readonly
                 value={
                   presentDayLonLatList.length > showLocationIndex
@@ -577,7 +616,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
             <IonItem>
               <IonInput
                 label="Present-day Latitude:"
-                slot="end"
                 readonly
                 value={
                   presentDayLonLatList.length > showLocationIndex
@@ -590,7 +628,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
               <IonItem>
                 <IonInput
                   label="Plate ID:"
-                  slot="end"
                   readonly
                   value={
                     presentDayLonLatList.length > showLocationIndex
@@ -605,7 +642,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                 <IonInput
                   label="Rotation Model:"
                   readonly
-                  slot="end"
                   value={currentModel.name}
                 ></IonInput>
               </IonItem>

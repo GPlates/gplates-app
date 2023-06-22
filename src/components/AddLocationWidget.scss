@@ -6,6 +6,7 @@
   height: auto;
   z-index: 1000;
   opacity: 0.85;
+  width: 100%;
   &.hide {
     display: none;
   }
@@ -33,9 +34,9 @@
   right: 0;
   text-align: center;
   bottom: 0;
-  /*width: 600px;*/
-  /*background-color: pink;*/
+  max-width: 600px;
 
+  /*background-color: pink;*/
   &.hide {
     /*display: none;*/
     transform: translateY(1000px);
@@ -47,6 +48,11 @@
     transform: translateY(0);
     transition: transform 0.5s;
   }
+  @media screen and (max-width: 420px) {
+    .label-text-wrapper {
+      max-width: 50px;
+    }
+  }
 }
 /*.close-button {
   position: absolute;
@@ -57,6 +63,20 @@
 .location-list-container {
   max-height: 300px;
   overflow: scroll !important;
+  top: 0;
+  position: absolute;
+  width: 100%;
+  &.hide {
+    display: none;
+  }
+  &.show {
+    display: block;
+  }
+}
+
+.location-list-inner {
+  max-width: 600px;
+  margin: auto;
 }
 
 .location-details {
@@ -65,10 +85,33 @@
 
 .add-location-close-button-container {
   text-align: right;
+  max-width: 600px;
+  margin: auto;
 }
 
 .add-location-close-button {
   background-color: var(--ion-background-color, #fff);
   margin-bottom: -5px;
   border-radius: 5px 5px 0px 0px;
+}
+
+.location-details {
+  ion-input {
+    input {
+      padding-right: 8px !important;
+    }
+    text-align: right;
+  }
+}
+
+#insert-new-location-btn,
+#show-location-list-btn {
+  margin-top: 0;
+}
+
+.insert-button-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

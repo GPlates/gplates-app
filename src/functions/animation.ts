@@ -36,9 +36,11 @@ export class AnimationService {
     this.to = range.upper
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @param url
+   * @returns
+   */
   drawFrame = async (url: string) => {
     animateStartTime = Date.now()
     try {
@@ -79,9 +81,9 @@ export class AnimationService {
     }
   }
 
-  //
-  // TODO: Cache next image before timeout expires to improve cold animation performance?
-  //
+  /**
+   * TODO: Cache next image before timeout expires to improve cold animation performance?
+   */
   scheduleFrame = (url: string, nextFrame = false) => {
     const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
     //console.log(timeToNext)
@@ -102,9 +104,10 @@ export class AnimationService {
     }, Math.max(timeToNext, 0)) //due to the event loop, the timeToNext cannot be guaranteed.
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @returns
+   */
   nextFrameNumber = () => {
     const reversed = this.range.lower > this.range.upper
 
@@ -134,14 +137,21 @@ export class AnimationService {
     return animateFrame
   }
 
-  //
-  //return the next valid age
-  //
-  getNextFrameNumber = () => {
+  /**
+   * return the next valid age
+   *
+   * @param forceLoop - get next age from start, ignore "loop" setting
+   * @returns
+   */
+  getNextFrameNumber = (forceLoop: boolean = false) => {
     //if loop is true and frame has reached the end, go to the start
     //otherwise, stay at the end
     if (Math.abs(animateFrame - this.to) < Number.EPSILON) {
-      return this.loop ? this.from : this.to
+      if (this.loop || forceLoop) {
+        return this.from
+      } else {
+        return this.to
+      }
     }
 
     let big = Math.max(this.from, this.to)
@@ -163,9 +173,11 @@ export class AnimationService {
     return currentModel ? currentModel.getNearestTime(nextNumber) : 0
   }
 
-  //
-  //return the previous valid age
-  //
+  /**
+   * return the previous valid age
+   *
+   * @returns
+   */
   getPrevFrameNumber = () => {
     //if loop is true and frame has reached the start, go to the end
     //otherwise, stay at the end
@@ -191,9 +203,10 @@ export class AnimationService {
     return currentModel ? currentModel.getNearestTime(prevNumber) : 0
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @param value
+   */
   onAgeSliderChange = (value: number) => {
     if (!this.playing) {
       animateFrame = value
@@ -204,9 +217,9 @@ export class AnimationService {
     }
   }
 
-  //
-  //
-  //
+  /**
+   *
+   */
   resetPlayHead = () => {
     this.setPlaying(false)
     animateFrame = this.range.lower
@@ -217,9 +230,10 @@ export class AnimationService {
     }
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @param value
+   */
   movePlayHead = (value: number) => {
     this.setPlaying(false)
     let raster = getRasterByID(this.currentRasterID)
@@ -233,12 +247,12 @@ export class AnimationService {
     if (raster) drawLayers(animateFrame, raster)
   }
 
-  //
-  //
-  //
+  /**
+   *
+   */
   moveNext = () => {
     this.setPlaying(false)
-    animateFrame = this.getNextFrameNumber()
+    animateFrame = this.getNextFrameNumber(true)
     this.setAge(animateFrame)
     let raster = getRasterByID(this.currentRasterID)
     if (raster) {
@@ -246,9 +260,9 @@ export class AnimationService {
     }
   }
 
-  //
-  //
-  //
+  /**
+   *
+   */
   movePrev = () => {
     this.setPlaying(false)
     animateFrame = this.getPrevFrameNumber()
@@ -259,21 +273,23 @@ export class AnimationService {
     }
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @param value
+   */
   setDragging = (value: boolean) => {
     dragging = value
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @param value
+   */
   setPlaying = (value: boolean) => {
     this._setPlaying(value)
     animateNext = value
     if (value) {
-      animateFrame = this.getNextFrameNumber()
+      animateFrame = this.getNextFrameNumber(true)
       let url = this.getLowResImageUrl()
       if (url) this.scheduleFrame(url)
     } else {
@@ -285,10 +301,12 @@ export class AnimationService {
     }
   }
 
-  //
-  // return the low-resolution map url of the current selected raster for animation
-  // The {{time}} will be replaced by real value of time in function drawFrame()
-  //
+  /**
+   * return the low-resolution map url of the current selected raster for animation
+   * The {{time}} will be replaced by real value of time in function drawFrame()
+   *
+   * @returns
+   */
   getLowResImageUrl = () => {
     // get overlays
     let overlays: string[] = []
@@ -327,5 +345,16 @@ export class AnimationService {
         )
       }
     }
+  }
+}
+/**
+ *
+ * @param age
+ */
+export const setAnimationFrame = (age: number, currentRasterID: string) => {
+  animateFrame = age
+  let raster = getRasterByID(currentRasterID)
+  if (raster) {
+    drawLayers(animateFrame, raster)
   }
 }

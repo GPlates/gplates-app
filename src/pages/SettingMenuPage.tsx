@@ -169,9 +169,12 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     }
   }, [currentRasterID])
 
-  //
-  //
-  //
+  /**
+   *
+   * @param path
+   * @param name
+   * @returns
+   */
   const subPageRouting = (path: string, name: string) => {
     return (
       <IonItem

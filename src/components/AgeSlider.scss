@@ -28,7 +28,7 @@ $transition: all 150ms;
 
 .ios {
   .top-buttons-container:not(.buttons:not(.hidden)) {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(25px, env(safe-area-inset-top));
   }
 }
 
@@ -94,6 +94,7 @@ $transition: all 150ms;
 .slider {
   ion-range {
     padding-left: 10px;
+    padding-right: 10px;
   }
   ion-button {
     &::part(native) {

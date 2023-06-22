@@ -9,11 +9,12 @@ export const AboutPage: React.FC<ContainerProps> = () => {
   return (
     <IonContent>
       <div className={'about-page-icon'}>
+        <p></p>
         <img src={'assets/icon/icon.png'} alt={'app icon'} />
+        <p>Version 1.0.3</p>
       </div>
 
       <div className={'about-page-intro-frame'}>
-        <h4>About This App</h4>
         <p className={'about-page-intro-text'}>
           The GPlates App is a powerful tool designed to enable users to
           reconstruct and visualize spatial data through geological time. Built
@@ -103,7 +104,8 @@ export const AboutPage: React.FC<ContainerProps> = () => {
         <br />
       </div>
       <div className={'about-page-copyright'}>
-        Copyright © 2022 The University of Sydney. All rights reserved.
+        <p>Copyright © 2023 The University of Sydney. </p>
+        <p>All rights reserved.</p>
       </div>
     </IonContent>
   )
