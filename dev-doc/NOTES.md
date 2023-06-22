@@ -9,8 +9,8 @@ The following steps worked on my Macbook Pro.
 - `nvm use 18`
 - `npm install`
 - `source ./set-env.sh`
-- `ionic capacitor run android`
-- `ionic capacitor run ios`
+- `ionic capacitor run android -l --external`
+- `ionic capacitor run ios -l --external`
 
 ## Serve as a web page
 
