@@ -11,7 +11,7 @@ export const AboutPage: React.FC<ContainerProps> = () => {
       <div className={'about-page-icon'}>
         <p></p>
         <img src={'assets/icon/icon.png'} alt={'app icon'} />
-        <p>Version 1.0.3</p>
+        <p>Version 1.0.0</p>
       </div>
 
       <div className={'about-page-intro-frame'}>

@@ -20,7 +20,7 @@ $transition: all 150ms;
 
 /*
 .ios {
-  .age-play-controls-container:not(.buttons:not(.hidden)) {
+  .age-play-controls-container:not(.buttons:not(.hidden)) { 
     padding-top: env(safe-area-inset-top);
   }
 }
@@ -29,6 +29,12 @@ $transition: all 150ms;
 .ios {
   .top-buttons-container:not(.buttons:not(.hidden)) {
     padding-top: max(25px, env(safe-area-inset-top));
+  }
+  /*iphone x/14*/
+  @media only screen and (min-height: 800px) and (orientation: portrait) {
+    .top-buttons-container:not(.buttons:not(.hidden)) {
+      padding-top: max(50px, env(safe-area-inset-top));
+    }
   }
 }
 
