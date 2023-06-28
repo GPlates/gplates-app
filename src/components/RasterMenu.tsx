@@ -50,9 +50,12 @@ interface ContainerProps {
   animationService: AnimationService
 }
 
-//
-// RasterMenu funtional component
-//
+/**
+ * RasterMenu funtional component
+ *
+ * @param param0
+ * @returns
+ */
 export const RasterMenu: React.FC<ContainerProps> = ({
   isCesiumViewerReady,
   setAgeSliderShown,
@@ -69,9 +72,11 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   const [swiper, setSwiper] = useState<SwiperType>()
   const rasterGroup = useRecoilValue(rasterGroupState)
 
-  //
-  // switch to another raster
-  //
+  /**
+   * switch to another raster
+   *
+   * @param raster
+   */
   const switchRaster = (raster: RasterCfg) => {
     //stop the animation if necessary
     animationService.setPlaying(false)
@@ -89,19 +94,19 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     pruneLayers()
   }
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {}, [isCesiumViewerReady]) //initial selection
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {}, [rasterGroup])
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {}, [currentRasterID]) // current raster ID changed
 
   let optionList = []
@@ -152,9 +157,11 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     )
   }
 
-  //
-  // select the current raster and deselect all others
-  //
+  /**
+   * select the current raster and deselect all others
+   *
+   * @param rasterID
+   */
   const select = async (rasterID: string) => {
     setCurrentRasterID(rasterID)
 
@@ -199,9 +206,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   } //end of select()
 
   //swiper?.destroy(true, false) //destroy the old swiper instance. a new one will be created.
-  //
-  //
-  //
+
   return (
     <div style={{ visibility: isShow ? 'visible' : 'hidden' }}>
       {/*<div

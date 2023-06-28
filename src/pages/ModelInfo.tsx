@@ -43,9 +43,9 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
   const [path, setPath] = useRecoilState(infoPath)
   const [showRasterLengend, setShowRasterLengend] = useState(false)
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {
     setShowRasterLengend(false)
   }, [currentRasterID])
@@ -63,9 +63,12 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
       ' Ma'
   }
 
-  //
-  //
-  //
+  /**
+   *
+   * @param path
+   * @param name
+   * @returns
+   */
   const subPageRouting = (path: string, name: string) => {
     return (
       <IonItem
@@ -81,7 +84,12 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
   }
 
   return (
-    <IonModal isOpen={modelInfoShow} animated backdropDismiss={false}>
+    <IonModal
+      isOpen={modelInfoShow}
+      animated
+      backdropDismiss={false}
+      className={'model-info-model'}
+    >
       <IonToolbar>
         {path !== 'root' && (
           <IonButtons slot={'start'}>
@@ -118,7 +126,7 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
         unmountOnExit
         classNames={'info-fade'}
       >
-        <IonContent>
+        <div className={'model-info-content'}>
           <IonList>
             <IonItem key={'raster-title'}>
               <IonLabel className={'info-small-label'}>{'Title'} </IonLabel>
@@ -149,11 +157,10 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
                 <IonNote slot="end">{currentRaster.model}</IonNote>
               </IonItem>
             )}
+
+            {subPageRouting('about', 'About GPlates')}
+            {subPageRouting('howtouse', 'How To Handle 3D Globe')}
           </IonList>
-
-          {subPageRouting('about', 'About GPlates')}
-          {subPageRouting('howtouse', 'How To Handle 3D Globe')}
-
           <div
             className="raster-legend"
             style={showRasterLengend ? {} : { display: 'none' }}
@@ -165,7 +172,7 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
               onLoad={() => setShowRasterLengend(true)}
             />
           </div>
-        </IonContent>
+        </div>
       </CSSTransition>
 
       {/* About subpage */}
@@ -182,7 +189,7 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
       {/* HowToUse subpage */}
       <CSSTransition
         in={path === 'howtouse'}
-        timeout={4000}
+        timeout={2000}
         unmountOnExit
         classNames={'how-fade'}
       >
