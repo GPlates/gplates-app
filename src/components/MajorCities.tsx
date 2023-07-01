@@ -85,7 +85,7 @@ const drawCity = (lon: number, lat: number, name: string) => {
  */
 const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
   if (cityPlateIDs) {
-    //reconstruct location
+    //reconstruct the city coordinates
     let reconstructedCity = currentModel?.rotate(
       {
         lon: city_coords[0],
@@ -95,8 +95,9 @@ const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
       age
     )
     if (!reconstructedCity) {
+      console.log(name, age, city_coords)
       console.log(
-        'Reconstructed city coordinates are undefined. Maybe the rotation model has been loaded yet.'
+        'The paleo-city coordinates are undefined. 1. The city does not exist at the time. 2. The rotation model has not been loaded yet.'
       )
       return
     }

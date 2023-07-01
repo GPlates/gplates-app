@@ -9,8 +9,6 @@ import {
 } from './graticule'
 import { updateImageryLayer } from '../components/VectorDataLayerMenu'
 import { RasterCfg } from './types'
-import { getLowResImageUrlForGeosrv } from './util'
-import { cachingServant } from './cache'
 
 /**
  * This module contains functions to manipulate Cesium Viewer.
@@ -23,6 +21,13 @@ export const HOME_LONGITUDE = 135.0
 export const HOME_LATITUDE = -25.0
 export const DEFAULT_CAMERA_HEIGHT = 15000000
 export const DEFAULT_CAMERA_HEIGHT_SMALL_SCREEN = 19000000
+
+let currentBasemapLayer: Cesium.ImageryLayer | null = null
+export const currentVectorLayers: Cesium.ImageryLayer[] = []
+
+export const setCurrentBasemapLayer = (layer: Cesium.ImageryLayer | null) => {
+  currentBasemapLayer = layer
+}
 
 /**
  *
@@ -86,13 +91,19 @@ export const initCesiumViewer = (provider: Cesium.ImageryProvider) => {
 
 /**
  * draw raster layer and vector layers
+ * maily being used in animation
+ *
  * @param time
  * @param rasterCfg
  */
 export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
+  console.log('LOOK HERE!')
+  return
   //draw the raster layer
   const provider = createCesiumImageryProvider(rasterCfg, time)
-  cesiumViewer.imageryLayers.addImageryProvider(provider)
+  let newBasemapLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
+  removeCurrentImageryLayers()
+  currentBasemapLayer = newBasemapLayer
 
   //draw the vector layers
   let vectorLayers = getVectorLayers(rasterCfg.id)
@@ -103,11 +114,12 @@ export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
       let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
         createCesiumImageryProvider(vectorLayers[id], time)
       )
+      currentVectorLayers.push(imageryLayer)
       updateImageryLayer(id, imageryLayer)
     }
   }
   raiseGraticuleLayerToTop() //raise graticlue layer if enabled
-  pruneLayers()
+  //pruneLayers()
 }
 
 /**
@@ -119,6 +131,61 @@ export const pruneLayers = () => {
     //console.log(cesiumViewer.imageryLayers.length)
     cesiumViewer.imageryLayers.remove(cesiumViewer.imageryLayers.get(0), true)
   }
+}
+
+/**
+ * remove basemap imagery layer after 2 seconds delay
+ *
+ * @param layer
+ */
+const delayRemoveBaseLayer = (layer: Cesium.ImageryLayer) => {
+  setTimeout(() => {
+    if (layer) {
+      if (!cesiumViewer.imageryLayers.remove(layer, true)) {
+        console.log('Failed to remove basemap layer: ', layer)
+      }
+    }
+  }, 2000)
+}
+
+/**
+ *
+ * remove all vector layers and basemap layer
+ */
+export const removeCurrentImageryLayers = () => {
+  if (currentBasemapLayer) {
+    delayRemoveBaseLayer(currentBasemapLayer)
+  }
+  currentBasemapLayer = null
+
+  console.log(
+    'Before removing vector layers: ',
+    cesiumViewer.imageryLayers.length
+  )
+
+  for (let i = 0; i < currentVectorLayers.length; i++) {
+    console.log('removing: ', currentVectorLayers[i])
+    if (!cesiumViewer.imageryLayers.remove(currentVectorLayers[i])) {
+      console.log('failed to remove vector layer:', currentVectorLayers[i])
+    }
+  }
+  currentVectorLayers.length = 0
+  console.log(
+    'After removing vector layers:: ',
+    cesiumViewer.imageryLayers.length
+  )
+}
+
+/**
+ *
+ * @param raster - new base map configuration
+ */
+export const drawBasemap = (raster: RasterCfg) => {
+  //draw a new basemap
+  let provider = createCesiumImageryProvider(raster)
+  let newBasemapLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
+  removeCurrentImageryLayers()
+  setCurrentBasemapLayer(newBasemapLayer)
 }
 
 const gridsetName = 'EPSG:4326'

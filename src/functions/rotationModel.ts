@@ -25,19 +25,17 @@ export default class RotationModel {
   name: string
   times: number[]
   finiteRotations!: Map<string, any>
-  vectorLayers: any
   newRotationModelImpl: RotationModelEx | undefined
 
   /**
    *
    * @param name
    * @param times
-   * @param vLayers
    */
-  constructor(name: string, times: number[], vLayers: any) {
+  constructor(name: string, times: number[]) {
     this.name = name
     this.times = times
-    this.vectorLayers = vLayers
+
     this.finiteRotations = new Map<string, any>()
     RotationModelEx.loadRotationModel(
       serverURL + '/rotation/get_rotation_map',

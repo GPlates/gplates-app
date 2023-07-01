@@ -272,8 +272,9 @@ const Main: React.FC = () => {
 
       //create a rotation model for each raster
       rasterMaps.forEach(async (raster) => {
-        if (!getVectorLayers(raster.id)) await loadVectorLayers(raster.id)
-
+        if (!getVectorLayers(raster.id)) {
+          loadVectorLayers(raster.id)
+        }
         let modelName = raster.model
         if (modelName) {
           let m = rotationModels.get(modelName)
@@ -283,7 +284,7 @@ const Main: React.FC = () => {
               times = timeRange(raster.startTime, raster.endTime, raster.step)
             }
 
-            m = new RotationModel(modelName, times, getVectorLayers(modelName))
+            m = new RotationModel(modelName, times)
             //console.log(getVectorLayers(modelName))
             rotationModels.set(modelName, m)
           }

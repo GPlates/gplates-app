@@ -10,9 +10,11 @@ export let vectorLayers: Map<string, any> = new Map<string, any>()
 //raster/basemap ID : vector layer names(array)
 const enabledLayers: Map<string, string[]> = new Map<string, string[]>()
 
-//
-// get vector-layers local storage object
-//
+/**
+ * get vector-layers local storage object
+ *
+ * @returns
+ */
 export const getVectorLayerStore = async () => {
   if (store === null) {
     let store_ = new Storage({ name: 'vector-layers' })
@@ -22,9 +24,11 @@ export const getVectorLayerStore = async () => {
   return store
 }
 
-//
-// fetch the vector-layer configurate for a given raster ID from server
-//
+/**
+ * fetch the vector-layer configurate for a given raster ID from server
+ *
+ * @param rasterID
+ */
 export const loadVectorLayers = async (rasterID: string) => {
   try {
     let response = await fetch(
@@ -46,16 +50,22 @@ export const loadVectorLayers = async (rasterID: string) => {
   }
 }
 
-//
-// get all vector layers for a raster
-//
+/**
+ * get all vector layers for a raster
+ *
+ * @param rasterID
+ * @returns
+ */
 export const getVectorLayers = (rasterID: string) => {
   return vectorLayers.get(rasterID)
 }
 
-//
-// add a new vector layer name into enabledLayers
-//
+/**
+ * add a new vector layer name into enabledLayers
+ *
+ * @param rasterID
+ * @param layerName
+ */
 export const enableLayer = (rasterID: string, layerName: string) => {
   let layers = enabledLayers.get(rasterID)
   //console.log('enableLayer')
@@ -70,9 +80,12 @@ export const enableLayer = (rasterID: string, layerName: string) => {
   console.log(enabledLayers)
 }
 
-//
-// remove a vector layer name from enabledLayers
-//
+/**
+ * remove a vector layer name from enabledLayers
+ *
+ * @param rasterID
+ * @param layerName
+ */
 export const disableLayer = (rasterID: string, layerName: string) => {
   let layers = enabledLayers.get(rasterID)
   if (layers !== undefined) {
@@ -84,9 +97,12 @@ export const disableLayer = (rasterID: string, layerName: string) => {
   }
 }
 
-//
-// get enable the vector layer names
-//
+/**
+ * get enable the vector layer names
+ *
+ * @param rasterID
+ * @returns
+ */
 export const getEnabledLayers = (rasterID: string) => {
   //console.log(enabledLayers)
   return enabledLayers.get(rasterID) ?? []

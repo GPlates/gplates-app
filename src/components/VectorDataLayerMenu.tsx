@@ -25,61 +25,67 @@ import {
   getEnabledLayers,
   disableLayer,
 } from '../functions/vectorLayers'
-import { cesiumViewer } from '../functions/cesiumViewer'
+import { cesiumViewer, currentVectorLayers } from '../functions/cesiumViewer'
 import './VectorDataLayerMenu.scss'
 
-//only for this GUI component
+// only for this GUI component
+// a list of vector layers for the current basemap
 let vectorLayers: VectorLayerType[] = []
 
+// indicate if the cities has been enabled
 let cityEnabledFlag = false
 
-//
-// given the layer's ID, update the cesium ImageryLayer object
-//
+/**
+ * given the layer's ID, update the cesium ImageryLayer object
+ *
+ * @param layerID
+ * @param imageryLayer
+ */
 export const updateImageryLayer = (layerID: string, imageryLayer: any) => {
-  let layer: any = null
   for (let i = 0; i < vectorLayers.length; i++) {
     if (vectorLayers[i].id === layerID) {
-      layer = vectorLayers[i]
+      let layer = vectorLayers[i]
+      if (layer) {
+        layer.imageryLayer = imageryLayer
+      }
       break
     }
-  }
-  //console.log(layer)
-  if (layer) {
-    if (layer.imageryLayer) {
-      cesiumViewer.imageryLayers.remove(layer.imageryLayer)
-    }
-    layer.imageryLayer = imageryLayer
   }
 }
 
 interface ContainerProps {}
 
+/**
+ *
+ * @param param0
+ * @returns
+ */
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
   const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
   const currentRasterID = useRecoilValue(currentRasterIDState)
   const rAge = useRecoilValue(ageState)
   const setShowCities = useSetRecoilState(showCities)
 
-  //
-  // draw all enabled vector layers
-  //
+  /**
+   * draw all enabled vector layers
+   */
   const drawEnabledVectorLayers = () => {
     let enabledLayers = getEnabledLayers(currentRasterID)
-
+    currentVectorLayers.length = 0
     for (let i = 0; i < vectorLayers.length; i++) {
       if (enabledLayers.includes(vectorLayers[i].id)) {
         let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
           createCesiumImageryProvider(vectorLayers[i], 0) //time=0
         )
         vectorLayers[i].imageryLayer = imageryLayer
+        currentVectorLayers.push(imageryLayer)
       }
     }
   }
 
-  //
-  // prepare the vectorLayers array
-  //
+  /**
+   * prepare the vectorLayers array
+   */
   const prepareVectorLayers = () => {
     //find out all the vector layers defined for the current raster
     let layers = getVectorLayers(currentRasterID)
@@ -112,22 +118,24 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     }
   }
 
-  //
-  // when current raster is changed, populate the vectorLayers array
-  //
+  /**
+   * when current raster is changed, populate the vectorLayers array
+   */
   useEffect(() => {
     prepareVectorLayers()
     drawEnabledVectorLayers()
   }, [currentRasterID])
 
-  //
-  // initializing
-  //
+  /**
+   * initializing
+   */
   useEffect(() => {}, [])
 
-  //
-  // when any vector layer checkbox changed
-  //
+  /**
+   * when any vector layer checkbox changed
+   *
+   * @param checkbox
+   */
   const onCheckBoxChange = (checkbox: any) => {
     let layer = vectorLayers[checkbox.detail.value]
     layer.checked = checkbox.detail.checked
@@ -147,11 +155,21 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
       }
       disableLayer(currentRasterID, layer.id)
     }
+
+    //update current vector layers
+    currentVectorLayers.length = 0
+    for (let i = 0; i < vectorLayers.length; i++) {
+      if (vectorLayers[i].checked) {
+        currentVectorLayers.push(vectorLayers[i].imageryLayer)
+      }
+    }
   }
 
-  //
-  // callback when cities checkbox changed
-  //
+  /**
+   * callback when cities checkbox changed
+   *
+   * @param checkbox
+   */
   const onCitiesCheckBoxChange = (checkbox: any) => {
     setShowCities(checkbox.detail.checked)
 
