@@ -11,15 +11,12 @@ import {
   IonItem,
   IonLabel,
   IonInput,
-  IonItemDivider,
   IonModal,
   IonHeader,
   IonToolbar,
   IonButtons,
   IonTitle,
   IonContent,
-  IonAccordionGroup,
-  IonAccordion,
   useIonToast,
 } from '@ionic/react'
 import {
@@ -29,7 +26,6 @@ import {
   Cartographic,
   Math as CMath,
   Cartesian3,
-  ConstantPositionProperty,
   SceneMode,
   Rectangle,
 } from 'cesium'
@@ -279,11 +275,6 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
       return []
 
     let paleoCoords: { lon: number; lat: number }[] = []
-
-    // fetch finite rotation for plate IDs
-    await currentModel.fetchFiniteRotations(
-      presentDayLonLatList.map((lll) => String(lll.pid))
-    )
 
     presentDayLonLatList.forEach((point) => {
       if (currentModel) {

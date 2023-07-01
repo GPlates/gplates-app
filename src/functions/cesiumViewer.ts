@@ -1,7 +1,3 @@
-/**
- * This module contains functions to manipulate Cesium Viewer.
- */
-
 import { Preferences } from '@capacitor/preferences'
 //import { Color, Viewer, ImageryProvider, Cartesian3 } from 'cesium'
 import * as Cesium from 'cesium'
@@ -15,6 +11,10 @@ import { updateImageryLayer } from '../components/VectorDataLayerMenu'
 import { RasterCfg } from './types'
 import { getLowResImageUrlForGeosrv } from './util'
 import { cachingServant } from './cache'
+
+/**
+ * This module contains functions to manipulate Cesium Viewer.
+ */
 
 //singleton Cersium Viewer object
 export let cesiumViewer: Cesium.Viewer
@@ -182,8 +182,9 @@ export const createCesiumImageryProvider = (image: any, time = 0) => {
   //if the network is disconnected, use this error handler to load stored low resolution image
   const handler = (providerError: any) => {
     console.log(providerError)
-    cesiumViewer.imageryLayers.removeAll()
+    //cesiumViewer.imageryLayers.removeAll()
     //console.log(url_str, layer_name, style_name)
+    /*
     let url_ = getLowResImageUrlForGeosrv(image.wmsUrl, layer_name)
     cachingServant
       .getCachedRequest(url_.replace('{{time}}', String(time)))
@@ -201,11 +202,12 @@ export const createCesiumImageryProvider = (image: any, time = 0) => {
         console.log('Error: createCesiumImageryProvider error handler')
         console.log(err)
       })
+    */
   }
-  provider.errorEvent.addEventListener(handler)
+  //provider.errorEvent.addEventListener(handler)
 
   //cache the low resolution image
-  let url = getLowResImageUrlForGeosrv(image.wmsUrl, layer_name)
-  cachingServant?.cacheURL(url.replace('{{time}}', String(time)))
+  //let url = getLowResImageUrlForGeosrv(image.wmsUrl, layer_name)
+  //cachingServant?.cacheURL(url.replace('{{time}}', String(time)))
   return provider
 }

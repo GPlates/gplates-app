@@ -8,19 +8,17 @@ import { cesiumViewer } from '../functions/cesiumViewer'
 import { getEnabledLayers } from '../functions/vectorLayers'
 
 //for example: "Sydney": [151.2099, -33.8651],
-let citiesLonLat: any = null
+let citiesLonLat: { [key: string]: [number, number] } | null = null
 //for example: "SETON2012": [801, 801, 801, 801, 801],
-let cityPlateIDs: any = null
+let cityPlateIDs: { [key: string]: number[] } | null = null
 
-let cityCesiumEntities: any = []
-let labels: any = null
+let cityCesiumEntities: any = [] //cesium entities
+let labels: any = null //cesium primitives
 
-//
-//
-//
+/**
+ * remove the cities from the globe
+ */
 const undrawCities = () => {
-  //console.log('undraw cities')
-  //console.log(cityCesiumEntities)
   for (let i = 0; i < cityCesiumEntities.length; i++) {
     cesiumViewer.entities.remove(cityCesiumEntities[i])
   }
@@ -31,9 +29,12 @@ const undrawCities = () => {
   }
 }
 
-//
-//
-//
+/**
+ *
+ * @param lon
+ * @param lat
+ * @param name
+ */
 const drawCity = (lon: number, lat: number, name: string) => {
   let locationCartesian: Cesium.Cartesian3 = Cesium.Cartesian3.fromDegrees(
     lon,
@@ -74,22 +75,29 @@ const drawCity = (lon: number, lat: number, name: string) => {
   }
 }
 
-//
-//
-//
-const drawPaleoCity = (city: number[], name: string, age: number) => {
+/**
+ * rotate city's coordinates and show it on the globe
+ *
+ * @param city_coords
+ * @param name
+ * @param age
+ * @returns
+ */
+const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
   if (cityPlateIDs) {
     //reconstruct location
-    let reconstructedCity = currentModel?.rotateLonLatPid(
-      currentModel.getTimeIndex(age),
+    let reconstructedCity = currentModel?.rotate(
       {
-        lon: city[0],
-        lat: city[1],
-        pid: cityPlateIDs[currentModel?.name][city[2]], //plate ID
-      }
+        lon: city_coords[0],
+        lat: city_coords[1],
+        pid: cityPlateIDs[currentModel?.name][city_coords[2]], //plate ID
+      },
+      age
     )
     if (!reconstructedCity) {
-      console.log('reconstructed city coordinates are undefined.')
+      console.log(
+        'Reconstructed city coordinates are undefined. Maybe the rotation model has been loaded yet.'
+      )
       return
     }
     drawCity(reconstructedCity.lon, reconstructedCity.lat, name) //draw reconstructed coordinates
@@ -98,9 +106,9 @@ const drawPaleoCity = (city: number[], name: string, age: number) => {
   }
 }
 
-//
-//
-//
+/**
+ *
+ */
 const loadCityData = () => {
   fetch(serverURL + '/mobile/get_cities')
     .then((response) => response.json())
@@ -113,23 +121,24 @@ const loadCityData = () => {
     })
 }
 
-//
-//
+/**
+ *
+ */
 interface MajorCitiesProps {}
-//
-//
+
+/**
+ *
+ * @returns
+ */
 const MajorCities: React.FC<MajorCitiesProps> = () => {
   const paleoAge = useRecoilValue(ageState)
   const showCitiesFlag = useRecoilValue(showCities)
   const currentRasterID = useRecoilValue(currentRasterIDState)
 
-  //
-  //
-  //
+  /**
+   *
+   */
   const drawPaleoCities = async () => {
-    if (currentModel) {
-      await currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
-    }
     //paleoAge !== 0, draw reconstructed city coordinates
     if (showCitiesFlag && paleoAge !== 0 && currentModel) {
       for (let key in citiesLonLat) {
@@ -138,17 +147,12 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
     }
   }
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {
     if (showCitiesFlag) {
       undrawCities()
-      // fetch finite rotation for plate IDs
-      // finite rotation must be ready before currentModel.rotateLonLatPid()
-      if (currentModel) {
-        currentModel.fetchFiniteRotations(cityPlateIDs[currentModel.name])
-      }
 
       for (let key in citiesLonLat) {
         drawPaleoCity(citiesLonLat[key], key, paleoAge)
@@ -156,9 +160,9 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
     }
   }, [paleoAge])
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {
     // draw cities on cesium here
     if (showCitiesFlag) {
@@ -167,7 +171,6 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
           drawCity(citiesLonLat[key][0], citiesLonLat[key][1], key) //paleoAge===0, draw present-day cities
         }
       } else {
-        // fetch finite rotation for plate IDs
         if (currentModel && cityPlateIDs) {
           drawPaleoCities()
         }
@@ -177,16 +180,16 @@ const MajorCities: React.FC<MajorCitiesProps> = () => {
     }
   }, [showCitiesFlag])
 
-  //
-  // initial loading
-  //
+  /**
+   * initial loading
+   */
   useEffect(() => {
     loadCityData()
   }, [])
 
-  //
-  // when the current raster is changed
-  //
+  /**
+   * when the current raster is changed
+   */
   useEffect(() => {
     //find out if cities is enabled for this raster
     let enabledLayers = getEnabledLayers(currentRasterID)
