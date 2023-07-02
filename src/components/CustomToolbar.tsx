@@ -244,10 +244,11 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
    *
    */
   useEffect(() => {
+    /*
     if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
       updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
       getPlateID()
-    }
+    }*/
   }, [currentRasterID])
 
   //do not show social sharing button on desktop/web browser

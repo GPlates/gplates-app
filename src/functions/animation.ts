@@ -5,7 +5,12 @@ import { getRasterByID } from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { getLowResImageUrlForGeosrv } from './util'
 import { currentModel } from './rotationModel'
-import { drawLayers, removeCurrentImageryLayers } from './cesiumViewer'
+import {
+  drawLayers,
+  removeCurrentImageryLayers,
+  setCurrentSingleTileImageryLayer,
+  getCurrentSingleTileImageryLayer,
+} from './cesiumViewer'
 import { raiseGraticuleLayerToTop } from './graticule'
 import { RasterGroup } from './types'
 
@@ -18,7 +23,6 @@ let dragging = false
 export class AnimationService {
   private from: number
   private to: number
-  private currentSingleTileImageryLayer: ImageryLayer | null
   constructor(
     public cachingService: CachingService,
     public setAge: SetterOrUpdater<number>,
@@ -35,7 +39,6 @@ export class AnimationService {
   ) {
     this.from = range.lower
     this.to = range.upper
-    this.currentSingleTileImageryLayer = null
   }
 
   /**
@@ -45,6 +48,7 @@ export class AnimationService {
    */
   delayRemoveSingleTileImageryLayer = (layer: ImageryLayer) => {
     setTimeout(() => {
+      console.log('remove SingleTileImageryProvider')
       if (layer) {
         this.viewer.imageryLayers.remove(layer, true)
       }
@@ -70,17 +74,20 @@ export class AnimationService {
         const provider = new SingleTileImageryProvider({
           url: dataURL,
         })
+
         // Disallow old frames from being printed when manually changing age
         if (animateNext) {
           let newLayer = this.viewer.imageryLayers.addImageryProvider(provider)
+          console.log('add SingleTileImageryProvider')
 
           //delay remove the old layer
-          if (this.currentSingleTileImageryLayer) {
+          let currentSingleTileImageryLayer = getCurrentSingleTileImageryLayer()
+          if (currentSingleTileImageryLayer) {
             this.delayRemoveSingleTileImageryLayer(
-              this.currentSingleTileImageryLayer
+              currentSingleTileImageryLayer
             )
           }
-          this.currentSingleTileImageryLayer = newLayer
+          setCurrentSingleTileImageryLayer(newLayer)
 
           raiseGraticuleLayerToTop()
         }
@@ -99,7 +106,6 @@ export class AnimationService {
     if (this.viewer.imageryLayers.length > 8) {
       this.viewer.imageryLayers.remove(this.viewer.imageryLayers.get(0), true)
     }*/
-    console.log(this.viewer.imageryLayers.length)
 
     if (animateNext) {
       this.scheduleFrame(url, true)
@@ -243,10 +249,14 @@ export class AnimationService {
   }
 
   /**
-   *
+   * Move to the beginning of the animation
    */
   resetPlayHead = () => {
-    this.setPlaying(false)
+    //if animation is playing, do nothing
+    if (this.playing) {
+      return
+    }
+
     animateFrame = this.range.lower
     this.setAge(animateFrame)
     let raster = getRasterByID(this.currentRasterID)
@@ -256,27 +266,14 @@ export class AnimationService {
   }
 
   /**
-   *
-   * @param value
-   */
-  movePlayHead = (value: number) => {
-    this.setPlaying(false)
-    let raster = getRasterByID(this.currentRasterID)
-    if (raster) {
-      animateFrame = Math.min(
-        Math.max(animateFrame + value, raster.endTime),
-        raster.startTime
-      )
-    }
-    this.setAge(animateFrame)
-    if (raster) drawLayers(animateFrame, raster)
-  }
-
-  /**
-   *
+   * move to next frame
    */
   moveNext = () => {
-    this.setPlaying(false)
+    //if animation is playing, do nothing
+    if (this.playing) {
+      return
+    }
+
     animateFrame = this.getNextFrameNumber(true)
     this.setAge(animateFrame)
     let raster = getRasterByID(this.currentRasterID)
@@ -286,10 +283,13 @@ export class AnimationService {
   }
 
   /**
-   *
+   * move to previous frame
    */
   movePrev = () => {
-    this.setPlaying(false)
+    //if animation is playing, do nothing
+    if (this.playing) {
+      return
+    }
     animateFrame = this.getPrevFrameNumber()
     this.setAge(animateFrame)
     let raster = getRasterByID(this.currentRasterID)
@@ -311,7 +311,19 @@ export class AnimationService {
    * @param value - True: play; False: stop
    */
   setPlaying = (value: boolean) => {
+    if (this.playing == value) {
+      return
+    }
+
+    //delay remove the old layer
+    let currentSingleTileImageryLayer = getCurrentSingleTileImageryLayer()
+    if (currentSingleTileImageryLayer) {
+      this.delayRemoveSingleTileImageryLayer(currentSingleTileImageryLayer)
+    }
+    setCurrentSingleTileImageryLayer(null)
+
     this._setPlaying(value)
+
     animateNext = value
     if (value) {
       animateFrame = this.getNextFrameNumber(true)
@@ -320,14 +332,6 @@ export class AnimationService {
       removeCurrentImageryLayers()
     } else {
       clearTimeout(animateTimeout)
-
-      //delay remove the old layer
-      if (this.currentSingleTileImageryLayer) {
-        this.delayRemoveSingleTileImageryLayer(
-          this.currentSingleTileImageryLayer
-        )
-      }
-      this.currentSingleTileImageryLayer = null
 
       //when animation stopped, draw the tiled layers for higher resolution images
       let raster = getRasterByID(this.currentRasterID)

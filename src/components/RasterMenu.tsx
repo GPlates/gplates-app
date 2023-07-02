@@ -77,7 +77,8 @@ export const RasterMenu: React.FC<ContainerProps> = ({
    * @param raster - new basemap configuration
    */
   const switchBasemap = async (raster: RasterCfg) => {
-    console.log('switchBasemap')
+    console.log('Length of Imagery Layers: ', cesiumViewer.imageryLayers.length)
+    console.log(cesiumViewer.imageryLayers)
     //stop the animation if necessary
     animationService.setPlaying(false)
 
@@ -107,8 +108,10 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       }
     }
 
-    if (!cesiumViewer?.entities.removeById('userLocation')) {
-      console.log('Failed to remove user location.')
+    if (cesiumViewer.entities.getById('userLocation')) {
+      if (!cesiumViewer.entities.removeById('userLocation')) {
+        console.log('Failed to remove user location.')
+      }
     }
 
     //find out if the rotation model has been created

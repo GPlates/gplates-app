@@ -23,10 +23,33 @@ export const DEFAULT_CAMERA_HEIGHT = 15000000
 export const DEFAULT_CAMERA_HEIGHT_SMALL_SCREEN = 19000000
 
 let currentBasemapLayer: Cesium.ImageryLayer | null = null
+let currentSingleTileImageryLayer: Cesium.ImageryLayer | null = null
 export const currentVectorLayers: Cesium.ImageryLayer[] = []
 
+/**
+ *
+ * @param layer
+ */
 export const setCurrentBasemapLayer = (layer: Cesium.ImageryLayer | null) => {
   currentBasemapLayer = layer
+}
+
+/**
+ *
+ * @param layer
+ */
+export const setCurrentSingleTileImageryLayer = (
+  layer: Cesium.ImageryLayer | null
+) => {
+  currentSingleTileImageryLayer = layer
+}
+
+/**
+ *
+ * @returns
+ */
+export const getCurrentSingleTileImageryLayer = () => {
+  return currentSingleTileImageryLayer
 }
 
 /**
@@ -78,6 +101,7 @@ export const initCesiumViewer = (provider: Cesium.ImageryProvider) => {
     ),
   })
   cesiumViewer = viewer
+  currentBasemapLayer = viewer.imageryLayers.get(0) //the only imagery layer so far
   Preferences.get({ key: 'showGraticule' }).then((res) => {
     if (res?.value) {
       const flag = JSON.parse(res.value)
@@ -90,16 +114,14 @@ export const initCesiumViewer = (provider: Cesium.ImageryProvider) => {
 }
 
 /**
- * draw raster layer and vector layers
+ * draw basemap layer and vector layers
  * maily being used in animation
  *
- * @param time
- * @param rasterCfg
+ * @param time - paleo-age
+ * @param rasterCfg - basemap configuration
  */
 export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
-  console.log('LOOK HERE!')
-  return
-  //draw the raster layer
+  //draw the basemap layer
   const provider = createCesiumImageryProvider(rasterCfg, time)
   let newBasemapLayer = cesiumViewer.imageryLayers.addImageryProvider(provider)
   removeCurrentImageryLayers()
@@ -158,22 +180,13 @@ export const removeCurrentImageryLayers = () => {
   }
   currentBasemapLayer = null
 
-  console.log(
-    'Before removing vector layers: ',
-    cesiumViewer.imageryLayers.length
-  )
-
   for (let i = 0; i < currentVectorLayers.length; i++) {
-    console.log('removing: ', currentVectorLayers[i])
+    //console.log('removing: ', currentVectorLayers[i])
     if (!cesiumViewer.imageryLayers.remove(currentVectorLayers[i])) {
       console.log('failed to remove vector layer:', currentVectorLayers[i])
     }
   }
   currentVectorLayers.length = 0
-  console.log(
-    'After removing vector layers:: ',
-    cesiumViewer.imageryLayers.length
-  )
 }
 
 /**
