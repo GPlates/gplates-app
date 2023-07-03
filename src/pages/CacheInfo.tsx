@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import './CacheInfo.scss'
 import {
   IonButton,
@@ -27,9 +27,9 @@ import { getLowResImageUrlForGeosrv } from '../functions/util'
 export let cacheStatsMap: Map<string, number> = new Map<string, number>()
 let total = 0
 
-//
-//
-//
+/**
+ *
+ */
 export const getCacheStatsData = async () => {
   //do not remove the code below
   //for future reference
@@ -48,10 +48,10 @@ export const getCacheStatsData = async () => {
   })
 }
 
-//
-// Cache the current raster and overlays
-// for now, only work for geoserver
-//
+/**
+ * Cache the current raster and overlays
+ * for now, only work for geoserver
+ */
 const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
   let overlays: string[] = []
   let enabledLayers = getEnabledLayers(currentRasterID)
@@ -67,23 +67,29 @@ const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
     rasterMaps[index].layerName,
     overlays
   )
-  console.log(url)
+
   let allUrls = await cachingServant.getAllUrls()
   let count = 0
-  console.log(allUrls)
+
   currentModel?.times.forEach((time) => {
-    console.log(time)
     let newUrl = url.replaceAll('{{time}}', time.toString())
     if (!allUrls?.includes(newUrl)) {
-      console.log(`caching ${newUrl}`)
+      //console.log(`caching ${newUrl}`)
       count += 1
       setTimeout(() => cachingServant.cacheURL(newUrl), count * 1000)
     }
   })
 }
 
+/**
+ *
+ */
 interface ContainerProps {}
 
+/**
+ *
+ * @returns
+ */
 export const CacheInfo: React.FC<ContainerProps> = () => {
   const [cacheInfoShow, setCacheInfoShow] = useRecoilState(isCacheInfoShowState)
   const [refresh, setRefresh] = useState(true)

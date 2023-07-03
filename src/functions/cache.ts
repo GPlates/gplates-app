@@ -56,6 +56,7 @@ export class CachingService {
       console.log('run query: ' + command)
       console.log(values)
     }
+
     return this.db!.run(command, values).catch((error) => console.log(error))
   }
 
@@ -72,6 +73,7 @@ export class CachingService {
       const ret = await this.db!.query('SELECT * FROM cache WHERE url == ?', [
         url,
       ])
+
       value = ret.values && ret.values[0]
     } catch (err) {
       console.log('Error occurred during fetching cache data. ')
@@ -98,6 +100,7 @@ export class CachingService {
         this.cacheRequest(url, data).catch((error) => {
           console.log(error) //handle the promise rejection
         })
+
         //TODO: on "web" platform, you need to saveToStore. otherwise the DB is in memory
         //await sqlite.saveToStore('db_main') //LOOK HERE
         return URL.createObjectURL(blob)

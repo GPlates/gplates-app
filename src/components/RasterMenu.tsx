@@ -41,6 +41,7 @@ import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
 import { AnimationService } from '../functions/animation'
 import { RasterCfg, RasterGroup } from '../functions/types'
 import { closeCircleOutline } from 'ionicons/icons'
+import { DEBUG } from '../functions/settings'
 
 interface ContainerProps {
   isViewerLoading: Function
@@ -77,8 +78,14 @@ export const RasterMenu: React.FC<ContainerProps> = ({
    * @param raster - new basemap configuration
    */
   const switchBasemap = async (raster: RasterCfg) => {
-    console.log('Length of Imagery Layers: ', cesiumViewer.imageryLayers.length)
-    console.log(cesiumViewer.imageryLayers)
+    if (DEBUG) {
+      console.log(
+        'Length of Imagery Layers: ',
+        cesiumViewer.imageryLayers.length
+      )
+      console.log(cesiumViewer.imageryLayers)
+    }
+
     //stop the animation if necessary
     animationService.setPlaying(false)
 

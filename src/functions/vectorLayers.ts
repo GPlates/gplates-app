@@ -77,7 +77,7 @@ export const enableLayer = (rasterID: string, layerName: string) => {
       layers.push(layerName)
     }
   }
-  console.log(enabledLayers)
+  //console.log(enabledLayers)
 }
 
 /**

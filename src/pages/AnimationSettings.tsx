@@ -106,7 +106,6 @@ export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
           <IonRow>
             <IonCol>
               <IonItem>
-                <IonLabel>Range</IonLabel>
                 <IonRange
                   dir={range.lower > range.upper ? 'rtl' : 'ltr'}
                   dualKnobs={true}

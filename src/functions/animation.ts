@@ -48,7 +48,7 @@ export class AnimationService {
    */
   delayRemoveSingleTileImageryLayer = (layer: ImageryLayer) => {
     setTimeout(() => {
-      console.log('remove SingleTileImageryProvider')
+      //console.log('remove SingleTileImageryProvider')
       if (layer) {
         this.viewer.imageryLayers.remove(layer, true)
       }
@@ -78,7 +78,7 @@ export class AnimationService {
         // Disallow old frames from being printed when manually changing age
         if (animateNext) {
           let newLayer = this.viewer.imageryLayers.addImageryProvider(provider)
-          console.log('add SingleTileImageryProvider')
+          //console.log('add SingleTileImageryProvider')
 
           //delay remove the old layer
           let currentSingleTileImageryLayer = getCurrentSingleTileImageryLayer()

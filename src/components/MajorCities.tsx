@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import * as Cesium from 'cesium'
 import { useRecoilValue } from 'recoil'
 import { ageState, showCities, currentRasterIDState } from '../functions/atoms'
-import { serverURL } from '../functions/settings'
+import { DEBUG, serverURL } from '../functions/settings'
 import { currentModel } from '../functions/rotationModel'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { getEnabledLayers } from '../functions/vectorLayers'
@@ -95,10 +95,12 @@ const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
       age
     )
     if (!reconstructedCity) {
-      console.log(name, age, city_coords)
-      console.log(
-        'The paleo-city coordinates are undefined. 1. The city does not exist at the time. 2. The rotation model has not been loaded yet.'
-      )
+      if (DEBUG) {
+        console.log(name, age, city_coords)
+        console.log(
+          'The paleo-city coordinates are undefined. 1. The city does not exist at the time. 2. The rotation model has not been loaded yet. 3. The paleo-age is 0.'
+        )
+      }
       return
     }
     drawCity(reconstructedCity.lon, reconstructedCity.lat, name) //draw reconstructed coordinates
