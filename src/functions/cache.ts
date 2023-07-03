@@ -57,7 +57,9 @@ export class CachingService {
       console.log(values)
     }
 
-    return this.db!.run(command, values).catch((error) => console.log(error))
+    return this.db!.run(command, values).catch((error) => {
+      //console.log(error)
+    })
   }
 
   /**
@@ -460,10 +462,10 @@ export class CachingService {
    */
   purge(queryStr: string, callback: Function) {
     queryStr = "DELETE FROM cache WHERE url like '" + queryStr + "'"
-    console.log(`purging: ${queryStr}`)
+    //console.log(`purging: ${queryStr}`)
     this.db!.run(queryStr)
       .then(async (ret) => {
-        console.log(ret)
+        //console.log(ret)
         callback()
       })
       .catch((error) => console.log(error))
