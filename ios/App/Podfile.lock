@@ -8,7 +8,7 @@ PODS:
   - CapacitorCommunityMedia (5.0.1):
     - Capacitor
     - SDWebImage
-  - CapacitorCommunitySqlite (5.0.3-1):
+  - CapacitorCommunitySqlite (5.0.4):
     - Capacitor
     - SQLCipher
     - ZIPFoundation
@@ -106,7 +106,7 @@ SPEC CHECKSUMS:
   CapacitorApp: 7a5dec8b33573707164b293475d5c89ba684364a
   CapacitorBrowser: 2688852d02f1e89560a31b70521c71a5e7348860
   CapacitorCommunityMedia: 5724be7d15d5dbfeb704657c2a8ac5af718f5009
-  CapacitorCommunitySqlite: faf11ef166428262e08a90220130928bf9223971
+  CapacitorCommunitySqlite: e233665bd5f282483dd7fda96868002d003bdf58
   CapacitorCordova: f8c06b897c74ee8f7701fe10e6443b40822bc83a
   CapacitorFilesystem: e1bdfab09b95b181c844c16abcfda45ec8e8ed6b
   CapacitorGeolocation: 33015be1ef496585a60da9efa1c5642ff8624db3
