@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="600"  src="https://github.com/GPlates/gplates-app/assets/2688316/63fd5c22-e28c-484b-8204-a3af4e240c45">
+  <img width="600"  src="https://github.com/GPlates/gplates-app/assets/2688316/87399d49-f477-42ae-9984-e67d409eb42a" alt="GPlates App Logo">
 </p>
 
 ![build workflow](https://github.com/gplates/gplates-app/actions/workflows/build.yml/badge.svg)
@@ -8,61 +8,38 @@
 
 The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.org.au/), comprising a GPlates app with integrated lesson plans, to provide an Earth Science-focused education engagement initiative.
 
-## Screenshots
-
-### Topography globe with G20 capital cities
-
-<img width="600" alt="Topography" src="https://github.com/GPlates/gplates-app/assets/2688316/b86c953e-bd4f-4081-9753-fb45055242fb">
-
-### Paleo-bathymetry at 100Ma
-
-<img width="600" alt="Paleo-bathymetry" src="https://github.com/GPlates/gplates-app/assets/2688316/3279f7ae-9d7b-4d29-96d1-1df8fe0fd211">
-
-### Built-in Tutorial
-
-<img width="600" alt="Built-in Tutorial" src="https://github.com/GPlates/gplates-app/assets/2688316/8efae96b-7f56-4490-a408-da8d436ca28e">
-
-## Animations
-
-### Built-in Tutorial
+<p align="center">
+<img width="800" alt="Screenshot 2023-08-03 at 6 26 44 pm" src="https://github.com/GPlates/gplates-app/assets/2688316/b2e5a095-ce50-4665-8c77-85f76f7fb0af">
+</p>
 
 
-https://github.com/GPlates/gplates-app/assets/2688316/71589c97-a55e-44de-b4b9-562a5f9a7b34
-
-### Age Grid Reconstruction
-
-https://github.com/GPlates/gplates-app/assets/2688316/50f5a6a9-56e6-44fc-a667-e13d6422d8b3
-
+<div style="display: flex; align-items: center;">
+  <span>
+    <a href="https://apps.apple.com/au/app/gplates/id6447170583?itsct=apps_box_badge&amp;itscg=30200" ><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1689724800" alt="Download on the App Store"  height="83"></a>
+  </span>
+  <span>
+    <a  href='https://play.google.com/store/apps/dev?id=8357338151517566946&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img height="83"  alt='Get it on Google Play' src='https://github.com/GPlates/gplates-app/assets/2688316/7093cecc-c390-4282-bfe3-335b2ed88f61'/>
+    </a>
+  </span>
+</div>
 
 ## Troubleshooting
 
-### App being stuck at the start-up screen
+- App being stuck at the start-up screen
 
-**🔵 Clear the App storage data and cache, and then restart!!**
+  **Clear the App storage data and cache, and then restart!!**
 
-<img width="300" alt="clear data" src="https://github.com/GPlates/gplates-app/assets/2688316/d4d795f7-2f09-433a-b150-f03881819d7e">
+- Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
 
-### Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
+  reload the App by following the steps below.
 
-For example, if you see this blue ball
+  - Step 1: open the "Settings" window
 
-<img width="300" alt="blue ball error" src="https://github.com/GPlates/gplates-app/assets/2688316/cdf74619-cb3d-4753-aef8-25bc9fb6a62e">
+    <img width="437" alt="243554796-01c385fd-229d-4233-9cd7-c9ebfbb0fdf9" src="https://github.com/GPlates/gplates-app/assets/2688316/8c88ae4c-f718-4002-b1b0-60792ffdbf56">
 
-Another example is the "Graph" data failed to load. See the empty graph chart screenshot.
+  - Step 2: hit the "Reload App" button
 
-<img width="300" alt="graph chart no data" src="https://github.com/GPlates/gplates-app/assets/2688316/2ba17689-a312-431f-82a0-1deff3194e0a">
-
-
-To escape the "limbo", you can just reload the App by following the steps below.
-
-- Step 1: open the "Settings" window
-
-<img width="437" alt="Settings" src="https://github.com/GPlates/gplates-app/assets/2688316/01c385fd-229d-4233-9cd7-c9ebfbb0fdf9">
-
-- Step 2: hit the "Reload App" button
-
-<img width="593" alt="Reload App" src="https://github.com/GPlates/gplates-app/assets/2688316/c34ed7fa-2bbd-4b51-a370-b2586b0593ac">
-
+    <img width="593" alt="243554772-c34ed7fa-2bbd-4b51-a370-b2586b0593ac" src="https://github.com/GPlates/gplates-app/assets/2688316/650476b9-8d1f-4868-9e2e-1140e88e8ab4">
 
 ## How to contribute code
 
