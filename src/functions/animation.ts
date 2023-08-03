@@ -1,11 +1,16 @@
-import { SingleTileImageryProvider, Viewer } from 'cesium'
+import { SingleTileImageryProvider, Viewer, ImageryLayer } from 'cesium'
 import { CachingService } from './cache'
 import { SetterOrUpdater } from 'recoil'
-import { getRasters, getRasterByID, getRasterIndexByID } from './rasterMaps'
+import { getRasterByID } from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { getLowResImageUrlForGeosrv } from './util'
 import { currentModel } from './rotationModel'
-import { drawLayers } from './cesiumViewer'
+import {
+  drawLayers,
+  removeCurrentImageryLayers,
+  setCurrentSingleTileImageryLayer,
+  getCurrentSingleTileImageryLayer,
+} from './cesiumViewer'
 import { raiseGraticuleLayerToTop } from './graticule'
 import { RasterGroup } from './types'
 
@@ -37,8 +42,22 @@ export class AnimationService {
   }
 
   /**
+   * remove imagery layer after 2 seconds delay
    *
-   * @param url
+   * @param layer
+   */
+  delayRemoveSingleTileImageryLayer = (layer: ImageryLayer) => {
+    setTimeout(() => {
+      //console.log('remove SingleTileImageryProvider')
+      if (layer) {
+        this.viewer.imageryLayers.remove(layer, true)
+      }
+    }, 2000)
+  }
+
+  /**
+   *
+   * @param url - the url of the geoserver wms for this frame
    * @returns
    */
   drawFrame = async (url: string) => {
@@ -55,14 +74,24 @@ export class AnimationService {
         const provider = new SingleTileImageryProvider({
           url: dataURL,
         })
+
         // Disallow old frames from being printed when manually changing age
         if (animateNext) {
-          this.viewer.imageryLayers.addImageryProvider(provider)
+          let newLayer = this.viewer.imageryLayers.addImageryProvider(provider)
+          //console.log('add SingleTileImageryProvider')
+
+          //delay remove the old layer
+          let currentSingleTileImageryLayer = getCurrentSingleTileImageryLayer()
+          if (currentSingleTileImageryLayer) {
+            this.delayRemoveSingleTileImageryLayer(
+              currentSingleTileImageryLayer
+            )
+          }
+          setCurrentSingleTileImageryLayer(newLayer)
+
           raiseGraticuleLayerToTop()
         }
       }
-      //reconstruct locations inserted by user
-      //await reconstructPresentDayLocations(animateFrame)
     } catch (err) {
       console.log(err)
       return
@@ -72,9 +101,11 @@ export class AnimationService {
     if (!dragging) {
       this.setAge(animateFrame)
     }
+
+    /*
     if (this.viewer.imageryLayers.length > 8) {
       this.viewer.imageryLayers.remove(this.viewer.imageryLayers.get(0), true)
-    }
+    }*/
 
     if (animateNext) {
       this.scheduleFrame(url, true)
@@ -218,10 +249,14 @@ export class AnimationService {
   }
 
   /**
-   *
+   * Move to the beginning of the animation
    */
   resetPlayHead = () => {
-    this.setPlaying(false)
+    //if animation is playing, do nothing
+    if (this.playing) {
+      return
+    }
+
     animateFrame = this.range.lower
     this.setAge(animateFrame)
     let raster = getRasterByID(this.currentRasterID)
@@ -231,27 +266,14 @@ export class AnimationService {
   }
 
   /**
-   *
-   * @param value
-   */
-  movePlayHead = (value: number) => {
-    this.setPlaying(false)
-    let raster = getRasterByID(this.currentRasterID)
-    if (raster) {
-      animateFrame = Math.min(
-        Math.max(animateFrame + value, raster.endTime),
-        raster.startTime
-      )
-    }
-    this.setAge(animateFrame)
-    if (raster) drawLayers(animateFrame, raster)
-  }
-
-  /**
-   *
+   * move to next frame
    */
   moveNext = () => {
-    this.setPlaying(false)
+    //if animation is playing, do nothing
+    if (this.playing) {
+      return
+    }
+
     animateFrame = this.getNextFrameNumber(true)
     this.setAge(animateFrame)
     let raster = getRasterByID(this.currentRasterID)
@@ -261,10 +283,13 @@ export class AnimationService {
   }
 
   /**
-   *
+   * move to previous frame
    */
   movePrev = () => {
-    this.setPlaying(false)
+    //if animation is playing, do nothing
+    if (this.playing) {
+      return
+    }
     animateFrame = this.getPrevFrameNumber()
     this.setAge(animateFrame)
     let raster = getRasterByID(this.currentRasterID)
@@ -275,7 +300,7 @@ export class AnimationService {
 
   /**
    *
-   * @param value
+   * @param value - True: dragging; False: not dragging
    */
   setDragging = (value: boolean) => {
     dragging = value
@@ -283,17 +308,32 @@ export class AnimationService {
 
   /**
    *
-   * @param value
+   * @param value - True: play; False: stop
    */
   setPlaying = (value: boolean) => {
+    if (this.playing == value) {
+      return
+    }
+
+    //delay remove the old layer
+    let currentSingleTileImageryLayer = getCurrentSingleTileImageryLayer()
+    if (currentSingleTileImageryLayer) {
+      this.delayRemoveSingleTileImageryLayer(currentSingleTileImageryLayer)
+    }
+    setCurrentSingleTileImageryLayer(null)
+
     this._setPlaying(value)
+
     animateNext = value
     if (value) {
       animateFrame = this.getNextFrameNumber(true)
       let url = this.getLowResImageUrl()
       if (url) this.scheduleFrame(url)
+      removeCurrentImageryLayers()
     } else {
       clearTimeout(animateTimeout)
+
+      //when animation stopped, draw the tiled layers for higher resolution images
       let raster = getRasterByID(this.currentRasterID)
       if (raster) {
         drawLayers(animateFrame, raster)
@@ -320,7 +360,7 @@ export class AnimationService {
       enabledLayers.forEach((layer) => {
         if (layer !== 'cities') {
           if (!raster) return
-          console.log(vectorLayers.get(raster.id))
+          //console.log(vectorLayers.get(raster.id))
           overlays.push(vectorLayers.get(raster.id)[layer].layerName)
           layerIDs.push(layer)
         }
@@ -334,7 +374,7 @@ export class AnimationService {
           url = url + ',' + id
         })
         url += '&time={{time}}&model=' + currentModel?.name + '&bg=211,211,211'
-        console.log(url)
+        //console.log(url)
         return url
       } else {
         //URL for geosever

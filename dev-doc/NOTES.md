@@ -7,7 +7,7 @@ You need Java 11 and Android studio 2021.2.1 or newer.
 The following steps worked on my Macbook Pro.
 
 - `nvm use 18`
-- `npm install`
+- `npm install --legacy-peer-deps`
 - `source ./set-env.sh`
 - `ionic capacitor run android -l --external`
 - `ionic capacitor run ios -l --external`

@@ -16,21 +16,26 @@ export const rotationModels: Map<string, RotationModel> = new Map<
 >()
 
 /**
- * * finiteRotations: The key is plate id string. The value is a list of pole-angles,
+ * Class to do the finate rotation on globe
+ * This class contains some deprecated code. The new implementation is inhttps://www.npmjs.com/package/gplates
+ * finiteRotations(deprecated!!): The key is plate id string. The value is a list of pole-angles,
  * such as [[0, 90, 0], [-80.0171, 51.5165, -0.312], [-80.0171, 51.5165, -0.624] ], for each time in this.times.
  */
 export default class RotationModel {
   name: string
   times: number[]
   finiteRotations!: Map<string, any>
-  vectorLayers: any
   newRotationModelImpl: RotationModelEx | undefined
 
-  //
-  constructor(name: string, times: number[], vLayers: any) {
+  /**
+   *
+   * @param name
+   * @param times
+   */
+  constructor(name: string, times: number[]) {
     this.name = name
     this.times = times
-    this.vectorLayers = vLayers
+
     this.finiteRotations = new Map<string, any>()
     RotationModelEx.loadRotationModel(
       serverURL + '/rotation/get_rotation_map',
@@ -39,8 +44,6 @@ export default class RotationModel {
         this.newRotationModelImpl = model
       }
     )
-    //this.fetchFiniteRotations(['701', '801'])
-    //this.fetchAllFiniteRotations()//big performace impact at start up
   }
 
   /**
@@ -62,8 +65,11 @@ export default class RotationModel {
     )
   }
 
-  //retrieve all Euler pole and angles for all plate ids in a rotation model from the server
-  // /rotation/get_euler_pole_and_angle?times=0,50,100&group_by_pid&model=MULLER2019
+  /**
+   * deprecated!!! Big performance impact. Do not use!
+   * retrieve all Euler pole and angles for all plate ids in a rotation model from the server
+   * "/rotation/get_euler_pole_and_angle?times=0,50,100&group_by_pid&model=MULLER2019"
+   */
   fetchAllFiniteRotations = () => {
     let times = this.times
 
@@ -82,8 +88,13 @@ export default class RotationModel {
       })
   }
 
-  //retrieve all Euler pole and angles for given plate ids in a rotation model from the server
-  // /rotation/get_euler_pole_and_angle?pids=701,801&group_by_pid&model=MULLER2019
+  /**
+   * deprecated!!
+   * retrieve all Euler pole and angles for given plate ids in a rotation model from the server
+   * "/rotation/get_euler_pole_and_angle?pids=701,801&group_by_pid&model=MULLER2019"
+   * @param pids
+   * @returns
+   */
   fetchFiniteRotations = async (pids: string[]) => {
     let times = this.times
 
@@ -125,14 +136,27 @@ export default class RotationModel {
     }
   }
 
-  //get Euler pole and angle for a plate id at a time
+  /**
+   * get Euler pole and angle for a plate id at a time
+   *
+   * @param pid
+   * @param timeIdx
+   * @returns
+   */
   getEulerPoleAngle = (pid: number, timeIdx: number) => {
     assert(timeIdx < this.times.length)
     let r = this.finiteRotations.get(String(pid))
     return r ? r[timeIdx] : [0, 90, 0]
   }
 
-  //rotate a location/point according to its plate id to a time
+  /**
+   * deprecated!!!
+   * rotate a location/point according to its plate id to a time
+   *
+   * @param timeIdx
+   * @param lonLatPid
+   * @returns
+   */
   rotateLonLatPid = (timeIdx: number, lonLatPid: LonLatPid) => {
     let rotations = this.finiteRotations.get(String(lonLatPid.pid))
     let poleAndAngle = rotations ? rotations[timeIdx] : [0, 90, 0]
@@ -148,13 +172,22 @@ export default class RotationModel {
     )
   }
 
-  //
+  /**
+   *
+   * @param time
+   * @returns
+   */
   getTimeIndex = (time: number) => {
     return this.times.indexOf(time)
   }
 
-  //return the nearest valid time
-  //assume this.times is sorted in ascending order
+  /**
+   * return the nearest valid time
+   * assume this.times is sorted in ascending order
+   *
+   * @param time
+   * @returns
+   */
   getNearestTime = (time: number) => {
     let lastOne = -1
     for (let i = 0; i < this.times.length; i++) {
@@ -173,6 +206,4 @@ export default class RotationModel {
     }
     return this.times[-1] //the last one is the nearest
   }
-
-  //
 }

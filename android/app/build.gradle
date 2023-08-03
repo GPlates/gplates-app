@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace "earthbyte.gplates.edu"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "earthbyte.gplates.edu"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
+        versionCode 5
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

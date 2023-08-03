@@ -40,6 +40,8 @@ https://github.com/GPlates/gplates-app/assets/2688316/50f5a6a9-56e6-44fc-a667-e1
 
 **🔵 Clear the App storage data and cache, and then restart!!**
 
+<img width="300" alt="clear data" src="https://github.com/GPlates/gplates-app/assets/2688316/d4d795f7-2f09-433a-b150-f03881819d7e">
+
 ### Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
 
 For example, if you see this blue ball

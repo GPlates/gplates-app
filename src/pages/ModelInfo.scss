@@ -45,7 +45,7 @@
 .how-fade-enter-active {
   opacity: 1;
 
-  transition: opacity 4000ms;
+  transition: opacity 2000ms;
 }
 
 .how-fade-exit {
@@ -59,4 +59,8 @@
 
 .info-small-label {
   font-size: 80% !important;
+}
+
+.model-info-content {
+  height: 100%;
 }

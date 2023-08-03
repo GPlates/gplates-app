@@ -57,9 +57,9 @@ const titles: { [key: string]: string } = {
   backgroundSetting: 'Background Settings',
 }
 
-//
-// try to cache everything. not in use for now
-//
+/**
+ * try to cache everything. not in use for now
+ */
 export const populateCache = () => {
   let count = 0
   rasterMaps.forEach(async (raster) => {
@@ -86,12 +86,19 @@ export const populateCache = () => {
   })
 }
 
-//
+/**
+ *
+ */
 interface ContainerProps {
   backgroundService: BackgroundService
 }
 
-// main component for setting menu
+/**
+ * main component for setting menu
+ *
+ * @param param0
+ * @returns
+ */
 export const SettingMenuPage: React.FC<ContainerProps> = ({
   backgroundService,
 }) => {
@@ -111,9 +118,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
   //const navigate = useNavigate()
   const history = useHistory()
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {
     if (isShow) {
       setStatusBarTheme(darkMode)
@@ -124,9 +131,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     }
   }, [isShow])
 
-  //
-  // Save settings on each change
-  //
+  /**
+   * Save settings on each change
+   */
   useEffect(() => {
     if (isShow && path === 'root') {
       setDarkMode(darkMode)
@@ -141,9 +148,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     }
   }, [darkMode])
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {
     if (isShow && path === 'root') {
       const settings = {
@@ -156,9 +163,9 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     }
   })
 
-  //
-  //
-  //
+  /**
+   *
+   */
   useEffect(() => {
     let raster = getRasterByID(currentRasterID)
     if (!raster) return
@@ -189,9 +196,11 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     )
   }
 
-  //
-  // when the server url has changed, ask user if reload the page
-  //
+  /**
+   * when the server url has changed, ask user if reload the page
+   *
+   * @param msg
+   */
   const showReloadPageAlert = (msg: string) => {
     presentAlert({
       header: 'Confirm Reload',
@@ -217,9 +226,6 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     })
   }
 
-  //
-  //
-  //
   return (
     <IonModal isOpen={isShow} animated backdropDismiss={false}>
       <IonToolbar>

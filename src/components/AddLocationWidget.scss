@@ -1,7 +1,7 @@
 .location-container {
   overflow: hidden;
   position: absolute;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);
   right: 0;
   height: auto;
   z-index: 1000;
@@ -33,7 +33,7 @@
   /*left: 0;*/
   right: 0;
   text-align: center;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);
   max-width: 600px;
 
   /*background-color: pink;*/

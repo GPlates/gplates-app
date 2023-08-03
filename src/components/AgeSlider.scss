@@ -125,6 +125,12 @@ $transition: all 150ms;
   text-shadow: 1px 1px 8px #000000, 1px 1px 8px #000000, 1px 1px 8px #000000;
 }
 
+@media only screen and (max-width: 380px) {
+  .time {
+    font-size: 20px;
+  }
+}
+
 .time-input {
   ion-input {
     input {

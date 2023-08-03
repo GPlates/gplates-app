@@ -128,7 +128,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   const getPlateID = async () => {
     if (currentModel !== undefined) {
       let pid = plateIDMap.get(currentModel.name)
-      console.log(plateIDMap)
+      //console.log(plateIDMap)
       if (pid === undefined) {
         let result = await fetch(
           serverURL +
@@ -172,8 +172,8 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     }
 
     if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
-      await getPlateID()
       if (paleoAge === 0) {
+        getPlateID()
         updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
         scene.camera.flyTo({
           destination: Cartesian3.fromDegrees(
@@ -184,6 +184,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
         })
       } else {
         if (currentModel !== undefined) {
+          await getPlateID()
           let pid = plateIDMap.get(currentModel.name)
           if (pid !== undefined) {
             let newLatLon = currentModel.rotate(
@@ -244,10 +245,11 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
    *
    */
   useEffect(() => {
+    /*
     if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
       updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
       getPlateID()
-    }
+    }*/
   }, [currentRasterID])
 
   //do not show social sharing button on desktop/web browser
