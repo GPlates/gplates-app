@@ -59,9 +59,11 @@ To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how
 
 ⚠ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
 
-### Firebase Deploy
+### Deploy
 
-<https://gplates-app-5e092.web.app> @gplatesearthbyte@gmail.com
+GPlates server: <https://pwa.gplates.org>
+
+Firebase: <https://gplates-app-5e092.web.app> @gplatesearthbyte@gmail.com
 
 #### use chrome inspect to debug android chrome://inspect/#devices
 
