@@ -1,5 +1,5 @@
 {
-	"appId": "earthbyte.gplates.edu",
+	"appId": "gplates.app",
 	"appName": "GPlates",
 	"webDir": "build",
 	"bundledWebRuntime": false,
