@@ -1,14 +1,14 @@
 {
-	"appId": "gplates.app",
-	"appName": "GPlates",
-	"webDir": "build",
-	"bundledWebRuntime": false,
-	"server": {
-		"cleartext": true
-	},
-	"plugins": {
-		"SplashScreen": {
-			"launchAutoHide": false
-		}
-	}
+  "appId": "gplates.app",
+  "appName": "GPlates",
+  "webDir": "build",
+  "bundledWebRuntime": false,
+  "server": {
+    "cleartext": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
 }
