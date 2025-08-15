@@ -58,7 +58,7 @@ export const timeRange = (begin: number, end: number, step: number) => {
 export const getLowResImageUrlForGeosrv = (
   wmsUrl: string,
   layerName: string,
-  overlays: string[] = []
+  overlays: string[] = [],
 ) => {
   let layerName_ = layerName
   let [workspaceName, _] = layerName.split(':')

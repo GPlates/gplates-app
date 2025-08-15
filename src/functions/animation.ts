@@ -35,7 +35,7 @@ export class AnimationService {
     public range: { lower: number; upper: number },
     public viewer: Viewer,
     public currentRasterID: string,
-    public rasterGroup: RasterGroup
+    public rasterGroup: RasterGroup,
   ) {
     this.from = range.lower
     this.to = range.upper
@@ -64,7 +64,7 @@ export class AnimationService {
     animateStartTime = Date.now()
     try {
       const dataURL: string = await this.cachingService?.getCachedRequest(
-        url.replaceAll('{{time}}', String(animateFrame))
+        url.replaceAll('{{time}}', String(animateFrame)),
       )
       if (!dataURL) {
         return this.setPlaying(false)
@@ -84,7 +84,7 @@ export class AnimationService {
           let currentSingleTileImageryLayer = getCurrentSingleTileImageryLayer()
           if (currentSingleTileImageryLayer) {
             this.delayRemoveSingleTileImageryLayer(
-              currentSingleTileImageryLayer
+              currentSingleTileImageryLayer,
             )
           }
           setCurrentSingleTileImageryLayer(newLayer)
@@ -118,21 +118,24 @@ export class AnimationService {
   scheduleFrame = (url: string, nextFrame = false) => {
     const timeToNext = animateStartTime - Date.now() + 1000 / this.fps
     //console.log(timeToNext)
-    animateTimeout = setTimeout(() => {
-      if (nextFrame) {
-        let nextFrameNumber = this.getNextFrameNumber()
-        //if the next number is the same as the current number
-        //it means the animation reached end
-        //so, pause the animation and return
-        if (Math.abs(nextFrameNumber - animateFrame) < Number.EPSILON) {
-          this.setPlaying(false)
-          return
-        }
+    animateTimeout = setTimeout(
+      () => {
+        if (nextFrame) {
+          let nextFrameNumber = this.getNextFrameNumber()
+          //if the next number is the same as the current number
+          //it means the animation reached end
+          //so, pause the animation and return
+          if (Math.abs(nextFrameNumber - animateFrame) < Number.EPSILON) {
+            this.setPlaying(false)
+            return
+          }
 
-        animateFrame = nextFrameNumber
-      }
-      return this.drawFrame(url)
-    }, Math.max(timeToNext, 0)) //due to the event loop, the timeToNext cannot be guaranteed.
+          animateFrame = nextFrameNumber
+        }
+        return this.drawFrame(url)
+      },
+      Math.max(timeToNext, 0),
+    ) //due to the event loop, the timeToNext cannot be guaranteed.
   }
 
   /**
@@ -381,7 +384,7 @@ export class AnimationService {
         return getLowResImageUrlForGeosrv(
           raster.wmsUrl,
           raster.layerName,
-          overlays
+          overlays,
         )
       }
     }

@@ -77,7 +77,7 @@ let backgroundService: BackgroundService
 const Main: React.FC = () => {
   const isSettingsShown = useRecoilValue(isSettingsMenuShow)
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
-    isAddLocationWidgetShowState
+    isAddLocationWidgetShowState,
   )
   const ionAlert = useIonAlert()
 
@@ -132,7 +132,7 @@ const Main: React.FC = () => {
     range,
     cesiumViewer,
     currentRasterID,
-    rasterGroup
+    rasterGroup,
   )
 
   backgroundService = new BackgroundService(
@@ -140,7 +140,7 @@ const Main: React.FC = () => {
     isStarryBackgroundEnable,
     isCustomisedColorBackgroundEnable,
     color,
-    cesiumViewer
+    cesiumViewer,
   )
 
   setPresentDataAlert(ionAlert, setDownloadOnCellular)
@@ -249,7 +249,7 @@ const Main: React.FC = () => {
             setIsBackgroundSettingEnable(settings.isBackgroundSettingEnable)
             setIsStarryBackgroundEnable(settings.isStarryBackgroundEnable)
             setIsCustomisedColorBackgroundEnable(
-              settings.isCustomisedColorBackgroundEnable
+              settings.isCustomisedColorBackgroundEnable,
             )
             setColor(settings.color)
             setTimeout(() => {
@@ -301,14 +301,14 @@ const Main: React.FC = () => {
   }, [])
 
   //
-  useIonViewDidEnter(async () => {})
+  useIonViewDidEnter(() => {})
 
   //only save the DB to disk on "web" platform
   //do not close the DB connection here!!!
   //let's keep the DB connection valid all the time
   //I guess it is OK if the DB connection is still open when the app exits.
   //not ideal, but OK for this App
-  useIonViewDidLeave(async () => {
+  useIonViewDidLeave(() => {
     cachingServant.saveToWebStore()
   })
 

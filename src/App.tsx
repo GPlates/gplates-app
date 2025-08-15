@@ -1,9 +1,9 @@
 import React from 'react'
 /*import { Navigate, Route } from 'react-router-dom' 
 for react-router-dom 6, waiting for ionic framework to update*/
-import { Redirect, Route } from 'react-router-dom'
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
+import { Redirect, Route } from 'react-router-dom'
 import { SQLiteHook, useSQLite } from 'react-sqlite-hook'
 import Main from './pages/Main'
 
@@ -16,18 +16,18 @@ import '@ionic/react/css/structure.css'
 import '@ionic/react/css/typography.css'
 
 /* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css'
+import '@ionic/react/css/display.css'
+import '@ionic/react/css/flex-utils.css'
 import '@ionic/react/css/float-elements.css'
+import '@ionic/react/css/padding.css'
 import '@ionic/react/css/text-alignment.css'
 import '@ionic/react/css/text-transformation.css'
-import '@ionic/react/css/flex-utils.css'
-import '@ionic/react/css/display.css'
 
 /* Theme variables */
-import './theme/variables.scss'
 import { RecoilRoot } from 'recoil'
-import Tutorial from './pages/Tutorial'
 import { setSQLiteHook } from './functions/cache'
+import Tutorial from './pages/Tutorial'
+import './theme/variables.scss'
 
 // Singleton SQLite Hook
 export let sqlite: SQLiteHook

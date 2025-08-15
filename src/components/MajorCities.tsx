@@ -38,7 +38,7 @@ const undrawCities = () => {
 const drawCity = (lon: number, lat: number, name: string) => {
   let locationCartesian: Cesium.Cartesian3 = Cesium.Cartesian3.fromDegrees(
     lon,
-    lat
+    lat,
   )
   let pe = cesiumViewer.entities.add({
     name: name,
@@ -92,13 +92,13 @@ const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
         lat: city_coords[1],
         pid: cityPlateIDs[currentModel?.name][city_coords[2]], //plate ID
       },
-      age
+      age,
     )
     if (!reconstructedCity) {
       if (DEBUG) {
         console.log(name, age, city_coords)
         console.log(
-          'The paleo-city coordinates are undefined. 1. The city does not exist at the time. 2. The rotation model has not been loaded yet. 3. The paleo-age is 0.'
+          'The paleo-city coordinates are undefined. 1. The city does not exist at the time. 2. The rotation model has not been loaded yet. 3. The paleo-age is 0.',
         )
       }
       return

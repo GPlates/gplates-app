@@ -67,7 +67,7 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
           checked={isCustomisedColorBackgroundEnable}
           onIonChange={() => {
             setIsCustomisedColorBackgroundEnable(
-              !isCustomisedColorBackgroundEnable
+              !isCustomisedColorBackgroundEnable,
             )
           }}
         >

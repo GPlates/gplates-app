@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import './SettingMenuPage.scss'
+import { Preferences } from '@capacitor/preferences'
 import {
   IonButton,
   IonButtons,
@@ -14,41 +13,42 @@ import {
   IonSegment,
   IonSegmentButton,
   IonTitle,
+  IonToggle,
   IonToolbar,
   isPlatform,
   useIonAlert,
-  IonToggle,
 } from '@ionic/react'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import { CSSTransition } from 'react-transition-group'
-import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
-import { AnimationSettings } from './AnimationSettings'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import {
-  appDarkMode,
-  isAgeSliderShown,
-  isSettingsMenuShow,
-  settingsPath,
-  isCacheInfoShowState,
-  networkDownloadOnCellular,
-  currentRasterIDState,
-} from '../functions/atoms'
-import { BackgroundService } from '../functions/background'
-import { Preferences } from '@capacitor/preferences'
-import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
-import { serverURL, setServerURL } from '../functions/settings'
-import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
-import { cachingServant } from '../functions/cache'
-import { rotationModels } from '../functions/rotationModel'
-import { getCacheStatsData } from './CacheInfo'
-import {
-  showGraticule,
-  hideGraticule,
-  setShowGraticuleFlag,
-  showGraticuleFlag,
-} from '../functions/graticule'
+import React, { useEffect, useState } from 'react'
 //import { useNavigate } from 'react-router'
 import { useHistory } from 'react-router'
+import { CSSTransition } from 'react-transition-group'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
+import {
+  appDarkMode,
+  currentRasterIDState,
+  isAgeSliderShown,
+  isCacheInfoShowState,
+  isSettingsMenuShow,
+  networkDownloadOnCellular,
+  settingsPath,
+} from '../functions/atoms'
+import { BackgroundService } from '../functions/background'
+import { cachingServant } from '../functions/cache'
+import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
+import {
+  hideGraticule,
+  setShowGraticuleFlag,
+  showGraticule,
+  showGraticuleFlag,
+} from '../functions/graticule'
+import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
+import { rotationModels } from '../functions/rotationModel'
+import { serverURL, setServerURL } from '../functions/settings'
+import { AnimationSettings } from './AnimationSettings'
+import { getCacheStatsData } from './CacheInfo'
+import './SettingMenuPage.scss'
 
 //
 const titles: { [key: string]: string } = {
@@ -75,9 +75,9 @@ export const populateCache = () => {
               cachingServant.cacheRasterLayer(
                 m!,
                 raster.wmsUrl,
-                raster.layerName
+                raster.layerName,
               ),
-            count * 1000
+            count * 1000,
           )
           count += m.times.length
         }
@@ -104,7 +104,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 }) => {
   const [darkMode, _setDarkMode] = useRecoilState(appDarkMode)
   const [downloadOnCellular, setDownloadOnCellular] = useRecoilState(
-    networkDownloadOnCellular
+    networkDownloadOnCellular,
   )
   const [path, setPath] = useRecoilState(settingsPath)
   const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
@@ -305,7 +305,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             button
             onClick={() => {
               showReloadPageAlert(
-                'Are you sure that you would like to reload the App.'
+                'Are you sure that you would like to reload the App.',
               )
             }}
           >
@@ -319,7 +319,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
           <IonItemDivider>App Theme</IonItemDivider>
           <IonItem>
             <IonSegment
-              onIonChange={(e) => _setDarkMode(e.detail.value!)}
+              onIonChange={(e) => _setDarkMode(e.detail.value!.toString())}
               value={darkMode}
             >
               <IonSegmentButton value="auto">
@@ -356,7 +356,7 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
                   let isChanged = await setServerURL(e.target.value.toString())
                   if (isChanged) {
                     showReloadPageAlert(
-                      'The server URL is changed. Would you like to reload the App?'
+                      'The server URL is changed. Would you like to reload the App?',
                     )
                   }
                 }

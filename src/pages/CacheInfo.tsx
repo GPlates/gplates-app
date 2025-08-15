@@ -65,7 +65,7 @@ const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
   let url = getLowResImageUrlForGeosrv(
     rasterMaps[index].wmsUrl,
     rasterMaps[index].layerName,
-    overlays
+    overlays,
   )
 
   let allUrls = await cachingServant.getAllUrls()
@@ -152,7 +152,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                             async () => {
                               await getCacheStatsData()
                               setRefresh(!refresh)
-                            }
+                            },
                           )
                         },
                       },
@@ -235,7 +235,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                     role: 'cancel',
                     handler: () => {
                       console.log(
-                        'Info: Cache Current Basemap And Overlays cancelled!'
+                        'Info: Cache Current Basemap And Overlays cancelled!',
                       )
                     },
                   },

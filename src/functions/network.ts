@@ -13,7 +13,7 @@ let setDownloadOnCellular: SetterOrUpdater<boolean>
  */
 export const setPresentDataAlert = (
   alert: UseIonAlertResult,
-  setter: SetterOrUpdater<boolean>
+  setter: SetterOrUpdater<boolean>,
 ) => {
   ionAlert = alert
   setDownloadOnCellular = setter

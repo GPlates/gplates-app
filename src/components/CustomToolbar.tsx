@@ -73,7 +73,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
             destination: Cartesian3.fromDegrees(
               HOME_LONGITUDE,
               HOME_LATITUDE,
-              getDefaultCameraHeight()
+              getDefaultCameraHeight(),
             ),
           })
         }, 2500) //wait for the morphTo3D to finish(by default 2 seconds morphTo3D to finish)
@@ -95,7 +95,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
   ]
   const [mode, setMode] = useState(sceneModes[0])
   const setShowAddLocationWidget = useSetRecoilState(
-    isAddLocationWidgetShowState
+    isAddLocationWidgetShowState,
   )
 
   /**
@@ -138,7 +138,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
             ',' +
             currentLocationLat +
             '&model=' +
-            currentModel!.name
+            currentModel!.name,
         )
         let jsonData = await result.json()
         plateIDMap.set(currentModel!.name, jsonData[0])
@@ -179,7 +179,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           destination: Cartesian3.fromDegrees(
             currentLocationLon,
             currentLocationLat,
-            getDefaultCameraHeight()
+            getDefaultCameraHeight(),
           ),
         })
       } else {
@@ -189,7 +189,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           if (pid !== undefined) {
             let newLatLon = currentModel.rotate(
               { lat: currentLocationLat, lon: currentLocationLon, pid: pid },
-              paleoAge
+              paleoAge,
             )
             //console.log(newLatLon)
             if (newLatLon !== undefined) {
@@ -197,13 +197,13 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
               paleoCurrentLocationLon = newLatLon.lon
               updateCurrentLocationEntity(
                 paleoCurrentLocationLat,
-                paleoCurrentLocationLon
+                paleoCurrentLocationLon,
               )
               scene.camera.flyTo({
                 destination: Cartesian3.fromDegrees(
                   paleoCurrentLocationLon,
                   paleoCurrentLocationLat,
-                  getDefaultCameraHeight()
+                  getDefaultCameraHeight(),
                 ),
               })
             }
@@ -226,7 +226,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
       if (pid !== undefined) {
         let newLatLon = currentModel.rotate(
           { lat: currentLocationLat, lon: currentLocationLon, pid: pid },
-          paleoAge
+          paleoAge,
         )
 
         if (newLatLon !== undefined) {
@@ -234,7 +234,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           paleoCurrentLocationLon = newLatLon.lon
           updateCurrentLocationEntity(
             paleoCurrentLocationLat,
-            paleoCurrentLocationLon
+            paleoCurrentLocationLon,
           )
         }
       }

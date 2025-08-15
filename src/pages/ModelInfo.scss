@@ -26,7 +26,9 @@
   opacity: 1;
   transform: scale(1);
 
-  transition: transform 2000ms, opacity 2000ms;
+  transition:
+    transform 2000ms,
+    opacity 2000ms;
 }
 
 .info-fade-exit {

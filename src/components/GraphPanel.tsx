@@ -28,7 +28,7 @@ const sliceData = (
   xData: string[],
   yData: number[],
   lower: number,
-  upper: number
+  upper: number,
 ) => {
   let big = Math.max(lower, upper)
   let small = Math.min(lower, upper)
@@ -117,7 +117,7 @@ interface ContainerProps {}
 
 export const GraphPanel: React.FC<ContainerProps> = () => {
   const [showGraphPanel, setShowGraphPanel] = useRecoilState(
-    isGraphPanelShowState
+    isGraphPanelShowState,
   )
   const age = useRecoilValue(ageState)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
@@ -249,7 +249,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   //
   const loadGraphList = async () => {
     let data_map: any = await requestDataByUrl(
-      serverURL.replace(/\/+$/, '') + '/mobile/get_graphs'
+      serverURL.replace(/\/+$/, '') + '/mobile/get_graphs',
     )
     const graphList: string[][] = []
     for (let [key, value] of Object.entries(data_map)) {
@@ -270,7 +270,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         graphChart.resize()
       } else {
         console.log(
-          'Unable to resize the graphChart. The graphChart object is invalid.'
+          'Unable to resize the graphChart. The graphChart object is invalid.',
         )
       }
     })

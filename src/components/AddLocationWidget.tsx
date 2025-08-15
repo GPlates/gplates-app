@@ -101,7 +101,7 @@ const setPresentDayLonLatPid = (
     lon: number
     lat: number
   }>,
-  modelName: string | undefined
+  modelName: string | undefined,
 ) => {
   //present-day only basemap, PIDs are not needed.
   if (!modelName) {
@@ -118,7 +118,7 @@ const setPresentDayLonLatPid = (
     fetch(
       serverURL.replace(/\/+$/, '') +
         `/reconstruct/reconstruct_points/?points=${lonLat.current.lon},${lonLat.current.lat}` +
-        `&time=${age}&model=${modelName}&reverse&fc`
+        `&time=${age}&model=${modelName}&reverse&fc`,
     )
       .then((response) => response.json())
       .then((jsonData) => {
@@ -161,7 +161,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
   const [updateLonLat, setUpdateLonLat] = useState(false) //triger re-render when lonLat changed
   //the coordinates for the current age
   const [lonLatList, setLonLatlist] = useState<{ lon: number; lat: number }[]>(
-    []
+    [],
   )
   const [showLocationDetails, setShowLocationDetails] = useState(false)
   const [showLocationListState, setShowLocationListState] = useState(false)
@@ -243,7 +243,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
         destination: Cartesian3.fromDegrees(
           inputLon,
           inputLat,
-          cesiumViewer.scene.camera.positionCartographic.height
+          cesiumViewer.scene.camera.positionCartographic.height,
         ),
       })
     }
@@ -369,8 +369,8 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
     let ray = cesiumViewer.scene.camera.getPickRay(
       new Cartesian2(
         cesiumViewer.scene.canvas.clientWidth / 2,
-        cesiumViewer.scene.canvas.clientHeight / 2
-      )
+        cesiumViewer.scene.canvas.clientHeight / 2,
+      ),
     )
 
     if (ray != undefined) {
@@ -443,7 +443,7 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
                         lonLatList[index].lon - width,
                         lonLatList[index].lat - height,
                         lonLatList[index].lon + width,
-                        lonLatList[index].lat + height
+                        lonLatList[index].lat + height,
                       )
                       cesiumViewer.scene.camera.flyTo({
                         destination: rectangle,

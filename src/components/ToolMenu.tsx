@@ -37,10 +37,10 @@ export const ToolMenu = () => {
   const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
 
   const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
-    isGraphPanelShowState
+    isGraphPanelShowState,
   )
   const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
-    isAddLocationWidgetShowState
+    isAddLocationWidgetShowState,
   )
 
   const setRasterGroup = useSetRecoilState(rasterGroupState)

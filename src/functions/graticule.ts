@@ -24,7 +24,7 @@ export const showGraticule = () => {
       backgroundColor: new Cesium.Color(0, 0, 0, 0.0),
       glowColor: new Cesium.Color(0, 0, 0, 0.0),
       color: new Cesium.Color(1, 1, 1, 0.2),
-    })
+    }),
   )
   if (!labels) {
     //labels = cesiumViewer.scene.primitives.add(new Cesium.LabelCollection())

@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { CSSTransition } from 'react-transition-group'
 import {
   IonButton,
   IonContent,
   IonPage,
   useIonViewDidLeave,
 } from '@ionic/react'
+import React, { useEffect, useState } from 'react'
+import { CSSTransition } from 'react-transition-group'
 //import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
+import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination } from 'swiper'
 import * as Types from 'swiper/types'
 
-import './Tutorial.scss'
 import { Preferences } from '@capacitor/preferences'
 import { SplashScreen } from '@capacitor/splash-screen'
 //import { useNavigate } from 'react-router'
 import { useHistory } from 'react-router'
+import './Tutorial.scss'
 
 const Tutorial: React.FC = () => {
   const [index, setIndex] = useState(0)
@@ -45,8 +45,8 @@ const Tutorial: React.FC = () => {
 
   const finishTutorial = () => {
     return Preferences.set({ key: 'hasFinishedTutorial', value: 'true' }).then(
-      () => history.replace('/main')
-      //() => navigate('/main', { replace: true })
+      () => history.replace('/main'),
+      //() => navigate('/main', { replace: true }),
     )
   }
 

@@ -75,7 +75,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     for (let i = 0; i < vectorLayers.length; i++) {
       if (enabledLayers.includes(vectorLayers[i].id)) {
         let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-          createCesiumImageryProvider(vectorLayers[i], 0) //time=0
+          createCesiumImageryProvider(vectorLayers[i], 0), //time=0
         )
         vectorLayers[i].imageryLayer = imageryLayer
         currentVectorLayers.push(imageryLayer)
@@ -144,7 +144,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     if (isChecked) {
       if (layer.imageryLayer === null) {
         layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-          createCesiumImageryProvider(layer, rAge)
+          createCesiumImageryProvider(layer, rAge),
         )
       }
       enableLayer(currentRasterID, layer.id)

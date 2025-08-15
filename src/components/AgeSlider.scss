@@ -122,7 +122,10 @@ $transition: all 150ms;
   display: flex;
   font-size: 28px;
   padding: 8px;
-  text-shadow: 1px 1px 8px #000000, 1px 1px 8px #000000, 1px 1px 8px #000000;
+  text-shadow:
+    1px 1px 8px #000000,
+    1px 1px 8px #000000,
+    1px 1px 8px #000000;
 }
 
 @media only screen and (max-width: 380px) {

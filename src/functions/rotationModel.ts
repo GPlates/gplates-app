@@ -42,7 +42,7 @@ export default class RotationModel {
       name,
       (model: RotationModelEx) => {
         this.newRotationModelImpl = model
-      }
+      },
     )
   }
 
@@ -61,7 +61,7 @@ export default class RotationModel {
     return this.newRotationModelImpl.rotate(
       { lat: lonLatPid.lat, lon: lonLatPid.lon },
       lonLatPid.pid,
-      time
+      time,
     )
   }
 
@@ -121,7 +121,7 @@ export default class RotationModel {
         {
           method: 'POST',
           body: JSON.stringify(data),
-        }
+        },
       )
       let jsonData = await response.json()
 
@@ -168,7 +168,7 @@ export default class RotationModel {
     return rotate(
       { lat: lonLatPid.lat, lon: lonLatPid.lon }, //location
       { lat: poleAndAngle[1], lon: poleAndAngle[0] }, //pole
-      poleAndAngle[2] //angle
+      poleAndAngle[2], //angle
     )
   }
 

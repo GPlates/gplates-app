@@ -186,9 +186,9 @@ const saveImage = async (img: string) => {
       await Media.createAlbum({ name: albumName })
       await Media.savePhoto({
         path: savedPath,
-        albumIdentifier: (
-          await Media.getAlbums()
-        ).albums.find((a) => a.name === albumName)?.identifier,
+        albumIdentifier: (await Media.getAlbums()).albums.find(
+          (a) => a.name === albumName,
+        )?.identifier,
       })
     } else {
       await Media.savePhoto({
@@ -289,7 +289,7 @@ const getScreenShot = async () => {
 
   //get starry sky background
   const starrySkyCanvas = document.getElementById(
-    'starry-sky'
+    'starry-sky',
   ) as HTMLCanvasElement
 
   let starBackgroundScreenShot = ''
@@ -328,7 +328,7 @@ const getScreenShot = async () => {
       0,
       0,
       starrySkyImage.width,
-      starrySkyImage.height
+      starrySkyImage.height,
     )
   }
   //draw cesium image
@@ -372,7 +372,7 @@ export const SocialSharing = async (
   loadingPresent: Function,
   loadingDismiss: Function,
   presentToast: Function,
-  dismissToast: Function
+  dismissToast: Function,
 ) => {
   let isFail = false
   let canShare: boolean = (await Share.canShare()).value

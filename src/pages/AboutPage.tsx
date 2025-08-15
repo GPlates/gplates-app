@@ -35,7 +35,8 @@ export const AboutPage: React.FC<ContainerProps> = () => {
           App is an invaluable tool for anyone seeking to gain a deeper
           understanding of the Earth&apos;s geological history. Whether you are
           a student, teacher, researcher, or just a curious enthusiast, the
-          GPlates App is the perfect tool to explore our ever-evolving planet.{' '}
+          GPlates App is the perfect tool to explore our ever-evolving
+          planet.{' '}
         </p>
         <p className={'about-page-intro-text'}>
           In addition, the&nbsp;
