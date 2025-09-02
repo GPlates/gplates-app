@@ -26,11 +26,11 @@ declare global {
   }
 }
 
-jeepSqlite(window)
+//jeepSqlite(window)//comment out temporarily by MC
 
 window.addEventListener('DOMContentLoaded', async () => {
-  let o = new CachingService('db_main')
-  await o.init()
+  //let o = new CachingService('db_main')//comment out temporarily by MC
+  //await o.init()//comment out temporarily by MC
 
   // Initialise App
   const container = document.getElementById('root')

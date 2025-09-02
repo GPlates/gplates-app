@@ -22,7 +22,7 @@ import { chevronBack, chevronForward } from 'ionicons/icons'
 import React, { useEffect, useState } from 'react'
 //import { useNavigate } from 'react-router'
 import { useHistory } from 'react-router'
-import { CSSTransition } from 'react-transition-group'
+//import { CSSTransition } from 'react-transition-group'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
 import {
@@ -259,157 +259,133 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
 
       {/* put new settings in this IonList element below */}
       {/* some demo is shown below */}
-      <CSSTransition
-        in={path === 'root'}
-        timeout={200}
-        unmountOnExit
-        classNames={'fade'}
-      >
-        <IonList className={'settings-list'}>
-          {showAnimationSettings &&
-            subPageRouting('animation', 'Animation Settings')}
-          {subPageRouting('backgroundSetting', 'Background Settings')}
 
-          {/*--------------------------------------------*/}
-          <IonItem
-            button
-            onClick={async () => {
-              await getCacheStatsData()
-              setCacheInfoShow(true)
-            }}
+      <IonList className={'settings-list'}>
+        {showAnimationSettings &&
+          subPageRouting('animation', 'Animation Settings')}
+        {subPageRouting('backgroundSetting', 'Background Settings')}
+
+        {/*--------------------------------------------*/}
+        <IonItem
+          button
+          onClick={async () => {
+            await getCacheStatsData()
+            setCacheInfoShow(true)
+          }}
+        >
+          {!isPlatform('ios') && <IonIcon icon={chevronForward} slot={'end'} />}
+          <IonLabel>Caching</IonLabel>
+        </IonItem>
+        {/*--------------------------------------------*/}
+
+        <IonItem
+          button
+          onClick={() => {
+            Preferences.remove({ key: 'hasFinishedTutorial' }).then(() => {
+              //navigate('/tutorial', { replace: true })
+              history.replace('/tutorial')
+              setIsShow(false)
+            })
+          }}
+        >
+          {!isPlatform('ios') && <IonIcon icon={chevronForward} slot={'end'} />}
+          <IonLabel>Tutorial</IonLabel>
+        </IonItem>
+        {/*--------------------------------------------*/}
+        <IonItem
+          button
+          onClick={() => {
+            showReloadPageAlert(
+              'Are you sure that you would like to reload the App.',
+            )
+          }}
+        >
+          {!isPlatform('ios') && <IonIcon icon={chevronForward} slot={'end'} />}
+          <IonLabel>Reload App</IonLabel>
+        </IonItem>
+
+        {/*--------------------------------------------*/}
+        <IonItemDivider>App Theme</IonItemDivider>
+        <IonItem>
+          <IonSegment
+            onIonChange={(e) => _setDarkMode(e.detail.value!.toString())}
+            value={darkMode}
           >
-            {!isPlatform('ios') && (
-              <IonIcon icon={chevronForward} slot={'end'} />
-            )}
-            <IonLabel>Caching</IonLabel>
-          </IonItem>
-          {/*--------------------------------------------*/}
-
-          <IonItem
-            button
-            onClick={() => {
-              Preferences.remove({ key: 'hasFinishedTutorial' }).then(() => {
-                //navigate('/tutorial', { replace: true })
-                history.replace('/tutorial')
-                setIsShow(false)
+            <IonSegmentButton value="auto">
+              <IonLabel>Auto</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="light">
+              <IonLabel>Light</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="dark">
+              <IonLabel>Dark</IonLabel>
+            </IonSegmentButton>
+          </IonSegment>
+        </IonItem>
+        {/*--------------------------------------------*/}
+        <IonItemDivider>Network Settings</IonItemDivider>
+        <IonItem>
+          <IonToggle
+            class={'single-setting-option'}
+            checked={downloadOnCellular}
+            onIonChange={(e) => setDownloadOnCellular(e.detail.checked)}
+          >
+            Use Mobile Data
+          </IonToggle>
+        </IonItem>
+        {/*--------------------------------------------*/}
+        <IonItem>
+          <IonInput
+            label="Server URL"
+            class="server-url-input"
+            value={serverURL}
+            onIonBlur={async (e) => {
+              //console.log(e.target.value)
+              if (e.target.value) {
+                let isChanged = await setServerURL(e.target.value.toString())
+                if (isChanged) {
+                  showReloadPageAlert(
+                    'The server URL is changed. Would you like to reload the App?',
+                  )
+                }
+              }
+            }}
+          />
+        </IonItem>
+        {/*--------------------------------------------*/}
+        <IonItemDivider>Graticules</IonItemDivider>
+        <IonItem>
+          <IonToggle
+            class={'single-setting-option'}
+            checked={showGraticuleFlag}
+            onIonChange={(e) => {
+              //console.log(e.detail.checked)
+              if (e.detail.checked) {
+                showGraticule()
+                setShowGraticuleFlag(true)
+              } else {
+                hideGraticule()
+                setShowGraticuleFlag(false)
+              }
+              Preferences.set({
+                key: 'showGraticule',
+                value: JSON.stringify(e.detail.checked),
               })
             }}
           >
-            {!isPlatform('ios') && (
-              <IonIcon icon={chevronForward} slot={'end'} />
-            )}
-            <IonLabel>Tutorial</IonLabel>
-          </IonItem>
-          {/*--------------------------------------------*/}
-          <IonItem
-            button
-            onClick={() => {
-              showReloadPageAlert(
-                'Are you sure that you would like to reload the App.',
-              )
-            }}
-          >
-            {!isPlatform('ios') && (
-              <IonIcon icon={chevronForward} slot={'end'} />
-            )}
-            <IonLabel>Reload App</IonLabel>
-          </IonItem>
-
-          {/*--------------------------------------------*/}
-          <IonItemDivider>App Theme</IonItemDivider>
-          <IonItem>
-            <IonSegment
-              onIonChange={(e) => _setDarkMode(e.detail.value!.toString())}
-              value={darkMode}
-            >
-              <IonSegmentButton value="auto">
-                <IonLabel>Auto</IonLabel>
-              </IonSegmentButton>
-              <IonSegmentButton value="light">
-                <IonLabel>Light</IonLabel>
-              </IonSegmentButton>
-              <IonSegmentButton value="dark">
-                <IonLabel>Dark</IonLabel>
-              </IonSegmentButton>
-            </IonSegment>
-          </IonItem>
-          {/*--------------------------------------------*/}
-          <IonItemDivider>Network Settings</IonItemDivider>
-          <IonItem>
-            <IonToggle
-              class={'single-setting-option'}
-              checked={downloadOnCellular}
-              onIonChange={(e) => setDownloadOnCellular(e.detail.checked)}
-            >
-              Use Mobile Data
-            </IonToggle>
-          </IonItem>
-          {/*--------------------------------------------*/}
-          <IonItem>
-            <IonInput
-              label="Server URL"
-              class="server-url-input"
-              value={serverURL}
-              onIonBlur={async (e) => {
-                //console.log(e.target.value)
-                if (e.target.value) {
-                  let isChanged = await setServerURL(e.target.value.toString())
-                  if (isChanged) {
-                    showReloadPageAlert(
-                      'The server URL is changed. Would you like to reload the App?',
-                    )
-                  }
-                }
-              }}
-            />
-          </IonItem>
-          {/*--------------------------------------------*/}
-          <IonItemDivider>Graticules</IonItemDivider>
-          <IonItem>
-            <IonToggle
-              class={'single-setting-option'}
-              checked={showGraticuleFlag}
-              onIonChange={(e) => {
-                //console.log(e.detail.checked)
-                if (e.detail.checked) {
-                  showGraticule()
-                  setShowGraticuleFlag(true)
-                } else {
-                  hideGraticule()
-                  setShowGraticuleFlag(false)
-                }
-                Preferences.set({
-                  key: 'showGraticule',
-                  value: JSON.stringify(e.detail.checked),
-                })
-              }}
-            >
-              Show Graticules
-            </IonToggle>
-          </IonItem>
-          {/*--------------------------------------------*/}
-        </IonList>
-      </CSSTransition>
+            Show Graticules
+          </IonToggle>
+        </IonItem>
+        {/*--------------------------------------------*/}
+      </IonList>
 
       {/* animation settings subpage */}
-      <CSSTransition
-        in={path === 'animation'}
-        timeout={200}
-        unmountOnExit
-        classNames={'fade'}
-      >
-        <AnimationSettings />
-      </CSSTransition>
+
+      <AnimationSettings />
 
       {/* background setting subpage */}
-      <CSSTransition
-        in={path === 'backgroundSetting'}
-        timeout={200}
-        unmountOnExit
-        classNames={'fade'}
-      >
-        <BackgroundColorSettings backgroundService={backgroundService} />
-      </CSSTransition>
+
+      <BackgroundColorSettings backgroundService={backgroundService} />
     </IonModal>
   )
 }

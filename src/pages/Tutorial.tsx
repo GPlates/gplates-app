@@ -5,7 +5,7 @@ import {
   useIonViewDidLeave,
 } from '@ionic/react'
 import React, { useEffect, useState } from 'react'
-import { CSSTransition } from 'react-transition-group'
+//import { CSSTransition } from 'react-transition-group'
 //import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js'
 import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -100,66 +100,64 @@ const Tutorial: React.FC = () => {
 
   return (
     <IonPage>
-      <CSSTransition in={show} timeout={200} unmountOnExit classNames={'fade'}>
-        <IonContent fullscreen scrollY={false}>
-          <Swiper
-            pagination={{ clickable: true }}
-            modules={[Pagination]}
-            onSlideChange={(s) => onSlideChange(s)}
-            onSwiper={(s) => setSwiper(s)}
-            className={'tutorial-swiper slide' + index}
-          >
-            <SwiperSlide className={'ion-padding'}>
-              <img src={'/assets/slides/slide0.svg'} />
-              <h1>Welcome to GPlates!</h1>
-              <p>Swipe left to get started</p>
-            </SwiperSlide>
-            <SwiperSlide className={'ion-padding'}>
-              <img src={'/assets/slides/slide1.svg'} />
-              <h3>Age Slider</h3>
-              <p>
-                Use the age slider (top right) to reconstruct geological and
-                paleographic features through time
-              </p>
-            </SwiperSlide>
-            <SwiperSlide className={'ion-padding'}>
-              <img src={'/assets/slides/slide2.svg'} />
-              <h3>Toolbox</h3>
-              <p>
-                Access settings, tools, and more from the toolbox (bottom left)
-              </p>
-            </SwiperSlide>
-            <SwiperSlide className={'ion-padding'}>
-              <img src={'/assets/slides/slide3.png'} />
-              <h3>Rasters</h3>
-              <p>Explore different models with the raster menu</p>
-            </SwiperSlide>
-            <SwiperSlide className={'ion-padding'}>
-              <img src={'/assets/slides/slide4.svg'} />
-              <h3>Overlays</h3>
-              <p>See additional information, like coastlines, with overlays</p>
-            </SwiperSlide>
-            <SwiperSlide className={'ion-padding'}>
-              <img src={'/assets/slides/slide5.svg'} />
-              <h3>Graphs</h3>
-              <p>
-                View stats, such as global temperature, as they change through
-                time
-              </p>
-            </SwiperSlide>
-            <SwiperSlide className={'ion-padding'}>
-              <img src={'/assets/slides/slide6.svg'} />
-              <h3>Locations</h3>
-              <p>
-                Pinpoint places on the globe and keep track of their location as
-                time changes
-              </p>
-            </SwiperSlide>
-          </Swiper>
-          {getPrevSkip()}
-          {getNextFinish()}
-        </IonContent>
-      </CSSTransition>
+      <IonContent fullscreen scrollY={false}>
+        <Swiper
+          pagination={{ clickable: true }}
+          modules={[Pagination]}
+          onSlideChange={(s) => onSlideChange(s)}
+          onSwiper={(s) => setSwiper(s)}
+          className={'tutorial-swiper slide' + index}
+        >
+          <SwiperSlide className={'ion-padding'}>
+            <img src={'/assets/slides/slide0.svg'} />
+            <h1>Welcome to GPlates!</h1>
+            <p>Swipe left to get started</p>
+          </SwiperSlide>
+          <SwiperSlide className={'ion-padding'}>
+            <img src={'/assets/slides/slide1.svg'} />
+            <h3>Age Slider</h3>
+            <p>
+              Use the age slider (top right) to reconstruct geological and
+              paleographic features through time
+            </p>
+          </SwiperSlide>
+          <SwiperSlide className={'ion-padding'}>
+            <img src={'/assets/slides/slide2.svg'} />
+            <h3>Toolbox</h3>
+            <p>
+              Access settings, tools, and more from the toolbox (bottom left)
+            </p>
+          </SwiperSlide>
+          <SwiperSlide className={'ion-padding'}>
+            <img src={'/assets/slides/slide3.png'} />
+            <h3>Rasters</h3>
+            <p>Explore different models with the raster menu</p>
+          </SwiperSlide>
+          <SwiperSlide className={'ion-padding'}>
+            <img src={'/assets/slides/slide4.svg'} />
+            <h3>Overlays</h3>
+            <p>See additional information, like coastlines, with overlays</p>
+          </SwiperSlide>
+          <SwiperSlide className={'ion-padding'}>
+            <img src={'/assets/slides/slide5.svg'} />
+            <h3>Graphs</h3>
+            <p>
+              View stats, such as global temperature, as they change through
+              time
+            </p>
+          </SwiperSlide>
+          <SwiperSlide className={'ion-padding'}>
+            <img src={'/assets/slides/slide6.svg'} />
+            <h3>Locations</h3>
+            <p>
+              Pinpoint places on the globe and keep track of their location as
+              time changes
+            </p>
+          </SwiperSlide>
+        </Swiper>
+        {getPrevSkip()}
+        {getNextFinish()}
+      </IonContent>
     </IonPage>
   )
 }
