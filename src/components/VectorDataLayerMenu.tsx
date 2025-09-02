@@ -10,13 +10,17 @@ import {
 import { createCesiumImageryProvider } from '../functions/cesiumViewer'
 import React, { useEffect } from 'react'
 import { closeCircleOutline } from 'ionicons/icons'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 import {
   currentRasterIDState,
   isVectorMenuShow,
   ageState,
   showCities,
-} from '../functions/atoms'
+} from '../functions/appStates'
 
 import { VectorLayerType } from '../functions/types'
 import {
@@ -61,10 +65,10 @@ interface ContainerProps {}
  * @returns
  */
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
-  const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
-  const rAge = useRecoilValue(ageState)
-  const setShowCities = useSetRecoilState(showCities)
+  const [isShow, setIsShow] = useAppState(isVectorMenuShow)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
+  const rAge = useAppStateValue(ageState)
+  const setShowCities = useSetAppState(showCities)
 
   /**
    * draw all enabled vector layers

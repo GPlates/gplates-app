@@ -1,20 +1,16 @@
 import { Network } from '@capacitor/network'
 import { UseIonAlertResult } from '@ionic/react'
-import { SetterOrUpdater } from 'recoil'
 import { Preferences } from '@capacitor/preferences'
 
 let ionAlert: UseIonAlertResult
-let setDownloadOnCellular: SetterOrUpdater<boolean>
+let setDownloadOnCellular: any
 
 /**
  *
  * @param alert
  * @param setter
  */
-export const setPresentDataAlert = (
-  alert: UseIonAlertResult,
-  setter: SetterOrUpdater<boolean>,
-) => {
+export const setPresentDataAlert = (alert: UseIonAlertResult, setter: any) => {
   ionAlert = alert
   setDownloadOnCellular = setter
 }

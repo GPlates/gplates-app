@@ -24,7 +24,6 @@ import '@ionic/react/css/text-alignment.css'
 import '@ionic/react/css/text-transformation.css'
 
 /* Theme variables */
-import { RecoilRoot } from 'recoil'
 import { setSQLiteHook } from './functions/cache'
 import Tutorial from './pages/Tutorial'
 import './theme/variables.scss'
@@ -44,9 +43,7 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
           <Route exact path="/main">
-            <RecoilRoot>
-              <Main />
-            </RecoilRoot>
+            <Main />
           </Route>
           <Route exact path="/tutorial">
             <Tutorial />

@@ -23,7 +23,11 @@ import React, { useEffect, useState } from 'react'
 //import { useNavigate } from 'react-router'
 import { useHistory } from 'react-router'
 //import { CSSTransition } from 'react-transition-group'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 import { BackgroundColorSettings } from '../components/BackgroundColorSettings'
 import {
   appDarkMode,
@@ -33,7 +37,7 @@ import {
   isSettingsMenuShow,
   networkDownloadOnCellular,
   settingsPath,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { BackgroundService } from '../functions/background'
 import { cachingServant } from '../functions/cache'
 import { setDarkMode, setStatusBarTheme } from '../functions/darkMode'
@@ -102,15 +106,15 @@ interface ContainerProps {
 export const SettingMenuPage: React.FC<ContainerProps> = ({
   backgroundService,
 }) => {
-  const [darkMode, _setDarkMode] = useRecoilState(appDarkMode)
-  const [downloadOnCellular, setDownloadOnCellular] = useRecoilState(
+  const [darkMode, _setDarkMode] = useAppState(appDarkMode)
+  const [downloadOnCellular, setDownloadOnCellular] = useAppState(
     networkDownloadOnCellular,
   )
-  const [path, setPath] = useRecoilState(settingsPath)
-  const [isShow, setIsShow] = useRecoilState(isSettingsMenuShow)
-  const isSliderShow = useRecoilValue(isAgeSliderShown)
-  const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
+  const [path, setPath] = useAppState(settingsPath)
+  const [isShow, setIsShow] = useAppState(isSettingsMenuShow)
+  const isSliderShow = useAppStateValue(isAgeSliderShown)
+  const setCacheInfoShow = useSetAppState(isCacheInfoShowState)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
   const [showAnimationSettings, setShowAnimationSettings] = useState(false)
 
   const [presentAlert] = useIonAlert()

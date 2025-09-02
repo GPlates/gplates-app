@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import assert from 'assert'
-import { useRecoilValue } from 'recoil'
-import { backgroundIsStarry, backgroundIsEnabled } from '../functions/atoms'
+import { useAppStateValue } from '../functions/appStates'
+import { backgroundIsStarry, backgroundIsEnabled } from '../functions/appStates'
 
 let maxNumStars = Math.log2(window.innerWidth * window.innerHeight) * 10
 let stars: Star[] = []
@@ -71,8 +71,8 @@ class Star {
 interface ContainerProps {}
 
 export const StarrySky: React.FC<ContainerProps> = () => {
-  const isStarryBackgroundEnable = useRecoilValue(backgroundIsStarry)
-  const isBackgroundSettingEnable = useRecoilValue(backgroundIsEnabled)
+  const isStarryBackgroundEnable = useAppStateValue(backgroundIsStarry)
+  const isBackgroundSettingEnable = useAppStateValue(backgroundIsEnabled)
 
   let showStarsFlag = isBackgroundSettingEnable && isStarryBackgroundEnable
   let hue = 217

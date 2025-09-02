@@ -19,7 +19,11 @@ import {
 } from 'ionicons/icons'
 import React, { useEffect, useState } from 'react'
 import { AnimationService } from '../functions/animation'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 import {
   ageState,
   animatePlaying,
@@ -31,7 +35,7 @@ import {
   animateRange,
   animateIncrement,
   showTimeStampState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import {
   matchDarkMode,
   setStatusBarTheme,
@@ -46,17 +50,17 @@ interface AgeSliderProps {
 }
 
 const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
-  const [age, setAge] = useRecoilState(ageState)
-  const darkMode = useRecoilValue(appDarkMode)
-  const increment = useRecoilValue(animateIncrement)
-  const playing = useRecoilValue(animatePlaying)
-  const setMenuPath = useSetRecoilState(settingsPath)
-  const setMenuState = useSetRecoilState(isSettingsMenuShow)
-  const [shown, setShown] = useRecoilState(isAgeSliderShown)
+  const [age, setAge] = useAppState(ageState)
+  const darkMode = useAppStateValue(appDarkMode)
+  const increment = useAppStateValue(animateIncrement)
+  const playing = useAppStateValue(animatePlaying)
+  const setMenuPath = useSetAppState(settingsPath)
+  const setMenuState = useSetAppState(isSettingsMenuShow)
+  const [shown, setShown] = useAppState(isAgeSliderShown)
   const [presentToast, dismissToast] = useIonToast()
-  const currentRasterID = useRecoilValue(currentRasterIDState)
-  const range = useRecoilValue(animateRange)
-  const showTimeStamp = useRecoilValue(showTimeStampState)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
+  const range = useAppStateValue(animateRange)
+  const showTimeStamp = useAppStateValue(showTimeStampState)
   const [showTimeButton, setShowTimeButton] = useState(false) //the button to open time slider
 
   const openMenu = () => {

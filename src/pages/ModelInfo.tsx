@@ -17,12 +17,12 @@ import {
 import './ModelInfo.scss'
 import { getRasterByID } from '../functions/rasterMaps'
 import { serverURL } from '../functions/settings'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useAppState, useAppStateValue } from '../functions/appStates'
 import {
   isModelInfoShowState,
   currentRasterIDState,
   infoPath,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { chevronBack, chevronForward } from 'ionicons/icons'
 //import { CSSTransition } from 'react-transition-group'
 import { AboutPage } from './AboutPage'
@@ -38,9 +38,9 @@ const titles: { [key: string]: string } = {
 interface ContainerProps {}
 
 export const ModelInfo: React.FC<ContainerProps> = () => {
-  const [modelInfoShow, setModelInfoShow] = useRecoilState(isModelInfoShowState)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
-  const [path, setPath] = useRecoilState(infoPath)
+  const [modelInfoShow, setModelInfoShow] = useAppState(isModelInfoShowState)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
+  const [path, setPath] = useAppState(infoPath)
   const [showRasterLengend, setShowRasterLengend] = useState(false)
 
   /**

@@ -1,11 +1,11 @@
 import * as echarts from 'echarts'
 import React, { useEffect, useState } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useAppState, useAppStateValue } from '../functions/appStates'
 import {
   ageState,
   animateRange,
   isGraphPanelShowState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import './GraphPanel.scss'
 import {
   getPlatforms,
@@ -116,10 +116,8 @@ const interpolate = (xData: string[], yData: number[]) => {
 interface ContainerProps {}
 
 export const GraphPanel: React.FC<ContainerProps> = () => {
-  const [showGraphPanel, setShowGraphPanel] = useRecoilState(
-    isGraphPanelShowState,
-  )
-  const age = useRecoilValue(ageState)
+  const [showGraphPanel, setShowGraphPanel] = useAppState(isGraphPanelShowState)
+  const age = useAppStateValue(ageState)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [graphList, setGraphList] = useState([] as string[][])
   const [curGraphName, setCurGraphName] = useState('')

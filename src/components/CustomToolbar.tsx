@@ -18,7 +18,7 @@ import {
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
 import './CustomToolbar.scss'
 import React, { Fragment, useState, useEffect } from 'react'
-import { useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetAppState, useAppStateValue } from '../functions/appStates'
 import {
   cesiumViewer,
   HOME_LONGITUDE,
@@ -34,7 +34,7 @@ import {
   isAddLocationWidgetShowState,
   isModelInfoShowState,
   currentRasterIDState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { SocialSharing } from './SocialSharing'
 import { currentModel } from '../functions/rotationModel'
 import { serverURL } from '../functions/settings'
@@ -56,9 +56,9 @@ let plateIDMap: Map<string, number> = new Map<string, number>()
  * @returns
  */
 const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
-  const setShowModelInfo = useSetRecoilState(isModelInfoShowState)
-  const paleoAge = useRecoilValue(ageState)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
+  const setShowModelInfo = useSetAppState(isModelInfoShowState)
+  const paleoAge = useAppStateValue(ageState)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
   const [presentToast, dismissToast] = useIonToast()
   const [present, dismiss] = useIonLoading()
 
@@ -94,9 +94,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     },
   ]
   const [mode, setMode] = useState(sceneModes[0])
-  const setShowAddLocationWidget = useSetRecoilState(
-    isAddLocationWidgetShowState,
-  )
+  const setShowAddLocationWidget = useSetAppState(isAddLocationWidgetShowState)
 
   /**
    * update the current location point on Cesium globe

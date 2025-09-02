@@ -1,6 +1,5 @@
 import { SingleTileImageryProvider, Viewer, ImageryLayer } from 'cesium'
 import { CachingService } from './cache'
-import { SetterOrUpdater } from 'recoil'
 import { getRasterByID } from './rasterMaps'
 import { getEnabledLayers, vectorLayers } from './vectorLayers'
 import { getLowResImageUrlForGeosrv } from './util'
@@ -25,13 +24,13 @@ export class AnimationService {
   private to: number
   constructor(
     public cachingService: CachingService,
-    public setAge: SetterOrUpdater<number>,
+    public setAge: any,
     public exact: boolean,
     public fps: number,
     public increment: number,
     public loop: boolean,
     public playing: boolean,
-    public _setPlaying: SetterOrUpdater<boolean>,
+    public _setPlaying: any,
     public range: { lower: number; upper: number },
     public viewer: Viewer,
     public currentRasterID: string,

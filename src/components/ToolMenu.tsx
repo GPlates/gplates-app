@@ -15,7 +15,7 @@ import {
   statsChartOutline,
 } from 'ionicons/icons'
 
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useAppState, useSetAppState } from '../functions/appStates'
 import {
   isAddLocationWidgetShowState,
   isGraphPanelShowState,
@@ -23,7 +23,7 @@ import {
   isSettingsMenuShow,
   isVectorMenuShow,
   rasterGroupState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { cesiumViewer } from '../functions/cesiumViewer'
 import { SceneMode } from 'cesium'
 import { RasterGroup } from '../functions/types'
@@ -32,18 +32,18 @@ import './ToolMenu.scss'
 export const ToolMenu = () => {
   const [presentToast, dismissToast] = useIonToast()
 
-  const setMenuPageShow = useSetRecoilState(isSettingsMenuShow)
-  const setRasterMenuPageShow = useSetRecoilState(isRasterMenuShow)
-  const setIsVectorDataLayerMenuShow = useSetRecoilState(isVectorMenuShow)
+  const setMenuPageShow = useSetAppState(isSettingsMenuShow)
+  const setRasterMenuPageShow = useSetAppState(isRasterMenuShow)
+  const setIsVectorDataLayerMenuShow = useSetAppState(isVectorMenuShow)
 
-  const [isGraphPanelShow, setIsGraphPanelShow] = useRecoilState(
+  const [isGraphPanelShow, setIsGraphPanelShow] = useAppState(
     isGraphPanelShowState,
   )
-  const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
+  const [showAddLocationWidget, setShowAddLocationWidget] = useAppState(
     isAddLocationWidgetShowState,
   )
 
-  const setRasterGroup = useSetRecoilState(rasterGroupState)
+  const setRasterGroup = useSetAppState(rasterGroupState)
 
   const toolMenuList: any[] = [
     <IonFabButton

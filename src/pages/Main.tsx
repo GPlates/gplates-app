@@ -24,7 +24,6 @@ import { cachingServant } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   ageState,
   animateExact,
@@ -45,7 +44,7 @@ import {
   rasterGroupState,
   currentRasterIDState,
   showTimeStampState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, {
   loadRasterMaps,
@@ -67,6 +66,11 @@ import { createCesiumImageryProvider } from '../functions/cesiumViewer'
 import { setPresentDataAlert } from '../functions/network'
 import NetworkIndicator from '../components/NetworkIndicator'
 import { DEBUG } from '../functions/settings'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -75,45 +79,45 @@ let animationService: AnimationService
 let backgroundService: BackgroundService
 
 const Main: React.FC = () => {
-  const isSettingsShown = useRecoilValue(isSettingsMenuShow)
-  const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
+  const isSettingsShown = useAppStateValue(isSettingsMenuShow)
+  const [showAddLocationWidget, setShowAddLocationWidget] = useAppState(
     isAddLocationWidgetShowState,
   )
   const ionAlert = useIonAlert()
 
   // Animation
-  const setAge = useSetRecoilState(ageState)
-  const [exact, setExact] = useRecoilState(animateExact)
-  const [fps, setFps] = useRecoilState(animateFps)
-  const [increment, setIncrement] = useRecoilState(animateIncrement)
-  const [loop, setLoop] = useRecoilState(animateLoop)
-  const [playing, _setPlaying] = useRecoilState(animatePlaying)
-  const [range, setRange] = useRecoilState(animateRange)
+  const setAge = useSetAppState(ageState)
+  const [exact, setExact] = useAppState(animateExact)
+  const [fps, setFps] = useAppState(animateFps)
+  const [increment, setIncrement] = useAppState(animateIncrement)
+  const [loop, setLoop] = useAppState(animateLoop)
+  const [playing, _setPlaying] = useAppState(animatePlaying)
+  const [range, setRange] = useAppState(animateRange)
 
   // App
-  const _setDarkMode = useSetRecoilState(appDarkMode)
-  const setDownloadOnCellular = useSetRecoilState(networkDownloadOnCellular)
+  const _setDarkMode = useSetAppState(appDarkMode)
+  const setDownloadOnCellular = useSetAppState(networkDownloadOnCellular)
 
   // Background
   const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
-    useRecoilState(backgroundIsEnabled)
+    useAppState(backgroundIsEnabled)
   const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
-    useRecoilState(backgroundIsStarry)
+    useAppState(backgroundIsStarry)
   const [
     isCustomisedColorBackgroundEnable,
     setIsCustomisedColorBackgroundEnable,
-  ] = useRecoilState(backgroundIsCustom)
-  const [color, setColor] = useRecoilState(backgroundColor)
+  ] = useAppState(backgroundIsCustom)
+  const [color, setColor] = useAppState(backgroundColor)
 
   // Raster
-  const setAgeSliderShown = useSetRecoilState(isAgeSliderShown)
+  const setAgeSliderShown = useSetAppState(isAgeSliderShown)
   const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
 
   const [currentRasterID, setCurrentRasterID] =
-    useRecoilState(currentRasterIDState)
-  const rasterGroup = useRecoilValue(rasterGroupState)
-  const setShowTimeStamp = useSetRecoilState(showTimeStampState)
+    useAppState(currentRasterIDState)
+  const rasterGroup = useAppStateValue(rasterGroupState)
+  const setShowTimeStamp = useSetAppState(showTimeStampState)
   const [isOffline, setIsOffline] = useState(false)
   //we don't show message if the app is online at startup
   const isStartupOnline = useRef(true)

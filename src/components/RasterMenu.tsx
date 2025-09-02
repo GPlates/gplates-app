@@ -13,11 +13,10 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { closeCircleOutline } from 'ionicons/icons'
 import {
-  SetterOrUpdater,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 import { AnimationService } from '../functions/animation'
 import {
   ageState,
@@ -26,7 +25,7 @@ import {
   isRasterMenuShow,
   rasterGroupState,
   showTimeStampState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { cesiumViewer, drawBasemap } from '../functions/cesiumViewer'
 import { raiseGraticuleLayerToTop } from '../functions/graticule'
 import { getRasters } from '../functions/rasterMaps'
@@ -43,7 +42,7 @@ import './RasterMenu.scss'
 interface ContainerProps {
   isViewerLoading: Function
   isCesiumViewerReady: boolean
-  setAgeSliderShown: SetterOrUpdater<boolean>
+  setAgeSliderShown: any
   animationService: AnimationService
 }
 
@@ -59,15 +58,15 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   animationService,
 }) => {
   const [currentRasterID, setCurrentRasterID] =
-    useRecoilState(currentRasterIDState)
+    useAppState(currentRasterIDState)
 
-  const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
-  const [age, setAge] = useRecoilState(ageState)
-  const setRange = useSetRecoilState(animateRange)
-  const setShowTimeStampState = useSetRecoilState(showTimeStampState)
+  const [isShow, setIsShow] = useAppState(isRasterMenuShow)
+  const [age, setAge] = useAppState(ageState)
+  const setRange = useSetAppState(animateRange)
+  const setShowTimeStampState = useSetAppState(showTimeStampState)
 
   const [swiper, setSwiper] = useState<SwiperType>()
-  const rasterGroup = useRecoilValue(rasterGroupState)
+  const rasterGroup = useAppStateValue(rasterGroupState)
 
   /**
    * switch to another basemap

@@ -12,7 +12,11 @@ import {
   IonToggle,
 } from '@ionic/react'
 import { Preferences } from '@capacitor/preferences'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 import {
   ageState,
   animateExact,
@@ -22,7 +26,7 @@ import {
   animateRange,
   currentRasterIDState,
   isCacheInfoShowState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import RasterMaps, { getRasterByID } from '../functions/rasterMaps'
 import { setAnimationFrame as setAnimationCurrentAge } from '../functions/animation'
 import { getCacheStatsData } from './CacheInfo'
@@ -37,15 +41,15 @@ interface ContainerProps {}
  * @returns
  */
 export const AnimationSettings: React.FC<ContainerProps> = ({}) => {
-  const [exact, setExact] = useRecoilState(animateExact)
-  const [fps, setFps] = useRecoilState(animateFps)
+  const [exact, setExact] = useAppState(animateExact)
+  const [fps, setFps] = useAppState(animateFps)
   const [tempFps, setTempFps] = useState<string | null>()
-  const [increment, setIncrement] = useRecoilState(animateIncrement)
-  const [loop, setLoop] = useRecoilState(animateLoop)
-  const [range, setRange] = useRecoilState(animateRange)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
-  const setCacheInfoShow = useSetRecoilState(isCacheInfoShowState)
-  const setCurrentAge = useSetRecoilState(ageState)
+  const [increment, setIncrement] = useAppState(animateIncrement)
+  const [loop, setLoop] = useAppState(animateLoop)
+  const [range, setRange] = useAppState(animateRange)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
+  const setCacheInfoShow = useSetAppState(isCacheInfoShowState)
+  const setCurrentAge = useSetAppState(ageState)
 
   // Animation constants
   const minIncrement = 1
