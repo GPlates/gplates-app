@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   defineCustomElements as jeepSqlite,
+  applyPolyfills,
   JSX as LocalJSX,
 } from 'jeep-sqlite/loader'
 import { HTMLAttributes } from 'react'
@@ -26,11 +27,13 @@ declare global {
   }
 }
 
-//jeepSqlite(window)//comment out temporarily by MC
+applyPolyfills().then(() => {
+  jeepSqlite(window)
+})
 
 window.addEventListener('DOMContentLoaded', async () => {
-  //let o = new CachingService('db_main')//comment out temporarily by MC
-  //await o.init()//comment out temporarily by MC
+  let o = new CachingService('db_main')
+  await o.init()
 
   // Initialise App
   const container = document.getElementById('root')
