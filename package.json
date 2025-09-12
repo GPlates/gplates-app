@@ -40,7 +40,6 @@
     "sass": "^1.90.0",
     "sql.js": "^1.8.0",
     "swiper": "^11.2.10",
-    "typescript": "^5.9.2",
     "web-vitals": "^5.1.0",
     "workbox-background-sync": "^7.3.0",
     "workbox-broadcast-update": "^7.3.0",
@@ -117,6 +116,7 @@
     "jeep-sqlite": "^2.3.4",
     "prettier": "3.6.2",
     "react-scripts": "^5.0.1",
+    "typescript": "^5.9.2",
     "webpack": "^5.101.0"
   },
   "description": "GPlates App"

@@ -111,7 +111,7 @@ const Main: React.FC = () => {
 
   // Raster
   const setAgeSliderShown = useSetAppState(isAgeSliderShown)
-  const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
+  const [, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
 
   const [currentRasterID, setCurrentRasterID] =
