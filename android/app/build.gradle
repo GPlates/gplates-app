@@ -4,10 +4,10 @@ android {
     namespace "earthbyte.gplates.edu"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "earthbyte.gplates.edu"
+        applicationId 'gplates.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 9
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
