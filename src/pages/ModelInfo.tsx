@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   IonButton,
   IonButtons,
-  IonContent,
   IonModal,
   IonRippleEffect,
   IonTitle,
@@ -24,7 +23,6 @@ import {
   infoPath,
 } from '../functions/appStates'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-//import { CSSTransition } from 'react-transition-group'
 import { AboutPage } from './AboutPage'
 import { HowToUse } from './HowToUse'
 //
@@ -83,6 +81,60 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
     )
   }
 
+  /**
+   *
+   * @returns
+   */
+  const rootPage = () => {
+    return (
+      <div className={'model-info-content'}>
+        <IonList>
+          <IonItem key={'raster-title'}>
+            <IonLabel className={'info-small-label'}>{'Title'} </IonLabel>
+            <IonNote slot="end">{currentRaster?.title}</IonNote>
+          </IonItem>
+
+          <IonItem key={'raster-subtitle'}>
+            <IonLabel className={'info-small-label'}>{'Subtitle'} </IonLabel>
+            <IonNote slot="end">{currentRaster?.subTitle}</IonNote>
+          </IonItem>
+
+          <IonItem key={'basemap-id'}>
+            <IonLabel className={'info-small-label'}>{'Basemap ID'} </IonLabel>
+            <IonNote slot="end">{currentRaster?.id}</IonNote>
+          </IonItem>
+
+          <IonItem key={'time-range'}>
+            <IonLabel className={'info-small-label'}>{'Time Range'}</IonLabel>
+            <IonNote slot="end">{timeRangeStr}</IonNote>
+          </IonItem>
+          {currentRaster.model && (
+            <IonItem key={'rotation-model'}>
+              <IonLabel className={'info-small-label'}>
+                {'Rotation Model'}
+              </IonLabel>
+              <IonNote slot="end">{currentRaster.model}</IonNote>
+            </IonItem>
+          )}
+
+          {subPageRouting('about', 'About GPlates')}
+          {subPageRouting('howtouse', 'How To Handle 3D Globe')}
+        </IonList>
+        <div
+          className="raster-legend"
+          style={showRasterLengend ? {} : { display: 'none' }}
+        >
+          <img
+            src={serverURL + '/static/app-legend/' + currentRasterID + '.png'}
+            alt={'Raster Legend Not Available'}
+            height={50}
+            onLoad={() => setShowRasterLengend(true)}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <IonModal
       isOpen={modelInfoShow}
@@ -121,55 +173,7 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
 
       {/* root page */}
 
-      {path == 'root' && (
-        <div className={'model-info-content'}>
-          <IonList>
-            <IonItem key={'raster-title'}>
-              <IonLabel className={'info-small-label'}>{'Title'} </IonLabel>
-              <IonNote slot="end">{currentRaster?.title}</IonNote>
-            </IonItem>
-
-            <IonItem key={'raster-subtitle'}>
-              <IonLabel className={'info-small-label'}>{'Subtitle'} </IonLabel>
-              <IonNote slot="end">{currentRaster?.subTitle}</IonNote>
-            </IonItem>
-
-            <IonItem key={'basemap-id'}>
-              <IonLabel className={'info-small-label'}>
-                {'Basemap ID'}{' '}
-              </IonLabel>
-              <IonNote slot="end">{currentRaster?.id}</IonNote>
-            </IonItem>
-
-            <IonItem key={'time-range'}>
-              <IonLabel className={'info-small-label'}>{'Time Range'}</IonLabel>
-              <IonNote slot="end">{timeRangeStr}</IonNote>
-            </IonItem>
-            {currentRaster.model && (
-              <IonItem key={'rotation-model'}>
-                <IonLabel className={'info-small-label'}>
-                  {'Rotation Model'}
-                </IonLabel>
-                <IonNote slot="end">{currentRaster.model}</IonNote>
-              </IonItem>
-            )}
-
-            {subPageRouting('about', 'About GPlates')}
-            {subPageRouting('howtouse', 'How To Handle 3D Globe')}
-          </IonList>
-          <div
-            className="raster-legend"
-            style={showRasterLengend ? {} : { display: 'none' }}
-          >
-            <img
-              src={serverURL + '/static/app-legend/' + currentRasterID + '.png'}
-              alt={'Raster Legend Not Available'}
-              height={50}
-              onLoad={() => setShowRasterLengend(true)}
-            />
-          </div>
-        </div>
-      )}
+      {path == 'root' && rootPage()}
 
       {/* About subpage */}
 
