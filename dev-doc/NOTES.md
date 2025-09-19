@@ -1,3 +1,16 @@
+## Very Important Notes, please read.
+
+### sql.js
+
+Currently, only version 1.8.0 works, as of 2025-09-19.
+
+⚠️ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
+
+### react-router-dom
+
+As of 2025-09-19, the ionic/react-router still does not support react-router-dom version 6+.
+Use react-router-dom version 5.3.4 until Ionic framework supports react-router-dom version 6+.
+
 ## Run the app in the simulators
 
 You need Java 11 and Android studio 2021.2.1 or newer.
@@ -54,10 +67,6 @@ CocoaPods is required to create the 'ios/App/Pods' folder, and the XCode build w
 You can try `sudo gem install cocoapods` to install [CocoaPods](https://cocoapods.org) on your Mac. However, this [**does not**](https://github.com/CocoaPods/CocoaPods/issues/11056) work on an M1 chip.
 
 To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how-to-run-cocoapods-on-apple-silicon-m1) mac, use HomeBrew: `brew install cocoapods`
-
-### Upgrade @capacitor-community/sqlite
-
-⚠ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
 
 ### Deploy
 

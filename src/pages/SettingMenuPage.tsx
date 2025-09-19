@@ -22,7 +22,6 @@ import { chevronBack, chevronForward } from 'ionicons/icons'
 import React, { useEffect, useState } from 'react'
 //import { useNavigate } from 'react-router'
 import { useHistory } from 'react-router'
-//import { CSSTransition } from 'react-transition-group'
 import {
   useAppState,
   useAppStateValue,
@@ -230,40 +229,8 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
     })
   }
 
-  return (
-    <IonModal isOpen={isShow} animated backdropDismiss={false}>
-      <IonToolbar>
-        {path !== 'root' && (
-          <IonButtons slot={'start'}>
-            <IonButton
-              onClick={() => {
-                setPath('root')
-              }}
-              color={'secondary'}
-            >
-              <IonIcon icon={chevronBack} />
-              <IonRippleEffect />
-            </IonButton>
-          </IonButtons>
-        )}
-        <IonTitle>{titles[path]}</IonTitle>
-        <IonButtons slot={'end'}>
-          <IonButton
-            onClick={() => {
-              setIsShow(false)
-              setPath('root')
-            }}
-            color={'secondary'}
-          >
-            Close
-            <IonRippleEffect />
-          </IonButton>
-        </IonButtons>
-      </IonToolbar>
-
-      {/* put new settings in this IonList element below */}
-      {/* some demo is shown below */}
-
+  const settingsPage = () => {
+    return (
       <IonList className={'settings-list'}>
         {showAnimationSettings &&
           subPageRouting('animation', 'Animation Settings')}
@@ -382,14 +349,51 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
         </IonItem>
         {/*--------------------------------------------*/}
       </IonList>
+    )
+  }
+
+  return (
+    <IonModal isOpen={isShow} animated backdropDismiss={false}>
+      <IonToolbar>
+        {path !== 'root' && (
+          <IonButtons slot={'start'}>
+            <IonButton
+              onClick={() => {
+                setPath('root')
+              }}
+              color={'secondary'}
+            >
+              <IonIcon icon={chevronBack} />
+              <IonRippleEffect />
+            </IonButton>
+          </IonButtons>
+        )}
+        <IonTitle>{titles[path]}</IonTitle>
+        <IonButtons slot={'end'}>
+          <IonButton
+            onClick={() => {
+              setIsShow(false)
+              setPath('root')
+            }}
+            color={'secondary'}
+          >
+            Close
+            <IonRippleEffect />
+          </IonButton>
+        </IonButtons>
+      </IonToolbar>
+
+      {path == 'root' && settingsPage()}
 
       {/* animation settings subpage */}
 
-      <AnimationSettings />
+      {path == 'animation' && <AnimationSettings />}
 
       {/* background setting subpage */}
 
-      <BackgroundColorSettings backgroundService={backgroundService} />
+      {path == 'backgroundSetting' && (
+        <BackgroundColorSettings backgroundService={backgroundService} />
+      )}
     </IonModal>
   )
 }
