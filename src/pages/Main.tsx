@@ -12,7 +12,7 @@ import {
 import './Main.scss'
 
 import { Ion } from 'cesium'
-import CustomToolbar from '../components/CustomToolbar'
+import TopButtons from '../components/TopButtons'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
@@ -86,7 +86,7 @@ const Main: React.FC = () => {
   const ionAlert = useIonAlert()
 
   // Animation
-  const setAge = useSetAppState(ageState)
+  const [age, setAge] = useAppState(ageState)
   const [exact, setExact] = useAppState(animateExact)
   const [fps, setFps] = useAppState(animateFps)
   const [increment, setIncrement] = useAppState(animateIncrement)
@@ -123,6 +123,8 @@ const Main: React.FC = () => {
   const isStartupOnline = useRef(true)
 
   const [presentToast, dismissToast] = useIonToast()
+
+  const showTimeStamp = useAppStateValue(showTimeStampState)
 
   animationService = new AnimationService(
     cachingServant,
@@ -329,10 +331,16 @@ const Main: React.FC = () => {
         <div id="cesiumContainer" />
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
-          <AgeSlider
-            buttons={<CustomToolbar scene={cesiumViewer?.scene} />}
-            animationService={animationService}
-          />
+          <AgeSlider animationService={animationService} />
+          <div className="timestamp-and-top-buttons">
+            <div
+              className="timestamp"
+              id={'timeStamp'} // screenshot need time information, using id to locate element
+            >
+              {showTimeStamp && <span>{age} Ma</span>}
+            </div>
+            <TopButtons scene={cesiumViewer?.scene} />
+          </div>
         </div>
         <ToolMenu />
         <AddLocationWidget

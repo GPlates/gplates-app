@@ -43,6 +43,7 @@ or
 
 Or
 
+- `source ./set-env.sh`
 - Run `ionic capacitor run android` and select your device
 
 ## Deploy on ios device

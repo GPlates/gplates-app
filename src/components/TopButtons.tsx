@@ -14,9 +14,12 @@ import {
   homeOutline,
   shareSocialOutline,
   informationOutline,
+  chevronUpCircleOutline,
+  timeOutline,
 } from 'ionicons/icons'
+
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
-import './CustomToolbar.scss'
+import './TopButtons.scss'
 import React, { Fragment, useState, useEffect } from 'react'
 import { useSetAppState, useAppStateValue } from '../functions/appStates'
 import {
@@ -31,9 +34,12 @@ import 'swiper/css/pagination'
 import { Geolocation } from '@capacitor/geolocation'
 import {
   ageState,
+  useAppState,
   isAddLocationWidgetShowState,
   isModelInfoShowState,
   currentRasterIDState,
+  showTimeButtonState,
+  showTimeSliderState,
 } from '../functions/appStates'
 import { SocialSharing } from './SocialSharing'
 import { currentModel } from '../functions/rotationModel'
@@ -55,12 +61,14 @@ let plateIDMap: Map<string, number> = new Map<string, number>()
  * @param param0
  * @returns
  */
-const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
+const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
   const setShowModelInfo = useSetAppState(isModelInfoShowState)
   const paleoAge = useAppStateValue(ageState)
   const currentRasterID = useAppStateValue(currentRasterIDState)
   const [presentToast, dismissToast] = useIonToast()
   const [present, dismiss] = useIonLoading()
+  const [showTimeButton, setShowTimeButton] = useAppState(showTimeButtonState) //the button to open time slider
+  const [showTimeSlider, setShowTimeSlider] = useAppState(showTimeSliderState)
 
   const sceneModes = [
     {
@@ -256,7 +264,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     : true
 
   return (
-    <Fragment>
+    <div className="top-buttons-container">
       <IonButton className="round-button" onClick={goHome}>
         <IonIcon icon={homeOutline} />
       </IonButton>
@@ -311,7 +319,17 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
       >
         <IonIcon icon={shareSocialOutline} />
       </IonButton>
-    </Fragment>
+
+      {/* the button to show or hide time slider */}
+      <IonButton
+        className="round-button show-button"
+        style={{ display: showTimeButton ? '' : 'none' }}
+        onClick={() => setShowTimeSlider(showTimeSlider ? false : true)}
+        size="default"
+      >
+        <IonIcon icon={showTimeSlider ? chevronUpCircleOutline : timeOutline} />
+      </IonButton>
+    </div>
   )
 }
-export default CustomToolbar
+export default TopButtons

@@ -55,3 +55,7 @@ export const showTimeStampState = atom(true)
 export const rasterGroupState = atom(RasterGroup.present)
 
 export const currentRasterIDState = atom('none')
+
+export const showTimeButtonState = atom(false)
+
+export const showTimeSliderState = atom(false)

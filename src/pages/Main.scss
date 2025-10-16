@@ -45,9 +45,9 @@
 }
 
 .toolbar-top {
-  top: env(safe-area-inset-top);
+  top: max(50px, env(safe-area-inset-top));
   left: 0;
-  overflow: hidden;
+  /*overflow: hidden;*/
   position: absolute;
   height: auto;
   width: 100%;
@@ -71,4 +71,21 @@
 
 .screenshot-loading .loading-wrapper {
   border-radius: 15px;
+}
+
+.timestamp {
+  display: inline-block;
+  align-items: center;
+  color: white;
+
+  font-size: 28px;
+  padding: 8px;
+  text-shadow:
+    1px 1px 8px #000000,
+    1px 1px 8px #000000,
+    1px 1px 8px #000000;
+}
+.timestamp-and-top-buttons {
+  display: flex;
+  justify-content: space-between;
 }
