@@ -29,7 +29,11 @@ The following steps worked on my Macbook Pro.
 
 - `npm start`/`ionic serve`
 
-or
+If you want to listen on external IP address and use another port, use the command below.
+
+- `ionic serve --external --port=8888`
+
+or use "serve"
 
 - `npm install -g serve`
 - `serve -s build`
@@ -84,6 +88,8 @@ Firebase: <https://gplates-app-5e092.web.app> @gplatesearthbyte@gmail.com
 ### append "&BGCOLOR=0x0000FF" to WMS request to get a background
 
 ### App Store Preview
+
+The command below creates App Store Preview video. There are [some requirements for the App preview video](https://developer.apple.com/help/app-store-connect/reference/app-preview-specifications/).
 
 `ffmpeg -i GPlates-App-preview-age-grid.mp4 -c:v libx264 -profile:v main -level:v 3.1 -c:a copy output.mp4`
 
