@@ -5,6 +5,7 @@ resources/android/splash
 resources/ios/
 *.DS_Store
 build/
+GPlatesAppData/
 
 # Logs
 logs
