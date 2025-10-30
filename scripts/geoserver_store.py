@@ -5,8 +5,11 @@
 
 from geoserver_pyadm import geoserver
 
-# list all data stores in workspace "gplates"
-print(geoserver.get_datastores("gplates"))
+# workspace_name="gplates"
+workspace_name = "gplates-app-present-day"
 
-# list all coverage stores in workspace "gplates"
-print(geoserver.get_coverage_stores("gplates"))
+# list all data stores in workspace
+print(geoserver.get_datastores(workspace_name))
+
+# list all coverage stores in workspace
+print(geoserver.get_coverage_stores(workspace_name))
