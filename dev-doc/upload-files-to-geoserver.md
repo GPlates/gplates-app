@@ -1,4 +1,4 @@
-### Upload a raster file
+### ⬆️ Upload a raster file
 
 Before uploading the raster file, make sure the .tif file is properly georeferenced.
 See [georeference-and-set-srs.sh](../scripts/georeference-and-set-srs.sh) for example.
@@ -17,3 +17,16 @@ See [georeference-and-set-srs.sh](../scripts/georeference-and-set-srs.sh) for ex
 #### Method 2: use Python script
 
 See [upload_local_raster_to_geoserver.py](../scripts/upload_local_raster_to_geoserver.py) for example.
+
+### ⬆️ Upload local shapefiles
+
+#### Method 1: use GeoServer web page
+
+- upload the shapefiles to the server via SFTP. save the files in $geoserver_data_dir/data/$WORKSPACE_NAME/$DATA_STORE_NAME/
+- create a "Shapefile" data store with name $DATA_STORE_NAME in the web page
+- create and publish a layer from the data store in the web page
+- check the "layer preview" to make sure the Shapefile layer is good
+
+#### Method 2: use Python script
+
+See [upload_local_shapefiles_to_geoserver.py](../scripts/upload_local_shapefiles_to_geoserver.py) for example.

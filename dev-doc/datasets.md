@@ -37,13 +37,15 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
   - "wmsUrl": "https://geoserver.gplates.org/geoserver/gplates/wms"
   - "layerName": "gplates:present-day-geology",
 - Agegrid
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/gplates/wms"
+  - wmsUrl: https://geoserver.gplates.org/geoserver/gplates/wms
   - layer name:
     - version 1: gplates:present-day-agegrid
-    - version 2:
+    - version 2: gplates-app-present-day:Seton_etal_2020_PresentDay_AgeGrid (latest)
+  - file on server:
+    - version 2: $data_dir/data/Seton_etal_2020_PresentDay_AgeGrid/Seton_etal_2020_PresentDay_AgeGrid.tif
 - CrustalThickness"
-  "wmsUrl": "https://geoserver.gplates.org/geoserver/gplates/wms"
-  "layerName": "gplates:present-day-crustal-thickness",
+  - "wmsUrl": "https://geoserver.gplates.org/geoserver/gplates/wms"
+  - "layerName": "gplates:present-day-crustal-thickness",
 
 #### Paleo-rasters
 
@@ -66,7 +68,7 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
   - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
   - "layerName": "MULLER2019YC:paleobathymetry-with-topo-{{time}}-Ma",
 
-#### Vector data
+#### Paleo-vector data
 
 - coastlines
   - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
@@ -80,9 +82,16 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 - static-polygons
   - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
   - "layerName": "MULLER2019YC:static-polygons-{{time}}-Ma",
+
+#### Present-day vector data
+
 - present-day-coastlines
-  - "url": "https://geoserver.gplates.org/geoserver/gwc/service/wmts",
-  - "layerName": "gplates:Global_EarthByte_GPlates_PresentDay_Coastlines",
+  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
+  - layerName:
+    - Version 1: gplates:Global_EarthByte_GPlates_PresentDay_Coastlines
+    - Version 2: gplates-app-present-day:Zahirovic_etal_2022_Global_coastlines_low_res
+  - file on server:
+    - version 2: $data_dir/data/gplates-app-present-day/Zahirovic_etal_2022_Global_coastlines_low_res/
 - present-day-static-polygons
   - "url": "https://geoserver.gplates.org/geoserver/gwc/service/wmts",
   - "layerName": "gplates:Global_EarthByte_GPlates_PresentDay_StaticPlatePolygons",

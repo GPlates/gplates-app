@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 #
 # pip3 install geoserver-pyadm
+# you also need a .env file to run this script. see https://github.com/michaelchin/geoserver-pyadm/blob/main/src/geoserver_pyadm/env-template.txt
 #
 from geoserver_pyadm import geoserver
 
