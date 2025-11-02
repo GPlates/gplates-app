@@ -24,7 +24,10 @@ See [upload_local_raster_to_geoserver.py](../scripts/upload_local_raster_to_geos
 
 - upload the shapefiles to the server via SFTP. save the files in $geoserver_data_dir/data/$WORKSPACE_NAME/$DATA_STORE_NAME/
 - create a "Shapefile" data store with name $DATA_STORE_NAME in the web page
+  <img width="561" height="591" alt="Screenshot 2025-11-03 at 8 26 06 am" src="https://github.com/user-attachments/assets/0d52d353-02de-4b1a-9ac1-acb9b9e57f80" />
+  <img width="678" height="645" alt="Screenshot 2025-11-03 at 8 30 36 am" src="https://github.com/user-attachments/assets/5532dca1-2e93-48cd-a4f3-3b7478c6e1be" />
 - create and publish a layer from the data store in the web page
+  <img width="745" height="259" alt="Screenshot 2025-11-03 at 8 31 36 am" src="https://github.com/user-attachments/assets/343c6d64-af00-4357-b98c-ba61edc8af1c" />
 - check the "layer preview" to make sure the Shapefile layer is good
 
 #### Method 2: use Python script
