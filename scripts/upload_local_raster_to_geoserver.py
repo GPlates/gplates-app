@@ -10,13 +10,32 @@ workspace_name = "gplates-app-present-day"
 # create the workspace if it doesn't exist already
 # geoserver.create_workspace(workspace_name)
 
+# Age Grid
+# store_name = "Seton_etal_2020_PresentDay_AgeGrid"
+# raster_path = f"../GPlatesAppData/Agegrid/{store_name}.shp"
+
+# Topography
+# store_name = "GEBCO_2024_sub_ice_topo"
+# raster_path = f"../GPlatesAppData/PresentDay-Topography/GEBCO/{store_name}.tif"
+
+# Geology
+# store_name = "Hasterok_etal_2022_global-gprv"
+# raster_path = f"../GPlatesAppData/PresentDay-Geology/{store_name}.tif"
+
+# Crustal Thickness
+store_name = "Alfonso_etal_2019_crustal-thickness"
+raster_path = f"../GPlatesAppData/PresentDay-CrustalThickness/{store_name}.tif"
+
+
+layer_name = store_name
+
 # upload the local raster file
-# the file will be stored in $geoserver_data_dir/data/gplates-app-present-day/Seton_etal_2020_PresentDay_AgeGrid/ on the server.
+# the file will be saved in $geoserver_data_dir/data/$workspace_name/$store_name/ on the server.
 r = geoserver.upload_raster(
     workspace_name,
-    "Seton_etal_2020_PresentDay_AgeGrid",  # data store name, this function will create a new datastore with this name
-    f"../GPlatesAppData/Agegrid/Seton_etal_2020_PresentDay_AgeGrid.tif",  # the local path to the raster file
-    coverage_name="Seton_etal_2020_PresentDay_AgeGrid",  # the layer name, this function will create a new layer with this name
+    store_name,  # data store name, this function will create a new datastore with this name
+    raster_path,  # the local path to the raster file
+    coverage_name=layer_name,  # the layer name, this function will create a new layer with this name
     file_fmt="geotiff",
     configure="all",
 )
