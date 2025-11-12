@@ -1,4 +1,4 @@
-### ⬆️ Upload a raster file
+### ⬆️ Upload and publish a raster file
 
 Before uploading the raster file, make sure the .tif file is properly georeferenced.
 See [georeference-and-set-srs.sh](../scripts/georeference-and-set-srs.sh) for example.
@@ -18,7 +18,7 @@ See [georeference-and-set-srs.sh](../scripts/georeference-and-set-srs.sh) for ex
 
 See [upload_local_raster_to_geoserver.py](../scripts/upload_local_raster_to_geoserver.py) for example.
 
-### ⬆️ Upload local shapefiles
+### ⬆️ Upload and publish local shapefiles
 
 #### Method 1: use GeoServer web page
 
@@ -33,3 +33,17 @@ See [upload_local_raster_to_geoserver.py](../scripts/upload_local_raster_to_geos
 #### Method 2: use Python script
 
 See [upload_local_shapefiles_to_geoserver.py](../scripts/upload_local_shapefiles_to_geoserver.py) for example.
+
+### ⬆️ Upload and publish time-dependent rasters
+
+- make sure the rasters are georeferenced
+- upload the time-dependent rasters to the server via SFTP. save the files in the folder $geoserver_data_dir/data/$WORKSPACE_NAME/$RASTER_NAME/
+- run script [publish_time_dependent_rasters.py](../scripts/publish_time_dependent_rasters.py)
+- check the "layer preview" to make sure the raster layers are good
+
+### ⬆️ Upload and publish time-dependent shapefiles
+
+- upload the time-dependent shapefiles to the server via SFTP. save the files in the folder $geoserver_data_dir/data/$WORKSPACE_NAME/$STORE_NAME/
+- create a data store via web page
+- run script [publish_time_dependent_shapefiles.py](../scripts/publish_time_dependent_shapefiles.py)
+- check the "layer preview" to make sure the Shapefile layers are good

@@ -1,10 +1,10 @@
 ### GeoServer
 
-GPlates app data is stored in a GeoServer.
+GPlates app data is stored in our GeoServer.
 
 https://geoserver.gplates.org/geoserver/web/?0
 
-Note: Some information has been encrypted with Michael Chin's public key for security reasons.
+Note: Some information below has been encrypted with Michael Chin's public key for security reasons.
 
 The user name and password is encrypted with Michael Chin's public key.
 
@@ -24,11 +24,12 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 
 ### Datasets
 
-- [Present-day rasters](#present-day-rasters)
-- [Paleo-rasters](#paleo-rasters)
-- [Vector data](#vector-data)
+- [Present-day Rasters](#present-day-rasters)
+- [Time-dependent Rasters](#time-dependent-rasters)
+- [Vector Data](#present-day-vector-data)
+- [Time-dependent Vector Data](#time-dependent-vector-data)
 
-#### Present-day rasters
+#### Present-day Rasters
 
 - Topography
   - wmsUrl: https://geoserver.gplates.org/geoserver/gplates/wms
@@ -66,7 +67,7 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
     - Version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Alfonso_etal_2019_crustal-thickness/
 
-#### Paleo-rasters
+#### Time-dependent Rasters
 
 - paleo-age-grid
   - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
@@ -87,22 +88,51 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
   - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
   - "layerName": "MULLER2019YC:paleobathymetry-with-topo-{{time}}-Ma",
 
-#### Paleo-vector data
+#### Time-dependent Vector Data
 
 - coastlines
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:coastlines-{{time}}-Ma",
+  - wmsUrl
+    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
+    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
+  - layerName:
+    - version 1: MULLER2019YC:coastlines-{{time}}-Ma
+    - version 2: gplates-app-zahirovic2022:coastlines-{{time}}-Ma
+  - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Coastlines/
 - plate-boundary
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:plate-boundary-polygons-{{time}}-Ma",
-- subduction
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:subduction-polyline-{{time}}-Ma",
-- static-polygons
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:static-polygons-{{time}}-Ma",
+  - wmsUrl
+    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
+    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
+  - layerName:
+    - version 1: MULLER2019YC:plate-boundary-polygons-{{time}}-Ma
+    - version 2: gplates-app-zahirovic2022:plate_boundaries-{{time}}-Ma
+  - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Plate-Boundaries/
 
-#### Present-day vector data
+- subduction
+  - wmsUrl:
+    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
+    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
+  - layerName:
+    - version 1: MULLER2019YC:subduction-polyline-{{time}}-Ma
+    - version 2: gplates-app-zahirovic2022:topology_subduction_boundaries-{{time}}-Ma
+  - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Subduction-Zones/
+- static-polygons
+  - wmsUrl:
+    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
+    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
+  - layerName:
+    - version 1: MULLER2019YC:static-polygons-{{time}}-Ma
+    - version 2: gplates-app-zahirovic2022:static-polygons-{{time}}-Ma
+  - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Static-Plate-Polygons/
+
+#### Present-day Vector Data
 
 - present-day-coastlines
   - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
