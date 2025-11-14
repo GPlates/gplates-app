@@ -31,41 +31,115 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 
 #### Present-day Rasters
 
-- Topography
-  - wmsUrl: https://geoserver.gplates.org/geoserver/gplates/wms
-  - layerName:
-    - Version 1: [gplates:present-day-topography](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-topography&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:GEBCO_2024_sub_ice_topo](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AGEBCO_2024_sub_ice_topo&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+- Topography (GEBCO)
+  - layer name:
+    - version 1: [gplates:present-day-topography](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-topography&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:GEBCO_2024_sub_ice_topo](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AGEBCO_2024_sub_ice_topo&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/GEBCO_2024_sub_ice_topo/
+  - file source:
+    - Version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-Topography/GEBCO/GEBCO_2024_sub_ice_topo.tif
 
-- Geology
-  - wmsUrl: https://geoserver.gplates.org/geoserver/gplates/wms
-  - layerName:
-    - Version 1: [gplates:present-day-geology](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-geology&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Hasterok_etal_2022_global-gprv](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AHasterok_etal_2022_global-gprv&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+- Geology (Hasterok)
+  - layer name:
+    - version 1: [gplates:present-day-geology](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-geology&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Hasterok_etal_2022_global-gprv](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AHasterok_etal_2022_global-gprv&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Hasterok_etal_2022_global-gprv/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-Geology/Hasterok_etal_2022_global-gprv.tif
 
-- Agegrid
-  - wmsUrl: https://geoserver.gplates.org/geoserver/gplates/wms
+- Seafloor Age
   - layer name:
     - version 1: [gplates:present-day-agegrid](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-agegrid&bbox=-180.0%2C-90.0%2C180.00000000000006%2C90.0&width=768&height=383&srs=EPSG%3A4326&styles=&format=application/openlayers)
     - version 2: [gplates-app-present-day:Seton_etal_2020_PresentDay_AgeGrid](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASeton_etal_2020_PresentDay_AgeGrid&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Seton_etal_2020_PresentDay_AgeGrid/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/Agegrid/Seton_etal_2020_PresentDay_AgeGrid.tif
 
-- CrustalThickness
-  - wmsUrl: https://geoserver.gplates.org/geoserver/gplates/wms
-  - layerName:
-    - Version 1: [gplates:present-day-crustal-thickness](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-crustal-thickness&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:gplates-app-present-day:Alfonso_etal_2019_crustal-thickness](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AAlfonso_etal_2019_crustal-thickness&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+- Crustal Thickness
+  - layer name:
+    - version 1: [gplates:present-day-crustal-thickness](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-crustal-thickness&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:gplates-app-present-day:Alfonso_etal_2019_crustal-thickness](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AAlfonso_etal_2019_crustal-thickness&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Alfonso_etal_2019_crustal-thickness/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-CrustalThickness/Alfonso_etal_2019_crustal-thickness.tif
+
+- Vertical Gravity Gradient
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-present-day:Sandwell_etal_curv_SWOT_03](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASandwell_etal_curv_SWOT_03&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-present-day/Sandwell_etal_curv_SWOT_03/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/VerticalGravityGradient/Sandwell_etal_curv_SWOT_03.tif
+
+- Asymmetry
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-present-day:Seton_etal_2020_PresentDayAsymmetry6m_GeeK2007](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASeton_etal_2020_PresentDayAsymmetry6m_GeeK2007&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-present-day/Seton_etal_2020_PresentDayAsymmetry6m_GeeK2007/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-Asymmetry/Seton_etal_2020_PresentDayAsymmetry6m_GeeK2007.tif
+
+- Polymetallic Nodules
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-present-day:Dutkiewicz_etal_2020_nodule_occurrence_prob_mean](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ADutkiewicz_etal_2020_nodule_occurrence_prob_mean&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-present-day/Dutkiewicz_etal_2020_nodule_occurrence_prob_mean/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-PolymetallicNodules/Dutkiewicz_etal_2020_nodule_occurrence_prob_mean.tif
+
+- Satellite Topography
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-present-day:Sandwell_etal_topo_25.1](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASandwell_etal_topo_25.1&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-present-day/Sandwell_etal_topo_25.1/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-SatelliteTopography/Sandwell_etal_topo_25.1.tif
+
+- Seafloor Lithology
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-present-day:Dutkiewicz_etal_2020_seabed_lithology_v1](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ADutkiewicz_etal_2020_seabed_lithology_v1&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-present-day/Dutkiewicz_etal_2020_seabed_lithology_v1/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-SeafloorLithology/Dutkiewicz_etal_2020_seabed_lithology_v1.tif
+
+- Spreading Rate
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-present-day:Seton_etal_2020_PresentDaySR6m_GeeK2007](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASeton_etal_2020_PresentDaySR6m_GeeK2007&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-present-day/Seton_etal_2020_PresentDaySR6m_GeeK2007/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-SpreadingRate/Seton_etal_2020_PresentDaySR6m_GeeK2007.tif
 
 #### Time-dependent Rasters
 

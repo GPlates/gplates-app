@@ -10,9 +10,9 @@ workspace_name = "gplates-app-present-day"
 # create the workspace if it doesn't exist already
 # geoserver.create_workspace(workspace_name)
 
-# Age Grid
+# Seafloor Age
 # store_name = "Seton_etal_2020_PresentDay_AgeGrid"
-# raster_path = f"../GPlatesAppData/Agegrid/{store_name}.shp"
+# raster_path = f"../GPlatesAppData/Agegrid/{store_name}.tif"
 
 # Topography
 # store_name = "GEBCO_2024_sub_ice_topo"
@@ -23,9 +23,32 @@ workspace_name = "gplates-app-present-day"
 # raster_path = f"../GPlatesAppData/PresentDay-Geology/{store_name}.tif"
 
 # Crustal Thickness
-store_name = "Alfonso_etal_2019_crustal-thickness"
-raster_path = f"../GPlatesAppData/PresentDay-CrustalThickness/{store_name}.tif"
+# store_name = "Alfonso_etal_2019_crustal-thickness"
+# raster_path = f"../GPlatesAppData/PresentDay-CrustalThickness/{store_name}.tif"
 
+# Vertical Gravity Gradient
+# store_name = "Sandwell_etal_curv_SWOT_03"
+# raster_path = f"../GPlatesAppData/VerticalGravityGradient/{store_name}.tif"
+
+# Asymmetry
+# store_name = "Seton_etal_2020_PresentDayAsymmetry6m_GeeK2007"
+# raster_path = f"../GPlatesAppData/PresentDay-Asymmetry/{store_name}.tif"
+
+# Polymetallic Nodules
+# store_name = "Dutkiewicz_etal_2020_nodule_occurrence_prob_mean"
+# raster_path = f"../GPlatesAppData/PresentDay-PolymetallicNodules/{store_name}.tif"
+
+# Satellite Topography
+# store_name = "Sandwell_etal_topo_25.1"
+# raster_path = f"../GPlatesAppData/PresentDay-SatelliteTopography/{store_name}.tif"
+
+# Seafloor Lithology
+# store_name = "Dutkiewicz_etal_2020_seabed_lithology_v1"
+# raster_path = f"../GPlatesAppData/PresentDay-SeafloorLithology/{store_name}.tif"
+
+# Spreading Rate
+store_name = "Seton_etal_2020_PresentDaySR6m_GeeK2007"
+raster_path = f"../GPlatesAppData/PresentDay-SpreadingRate/{store_name}.tif"
 
 layer_name = store_name
 
