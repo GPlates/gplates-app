@@ -42,8 +42,14 @@ workspace_name = "gplates-app-present-day"
 # )
 
 # Seafloor Fabric
-store_name = "Zahirovic_etal_2022_SeafloorFabric"
-shapefile_path = f"../GPlatesAppData/PresentDay-SeafloorFabric/{store_name}.shp"
+# store_name = "Zahirovic_etal_2022_SeafloorFabric"
+# shapefile_path = f"../GPlatesAppData/PresentDay-SeafloorFabric/{store_name}.shp"
+
+# Drill Sites
+store_name = "Drilled_Holes_IODP20250818"
+shapefile_path = (
+    f"../GPlatesAppData/PresentDay_DSDP-ODP-IODP-Drillsites/{store_name}.shp"
+)
 
 layer_name = store_name
 

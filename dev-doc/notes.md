@@ -94,3 +94,12 @@ The command below creates App Store Preview video. There are [some requirements 
 `ffmpeg -i GPlates-App-preview-age-grid.mp4 -c:v libx264 -profile:v main -level:v 3.1 -c:a copy output.mp4`
 
 `ffprobe -loglevel error -show_streams GPlates-App-preview-age-grid.mp4`
+
+### Dev on MC's macbook
+
+- start Docker daemon
+- go to GWS repository root and run `./scripts/start-gws-dev.sh`
+- in GPlates app repository root run `ionic serve`
+- set the server URL to `http://0.0.0.0:18000`
+
+Note: after having modified the basemap-cfg.json, the GPlates app may failed to load the raster configuration. Use `docker exec -it 7ac226117201 /bin/bash` and `ls /gws/data/mobile-app`

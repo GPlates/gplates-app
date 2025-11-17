@@ -144,139 +144,181 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 #### Time-dependent Rasters
 
 - paleo-age-grid
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:age-grid-{{time}}-Ma",
+  - layer name:
+    - [MULLER2019YC:age-grid-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Aage-grid-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+
 - paleobathymetry
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:paleobathymetry-{{time}}-Ma",
+  - layer name:
+    - version 1: [MULLER2019YC:paleobathymetry-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleobathymetry-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+
 - paleo-topo
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:paleotopo*1.00d*{{time}}.00Ma",
+  - layer name:
+    - version 1: [MULLER2019YC:paleotopo_1.00d\_{{time}}.00Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleotopo_1.00d_0.00Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - note: the store names are "paleo-topography-{{time}}-Ma". Search the store name instead of the layer name.
+
 - EMAG2
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:EMAG2-{{time}}-Ma",
+  - layer Nname:
+    - version 1: [MULLER2019YC:EMAG2-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3AEMAG2-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+
 - paleo-geology
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:geology-{{time}}-Ma",
+  - layer name:
+    - version 1: [MULLER2019YC:geology-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Ageology-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:Hasterok_etal_2022_global-gprv_0-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3AHasterok_etal_2022_global-gprv_0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Hasterok-Geology-2022/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Hasterok_etal_2022_GeologyReconstruction/
+
 - paleobathy-topo
-  - "wmsUrl": "https://geoserver.gplates.org/geoserver/MULLER2019YC/wms",
-  - "layerName": "MULLER2019YC:paleobathymetry-with-topo-{{time}}-Ma",
+  - layer name:
+    - version 1: [MULLER2019YC:paleobathymetry-with-topo-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleobathymetry-with-topo-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
 
 #### Time-dependent Vector Data
 
 - coastlines
-  - wmsUrl
-    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
-    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
-  - layerName:
-    - version 1: MULLER2019YC:coastlines-{{time}}-Ma
-    - version 2: gplates-app-zahirovic2022:coastlines-{{time}}-Ma
+  - layer name:
+    - version 1: [MULLER2019YC:coastlines-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Acoastlines-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C83.6539835031362&width=768&height=370&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:coastlines-{{time}}-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Acoastlines-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C83.6539835031362&width=768&height=370&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
     - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-zahirovic2022/Coastlines/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Global_EarthByte_GPlates_PresentDay_Coastlines/
+
 - plate-boundary
-  - wmsUrl
-    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
-    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
-  - layerName:
-    - version 1: MULLER2019YC:plate-boundary-polygons-{{time}}-Ma
-    - version 2: gplates-app-zahirovic2022:plate_boundaries-{{time}}-Ma
+  - layer name:
+    - version 1: [MULLER2019YC:plate-boundary-polygons-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Aplate-boundary-polygons-0-Ma&bbox=-180.0%2C-69.66316744045228%2C180.0%2C86.99049999987092&width=768&height=334&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:plate_boundaries-{{time}}-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Aplate_boundaries-0-Ma&bbox=-180.0%2C-69.6631674404523%2C180.0%2C86.99049999987092&width=768&height=334&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
     - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-zahirovic2022/Plate-Boundaries/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Zahirovic_etal_2022_PlateBoundariesReconstruction/
 
 - subduction
-  - wmsUrl:
-    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
-    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
-  - layerName:
-    - version 1: MULLER2019YC:subduction-polyline-{{time}}-Ma
-    - version 2: gplates-app-zahirovic2022:topology_subduction_boundaries-{{time}}-Ma
+  - layer name:
+    - version 1: [MULLER2019YC:subduction-polyline-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Asubduction-polyline-0-Ma&bbox=-180.0%2C-62.5112645472881%2C180.0%2C60.51799771289321&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:topology_subduction_boundaries-{{time}}-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Atopology_subduction_boundaries-0-Ma&bbox=-180.0%2C-62.51126454728802%2C180.0%2C59.34054205789541&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
     - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-zahirovic2022/Subduction-Zones/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Zahirovic_etal_2022_SubductionZoneReconstruction/
+
 - static-polygons
-  - wmsUrl:
-    - version 1: https://geoserver.gplates.org/geoserver/MULLER2019YC/wms
-    - version 2: https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms
-  - layerName:
-    - version 1: MULLER2019YC:static-polygons-{{time}}-Ma
-    - version 2: gplates-app-zahirovic2022:static-polygons-{{time}}-Ma
+  - layer name:
+    - version 1: [MULLER2019YC:static-polygons-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Astatic-polygons-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:static-polygons-{{time}}-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Astatic-polygons-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
     - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-zahirovic2022/Static-Plate-Polygons/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Global_EarthByte_GPlates_PresentDay_StaticPlatePolygons/
 
 #### Present-day Vector Data
 
 - present-day-coastlines
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:Global_EarthByte_GPlates_PresentDay_Coastlines](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AGlobal_EarthByte_GPlates_PresentDay_Coastlines&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Zahirovic_etal_2022_Global_coastlines_low_res](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_Global_coastlines_low_res&bbox=-180.0%2C-90.0%2C180.0%2C83.6539835031362&width=768&height=370&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:Global_EarthByte_GPlates_PresentDay_Coastlines](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AGlobal_EarthByte_GPlates_PresentDay_Coastlines&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Zahirovic_etal_2022_Global_coastlines_low_res](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_Global_coastlines_low_res&bbox=-180.0%2C-90.0%2C180.0%2C83.6539835031362&width=768&height=370&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Zahirovic_etal_2022_Global_coastlines_low_res/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/Coastlines/
 
 - present-day-static-polygons
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:Global_EarthByte_GPlates_PresentDay_StaticPlatePolygons](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AGlobal_EarthByte_GPlates_PresentDay_StaticPlatePolygons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Global_EarthByte_GPlates_PresentDay_StaticPlatePolygons](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AGlobal_EarthByte_GPlates_PresentDay_StaticPlatePolygons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:Global_EarthByte_GPlates_PresentDay_StaticPlatePolygons](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AGlobal_EarthByte_GPlates_PresentDay_StaticPlatePolygons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Global_EarthByte_GPlates_PresentDay_StaticPlatePolygons](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AGlobal_EarthByte_GPlates_PresentDay_StaticPlatePolygons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Global_EarthByte_GPlates_PresentDay_StaticPlatePolygons/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-StaticPolygons/
 
 - present-day-plate-boundaries
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:present-day-plate-boundaries](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-plate-boundaries&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Zahirovic_etal_2022_PresentDay_Plate_Boundaries](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_PresentDay_Plate_Boundaries&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:present-day-plate-boundaries](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-plate-boundaries&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Zahirovic_etal_2022_PresentDay_Plate_Boundaries](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_PresentDay_Plate_Boundaries&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Zahirovic_etal_2022_PresentDay_Plate_Boundaries/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-PlateBoundaries/
   - note: use polylines or polygons? polygons have vertical line along the dateline.
 
 - present-day-continental-polygons
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:Global_EarthByte_GPlates_PresentDay_ContinentalPolygons](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AGlobal_EarthByte_GPlates_PresentDay_ContinentalPolygons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Global_EarthByte_GPlates_PresentDay_ContinentalPolygons](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AGlobal_EarthByte_GPlates_PresentDay_ContinentalPolygons&bbox=-180.0%2C-90.0%2C180.0%2C84.284379223&width=768&height=371&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:Global_EarthByte_GPlates_PresentDay_ContinentalPolygons](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AGlobal_EarthByte_GPlates_PresentDay_ContinentalPolygons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Global_EarthByte_GPlates_PresentDay_ContinentalPolygons](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AGlobal_EarthByte_GPlates_PresentDay_ContinentalPolygons&bbox=-180.0%2C-90.0%2C180.0%2C84.284379223&width=768&height=371&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Global_EarthByte_GPlates_PresentDay_ContinentalPolygons/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ContinentalPolygons/
 
 - present-day-subduction-zones
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:present-day-subduction-zones](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-subduction-zones&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Zahirovic_etal_2022_PresentDay_Subduction_Zones](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_PresentDay_Subduction_Zones&bbox=-180.0%2C-62.511264547288086%2C180.0%2C59.34054205789541&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:present-day-subduction-zones](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-subduction-zones&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Zahirovic_etal_2022_PresentDay_Subduction_Zones](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_PresentDay_Subduction_Zones&bbox=-180.0%2C-62.511264547288086%2C180.0%2C59.34054205789541&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Zahirovic_etal_2022_PresentDay_Subduction_Zones/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-SubductionZones/
 
 - present-day-isochrons
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:present-day-isochrons](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-isochrons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Seton_etal_2020_Isochrons](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASeton_etal_2020_Isochrons&bbox=-180.0%2C-74.9045%2C180.0%2C89.81969999999968&width=768&height=351&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:present-day-isochrons](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Apresent-day-isochrons&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Seton_etal_2020_Isochrons](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASeton_etal_2020_Isochrons&bbox=-180.0%2C-74.9045%2C180.0%2C89.81969999999968&width=768&height=351&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Seton_etal_2020_Isochrons/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/Isochrons/
 
 - present-day-LIPs
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:Johansson_etal_2018_VolcanicProvinces_v2](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AJohansson_etal_2018_VolcanicProvinces_v2&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Johansson_etal_2018_VolcanicProvinces_v2](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AJohansson_etal_2018_VolcanicProvinces_v2&bbox=-180.0%2C-86.16119956953148%2C180.0%2C86.68269920379208&width=768&height=368&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:Johansson_etal_2018_VolcanicProvinces_v2](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3AJohansson_etal_2018_VolcanicProvinces_v2&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Johansson_etal_2018_VolcanicProvinces_v2](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AJohansson_etal_2018_VolcanicProvinces_v2&bbox=-180.0%2C-86.16119956953148%2C180.0%2C86.68269920379208&width=768&height=368&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
+    - version 1: TO BE FOUND
     - version 2: $data_dir/data/gplates-app-present-day/Johansson_etal_2018_VolcanicProvinces_v2/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-LIPs/
 
 - present-day-seafloor-fabric
-  - url: https://geoserver.gplates.org/geoserver/gwc/service/wmts
-  - layerName:
-    - Version 1: [gplates:seafloor-fabric](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Aseafloor-fabric&bbox=-180.0%2C-75.8306596426%2C180.0%2C71.8500988122&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - Version 2: [gplates-app-present-day:Zahirovic_etal_2022_SeafloorFabric](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_SeafloorFabric&bbox=-180.0%2C-73.71058912280002%2C180.0%2C71.8500988122&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - layer name:
+    - version 1: [gplates:seafloor-fabric](https://geoserver.gplates.org/geoserver/gplates/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates%3Aseafloor-fabric&bbox=-180.0%2C-75.8306596426%2C180.0%2C71.8500988122&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Zahirovic_etal_2022_SeafloorFabric](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3AZahirovic_etal_2022_SeafloorFabric&bbox=-180.0%2C-73.71058912280002%2C180.0%2C71.8500988122&width=768&height=330&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
-    - Version 1: TO BE FOUND
-    - version 2: $data_dir/data/gplates-app-present-day/PresentDay-SeafloorFabric/
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-present-day/Zahirovic_etal_2022_SeafloorFabric/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-SeafloorFabric/
+
+- drill-sites
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-present-day:Drilled_Holes_IODP20250818](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ADrilled_Holes_IODP20250818&bbox=-179.6718467%2C-77.4413%2C179.7375%2C87.93333&width=768&height=353&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-present-day/Drilled_Holes_IODP20250818/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay_DSDP-ODP-IODP-Drillsites/
