@@ -26,7 +26,7 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 
 - [Present-day Rasters](#present-day-rasters)
 - [Time-dependent Rasters](#time-dependent-rasters)
-- [Vector Data](#present-day-vector-data)
+- [Present-day Vector Data](#present-day-vector-data)
 - [Time-dependent Vector Data](#time-dependent-vector-data)
 
 #### Present-day Rasters
