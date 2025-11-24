@@ -3,8 +3,10 @@
 # pip3 install geoserver-pyadm
 #
 
-import os
 from geoserver_pyadm import geoserver
+
+import re
+
 
 # workspace_name="gplates"
 # workspace_name = "gplates-app-present-day"
@@ -18,18 +20,28 @@ print(geoserver.get_datastores(workspace_name))
 coverage_store_names = geoserver.get_coverage_stores(workspace_name)
 # for time-dependent rasters, each time step is a coverage store.
 # this will give us lots of coverage stores.
-# find the common prefix of the coverage store names
-# for example, only print "EMAG2-" for "EMAG2-{{time}}-Ma"
-common_prefixes = []
-for index, value in enumerate(coverage_store_names):
-    if index < len(coverage_store_names) - 1:
-        c_pref = os.path.commonprefix([value, coverage_store_names[index + 1]])
-        break_flag = False
-        for cp in common_prefixes:
-            if c_pref.startswith(cp):
-                break_flag = True
-        if break_flag:
-            continue
-        else:
-            common_prefixes.append(c_pref)
-print(common_prefixes)
+# find the name template of the coverage store names
+# for example, only print one "Hasterok_etal_2022_global-gprv_{{time}}-Ma" instead of all the names
+name_templates = {}
+time_pattern = r"\d+(?:\.\d+)?"
+
+for name in coverage_store_names:
+    matches = re.findall(time_pattern, name)
+    if len(matches) == 0:
+        print(f"Warning: no time found in the store name: {name}.")
+
+    time = matches[-1]  # assume the last number is time
+
+    time_start_index = name.rfind(time)  # assume the last number is time
+    name_template = (
+        name[:time_start_index] + r"{{time}}" + name[time_start_index + len(time) :]
+    )
+    time_number = float(time)
+    if time_number.is_integer():
+        time_number = int(time)
+    if name_template in name_templates:
+        name_templates[name_template].add(time_number)
+    else:
+        name_templates[name_template] = set([time_number])
+
+print(name_templates)

@@ -13,8 +13,14 @@ workspace_name = "gplates-app-zahirovic2022"
 
 
 for i in range(0, 411):
-    store_name = f"Hasterok_etal_2022_global-gprv_{i}-Ma"
-    data_path = f"data/{workspace_name}/Hasterok-Geology-2022/{store_name}.tif"
+    ext = "tiff"
+    store_name = f"asymmetry-platebounds-{i}Ma"
+    data_path = f"data/{workspace_name}/Asymmetry-Plate-Boundaries/{store_name}.{ext}"
+
+    # Hasterok_etal_2022 Geology
+    # store_name = f"Hasterok_etal_2022_global-gprv_{i}-Ma"
+    # data_path = f"data/{workspace_name}/Hasterok-Geology-2022/{store_name}.tif"
+
     layer_name = store_name
 
     print(store_name)
