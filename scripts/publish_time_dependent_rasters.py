@@ -12,7 +12,7 @@ workspace_name = "gplates-app-zahirovic2022"
 # geoserver.create_workspace(workspace_name)
 
 
-for i in range(0, 411):
+for i in range(0, 251):
     ext = "tiff"
     store_name = f"asymmetry-platebounds-{i}Ma"
     data_path = f"data/{workspace_name}/Asymmetry-Plate-Boundaries/{store_name}.{ext}"
@@ -33,5 +33,7 @@ for i in range(0, 411):
     )
     print(r)
     r = geoserver.publish_raster_layer(workspace_name, store_name, layer_name)
+    if r.status_code not in [200, 201]:
+        geoserver.delete_coverage_store(workspace_name, store_name)
     print(r)
     time.sleep(0.5)

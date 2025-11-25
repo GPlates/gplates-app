@@ -14,6 +14,7 @@ workspace_name = "gplates-app-zahirovic2022"
 # workspace_name = "MULLER2019YC"
 
 # list all data stores in workspace
+print("\nData stores:\n")
 print(geoserver.get_datastores(workspace_name))
 
 # list all coverage stores in workspace
@@ -25,14 +26,17 @@ coverage_store_names = geoserver.get_coverage_stores(workspace_name)
 name_templates = {}
 time_pattern = r"\d+(?:\.\d+)?"
 
+# try to deduce the name templates of time-dependent rasters
 for name in coverage_store_names:
     matches = re.findall(time_pattern, name)
     if len(matches) == 0:
-        print(f"Warning: no time found in the store name: {name}.")
+        # print(f"Warning: no time found in the store name: {name}.")
+        name_templates[name] = set([])
+        continue
 
     time = matches[-1]  # assume the last number is time
 
-    time_start_index = name.rfind(time)  # assume the last number is time
+    time_start_index = name.rfind(time)
     name_template = (
         name[:time_start_index] + r"{{time}}" + name[time_start_index + len(time) :]
     )
@@ -44,4 +48,21 @@ for name in coverage_store_names:
     else:
         name_templates[name_template] = set([time_number])
 
-print(name_templates)
+# not all coverage stores are time-dependent rasters
+# sanity check before printing
+
+print("\nCoverage stores:\n")
+for n in name_templates:
+    if len(name_templates[n]) == 0:
+        print(n)
+    elif len(name_templates[n]) == 1:
+        print(n.replace(r"{{time}}", str(list(name_templates[n])[0])))
+    else:
+        times = list(name_templates[n])
+        expected_times = set(range(times[0], times[-1]))
+        diff = expected_times - name_templates[n]
+        print(f"{n}: ({times[0]} Ma - {times[-1]} Ma)")
+        # print(name_templates[n])
+        if len(diff) != 0:
+            print("Warning: some rasters may be missing for some time points.")
+            print(diff)
