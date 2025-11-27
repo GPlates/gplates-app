@@ -5,7 +5,7 @@
 
 from geoserver_pyadm import geoserver
 
-import re
+import re, sys
 
 
 # workspace_name="gplates"
@@ -13,9 +13,14 @@ import re
 workspace_name = "gplates-app-zahirovic2022"
 # workspace_name = "MULLER2019YC"
 
+# allow user to provide workspace name in command line
+if len(sys.argv) > 1:
+    workspace_name = sys.argv[1]
+
 # list all data stores in workspace
-print("\nData stores:\n")
-print(geoserver.get_datastores(workspace_name))
+print("\nData stores:")
+for n in geoserver.get_datastores(workspace_name):
+    print("\t" + n)
 
 # list all coverage stores in workspace
 coverage_store_names = geoserver.get_coverage_stores(workspace_name)
@@ -51,17 +56,17 @@ for name in coverage_store_names:
 # not all coverage stores are time-dependent rasters
 # sanity check before printing
 
-print("\nCoverage stores:\n")
+print("\nCoverage stores:")
 for n in name_templates:
     if len(name_templates[n]) == 0:
-        print(n)
+        print("\t" + n)
     elif len(name_templates[n]) == 1:
-        print(n.replace(r"{{time}}", str(list(name_templates[n])[0])))
+        print("\t" + n.replace(r"{{time}}", str(list(name_templates[n])[0])))
     else:
         times = list(name_templates[n])
         expected_times = set(range(times[0], times[-1]))
         diff = expected_times - name_templates[n]
-        print(f"{n}: ({times[0]} Ma - {times[-1]} Ma)")
+        print(f"\t{n}: ({times[0]} - {times[-1]} Ma)")
         # print(name_templates[n])
         if len(diff) != 0:
             print("Warning: some rasters may be missing for some time points.")

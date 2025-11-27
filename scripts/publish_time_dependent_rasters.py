@@ -11,11 +11,29 @@ workspace_name = "gplates-app-zahirovic2022"
 # create the workspace if it doesn't exist already
 # geoserver.create_workspace(workspace_name)
 
-
-for i in range(0, 251):
+max_time = 251
+for i in range(0, max_time):
     ext = "tiff"
-    store_name = f"asymmetry-platebounds-{i}Ma"
-    data_path = f"data/{workspace_name}/Asymmetry-Plate-Boundaries/{store_name}.{ext}"
+    store_name = f"agegrid-platebounds-{i}Ma"
+    data_path = f"data/{workspace_name}/Agegrid-Plate-Boundaries/{store_name}.{ext}"
+
+    # ext = "tiff"
+    # store_name = f"spreadingrate-platebounds-{i}Ma"
+    # data_path = (
+    #    f"data/{workspace_name}/Spreading-Rate-Plate-Boundaries/{store_name}.{ext}"
+    # )
+
+    # ext = "tif"
+    # store_name = f"EMAG2-{i}-Ma"
+    # data_path = f"data/{workspace_name}/EMAG2/{store_name}.{ext}"
+
+    # ext = "tif"
+    # store_name = f"Global_Geology-{i}-Ma"
+    # data_path = f"data/{workspace_name}/Geology/{store_name}.{ext}"
+
+    # ext = "tiff"
+    # store_name = f"asymmetry-platebounds-{i}Ma"
+    # data_path = f"data/{workspace_name}/Asymmetry-Plate-Boundaries/{store_name}.{ext}"
 
     # Hasterok_etal_2022 Geology
     # store_name = f"Hasterok_etal_2022_global-gprv_{i}-Ma"

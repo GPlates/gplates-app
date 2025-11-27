@@ -145,7 +145,14 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 
 - paleo-age-grid
   - layer name:
-    - [MULLER2019YC:age-grid-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Aage-grid-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 1: [MULLER2019YC:age-grid-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Aage-grid-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:agegrid-platebounds-{{time}}Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Aagegrid-platebounds-0Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Agegrid-Plate-Boundaries/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/RasterOverlays/Agegrid_PlateBoundaries/
 
 - paleobathymetry
   - layer name:
@@ -159,21 +166,61 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 - EMAG2
   - layer Nname:
     - version 1: [MULLER2019YC:EMAG2-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3AEMAG2-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:EMAG2-{{time}}-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3AEMAG2-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/EMAG2/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Zahirovic_etal_2022_EMAG2Reconstruction/
+
+- hasterok-geology
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-zahirovic2022:Hasterok*etal_2022_global-gprv*{{time}}-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3AHasterok_etal_2022_global-gprv_0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+  - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Hasterok-Geology-2022/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Hasterok_etal_2022_GeologyReconstruction/
 
 - paleo-geology
   - layer name:
     - version 1: [MULLER2019YC:geology-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Ageology-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - version 2: [gplates-app-zahirovic2022:Hasterok_etal_2022_global-gprv_0-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3AHasterok_etal_2022_global-gprv_0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:Global_Geology-{{time}}-Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3AGlobal_Geology-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
     - version 1: TO BE FOUND
-    - version 2: $data_dir/data/gplates-app-zahirovic2022/Hasterok-Geology-2022/
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Geology/
   - file source:
     - version 1: Unknown
-    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Hasterok_etal_2022_GeologyReconstruction/
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructionData/Zahirovic_etal_2022_GeologyReconstruction/
 
 - paleobathy-topo
   - layer name:
     - version 1: [MULLER2019YC:paleobathymetry-with-topo-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleobathymetry-with-topo-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+
+- asymmetry-platebounds
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-zahirovic2022:asymmetry-platebounds-{{time}}Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Aasymmetry-platebounds-0Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Asymmetry-Plate-Boundaries/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/RasterOverlays/Asymmetry_PlateBoundaries/
+
+- spreadingrate-platebounds
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-zahirovic2022:spreadingrate-platebounds-{{time}}Ma](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Aspreadingrate-platebounds-0Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Spreading-Rate-Plate-Boundaries /
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/RasterOverlays/SpreadingRate_PlateBoundaries/
 
 #### Time-dependent Vector Data
 
