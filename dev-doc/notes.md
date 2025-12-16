@@ -103,3 +103,9 @@ The command below creates App Store Preview video. There are [some requirements 
 - set the server URL to `http://0.0.0.0:18000`
 
 Note: after having modified the basemap-cfg.json, the GPlates app may failed to load the raster configuration. Use `docker exec -it 7ac226117201 /bin/bash` and `ls /gws/data/mobile-app`
+
+### Misc
+
+Command to turn a colour into transparent. Used to make the globe icons.
+
+`magick vgg-256x256.png -transparent black output.png`

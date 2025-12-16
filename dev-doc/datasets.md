@@ -111,13 +111,13 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
 - Satellite Topography
   - layer name:
     - version 1: N/A
-    - version 2: [gplates-app-present-day:Sandwell_etal_topo_25.1](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASandwell_etal_topo_25.1&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-present-day:Sandwell_etal_topo_27.1](https://geoserver.gplates.org/geoserver/gplates-app-present-day/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-present-day%3ASandwell_etal_topo_27.1&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
   - file on server:
     - version 1: N/A
-    - version 2: $data_dir/data/gplates-app-present-day/Sandwell_etal_topo_25.1/
+    - version 2: $data_dir/data/gplates-app-present-day/Sandwell_etal_topo_27.1/
   - file source:
     - version 1: N/A
-    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-SatelliteTopography/Sandwell_etal_topo_25.1.tif
+    - version 2: $EarthByteNAS/GPlatesAppData/PresentDay-SatelliteTopography/Sandwell_etal_topo_27.1.tif
 
 - Seafloor Lithology
   - layer name:

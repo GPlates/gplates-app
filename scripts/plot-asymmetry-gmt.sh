@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# plot present-day age grid with GMT.
-# you need at least the Seton_etal_2020_PresentDay_AgeGrid.nc and age_2020.cpt to run this script.
+# plot present-day asymmetry grid with GMT.
+# you need at least Seton_etal_2020_PresentDayAsymmetry6m_GeeK2007.nc and asymgrid.cpt to run this script.
 # this script can be modified to plot other grids as well. Change "grid_file" and "cpt_file" below.
 
 # --- GMT styling ---
@@ -13,9 +13,9 @@ region=d
 projection=X18/9
 
 # --- files ---
-grid_file=./Seton_etal_2020_PresentDay_AgeGrid.nc
-cpt_file=./age_2020.cpt
-file_basename=Seton_etal_2020_PresentDay_AgeGrid
+grid_file=./Seton_etal_2020_PresentDayAsymmetry6m_GeeK2007.nc
+cpt_file=./asymgrid.cpt
+file_basename=Seton_etal_2020_PresentDayAsymmetry6m_GeeK2007
 
 # if the files does not exist, they will not be plotted.
 topology_boundaries=
@@ -27,7 +27,7 @@ subduction_right=
 
 
 # set to 0 if you don't want GMT coastlines.
-PLOT_GMT_COASTLINES=1
+PLOT_GMT_COASTLINES=0
 
 # set to 0 if you don't want NaN values are transparent, then NaN values will be plotted using the "N" colour in the cpt file.
 TRANSPARENT_NAN=0

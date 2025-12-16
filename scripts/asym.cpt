@@ -1,0 +1,17 @@
+#	cpt file created by makecpt on Wed Aug 30 06:05:47 1995
+#	No input V1.0 shade table was given; an iso-hue rainbow was made.
+#	Contours were made using a mid-value of 50 and a contour interval of 5
+#	Color palette is continous
+#
+30      0       0       200     35      0       0       200
+35      0       100     255     40      0       100     255
+40      100     150     235     45      100     150     235
+45      135     205     250     47.5    135     205     250
+47.5    190     255     0       52.5    190     255     0
+52.5    255     210     0       55      255     210     0
+55      255     150     0       60      255     150     0
+60      255     100     0       65      255     100     0
+65      255     50      0       70      255     50      0
+B         0      0      200
+F       255     50      0
+N       140     140     140
