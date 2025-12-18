@@ -1,10 +1,10 @@
 {
-	"appId": "gplates.app",
+	"appId": "earthbyte.gplates.edu",
 	"appName": "GPlates",
 	"webDir": "build",
-	"bundledWebRuntime": false,
 	"server": {
-		"cleartext": true
+		"cleartext": true,
+		"androidScheme": "https"
 	},
 	"plugins": {
 		"SplashScreen": {

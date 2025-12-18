@@ -1,3 +1,16 @@
+## Very Important Notes, please read.
+
+### sql.js
+
+Currently, only version 1.8.0 works, as of 2025-09-19.
+
+⚠️ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
+
+### react-router-dom
+
+As of 2025-09-19, the ionic/react-router still does not support react-router-dom version 6+.
+Use react-router-dom version 5.3.4 until Ionic framework supports react-router-dom version 6+.
+
 ## Run the app in the simulators
 
 You need Java 11 and Android studio 2021.2.1 or newer.
@@ -6,7 +19,7 @@ You need Java 11 and Android studio 2021.2.1 or newer.
 
 The following steps worked on my Macbook Pro.
 
-- `nvm use 18`
+- `nvm use 24`
 - `npm install --legacy-peer-deps`
 - `source ./set-env.sh`
 - `ionic capacitor run android -l --external`
@@ -16,7 +29,11 @@ The following steps worked on my Macbook Pro.
 
 - `npm start`/`ionic serve`
 
-or
+If you want to listen on external IP address and use another port, use the command below.
+
+- `ionic serve --external --port=8888`
+
+or use "serve"
 
 - `npm install -g serve`
 - `serve -s build`
@@ -30,6 +47,7 @@ or
 
 Or
 
+- `source ./set-env.sh`
 - Run `ionic capacitor run android` and select your device
 
 ## Deploy on ios device
@@ -55,10 +73,6 @@ You can try `sudo gem install cocoapods` to install [CocoaPods](https://cocoapod
 
 To install CocoaPods on an [M1](https://stackoverflow.com/questions/64901180/how-to-run-cocoapods-on-apple-silicon-m1) mac, use HomeBrew: `brew install cocoapods`
 
-### Upgrade @capacitor-community/sqlite
-
-⚠ Remember to copy manually the file sql-wasm.wasm from nodes_modules/sql.js/dist/sql-wasm.wasm to the public/assets folder of YOUR_APP
-
 ### Deploy
 
 GPlates server: <https://pwa.gplates.org>
@@ -75,6 +89,23 @@ Firebase: <https://gplates-app-5e092.web.app> @gplatesearthbyte@gmail.com
 
 ### App Store Preview
 
+The command below creates App Store Preview video. There are [some requirements for the App preview video](https://developer.apple.com/help/app-store-connect/reference/app-preview-specifications/).
+
 `ffmpeg -i GPlates-App-preview-age-grid.mp4 -c:v libx264 -profile:v main -level:v 3.1 -c:a copy output.mp4`
 
 `ffprobe -loglevel error -show_streams GPlates-App-preview-age-grid.mp4`
+
+### Dev on MC's macbook
+
+- start Docker daemon
+- go to GWS repository root and run `./scripts/start-gws-dev.sh`
+- in GPlates app repository root run `ionic serve`
+- set the server URL to `http://0.0.0.0:18000`
+
+Note: after having modified the basemap-cfg.json, the GPlates app may failed to load the raster configuration. Use `docker exec -it 7ac226117201 /bin/bash` and `ls /gws/data/mobile-app`
+
+### Misc
+
+Command to turn a colour into transparent. Used to make the globe icons.
+
+`magick vgg-256x256.png -transparent black output.png`

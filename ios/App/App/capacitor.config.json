@@ -2,13 +2,29 @@
 	"appId": "earthbyte.gplates.edu",
 	"appName": "GPlates",
 	"webDir": "build",
-	"bundledWebRuntime": false,
 	"server": {
-		"cleartext": true
+		"cleartext": true,
+		"androidScheme": "https"
 	},
 	"plugins": {
 		"SplashScreen": {
 			"launchAutoHide": false
 		}
-	}
+	},
+	"packageClassList": [
+		"MediaPlugin",
+		"CapacitorSQLitePlugin",
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"FilesystemPlugin",
+		"GeolocationPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"CAPNetworkPlugin",
+		"PreferencesPlugin",
+		"SharePlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin",
+		"CDVPlugin"
+	]
 }

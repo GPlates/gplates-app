@@ -14,11 +14,14 @@ import {
   homeOutline,
   shareSocialOutline,
   informationOutline,
+  chevronUpCircleOutline,
+  timeOutline,
 } from 'ionicons/icons'
+
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
-import './CustomToolbar.scss'
+import './TopButtons.scss'
 import React, { Fragment, useState, useEffect } from 'react'
-import { useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetAppState, useAppStateValue } from '../functions/appStates'
 import {
   cesiumViewer,
   HOME_LONGITUDE,
@@ -31,10 +34,13 @@ import 'swiper/css/pagination'
 import { Geolocation } from '@capacitor/geolocation'
 import {
   ageState,
+  useAppState,
   isAddLocationWidgetShowState,
   isModelInfoShowState,
   currentRasterIDState,
-} from '../functions/atoms'
+  showTimeButtonState,
+  showTimeSliderState,
+} from '../functions/appStates'
 import { SocialSharing } from './SocialSharing'
 import { currentModel } from '../functions/rotationModel'
 import { serverURL } from '../functions/settings'
@@ -55,12 +61,14 @@ let plateIDMap: Map<string, number> = new Map<string, number>()
  * @param param0
  * @returns
  */
-const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
-  const setShowModelInfo = useSetRecoilState(isModelInfoShowState)
-  const paleoAge = useRecoilValue(ageState)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
+const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
+  const setShowModelInfo = useSetAppState(isModelInfoShowState)
+  const paleoAge = useAppStateValue(ageState)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
   const [presentToast, dismissToast] = useIonToast()
   const [present, dismiss] = useIonLoading()
+  const [showTimeButton, setShowTimeButton] = useAppState(showTimeButtonState) //the button to open time slider
+  const [showTimeSlider, setShowTimeSlider] = useAppState(showTimeSliderState)
 
   const sceneModes = [
     {
@@ -73,7 +81,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
             destination: Cartesian3.fromDegrees(
               HOME_LONGITUDE,
               HOME_LATITUDE,
-              getDefaultCameraHeight()
+              getDefaultCameraHeight(),
             ),
           })
         }, 2500) //wait for the morphTo3D to finish(by default 2 seconds morphTo3D to finish)
@@ -94,9 +102,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     },
   ]
   const [mode, setMode] = useState(sceneModes[0])
-  const setShowAddLocationWidget = useSetRecoilState(
-    isAddLocationWidgetShowState
-  )
+  const setShowAddLocationWidget = useSetAppState(isAddLocationWidgetShowState)
 
   /**
    * update the current location point on Cesium globe
@@ -138,7 +144,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
             ',' +
             currentLocationLat +
             '&model=' +
-            currentModel!.name
+            currentModel!.name,
         )
         let jsonData = await result.json()
         plateIDMap.set(currentModel!.name, jsonData[0])
@@ -179,7 +185,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           destination: Cartesian3.fromDegrees(
             currentLocationLon,
             currentLocationLat,
-            getDefaultCameraHeight()
+            getDefaultCameraHeight(),
           ),
         })
       } else {
@@ -189,7 +195,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           if (pid !== undefined) {
             let newLatLon = currentModel.rotate(
               { lat: currentLocationLat, lon: currentLocationLon, pid: pid },
-              paleoAge
+              paleoAge,
             )
             //console.log(newLatLon)
             if (newLatLon !== undefined) {
@@ -197,13 +203,13 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
               paleoCurrentLocationLon = newLatLon.lon
               updateCurrentLocationEntity(
                 paleoCurrentLocationLat,
-                paleoCurrentLocationLon
+                paleoCurrentLocationLon,
               )
               scene.camera.flyTo({
                 destination: Cartesian3.fromDegrees(
                   paleoCurrentLocationLon,
                   paleoCurrentLocationLat,
-                  getDefaultCameraHeight()
+                  getDefaultCameraHeight(),
                 ),
               })
             }
@@ -226,7 +232,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
       if (pid !== undefined) {
         let newLatLon = currentModel.rotate(
           { lat: currentLocationLat, lon: currentLocationLon, pid: pid },
-          paleoAge
+          paleoAge,
         )
 
         if (newLatLon !== undefined) {
@@ -234,7 +240,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
           paleoCurrentLocationLon = newLatLon.lon
           updateCurrentLocationEntity(
             paleoCurrentLocationLat,
-            paleoCurrentLocationLon
+            paleoCurrentLocationLon,
           )
         }
       }
@@ -258,7 +264,7 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
     : true
 
   return (
-    <Fragment>
+    <div className="top-buttons-container">
       <IonButton className="round-button" onClick={goHome}>
         <IonIcon icon={homeOutline} />
       </IonButton>
@@ -313,7 +319,17 @@ const CustomToolbar: React.FC<ToolbarProps> = ({ scene }) => {
       >
         <IonIcon icon={shareSocialOutline} />
       </IonButton>
-    </Fragment>
+
+      {/* the button to show or hide time slider */}
+      <IonButton
+        className="round-button show-button"
+        style={{ display: showTimeButton ? '' : 'none' }}
+        onClick={() => setShowTimeSlider(showTimeSlider ? false : true)}
+        size="default"
+      >
+        <IonIcon icon={showTimeSlider ? chevronUpCircleOutline : timeOutline} />
+      </IonButton>
+    </div>
   )
 }
-export default CustomToolbar
+export default TopButtons

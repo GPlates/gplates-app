@@ -12,7 +12,7 @@ import {
 import './Main.scss'
 
 import { Ion } from 'cesium'
-import CustomToolbar from '../components/CustomToolbar'
+import TopButtons from '../components/TopButtons'
 import { SettingMenuPage } from './SettingMenuPage'
 import AgeSlider from '../components/AgeSlider'
 import { RasterMenu } from '../components/RasterMenu'
@@ -24,7 +24,6 @@ import { cachingServant } from '../functions/cache'
 import { AnimationService } from '../functions/animation'
 import { StarrySky } from '../components/StarrySky'
 import { VectorDataLayerMenu } from '../components/VectorDataLayerMenu'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   ageState,
   animateExact,
@@ -45,7 +44,7 @@ import {
   rasterGroupState,
   currentRasterIDState,
   showTimeStampState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { cesiumViewer, initCesiumViewer } from '../functions/cesiumViewer'
 import rasterMaps, {
   loadRasterMaps,
@@ -67,6 +66,11 @@ import { createCesiumImageryProvider } from '../functions/cesiumViewer'
 import { setPresentDataAlert } from '../functions/network'
 import NetworkIndicator from '../components/NetworkIndicator'
 import { DEBUG } from '../functions/settings'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 
 Ion.defaultAccessToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlMGFjYTVjNC04OTJjLTQ0Y2EtYTExOS1mYzAzOWFmYmM1OWQiLCJpZCI6MjA4OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg1MzEyNjF9.KyUbfBd_2aCHlvBlrBgdM3c3uDEfYyKoEmWzAHSGSsk'
@@ -75,50 +79,52 @@ let animationService: AnimationService
 let backgroundService: BackgroundService
 
 const Main: React.FC = () => {
-  const isSettingsShown = useRecoilValue(isSettingsMenuShow)
-  const [showAddLocationWidget, setShowAddLocationWidget] = useRecoilState(
-    isAddLocationWidgetShowState
+  const isSettingsShown = useAppStateValue(isSettingsMenuShow)
+  const [showAddLocationWidget, setShowAddLocationWidget] = useAppState(
+    isAddLocationWidgetShowState,
   )
   const ionAlert = useIonAlert()
 
   // Animation
-  const setAge = useSetRecoilState(ageState)
-  const [exact, setExact] = useRecoilState(animateExact)
-  const [fps, setFps] = useRecoilState(animateFps)
-  const [increment, setIncrement] = useRecoilState(animateIncrement)
-  const [loop, setLoop] = useRecoilState(animateLoop)
-  const [playing, _setPlaying] = useRecoilState(animatePlaying)
-  const [range, setRange] = useRecoilState(animateRange)
+  const [age, setAge] = useAppState(ageState)
+  const [exact, setExact] = useAppState(animateExact)
+  const [fps, setFps] = useAppState(animateFps)
+  const [increment, setIncrement] = useAppState(animateIncrement)
+  const [loop, setLoop] = useAppState(animateLoop)
+  const [playing, _setPlaying] = useAppState(animatePlaying)
+  const [range, setRange] = useAppState(animateRange)
 
   // App
-  const _setDarkMode = useSetRecoilState(appDarkMode)
-  const setDownloadOnCellular = useSetRecoilState(networkDownloadOnCellular)
+  const _setDarkMode = useSetAppState(appDarkMode)
+  const setDownloadOnCellular = useSetAppState(networkDownloadOnCellular)
 
   // Background
   const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
-    useRecoilState(backgroundIsEnabled)
+    useAppState(backgroundIsEnabled)
   const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
-    useRecoilState(backgroundIsStarry)
+    useAppState(backgroundIsStarry)
   const [
     isCustomisedColorBackgroundEnable,
     setIsCustomisedColorBackgroundEnable,
-  ] = useRecoilState(backgroundIsCustom)
-  const [color, setColor] = useRecoilState(backgroundColor)
+  ] = useAppState(backgroundIsCustom)
+  const [color, setColor] = useAppState(backgroundColor)
 
   // Raster
-  const setAgeSliderShown = useSetRecoilState(isAgeSliderShown)
-  const [isRasterMapsLoaded, setIsRasterMapsLoaded] = useState(false)
+  const setAgeSliderShown = useSetAppState(isAgeSliderShown)
+  const [, setIsRasterMapsLoaded] = useState(false)
   const [isCesiumViewerReady, setIsCesiumViewerReady] = useState(false)
 
   const [currentRasterID, setCurrentRasterID] =
-    useRecoilState(currentRasterIDState)
-  const rasterGroup = useRecoilValue(rasterGroupState)
-  const setShowTimeStamp = useSetRecoilState(showTimeStampState)
+    useAppState(currentRasterIDState)
+  const rasterGroup = useAppStateValue(rasterGroupState)
+  const setShowTimeStamp = useSetAppState(showTimeStampState)
   const [isOffline, setIsOffline] = useState(false)
   //we don't show message if the app is online at startup
   const isStartupOnline = useRef(true)
 
   const [presentToast, dismissToast] = useIonToast()
+
+  const showTimeStamp = useAppStateValue(showTimeStampState)
 
   animationService = new AnimationService(
     cachingServant,
@@ -132,7 +138,7 @@ const Main: React.FC = () => {
     range,
     cesiumViewer,
     currentRasterID,
-    rasterGroup
+    rasterGroup,
   )
 
   backgroundService = new BackgroundService(
@@ -140,7 +146,7 @@ const Main: React.FC = () => {
     isStarryBackgroundEnable,
     isCustomisedColorBackgroundEnable,
     color,
-    cesiumViewer
+    cesiumViewer,
   )
 
   setPresentDataAlert(ionAlert, setDownloadOnCellular)
@@ -249,7 +255,7 @@ const Main: React.FC = () => {
             setIsBackgroundSettingEnable(settings.isBackgroundSettingEnable)
             setIsStarryBackgroundEnable(settings.isStarryBackgroundEnable)
             setIsCustomisedColorBackgroundEnable(
-              settings.isCustomisedColorBackgroundEnable
+              settings.isCustomisedColorBackgroundEnable,
             )
             setColor(settings.color)
             setTimeout(() => {
@@ -301,14 +307,14 @@ const Main: React.FC = () => {
   }, [])
 
   //
-  useIonViewDidEnter(async () => {})
+  useIonViewDidEnter(() => {})
 
   //only save the DB to disk on "web" platform
   //do not close the DB connection here!!!
   //let's keep the DB connection valid all the time
   //I guess it is OK if the DB connection is still open when the app exits.
   //not ideal, but OK for this App
-  useIonViewDidLeave(async () => {
+  useIonViewDidLeave(() => {
     cachingServant.saveToWebStore()
   })
 
@@ -325,10 +331,16 @@ const Main: React.FC = () => {
         <div id="cesiumContainer" />
         <div id="credit" style={{ display: 'none' }} />
         <div className="toolbar-top">
-          <AgeSlider
-            buttons={<CustomToolbar scene={cesiumViewer?.scene} />}
-            animationService={animationService}
-          />
+          <AgeSlider animationService={animationService} />
+          <div className="timestamp-and-top-buttons">
+            <div
+              className="timestamp"
+              id={'timeStamp'} // screenshot need time information, using id to locate element
+            >
+              {showTimeStamp && <span>{age} Ma</span>}
+            </div>
+            <TopButtons scene={cesiumViewer?.scene} />
+          </div>
         </div>
         <ToolMenu />
         <AddLocationWidget

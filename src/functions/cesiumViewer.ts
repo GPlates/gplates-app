@@ -39,7 +39,7 @@ export const setCurrentBasemapLayer = (layer: Cesium.ImageryLayer | null) => {
  * @param layer
  */
 export const setCurrentSingleTileImageryLayer = (
-  layer: Cesium.ImageryLayer | null
+  layer: Cesium.ImageryLayer | null,
 ) => {
   currentSingleTileImageryLayer = layer
 }
@@ -97,7 +97,7 @@ export const initCesiumViewer = (provider: Cesium.ImageryProvider) => {
     destination: Cesium.Cartesian3.fromDegrees(
       HOME_LONGITUDE,
       HOME_LATITUDE,
-      getDefaultCameraHeight()
+      getDefaultCameraHeight(),
     ),
   })
   cesiumViewer = viewer
@@ -134,7 +134,7 @@ export const drawLayers = (time: number, rasterCfg: RasterCfg) => {
 
     if (enabledLayers.includes(id)) {
       let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-        createCesiumImageryProvider(vectorLayers[id], time)
+        createCesiumImageryProvider(vectorLayers[id], time),
       )
       currentVectorLayers.push(imageryLayer)
       updateImageryLayer(id, imageryLayer)

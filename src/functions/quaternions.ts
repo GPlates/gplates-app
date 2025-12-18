@@ -14,7 +14,7 @@ export const normalize = (v: number[], tolerance = 0.00001) => {
   const mag2 = v.reduce(
     (previousValue, currentValue) =>
       previousValue + currentValue * currentValue,
-    initialValue
+    initialValue,
   )
   if (Math.abs(mag2 - 1.0) > tolerance && mag2 > 0) {
     let mag = Math.sqrt(mag2)

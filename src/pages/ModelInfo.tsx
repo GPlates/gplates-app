@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   IonButton,
   IonButtons,
-  IonContent,
   IonModal,
   IonRippleEffect,
   IonTitle,
@@ -17,30 +16,31 @@ import {
 import './ModelInfo.scss'
 import { getRasterByID } from '../functions/rasterMaps'
 import { serverURL } from '../functions/settings'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useAppState, useAppStateValue } from '../functions/appStates'
 import {
   isModelInfoShowState,
   currentRasterIDState,
   infoPath,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { chevronBack, chevronForward } from 'ionicons/icons'
-import { CSSTransition } from 'react-transition-group'
 import { AboutPage } from './AboutPage'
 import { HowToUse } from './HowToUse'
+import { DatasetInfo } from './DatasetInfo'
 //
 const titles: { [key: string]: string } = {
   root: 'Info',
   model: 'Model Details',
   about: 'About',
   howtouse: 'How To Handle 3D Globe',
+  datasetinfo: 'Dataset Info',
 }
 
 interface ContainerProps {}
 
 export const ModelInfo: React.FC<ContainerProps> = () => {
-  const [modelInfoShow, setModelInfoShow] = useRecoilState(isModelInfoShowState)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
-  const [path, setPath] = useRecoilState(infoPath)
+  const [modelInfoShow, setModelInfoShow] = useAppState(isModelInfoShowState)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
+  const [path, setPath] = useAppState(infoPath)
   const [showRasterLengend, setShowRasterLengend] = useState(false)
 
   /**
@@ -83,6 +83,61 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
     )
   }
 
+  /**
+   *
+   * @returns
+   */
+  const rootPage = () => {
+    return (
+      <div className={'model-info-content'}>
+        <IonList>
+          <IonItem key={'raster-title'}>
+            <IonLabel className={'info-small-label'}>{'Title'} </IonLabel>
+            <IonNote slot="end">{currentRaster?.title}</IonNote>
+          </IonItem>
+
+          <IonItem key={'raster-subtitle'}>
+            <IonLabel className={'info-small-label'}>{'Subtitle'} </IonLabel>
+            <IonNote slot="end">{currentRaster?.subTitle}</IonNote>
+          </IonItem>
+
+          <IonItem key={'basemap-id'}>
+            <IonLabel className={'info-small-label'}>{'Basemap ID'} </IonLabel>
+            <IonNote slot="end">{currentRaster?.id}</IonNote>
+          </IonItem>
+
+          <IonItem key={'time-range'}>
+            <IonLabel className={'info-small-label'}>{'Time Range'}</IonLabel>
+            <IonNote slot="end">{timeRangeStr}</IonNote>
+          </IonItem>
+          {currentRaster.model && (
+            <IonItem key={'rotation-model'}>
+              <IonLabel className={'info-small-label'}>
+                {'Rotation Model'}
+              </IonLabel>
+              <IonNote slot="end">{currentRaster.model}</IonNote>
+            </IonItem>
+          )}
+
+          {subPageRouting('about', 'About GPlates')}
+          {subPageRouting('datasetinfo', 'Dataset References')}
+          {subPageRouting('howtouse', 'How To Handle 3D Globe')}
+        </IonList>
+        <div
+          className="raster-legend"
+          style={showRasterLengend ? {} : { display: 'none' }}
+        >
+          <img
+            src={serverURL + '/static/app-legend/' + currentRasterID + '.png'}
+            alt={'Raster Legend Not Available'}
+            height={50}
+            onLoad={() => setShowRasterLengend(true)}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <IonModal
       isOpen={modelInfoShow}
@@ -120,81 +175,19 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
       </IonToolbar>
 
       {/* root page */}
-      <CSSTransition
-        in={path === 'root'}
-        timeout={200}
-        unmountOnExit
-        classNames={'info-fade'}
-      >
-        <div className={'model-info-content'}>
-          <IonList>
-            <IonItem key={'raster-title'}>
-              <IonLabel className={'info-small-label'}>{'Title'} </IonLabel>
-              <IonNote slot="end">{currentRaster?.title}</IonNote>
-            </IonItem>
 
-            <IonItem key={'raster-subtitle'}>
-              <IonLabel className={'info-small-label'}>{'Subtitle'} </IonLabel>
-              <IonNote slot="end">{currentRaster?.subTitle}</IonNote>
-            </IonItem>
-
-            <IonItem key={'basemap-id'}>
-              <IonLabel className={'info-small-label'}>
-                {'Basemap ID'}{' '}
-              </IonLabel>
-              <IonNote slot="end">{currentRaster?.id}</IonNote>
-            </IonItem>
-
-            <IonItem key={'time-range'}>
-              <IonLabel className={'info-small-label'}>{'Time Range'}</IonLabel>
-              <IonNote slot="end">{timeRangeStr}</IonNote>
-            </IonItem>
-            {currentRaster.model && (
-              <IonItem key={'rotation-model'}>
-                <IonLabel className={'info-small-label'}>
-                  {'Rotation Model'}
-                </IonLabel>
-                <IonNote slot="end">{currentRaster.model}</IonNote>
-              </IonItem>
-            )}
-
-            {subPageRouting('about', 'About GPlates')}
-            {subPageRouting('howtouse', 'How To Handle 3D Globe')}
-          </IonList>
-          <div
-            className="raster-legend"
-            style={showRasterLengend ? {} : { display: 'none' }}
-          >
-            <img
-              src={serverURL + '/static/app-legend/' + currentRasterID + '.png'}
-              alt={'Raster Legend Not Available'}
-              height={50}
-              onLoad={() => setShowRasterLengend(true)}
-            />
-          </div>
-        </div>
-      </CSSTransition>
+      {path == 'root' && rootPage()}
 
       {/* About subpage */}
-      <CSSTransition
-        in={path === 'about'}
-        appear={true}
-        timeout={2000}
-        unmountOnExit
-        classNames={'info-fade'}
-      >
-        <AboutPage />
-      </CSSTransition>
+
+      {path == 'about' && <AboutPage />}
 
       {/* HowToUse subpage */}
-      <CSSTransition
-        in={path === 'howtouse'}
-        timeout={2000}
-        unmountOnExit
-        classNames={'how-fade'}
-      >
-        <HowToUse />
-      </CSSTransition>
+
+      {path == 'howtouse' && <HowToUse />}
+
+      {/* Dataset Info subpage */}
+      {path == 'datasetinfo' && <DatasetInfo />}
     </IonModal>
   )
 }

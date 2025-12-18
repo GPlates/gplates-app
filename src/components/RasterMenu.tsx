@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react'
 import {
   IonCard,
   IonCardHeader,
@@ -6,47 +5,44 @@ import {
   IonCardTitle,
   IonIcon,
 } from '@ionic/react'
+import React, { useEffect, useState } from 'react'
 
+import SwiperType from 'swiper'
+import { FreeMode, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import SwiperType, { FreeMode, Navigation } from 'swiper'
 
-import './RasterMenu.scss'
+import { closeCircleOutline } from 'ionicons/icons'
 import {
-  SetterOrUpdater,
-  useRecoilState,
-  useSetRecoilState,
-  useRecoilValue,
-} from 'recoil'
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
+import { AnimationService } from '../functions/animation'
 import {
-  isRasterMenuShow,
   ageState,
   animateRange,
-  showTimeStampState,
-  rasterGroupState,
   currentRasterIDState,
-} from '../functions/atoms'
-import { getRasters } from '../functions/rasterMaps'
-import {
-  cesiumViewer,
-  pruneLayers,
-  drawBasemap,
-} from '../functions/cesiumViewer'
-import { timeRange } from '../functions/util'
+  isRasterMenuShow,
+  rasterGroupState,
+  showTimeStampState,
+} from '../functions/appStates'
+import { cesiumViewer, drawBasemap } from '../functions/cesiumViewer'
 import { raiseGraticuleLayerToTop } from '../functions/graticule'
+import { getRasters } from '../functions/rasterMaps'
 import RotationModel, {
   rotationModels,
   setCurrentModel,
 } from '../functions/rotationModel'
-import { loadVectorLayers, getVectorLayers } from '../functions/vectorLayers'
-import { AnimationService } from '../functions/animation'
-import { RasterCfg, RasterGroup } from '../functions/types'
-import { closeCircleOutline } from 'ionicons/icons'
 import { DEBUG } from '../functions/settings'
+import { RasterCfg, RasterGroup } from '../functions/types'
+import { timeRange } from '../functions/util'
+import { getVectorLayers, loadVectorLayers } from '../functions/vectorLayers'
+import './RasterMenu.scss'
 
 interface ContainerProps {
   isViewerLoading: Function
   isCesiumViewerReady: boolean
-  setAgeSliderShown: SetterOrUpdater<boolean>
+  setAgeSliderShown: any
   animationService: AnimationService
 }
 
@@ -62,15 +58,15 @@ export const RasterMenu: React.FC<ContainerProps> = ({
   animationService,
 }) => {
   const [currentRasterID, setCurrentRasterID] =
-    useRecoilState(currentRasterIDState)
+    useAppState(currentRasterIDState)
 
-  const [isShow, setIsShow] = useRecoilState(isRasterMenuShow)
-  const [age, setAge] = useRecoilState(ageState)
-  const setRange = useSetRecoilState(animateRange)
-  const setShowTimeStampState = useSetRecoilState(showTimeStampState)
+  const [isShow, setIsShow] = useAppState(isRasterMenuShow)
+  const [age, setAge] = useAppState(ageState)
+  const setRange = useSetAppState(animateRange)
+  const setShowTimeStampState = useSetAppState(showTimeStampState)
 
   const [swiper, setSwiper] = useState<SwiperType>()
-  const rasterGroup = useRecoilValue(rasterGroupState)
+  const rasterGroup = useAppStateValue(rasterGroupState)
 
   /**
    * switch to another basemap
@@ -81,7 +77,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
     if (DEBUG) {
       console.log(
         'Length of Imagery Layers: ',
-        cesiumViewer.imageryLayers.length
+        cesiumViewer.imageryLayers.length,
       )
       console.log(cesiumViewer.imageryLayers)
     }
@@ -209,7 +205,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
           </IonCardHeader>
           <div />
         </IonCard>
-      </SwiperSlide>
+      </SwiperSlide>,
     )
   }
 

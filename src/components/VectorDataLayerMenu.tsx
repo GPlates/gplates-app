@@ -10,13 +10,17 @@ import {
 import { createCesiumImageryProvider } from '../functions/cesiumViewer'
 import React, { useEffect } from 'react'
 import { closeCircleOutline } from 'ionicons/icons'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 import {
   currentRasterIDState,
   isVectorMenuShow,
   ageState,
   showCities,
-} from '../functions/atoms'
+} from '../functions/appStates'
 
 import { VectorLayerType } from '../functions/types'
 import {
@@ -61,10 +65,10 @@ interface ContainerProps {}
  * @returns
  */
 export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
-  const [isShow, setIsShow] = useRecoilState(isVectorMenuShow)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
-  const rAge = useRecoilValue(ageState)
-  const setShowCities = useSetRecoilState(showCities)
+  const [isShow, setIsShow] = useAppState(isVectorMenuShow)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
+  const rAge = useAppStateValue(ageState)
+  const setShowCities = useSetAppState(showCities)
 
   /**
    * draw all enabled vector layers
@@ -75,7 +79,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     for (let i = 0; i < vectorLayers.length; i++) {
       if (enabledLayers.includes(vectorLayers[i].id)) {
         let imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-          createCesiumImageryProvider(vectorLayers[i], 0) //time=0
+          createCesiumImageryProvider(vectorLayers[i], 0), //time=0
         )
         vectorLayers[i].imageryLayer = imageryLayer
         currentVectorLayers.push(imageryLayer)
@@ -144,7 +148,7 @@ export const VectorDataLayerMenu: React.FC<ContainerProps> = ({}) => {
     if (isChecked) {
       if (layer.imageryLayer === null) {
         layer.imageryLayer = cesiumViewer.imageryLayers.addImageryProvider(
-          createCesiumImageryProvider(layer, rAge)
+          createCesiumImageryProvider(layer, rAge),
         )
       }
       enableLayer(currentRasterID, layer.id)

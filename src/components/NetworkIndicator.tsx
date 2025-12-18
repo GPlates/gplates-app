@@ -1,8 +1,8 @@
 import './NetworkIndicator.scss'
 import React, { useEffect, useState } from 'react'
 import { ConnectionStatus, Network } from '@capacitor/network'
-import { useRecoilState } from 'recoil'
-import { networkStatus } from '../functions/atoms'
+import { useAppState } from '../functions/appStates'
+import { networkStatus } from '../functions/appStates'
 import {
   cellularOutline,
   cloudOfflineOutline,
@@ -17,7 +17,7 @@ const NetworkIndicator: React.FC = () => {
   const [animate, setAnimate] = useState(true)
   const [icon, setIcon] = useState(extensionPuzzleOutline)
   const [label, setLabel] = useState('Unknown')
-  const [status, setStatus] = useRecoilState(networkStatus)
+  const [status, setStatus] = useAppState(networkStatus)
   const [presentAlert] = useIonAlert()
 
   const onStatusChange = (newStatus: ConnectionStatus) => {

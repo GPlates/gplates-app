@@ -55,7 +55,6 @@ Enrolling in the Apple Developer Program costs an annual fee of **99 USD (149 AU
 2. Set a version for the app in `android/app/build.gradle` (see [Version your app](https://developer.android.com/studio/publish/versioning#appversioning) for more information)
 
    There are two settings and both should be set:
-
    - `versionCode` - Positive integer. Increase by 1 for each release
    - `versionName` - Only displayed to users. `<major>.<minor>.<patch>` format
 

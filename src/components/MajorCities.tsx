@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react'
 import * as Cesium from 'cesium'
-import { useRecoilValue } from 'recoil'
-import { ageState, showCities, currentRasterIDState } from '../functions/atoms'
+import { useAppStateValue } from '../functions/appStates'
+import {
+  ageState,
+  showCities,
+  currentRasterIDState,
+} from '../functions/appStates'
 import { DEBUG, serverURL } from '../functions/settings'
 import { currentModel } from '../functions/rotationModel'
 import { cesiumViewer } from '../functions/cesiumViewer'
@@ -38,7 +42,7 @@ const undrawCities = () => {
 const drawCity = (lon: number, lat: number, name: string) => {
   let locationCartesian: Cesium.Cartesian3 = Cesium.Cartesian3.fromDegrees(
     lon,
-    lat
+    lat,
   )
   let pe = cesiumViewer.entities.add({
     name: name,
@@ -92,13 +96,13 @@ const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
         lat: city_coords[1],
         pid: cityPlateIDs[currentModel?.name][city_coords[2]], //plate ID
       },
-      age
+      age,
     )
     if (!reconstructedCity) {
       if (DEBUG) {
         console.log(name, age, city_coords)
         console.log(
-          'The paleo-city coordinates are undefined. 1. The city does not exist at the time. 2. The rotation model has not been loaded yet. 3. The paleo-age is 0.'
+          'The paleo-city coordinates are undefined. 1. The city does not exist at the time. 2. The rotation model has not been loaded yet. 3. The paleo-age is 0.',
         )
       }
       return
@@ -134,9 +138,9 @@ interface MajorCitiesProps {}
  * @returns
  */
 const MajorCities: React.FC<MajorCitiesProps> = () => {
-  const paleoAge = useRecoilValue(ageState)
-  const showCitiesFlag = useRecoilValue(showCities)
-  const currentRasterID = useRecoilValue(currentRasterIDState)
+  const paleoAge = useAppStateValue(ageState)
+  const showCitiesFlag = useAppStateValue(showCities)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
 
   /**
    *

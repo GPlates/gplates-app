@@ -1,13 +1,13 @@
 import { IonItem, IonLabel, IonToggle } from '@ionic/react'
 import React, { useEffect } from 'react'
 import { RgbColorPicker } from 'react-colorful'
-import { useRecoilState } from 'recoil'
+import { useAppState } from '../functions/appStates'
 import {
   backgroundColor,
   backgroundIsCustom,
   backgroundIsEnabled,
   backgroundIsStarry,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import { BackgroundService } from '../functions/background'
 import { Preferences } from '@capacitor/preferences'
 
@@ -19,14 +19,14 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
   backgroundService,
 }) => {
   const [isBackgroundSettingEnable, setIsBackgroundSettingEnable] =
-    useRecoilState(backgroundIsEnabled)
+    useAppState(backgroundIsEnabled)
   const [isStarryBackgroundEnable, setIsStarryBackgroundEnable] =
-    useRecoilState(backgroundIsStarry)
+    useAppState(backgroundIsStarry)
   const [
     isCustomisedColorBackgroundEnable,
     setIsCustomisedColorBackgroundEnable,
-  ] = useRecoilState(backgroundIsCustom)
-  const [color, setColor] = useRecoilState(backgroundColor)
+  ] = useAppState(backgroundIsCustom)
+  const [color, setColor] = useAppState(backgroundColor)
 
   useEffect(() => {
     backgroundService.changeBackground()
@@ -67,7 +67,7 @@ export const BackgroundColorSettings: React.FC<ContainerProps> = ({
           checked={isCustomisedColorBackgroundEnable}
           onIonChange={() => {
             setIsCustomisedColorBackgroundEnable(
-              !isCustomisedColorBackgroundEnable
+              !isCustomisedColorBackgroundEnable,
             )
           }}
         >

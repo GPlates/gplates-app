@@ -12,7 +12,6 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 <img width="800" alt="Screenshot 2023-08-03 at 6 26 44 pm" src="https://github.com/GPlates/gplates-app/assets/2688316/b2e5a095-ce50-4665-8c77-85f76f7fb0af">
 </p>
 
-
 <div style="display: flex; align-items: center;">
   <span>
     <a href="https://apps.apple.com/au/app/gplates/id6447170583?itsct=apps_box_badge&amp;itscg=30200" ><img src="https://raw.githubusercontent.com/GPlates/gplates-app/refs/heads/main/resources/apple-store-badge.svg" alt="Download on the App Store"  height="83"></a>
@@ -32,7 +31,6 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
 - Reloading App could be useful when a bug or mishap caused the App to enter and stuck in a messy state.
 
   reload the App by following the steps below.
-
   - Step 1: open the "Settings" window
 
     <img width="437" alt="243554796-01c385fd-229d-4233-9cd7-c9ebfbb0fdf9" src="https://github.com/GPlates/gplates-app/assets/2688316/8c88ae4c-f718-4002-b1b0-60792ffdbf56">

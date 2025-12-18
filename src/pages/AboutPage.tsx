@@ -35,7 +35,8 @@ export const AboutPage: React.FC<ContainerProps> = () => {
           App is an invaluable tool for anyone seeking to gain a deeper
           understanding of the Earth&apos;s geological history. Whether you are
           a student, teacher, researcher, or just a curious enthusiast, the
-          GPlates App is the perfect tool to explore our ever-evolving planet.{' '}
+          GPlates App is the perfect tool to explore our ever-evolving
+          planet.{' '}
         </p>
         <p className={'about-page-intro-text'}>
           In addition, the&nbsp;
@@ -104,7 +105,7 @@ export const AboutPage: React.FC<ContainerProps> = () => {
         <br />
       </div>
       <div className={'about-page-copyright'}>
-        <p>Copyright © 2023 The University of Sydney. </p>
+        <p>Copyright © 2023-2025 The University of Sydney. </p>
         <p>All rights reserved.</p>
       </div>
     </IonContent>

@@ -1,11 +1,11 @@
-import React from 'react'
 import { IonContent } from '@ionic/react'
-import './AboutPage.scss'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import React from 'react'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
-import { Pagination } from 'swiper'
+import { Pagination } from 'swiper/modules'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import './AboutPage.scss'
 
 interface ContainerProps {}
 

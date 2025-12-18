@@ -10,7 +10,7 @@ export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools/
 export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/
 export PATH=$PATH:$ANDROID_SDK_ROOT/emulator/
 
-export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https://services.gradle.org/distributions/gradle-8.1-all.zip
+export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https://services.gradle.org/distributions/gradle-8.13-all.zip
 
 export SKIP_PREFLIGHT_CHECK=true
 

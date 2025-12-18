@@ -4,9 +4,9 @@ const config: CapacitorConfig = {
   appId: 'earthbyte.gplates.edu',
   appName: 'GPlates',
   webDir: 'build',
-  bundledWebRuntime: false,
   server: {
     cleartext: true,
+    androidScheme: 'https',
   },
   plugins: {
     SplashScreen: {
@@ -14,5 +14,4 @@ const config: CapacitorConfig = {
     },
   },
 }
-
 export default config

@@ -20,7 +20,7 @@ export class BackgroundService {
     public isStarryBackgroundEnable: boolean,
     public isCustomisedColorBackgroundEnable: boolean,
     public color: { r: number; g: number; b: number },
-    public viewer: Viewer
+    public viewer: Viewer,
   ) {}
 
   changeBackground = () => {
@@ -33,7 +33,7 @@ export class BackgroundService {
         this.viewer.scene.backgroundColor = new Cesium.Color(
           this.color.r / 255,
           this.color.g / 255,
-          this.color.b / 255
+          this.color.b / 255,
         )
       }
     } else {

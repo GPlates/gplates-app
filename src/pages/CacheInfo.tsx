@@ -17,8 +17,11 @@ import {
 } from '@ionic/react'
 import { trashOutline } from 'ionicons/icons'
 import { cachingServant } from '../functions/cache'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { isCacheInfoShowState, currentRasterIDState } from '../functions/atoms'
+import { useAppState, useAppStateValue } from '../functions/appStates'
+import {
+  isCacheInfoShowState,
+  currentRasterIDState,
+} from '../functions/appStates'
 import { getEnabledLayers, vectorLayers } from '../functions/vectorLayers'
 import rasterMaps, { getRasterIndexByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
@@ -65,7 +68,7 @@ const CacheCurrentRasterAndOverlays = async (currentRasterID: string) => {
   let url = getLowResImageUrlForGeosrv(
     rasterMaps[index].wmsUrl,
     rasterMaps[index].layerName,
-    overlays
+    overlays,
   )
 
   let allUrls = await cachingServant.getAllUrls()
@@ -91,10 +94,10 @@ interface ContainerProps {}
  * @returns
  */
 export const CacheInfo: React.FC<ContainerProps> = () => {
-  const [cacheInfoShow, setCacheInfoShow] = useRecoilState(isCacheInfoShowState)
+  const [cacheInfoShow, setCacheInfoShow] = useAppState(isCacheInfoShowState)
   const [refresh, setRefresh] = useState(true)
   const [presentAlert] = useIonAlert()
-  const currentRasterID = useRecoilValue(currentRasterIDState)
+  const currentRasterID = useAppStateValue(currentRasterIDState)
 
   let cacheStatsList = Array.from(cacheStatsMap, (entry) => {
     let nameAndUrlPattern = entry[0].split('{{sep}}')
@@ -152,7 +155,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                             async () => {
                               await getCacheStatsData()
                               setRefresh(!refresh)
-                            }
+                            },
                           )
                         },
                       },
@@ -235,7 +238,7 @@ export const CacheInfo: React.FC<ContainerProps> = () => {
                     role: 'cancel',
                     handler: () => {
                       console.log(
-                        'Info: Cache Current Basemap And Overlays cancelled!'
+                        'Info: Cache Current Basemap And Overlays cancelled!',
                       )
                     },
                   },

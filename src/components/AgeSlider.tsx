@@ -19,7 +19,11 @@ import {
 } from 'ionicons/icons'
 import React, { useEffect, useState } from 'react'
 import { AnimationService } from '../functions/animation'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  useAppState,
+  useAppStateValue,
+  useSetAppState,
+} from '../functions/appStates'
 import {
   ageState,
   animatePlaying,
@@ -31,7 +35,9 @@ import {
   animateRange,
   animateIncrement,
   showTimeStampState,
-} from '../functions/atoms'
+  showTimeButtonState,
+  showTimeSliderState,
+} from '../functions/appStates'
 import {
   matchDarkMode,
   setStatusBarTheme,
@@ -41,23 +47,23 @@ import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
 import { setAnimationFrame } from '../functions/animation'
 
 interface AgeSliderProps {
-  buttons: any
   animationService: AnimationService
 }
 
-const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
-  const [age, setAge] = useRecoilState(ageState)
-  const darkMode = useRecoilValue(appDarkMode)
-  const increment = useRecoilValue(animateIncrement)
-  const playing = useRecoilValue(animatePlaying)
-  const setMenuPath = useSetRecoilState(settingsPath)
-  const setMenuState = useSetRecoilState(isSettingsMenuShow)
-  const [shown, setShown] = useRecoilState(isAgeSliderShown)
+const AgeSlider: React.FC<AgeSliderProps> = ({ animationService }) => {
+  const [age, setAge] = useAppState(ageState)
+  const darkMode = useAppStateValue(appDarkMode)
+  const increment = useAppStateValue(animateIncrement)
+  const playing = useAppStateValue(animatePlaying)
+  const setMenuPath = useSetAppState(settingsPath)
+  const setMenuState = useSetAppState(isSettingsMenuShow)
+  const [shown, setShown] = useAppState(isAgeSliderShown)
   const [presentToast, dismissToast] = useIonToast()
-  const currentRasterID = useRecoilValue(currentRasterIDState)
-  const range = useRecoilValue(animateRange)
-  const showTimeStamp = useRecoilValue(showTimeStampState)
-  const [showTimeButton, setShowTimeButton] = useState(false) //the button to open time slider
+  const currentRasterID = useAppStateValue(currentRasterIDState)
+  const range = useAppStateValue(animateRange)
+  const showTimeStamp = useAppStateValue(showTimeStampState)
+  const [showTimeButton, setShowTimeButton] = useAppState(showTimeButtonState) //the button to open time slider
+  const [showTimeSlider, setShowTimeSlider] = useAppState(showTimeSliderState)
 
   const openMenu = () => {
     setMenuPath('animation')
@@ -77,13 +83,24 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
         onDidDismiss: () => {},
       })
     } else {
-      setShown(!shown)
+      setShown(true)
     }
   }
 
-  //
-  //
-  //
+  /**
+   * handle showTimeSlider state change
+   */
+  useEffect(() => {
+    if (showTimeSlider) {
+      showAgeSliderWidget() //show the age slider
+    } else {
+      setShown(false) //hide the age slider
+    }
+  }, [showTimeSlider])
+
+  /**
+   *
+   */
   useEffect(() => {
     if (shown) {
       setStatusBarTheme(darkMode)
@@ -94,9 +111,9 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
     }
   }, [shown])
 
-  //
-  //
-  //
+  /**
+   * handle the situation when the current raster has changed.
+   */
   useEffect(() => {
     let raster = getRasterByID(currentRasterID)
     if (!raster) return
@@ -111,120 +128,91 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ buttons, animationService }) => {
   if (!raster) return null
 
   return (
-    <div>
-      <div
-        className={
-          shown
-            ? 'age-play-controls-container'
-            : 'age-play-controls-container hidden'
-        }
-      >
-        <IonItem className="time-input" lines="none">
-          <IonInput
-            inputMode="numeric"
-            min={rasterMaps.length > 0 ? raster.endTime : 0}
-            max={rasterMaps.length > 0 ? raster.startTime : 0}
-            onIonChange={(e) => {
-              if (!raster || !e.detail.value) return null
-              let newAge = Number(e.detail.value)
-              if (newAge < raster.endTime) {
-                newAge = raster.endTime
-              } else if (newAge > raster.startTime) {
-                newAge = raster.startTime
-              }
-              setAge(newAge)
-              setAnimationFrame(newAge, raster.id)
-            }}
-            value={age}
-          />
-          Ma
-        </IonItem>
-        <IonItem className="seek-buttons" lines="none">
-          <div>
-            <IonButton
-              fill="clear"
-              onClick={() => animationService.movePrev()}
-              size="default"
-            >
-              <IonIcon icon={playBackOutline} />
-            </IonButton>
-            <IonButton
-              fill="clear"
-              onClick={() => animationService.setPlaying(!playing)}
-              size="default"
-            >
-              <IonIcon
-                id="play-pause-icon"
-                icon={playing ? pauseOutline : playOutline}
-              />
-            </IonButton>
-            <IonButton
-              fill="clear"
-              onClick={() => animationService.moveNext()}
-              size="default"
-            >
-              <IonIcon icon={playForwardOutline} />
-            </IonButton>
-            <IonButton
-              fill="clear"
-              onClick={() => animationService.resetPlayHead()}
-              size="default"
-            >
-              <IonIcon icon={playSkipBackOutline} />
-            </IonButton>
-            <IonButton fill="clear" onClick={openMenu} size="default">
-              <IonIcon icon={cogOutline} />
-            </IonButton>
-          </div>
-        </IonItem>
-        <IonItem className="slider" lines="none">
-          <IonRange
-            dir={range.lower < range.upper ? 'ltr' : 'rtl'}
-            onIonKnobMoveStart={() => {
-              animationService.setDragging(true)
-              animationService.setPlaying(false)
-            }}
-            onIonKnobMoveEnd={(e) => {
-              animationService.setDragging(false)
-              animationService.onAgeSliderChange(e.detail.value as number)
-            }}
-            min={Math.min(range.lower, range.upper)}
-            max={Math.max(range.lower, range.upper)}
-            onIonChange={(e) => {
-              setAge(e.detail.value as number)
-              animationService.onAgeSliderChange(e.detail.value as number)
-            }}
-            value={age}
-          />
-        </IonItem>
-      </div>
-      <div
-        className={
-          shown
-            ? 'buttons top-buttons-container'
-            : 'buttons top-buttons-container hidden'
-        }
-      >
-        <div
-          className="time"
-          id={'timeStamp'} // screenshot need time information, using id to locate element
-          onClick={() => showAgeSliderWidget()}
-        >
-          {showTimeStamp && <span>{age} Ma</span>}
-        </div>
+    <div
+      className={
+        shown
+          ? 'age-play-controls-container'
+          : 'age-play-controls-container hidden'
+      }
+    >
+      <IonItem className="time-input" lines="none">
+        <IonInput
+          inputMode="numeric"
+          min={rasterMaps.length > 0 ? raster.endTime : 0}
+          max={rasterMaps.length > 0 ? raster.startTime : 0}
+          onIonChange={(e) => {
+            if (!raster || !e.detail.value) return null
+            let newAge = Number(e.detail.value)
+            if (newAge < raster.endTime) {
+              newAge = raster.endTime
+            } else if (newAge > raster.startTime) {
+              newAge = raster.startTime
+            }
+            setAge(newAge)
+            setAnimationFrame(newAge, raster.id)
+          }}
+          value={age}
+        />
+        Ma
+      </IonItem>
+      <IonItem className="seek-buttons" lines="none">
         <div>
-          {buttons}
-          {/* the button to show or hide time slider */}
           <IonButton
-            className="round-button show-button"
-            style={{ display: showTimeButton ? '' : 'none' }}
-            onClick={() => showAgeSliderWidget()}
+            fill="clear"
+            onClick={() => animationService.movePrev()}
             size="default"
           >
-            <IonIcon icon={shown ? chevronUpCircleOutline : timeOutline} />
+            <IonIcon icon={playBackOutline} />
+          </IonButton>
+          <IonButton
+            fill="clear"
+            onClick={() => animationService.setPlaying(!playing)}
+            size="default"
+          >
+            <IonIcon
+              id="play-pause-icon"
+              icon={playing ? pauseOutline : playOutline}
+            />
+          </IonButton>
+          <IonButton
+            fill="clear"
+            onClick={() => animationService.moveNext()}
+            size="default"
+          >
+            <IonIcon icon={playForwardOutline} />
+          </IonButton>
+          <IonButton
+            fill="clear"
+            onClick={() => animationService.resetPlayHead()}
+            size="default"
+          >
+            <IonIcon icon={playSkipBackOutline} />
+          </IonButton>
+          <IonButton fill="clear" onClick={openMenu} size="default">
+            <IonIcon icon={cogOutline} />
           </IonButton>
         </div>
-      </div>
+      </IonItem>
+      <IonItem className="slider" lines="none">
+        <IonRange
+          dir={range.lower < range.upper ? 'ltr' : 'rtl'}
+          onIonKnobMoveStart={() => {
+            animationService.setDragging(true)
+            animationService.setPlaying(false)
+          }}
+          onIonKnobMoveEnd={(e) => {
+            animationService.setDragging(false)
+            animationService.onAgeSliderChange(e.detail.value as number)
+          }}
+          min={Math.min(range.lower, range.upper)}
+          max={Math.max(range.lower, range.upper)}
+          onIonChange={(e) => {
+            setAge(e.detail.value as number)
+            animationService.onAgeSliderChange(e.detail.value as number)
+          }}
+          value={age}
+        />
+      </IonItem>
     </div>
   )
 }

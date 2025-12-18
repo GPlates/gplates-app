@@ -92,7 +92,7 @@ export class CachingService {
       if (value) {
         //if the cache hit, but expired, delete the expired data
         await this.db!.run('DELETE FROM cache WHERE url == ?', [url]).catch(
-          (error) => console.log(error)
+          (error) => console.log(error),
         )
       }
       const blob: Blob | undefined = await this.getBlob(url)
@@ -130,7 +130,7 @@ export class CachingService {
             reader.onloadend = () => resolve(reader.result)
             reader.onerror = reject
             return reader.readAsDataURL(blob)
-          })
+          }),
       )
   }
 
@@ -269,7 +269,7 @@ export class CachingService {
   async cacheRasterLayer(
     model: RotationModel,
     wmsUrl: string,
-    layerName: string
+    layerName: string,
   ) {
     let rowNum = await this.getCount(layerName)
     //check if the layer has been cached.
@@ -314,7 +314,7 @@ export class CachingService {
       ret = await this.db!.query(
         "SELECT COUNT(*) as num FROM cache WHERE url LIKE '%" +
           keyword.slice(0, idx - 1) +
-          "%'"
+          "%'",
         //"SELECT COUNT(*) as num FROM cache WHERE url LIKE '%paleo-topo-images:paleo-topo-image-{{time}}-Ma%'"
       )
     }
@@ -353,7 +353,7 @@ export class CachingService {
           false,
           'no-encryption',
           1,
-          false
+          false,
         )
       }
 
@@ -511,7 +511,7 @@ export class CachingService {
               raster.title,
               layersStr,
               raster.paleoMapUrl + '%' + layersStr,
-              urlMap
+              urlMap,
             )
           }
         }
@@ -550,7 +550,7 @@ export class CachingService {
                 let layerDisplayName = getDisplayNameFromRasterCfg(
                   layerInUrl,
                   allVectorLayersOfThisRaster,
-                  queryObj
+                  queryObj,
                 )
                 if (!layerDisplayName) {
                   //the layer in url cannot be found in raster config
@@ -591,7 +591,7 @@ export class CachingService {
 const getDisplayNameFromRasterCfg = (
   layerInUrl: string,
   allVectorLayersOfThisRaster: any[],
-  queryObj: any
+  queryObj: any,
 ) => {
   //loop through all vector layers in the raster config
   //allVectorLayersOfThisRaster is a javascript Object
@@ -622,7 +622,7 @@ const setCountNumber = (
   rasterName: string,
   layersStr: string,
   queryStr: string,
-  urlMap: Map<string, number>
+  urlMap: Map<string, number>,
 ) => {
   let keyStr = rasterName
   //now set the count number

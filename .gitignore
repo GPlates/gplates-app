@@ -1,9 +1,11 @@
+android/app/release/
 android/.idea/
 resources/android/icon
 resources/android/splash
 resources/ios/
 *.DS_Store
 build/
+GPlatesAppData/
 
 # Logs
 logs
@@ -76,7 +78,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-# .env
+.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)

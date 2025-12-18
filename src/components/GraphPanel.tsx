@@ -1,11 +1,11 @@
 import * as echarts from 'echarts'
 import React, { useEffect, useState } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useAppState, useAppStateValue } from '../functions/appStates'
 import {
   ageState,
   animateRange,
   isGraphPanelShowState,
-} from '../functions/atoms'
+} from '../functions/appStates'
 import './GraphPanel.scss'
 import {
   getPlatforms,
@@ -28,7 +28,7 @@ const sliceData = (
   xData: string[],
   yData: number[],
   lower: number,
-  upper: number
+  upper: number,
 ) => {
   let big = Math.max(lower, upper)
   let small = Math.min(lower, upper)
@@ -116,10 +116,8 @@ const interpolate = (xData: string[], yData: number[]) => {
 interface ContainerProps {}
 
 export const GraphPanel: React.FC<ContainerProps> = () => {
-  const [showGraphPanel, setShowGraphPanel] = useRecoilState(
-    isGraphPanelShowState
-  )
-  const age = useRecoilValue(ageState)
+  const [showGraphPanel, setShowGraphPanel] = useAppState(isGraphPanelShowState)
+  const age = useAppStateValue(ageState)
   const [curGraphIdx, setCurGraphIdx] = useState(0)
   const [graphList, setGraphList] = useState([] as string[][])
   const [curGraphName, setCurGraphName] = useState('')
@@ -249,7 +247,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
   //
   const loadGraphList = async () => {
     let data_map: any = await requestDataByUrl(
-      serverURL.replace(/\/+$/, '') + '/mobile/get_graphs'
+      serverURL.replace(/\/+$/, '') + '/mobile/get_graphs',
     )
     const graphList: string[][] = []
     for (let [key, value] of Object.entries(data_map)) {
@@ -270,7 +268,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
         graphChart.resize()
       } else {
         console.log(
-          'Unable to resize the graphChart. The graphChart object is invalid.'
+          'Unable to resize the graphChart. The graphChart object is invalid.',
         )
       }
     })

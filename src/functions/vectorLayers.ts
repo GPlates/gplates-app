@@ -34,7 +34,7 @@ export const loadVectorLayers = async (rasterID: string) => {
     let response = await fetch(
       serverURL.replace(/\/+$/, '') +
         '/mobile/get_vector_layers?raster=' +
-        rasterID
+        rasterID,
     )
     let json = await response.json()
     //console.log(json)
