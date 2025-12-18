@@ -154,14 +154,39 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
     - version 1: Unknown
     - version 2: $EarthByteNAS/GPlatesAppData/RasterOverlays/Agegrid_PlateBoundaries/
 
-- paleobathymetry
+- paleo-bathymetry
   - layer name:
     - version 1: [MULLER2019YC:paleobathymetry-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleobathymetry-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - version 2: [gplates-app-zahirovic2022:paleobathymetry\_{{time}}](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Apaleobathymetry_0&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Paleobathymetry/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructedPaleogeography/Paleobathymetry/
 
-- paleo-topo
+- paleo-topography
   - layer name:
     - version 1: [MULLER2019YC:paleotopo_1.00d\_{{time}}.00Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleotopo_1.00d_0.00Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
-    - note: the store names are "paleo-topography-{{time}}-Ma". Search the store name instead of the layer name.
+      note: the store names are "paleo-topography-{{time}}-Ma". Search the store name instead of the layer name.
+    - version 2: [ gplates-app-zahirovic2022:paleotopo\_{{time}}](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Apaleotopo_0&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - file on server:
+    - version 1: TO BE FOUND
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Paleotopography/
+  - file source:
+    - version 1: Unknown
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructedPaleogeography/Paleotopography/
+
+- paleo-geography
+  - layer name:
+    - version 1: N/A
+    - version 2: [gplates-app-zahirovic2022:paleogeo\_{{time}}](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Apaleogeo_0&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
+    - file on server:
+    - version 1: N/A
+    - version 2: $data_dir/data/gplates-app-zahirovic2022/Paleogeography/
+  - file source:
+    - version 1: N/A
+    - version 2: $EarthByteNAS/GPlatesAppData/ReconstructedPaleogeography/Paleogeography/
 
 - EMAG2
   - layer Nname:
