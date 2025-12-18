@@ -25,12 +25,14 @@ import {
 import { chevronBack, chevronForward } from 'ionicons/icons'
 import { AboutPage } from './AboutPage'
 import { HowToUse } from './HowToUse'
+import { DatasetInfo } from './DatasetInfo'
 //
 const titles: { [key: string]: string } = {
   root: 'Info',
   model: 'Model Details',
   about: 'About',
   howtouse: 'How To Handle 3D Globe',
+  datasetinfo: 'Dataset Info',
 }
 
 interface ContainerProps {}
@@ -118,6 +120,7 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
           )}
 
           {subPageRouting('about', 'About GPlates')}
+          {subPageRouting('datasetinfo', 'Dataset References')}
           {subPageRouting('howtouse', 'How To Handle 3D Globe')}
         </IonList>
         <div
@@ -182,6 +185,9 @@ export const ModelInfo: React.FC<ContainerProps> = () => {
       {/* HowToUse subpage */}
 
       {path == 'howtouse' && <HowToUse />}
+
+      {/* Dataset Info subpage */}
+      {path == 'datasetinfo' && <DatasetInfo />}
     </IonModal>
   )
 }

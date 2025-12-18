@@ -59,3 +59,5 @@ export const currentRasterIDState = atom('none')
 export const showTimeButtonState = atom(false)
 
 export const showTimeSliderState = atom(false)
+
+export const datasetInfoState = atom([] as any[])
