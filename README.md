@@ -17,7 +17,7 @@ The “GPlates-in-schools” program is funded by [AuScope](https://www.auscope.
     <a href="https://apps.apple.com/au/app/gplates/id6447170583?itsct=apps_box_badge&amp;itscg=30200" ><img src="https://raw.githubusercontent.com/GPlates/gplates-app/refs/heads/main/resources/apple-store-badge.svg" alt="Download on the App Store"  height="83"></a>
   </span>
   <span>
-    <a  href='https://play.google.com/store/apps/dev?id=8357338151517566946'><img height="83"  alt='Get it on Google Play' src='https://www.earthbyte.org/webdav/ftp/incoming/mchin/google-play-badge.png'/>
+    <a  href='https://play.google.com/store/apps/details?id=gplates.app'><img height="83"  alt='Get it on Google Play' src='https://raw.githubusercontent.com/GPlates/gplates-app/refs/heads/main/resources/GetItOnGooglePlay_Badge_Web_color_English.svg'/>
     </a>
   </span>
 </div>

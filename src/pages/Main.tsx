@@ -7,6 +7,7 @@ import {
   useIonViewDidLeave,
   useIonToast,
   useIonAlert,
+  getPlatforms,
 } from '@ionic/react'
 
 import './Main.scss'
@@ -323,6 +324,8 @@ const Main: React.FC = () => {
     return cesiumViewer.scene.globe.tilesLoaded
   }
 
+  let addInsetTopFlag = getPlatforms().includes('desktop') ? false : true
+
   return (
     <IonPage>
       <IonContent fullscreen scrollY={false}>
@@ -330,7 +333,9 @@ const Main: React.FC = () => {
 
         <div id="cesiumContainer" />
         <div id="credit" style={{ display: 'none' }} />
-        <div className="toolbar-top">
+        <div
+          className={addInsetTopFlag ? 'toolbar-top inset-top' : 'toolbar-top'}
+        >
           <AgeSlider animationService={animationService} />
           <div className="timestamp-and-top-buttons">
             <div

@@ -45,12 +45,16 @@
 }
 
 .toolbar-top {
-  top: max(50px, env(safe-area-inset-top));
+  top: 0;
   left: 0;
   /*overflow: hidden;*/
   position: absolute;
   height: auto;
   width: 100%;
+}
+
+.inset-top {
+  top: max(50px, env(safe-area-inset-top));
 }
 
 .toolbar-bottom {
