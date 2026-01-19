@@ -118,10 +118,11 @@ const Tutorial: React.FC = () => {
             <h3>Age Slider</h3>
             <p>
               Use the age slider (top right) to reconstruct geological and
-              paleogeographic features through time 
+              paleogeographic features through time
             </p>
             <p>
-              The age slider will only be activated when a dataset is loaded that can be reconstructed through time
+              The age slider will only be activated when a dataset is loaded
+              that can be reconstructed through time
             </p>
           </SwiperSlide>
           <SwiperSlide className={'ion-padding'}>
@@ -139,7 +140,10 @@ const Tutorial: React.FC = () => {
           <SwiperSlide className={'ion-padding'}>
             <img src={'/assets/slides/slide4.svg'} />
             <h3>Overlays</h3>
-            <p>Overlay additional data, like coastlines, city locations, etc., with the overlay menu</p>
+            <p>
+              Overlay additional data, like coastlines, city locations, etc.,
+              with the overlay menu
+            </p>
           </SwiperSlide>
           <SwiperSlide className={'ion-padding'}>
             <img src={'/assets/slides/slide5.svg'} />
