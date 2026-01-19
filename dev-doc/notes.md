@@ -21,6 +21,7 @@ The following steps worked on my Macbook Pro.
 
 - `nvm use 24`
 - `npm install --legacy-peer-deps`
+- `npm install -g @ionic/cli`
 - `source ./set-env.sh`
 - `ionic capacitor run android -l --external`
 - `ionic capacitor run ios -l --external`
