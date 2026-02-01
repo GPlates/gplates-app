@@ -154,7 +154,7 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
     - version 1: Unknown
     - version 2: $EarthByteNAS/GPlatesAppData/RasterOverlays/Agegrid_PlateBoundaries/
 
-- paleo-bathymetry
+- paleo-bathymetry (not in use)
   - layer name:
     - version 1: [MULLER2019YC:paleobathymetry-{{time}}-Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleobathymetry-0-Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
     - version 2: [gplates-app-zahirovic2022:paleobathymetry\_{{time}}](https://geoserver.gplates.org/geoserver/gplates-app-zahirovic2022/wms?service=WMS&version=1.1.0&request=GetMap&layers=gplates-app-zahirovic2022%3Apaleobathymetry_0&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
@@ -165,7 +165,7 @@ The configuration of GPlates app dataset is [here](https://github.com/GPlates/gp
     - version 1: Unknown
     - version 2: $EarthByteNAS/GPlatesAppData/ReconstructedPaleogeography/Paleobathymetry/
 
-- paleo-topography
+- paleo-topography (not in use)
   - layer name:
     - version 1: [MULLER2019YC:paleotopo_1.00d\_{{time}}.00Ma](https://geoserver.gplates.org/geoserver/MULLER2019YC/wms?service=WMS&version=1.1.0&request=GetMap&layers=MULLER2019YC%3Apaleotopo_1.00d_0.00Ma&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format=application/openlayers)
       note: the store names are "paleo-topography-{{time}}-Ma". Search the store name instead of the layer name.

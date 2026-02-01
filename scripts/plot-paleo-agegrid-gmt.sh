@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# plot paleo-bathymetry grid with GMT.
+# plot paleo seafloor grids with GMT.
 
 # --- GMT styling ---
 # gmt gmtset FONT_ANNOT_PRIMARY 0p FONT_LABEL 0p 
@@ -10,7 +10,7 @@ set -euo pipefail
 region=d
 projection=X18/9
 
-cpt_file=pbathy.cpt
+cpt_file=agegrid.cpt
 
 # set to 0 if you don't want GMT coastlines.
 PLOT_GMT_COASTLINES=0
@@ -21,11 +21,11 @@ TRANSPARENT_NAN=0
 age=0
 max_age=410
 
-mkdir -p paleobathymetry-tif
+mkdir -p paleo-age-grid-tif
 
 while (( age <= max_age )); do
-    grid_file=Paleobathymetry/paleobathymetry_${age}Ma.nc
-    file_basename=paleobathymetry_${age}
+    grid_file=../GPlatesAppData/Agegrid/Z22_Agegrid_PMAG/Zahirovic_etal_2022-v2_PMAG_SEAFLOOR_AGE_grid_${age}.0Ma.nc
+    file_basename=Zahirovic_etal_2022-v2_PMAG_SEAFLOOR_AGE_grid_${age}
 
     # if the files does not exist, they will not be plotted.
     # topology_boundaries=
@@ -79,7 +79,7 @@ while (( age <= max_age )); do
         $file_basename.tif
 
     rm $file_basename.png $file_basename.ps $file_basename.pgw
-    mv $file_basename.tif paleobathymetry-tif
+    mv $file_basename.tif paleo-age-grid-tif
     age=$((age + 1))
 done
 

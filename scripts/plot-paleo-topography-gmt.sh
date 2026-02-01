@@ -12,15 +12,6 @@ projection=X18/9
 
 cpt_file=paleogeo.cpt
 
-# if the files does not exist, they will not be plotted.
-topology_boundaries=
-subduction_left=
-subduction_right=
-# topology_boundaries=./z22/topology_boundaries_0.00Ma.xy
-# subduction_left=./z22/topology_subduction_boundaries_sL_0.00Ma.xy
-# subduction_right=./z22/topology_subduction_boundaries_sR_0.00Ma.xy
-
-
 # set to 0 if you don't want GMT coastlines.
 PLOT_GMT_COASTLINES=0
 
@@ -35,6 +26,14 @@ mkdir -p paleotopography-tif
 while (( age <= max_age )); do
     grid_file=Paleotopography/paleotopo_0.10d_${age}.00Ma_filtered.nc
     file_basename=paleotopo_${age}
+
+    # if the files does not exist, they will not be plotted.
+    # topology_boundaries=
+    # subduction_left=
+    # subduction_right=
+    topology_boundaries=../GPlatesAppData/z22-topology/topology_${age}.00Ma.xy
+    subduction_left=../GPlatesAppData/z22-topology/topology_subduction_boundaries_sL_${age}.00Ma.xy
+    subduction_right=../GPlatesAppData/z22-topology/topology_subduction_boundaries_sR_${age}.00Ma.xy
 
     # plot grid
     # add -Q to make NaN transparent. you also need -TG in "gmt psconvert" below
