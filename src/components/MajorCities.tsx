@@ -90,6 +90,10 @@ const drawCity = (lon: number, lat: number, name: string) => {
 const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
   if (cityPlateIDs) {
     //reconstruct the city coordinates
+    let anchorPlateID = 701701 //set anchor plate ID to 701701 to use zahirovic2022 pmag reference frame.
+    if (currentModel?.name.toLowerCase() !== 'zahirovic2022') {
+      anchorPlateID = 0
+    }
     let reconstructedCity = currentModel?.rotate(
       {
         lon: city_coords[0],
@@ -97,6 +101,7 @@ const drawPaleoCity = (city_coords: number[], name: string, age: number) => {
         pid: cityPlateIDs[currentModel?.name][city_coords[2]], //plate ID
       },
       age,
+      anchorPlateID,
     )
     if (!reconstructedCity) {
       if (DEBUG) {

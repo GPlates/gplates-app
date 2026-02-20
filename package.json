@@ -28,7 +28,7 @@
     "crypto-browserify": "^3.12.1",
     "echarts": "^6.0.0",
     "es6-promise-plugin": "^4.2.2",
-    "gplates": "^0.0.6",
+    "gplates": "^0.0.7",
     "history": "^5.3.0",
     "html2canvas": "^1.4.1",
     "jotai": "^2.13.1",

@@ -91,11 +91,10 @@ export const RasterMenu: React.FC<ContainerProps> = ({
 
     setCurrentRasterID(rasterID)
 
-    if (age != 0) {
-      setAge(0)
-    }
-
     if (raster) {
+      if (age != raster.startTime) {
+        setAge(raster.startTime)
+      }
       const endTime = raster.startTime
       const startTime = raster.endTime
       setRange({

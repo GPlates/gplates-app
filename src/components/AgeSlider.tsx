@@ -120,6 +120,7 @@ const AgeSlider: React.FC<AgeSliderProps> = ({ animationService }) => {
     if (raster?.startTime == raster.endTime && raster?.startTime == 0) {
       setShowTimeButton(false)
     } else {
+      setAnimationFrame(raster?.startTime, raster.id)
       setShowTimeButton(true)
     }
   }, [currentRasterID])

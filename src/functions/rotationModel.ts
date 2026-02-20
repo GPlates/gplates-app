@@ -53,7 +53,7 @@ export default class RotationModel {
    * @param time
    * @returns
    */
-  rotate(lonLatPid: LonLatPid, time: number) {
+  rotate(lonLatPid: LonLatPid, time: number, anchorPid: number = 0) {
     if (this.newRotationModelImpl === undefined) {
       console.log('newRotationModelImpl is not ready yet!')
       return undefined
@@ -62,6 +62,7 @@ export default class RotationModel {
       { lat: lonLatPid.lat, lon: lonLatPid.lon },
       lonLatPid.pid,
       time,
+      anchorPid,
     )
   }
 
