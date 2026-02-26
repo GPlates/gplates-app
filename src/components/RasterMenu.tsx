@@ -179,8 +179,16 @@ export const RasterMenu: React.FC<ContainerProps> = ({
       }
     }
     optionList.push(
-      <SwiperSlide style={{ width: 'auto' }} key={rasters[i].id}>
+      <SwiperSlide
+        style={{ width: 'auto', display: 'flex', justifyContent: 'center' }}
+        key={rasters[i].id}
+      >
         <IonCard
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
           key={'raster-menu-element-' + rasters[i].id}
           className={
             currentRasterID === rasters[i].id
