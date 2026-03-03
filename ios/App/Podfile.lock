@@ -1,38 +1,42 @@
 PODS:
-  - Capacitor (5.0.5):
+  - Capacitor (7.4.3):
     - CapacitorCordova
-  - CapacitorApp (5.0.3):
+  - CapacitorApp (7.1.0):
     - Capacitor
-  - CapacitorBrowser (5.0.3):
+  - CapacitorBrowser (7.0.2):
     - Capacitor
-  - CapacitorCommunityMedia (5.0.1):
+  - CapacitorCommunityMedia (8.0.1):
     - Capacitor
     - SDWebImage
-  - CapacitorCommunitySqlite (5.0.4):
+  - CapacitorCommunitySqlite (7.0.1):
     - Capacitor
     - SQLCipher
     - ZIPFoundation
-  - CapacitorCordova (5.0.5)
-  - CapacitorFilesystem (5.0.4):
+  - CapacitorCordova (7.4.3)
+  - CapacitorFilesystem (7.1.4):
     - Capacitor
-  - CapacitorGeolocation (5.0.4):
+    - IONFilesystemLib (~> 1.0.1)
+  - CapacitorGeolocation (7.1.4):
     - Capacitor
-  - CapacitorHaptics (5.0.4):
+    - IONGeolocationLib (~> 1.0)
+  - CapacitorHaptics (7.0.2):
     - Capacitor
-  - CapacitorKeyboard (5.0.4):
+  - CapacitorKeyboard (7.0.2):
     - Capacitor
-  - CapacitorNetwork (5.0.4):
+  - CapacitorNetwork (7.0.2):
     - Capacitor
-  - CapacitorPreferences (5.0.4):
+  - CapacitorPreferences (7.0.2):
     - Capacitor
-  - CapacitorShare (5.0.4):
+  - CapacitorShare (7.0.2):
     - Capacitor
-  - CapacitorSplashScreen (5.0.4):
+  - CapacitorSplashScreen (7.0.2):
     - Capacitor
-  - CapacitorStatusBar (5.0.4):
+  - CapacitorStatusBar (7.0.2):
     - Capacitor
-  - CordovaPlugins (5.1.0):
+  - CordovaPlugins (7.4.3):
     - CapacitorCordova
+  - IONFilesystemLib (1.0.1)
+  - IONGeolocationLib (1.0.2)
   - SDWebImage (5.15.5):
     - SDWebImage/Core (= 5.15.5)
   - SDWebImage/Core (5.15.5)
@@ -63,6 +67,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - IONFilesystemLib
+    - IONGeolocationLib
     - SDWebImage
     - SQLCipher
     - ZIPFoundation
@@ -102,26 +108,28 @@ EXTERNAL SOURCES:
     :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
-  Capacitor: b1248915663add1bd6567e2b67c1c1fa3abcf5e8
-  CapacitorApp: 7a5dec8b33573707164b293475d5c89ba684364a
-  CapacitorBrowser: 2688852d02f1e89560a31b70521c71a5e7348860
-  CapacitorCommunityMedia: 5724be7d15d5dbfeb704657c2a8ac5af718f5009
-  CapacitorCommunitySqlite: e233665bd5f282483dd7fda96868002d003bdf58
-  CapacitorCordova: f8c06b897c74ee8f7701fe10e6443b40822bc83a
-  CapacitorFilesystem: e1bdfab09b95b181c844c16abcfda45ec8e8ed6b
-  CapacitorGeolocation: 33015be1ef496585a60da9efa1c5642ff8624db3
-  CapacitorHaptics: e36653b37326d71bb35ae42b944124037dbc3d97
-  CapacitorKeyboard: d1b25fde6f19744ad09c890862aefc6e2a7ded3d
-  CapacitorNetwork: e2bd0bf1614aca34bb976f125a756a8a3df1c81a
-  CapacitorPreferences: 82a9ecf5355283a3b3cf7ac217d8c5534c4dee8a
-  CapacitorShare: 427bba238a1e3f116b2b349019aec6ea7f42cebd
-  CapacitorSplashScreen: 93a389d4f7673c08214ae25bb6f21d867d5305c5
-  CapacitorStatusBar: 190e0321b8734f4244d0c81baa183a00d5806ddf
-  CordovaPlugins: cd41fec5db5ae1994e9d3e5b1df806ddc91bb946
+  Capacitor: 28d6c01026a9a3f7156529498ec1f389a2a28dbc
+  CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
+  CapacitorBrowser: 22541e48442de44dc629c214388290d6eecc6ae9
+  CapacitorCommunityMedia: d1538b56a3303298e7cf45a18b11e624fbcbdc8e
+  CapacitorCommunitySqlite: 8b2c6bab33e3519280811d481f8bd0fa90343e1b
+  CapacitorCordova: 435121e81a2df4d0034f0fb11fcefab5104cfdb5
+  CapacitorFilesystem: f9bd850c41e048180e5dc0cbb90f2033ede9d2cc
+  CapacitorGeolocation: 32a1f849c38c72b5071de36a28ebc548ef3bb611
+  CapacitorHaptics: b3fb2869e72c4466e18ce9ccbeb60a3d8723b3d4
+  CapacitorKeyboard: a86aa9e4741b6444a802df26440a92ae041b34a6
+  CapacitorNetwork: 695069886b3c5ed514db69aa3d026b8dc3c03a6b
+  CapacitorPreferences: 65107ed7437d96ee72583df5763985e3c0ff2bc2
+  CapacitorShare: be166411fa995ead2d39b104aa0aae56d8615c66
+  CapacitorSplashScreen: 157947576b59d913792063a8d442a79e6d283ee5
+  CapacitorStatusBar: e04d05e121d5a5979c29eb4249186a4e4a84cacb
+  CordovaPlugins: 7f93f2453343ddfcedc9e71fbae8ec74978b7b9d
+  IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
+  IONGeolocationLib: adbb2a739b0ccda686d4a66f9bc05f8c4fd3d3c0
   SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
   SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: 2f2990d97565df825952f09b25b8b20d119fc833
+PODFILE CHECKSUM: baecdb47a4d273a2b81ce1e0799b69de9844c50d
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.16.2
