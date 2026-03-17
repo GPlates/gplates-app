@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# plot paleo-geography grid with GMT.
+# plot paleo-spreading-rate grid with GMT.
 
 # --- GMT styling ---
 # gmt gmtset FONT_ANNOT_PRIMARY 0p FONT_LABEL 0p 
@@ -10,7 +10,7 @@ set -euo pipefail
 region=d
 projection=X18/9
 
-cpt_file=paleogeo.cpt
+cpt_file=./fullrate.cpt
 
 # set to 0 if you don't want GMT coastlines.
 PLOT_GMT_COASTLINES=0
@@ -19,17 +19,17 @@ PLOT_GMT_COASTLINES=0
 TRANSPARENT_NAN=0
 
 age=0
-max_age=410
+max_age=250
 
 DATA_DIR=../GPlatesAppData
-GRID_DIR="${DATA_DIR}/ReconstructedPaleogeography"
-OUTPUT_DIR="${GRID_DIR}/paleogeography-PMAG-tif"
+GRID_DIR="${DATA_DIR}/ReconstructedSpreadingRateGrids"
+OUTPUT_DIR="${GRID_DIR}/spreading-rate-pmag-tif"
 mkdir -p "${OUTPUT_DIR}"
 
 while (( age <= max_age )); do
-    echo "Plotting paleogeography for age ${age} Ma..."
-    grid_file="${GRID_DIR}/Paleogeography-PMAG/paleogeo_${age}.nc"
-    file_basename=paleogeo_${age}
+    echo "Plotting paleo-spreading-rate for age ${age} Ma..."
+    grid_file="${GRID_DIR}/pmag-ref-frame/Seton_etal_2020_SR_${age}Ma.nc"
+    file_basename=spreadingrate-platebounds-${age}Ma
 
     # if the files does not exist, they will not be plotted.
     # topology_boundaries=
@@ -80,10 +80,10 @@ while (( age <= max_age )); do
         -a_srs EPSG:4326 \
         -co COMPRESS=LZW -co TILED=YES \
         "${file_basename}.png" \
-        "${file_basename}.tif"
+        "${file_basename}.tiff"
 
     rm "${file_basename}.png" "${file_basename}.ps" "${file_basename}.pgw"
-    mv "${file_basename}.tif" "${OUTPUT_DIR}"
+    mv "${file_basename}.tiff" "${OUTPUT_DIR}"
     age=$((age + 1))
 done
 
