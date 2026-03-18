@@ -1,3 +1,7 @@
 .fab-button-in-list {
   margin-inline: 10px;
 }
+
+.toolbar-bottom {
+  bottom: calc(var(--ion-safe-area-bottom) + 10px);
+}
