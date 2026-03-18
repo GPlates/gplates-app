@@ -11,4 +11,4 @@ fi
 
 echo "[ci_post_clone] Installing JavaScript dependencies"
 cd "$CI_WORKSPACE"
-npm ci
+npm ci --legacy-peer-deps
