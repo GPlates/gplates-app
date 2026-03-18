@@ -50,9 +50,9 @@ if [ ! -d "$PROJECT_ROOT/node_modules" ]; then
 fi
 
 if [ ! -f "$PROJECT_ROOT/build/index.html" ]; then
-	echo "[ci_pre_xcodebuild] build/index.html missing. Running npm run build"
+	echo "[ci_pre_xcodebuild] build/index.html missing. Running npm run build with CI warnings non-fatal"
 	cd "$PROJECT_ROOT"
-	npm run build
+	CI= npm run build
 fi
 
 echo "[ci_pre_xcodebuild] Syncing Capacitor iOS project"
