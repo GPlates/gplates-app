@@ -49,6 +49,12 @@ if [ ! -d "$PROJECT_ROOT/node_modules" ]; then
 	npm ci --legacy-peer-deps
 fi
 
+if [ ! -f "$PROJECT_ROOT/build/index.html" ]; then
+	echo "[ci_pre_xcodebuild] build/index.html missing. Running npm run build"
+	cd "$PROJECT_ROOT"
+	npm run build
+fi
+
 echo "[ci_pre_xcodebuild] Syncing Capacitor iOS project"
 cd "$PROJECT_ROOT"
 if ! npx cap sync ios; then
