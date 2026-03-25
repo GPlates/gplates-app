@@ -4,6 +4,7 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonIcon,
+  isPlatform,
 } from '@ionic/react'
 import React, { useEffect, useState } from 'react'
 
@@ -245,7 +246,7 @@ export const RasterMenu: React.FC<ContainerProps> = ({
         watchOverflow={true}
         freeMode={true}
         modules={[FreeMode, Navigation]}
-        className="raster-menu-scroll"
+        className={`raster-menu-scroll ${isPlatform('ios') ? 'raster-menu-scroll-ios' : 'raster-menu-scroll-not-ios'}`}
         onSwiper={(swiper) => setSwiper(swiper)}
       >
         {optionList}

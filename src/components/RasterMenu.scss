@@ -22,6 +22,22 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
 //   justify-content: center;
 // }
 
+.raster-menu-scroll-not-ios {
+  ion-card-header {
+    padding-inline: 0;
+    padding: $card-header-vertical-padding 0;
+    height: $header-height;
+  }
+}
+
+.raster-menu-scroll-ios {
+  ion-card-header {
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+    height: $header-height;
+  }
+}
+
 .raster-menu-scroll {
   text-align: center;
   white-space: break-spaces;
@@ -38,12 +54,6 @@ $chevron-vertical-position: math.div($raster-menu-height - $arrow-size, 2) +
     box-shadow: 0 0;
     margin-top: 0.5rem;
     width: 7rem;
-  }
-
-  ion-card-header {
-    padding-inline: 0;
-    padding: $card-header-vertical-padding 0;
-    height: $header-height;
   }
 
   ion-card-title {

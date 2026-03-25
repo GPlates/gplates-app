@@ -6,6 +6,7 @@ import {
   IonList,
   IonPopover,
   getPlatforms,
+  isPlatform,
   useIonLoading,
   useIonToast,
 } from '@ionic/react'
@@ -16,7 +17,6 @@ import {
   informationOutline,
   chevronUpCircleOutline,
   timeOutline,
-  basketballOutline,
 } from 'ionicons/icons'
 
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
@@ -289,7 +289,10 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
                     }
                   }}
                 >
-                  <svg className="scene-mode-icon" viewBox="0 0 64 64">
+                  <svg
+                    className={`scene-mode-icon ${isPlatform('ios') ? 'scene-mode-icon-svg-ios' : 'scene-mode-icon-svg-not-ios'}`}
+                    viewBox="0 0 64 64"
+                  >
                     <path d={m.path} />
                   </svg>
                   {m.name}
