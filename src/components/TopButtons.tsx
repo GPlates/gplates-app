@@ -16,6 +16,7 @@ import {
   informationOutline,
   chevronUpCircleOutline,
   timeOutline,
+  basketballOutline,
 } from 'ionicons/icons'
 
 import { columbusViewPath, flatMapPath, globePath } from '../theme/paths'
@@ -265,13 +266,14 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
 
   return (
     <div className="top-buttons-container">
-      <IonButton className="round-button" onClick={goHome}>
+      <IonButton className="round-btn" onClick={goHome}>
         <IonIcon icon={homeOutline} />
       </IonButton>
-      <IonButton className="round-button" id="scene-mode-button">
+      <IonButton className="round-btn" id="scene-mode-button">
         <svg className="button scene-mode-icon" viewBox="0 0 64 64">
           <path d={mode.path} />
         </svg>
+
         <IonPopover dismissOnSelect={true} trigger="scene-mode-button">
           <IonContent>
             <IonList>
@@ -299,7 +301,7 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
       </IonButton>
 
       <IonButton
-        className="round-button"
+        className="round-btn"
         id="help-button"
         onClick={() => {
           setShowModelInfo(true)
@@ -310,7 +312,7 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
 
       {/* social sharing button */}
       <IonButton
-        className="round-button"
+        className="round-btn"
         style={{ display: showSocialSharingButton ? '' : 'none' }}
         id="screenshot-button"
         onClick={async () => {
@@ -322,7 +324,7 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
 
       {/* the button to show or hide time slider */}
       <IonButton
-        className="round-button show-button"
+        className="round-btn show-button"
         style={{ display: showTimeButton ? '' : 'none' }}
         onClick={() => setShowTimeSlider(showTimeSlider ? false : true)}
         size="default"
