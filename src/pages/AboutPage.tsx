@@ -11,7 +11,7 @@ export const AboutPage: React.FC<ContainerProps> = () => {
       <div className={'about-page-icon'}>
         <p></p>
         <img src={'assets/icon/icon.png'} alt={'app icon'} />
-        <p>Version 1.0.0</p>
+        <p>Version 1.0.2</p>
       </div>
 
       <div className={'about-page-intro-frame'}>
@@ -105,7 +105,7 @@ export const AboutPage: React.FC<ContainerProps> = () => {
         <br />
       </div>
       <div className={'about-page-copyright'}>
-        <p>Copyright © 2023-2025 The University of Sydney. </p>
+        <p>Copyright © 2023-2026 The University of Sydney. </p>
         <p>All rights reserved.</p>
       </div>
     </IonContent>

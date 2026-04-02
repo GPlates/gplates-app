@@ -290,7 +290,7 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
                   }}
                 >
                   <svg
-                    className={`scene-mode-icon ${isPlatform('ios') ? 'scene-mode-icon-svg-ios' : 'scene-mode-icon-svg-not-ios'}`}
+                    className={`scene-mode-icon ${isPlatform('ios') || isPlatform('android') ? 'scene-mode-icon-svg-ios-android' : 'scene-mode-icon-svg-not-ios-android'}`}
                     viewBox="0 0 64 64"
                   >
                     <path d={m.path} />
