@@ -132,7 +132,7 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
     }
   }
 
-  const getPlateID = async () => {
+  const getPlateID = async (lat: number, lon: number) => {
     if (currentModel !== undefined) {
       let pid = plateIDMap.get(currentModel.name)
       //console.log(plateIDMap)
@@ -141,9 +141,9 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
           serverURL +
             '/reconstruct/assign_points_plate_ids/' +
             '?points=' +
-            currentLocationLon +
+            lon +
             ',' +
-            currentLocationLat +
+            lat +
             '&model=' +
             currentModel!.name,
         )
@@ -153,68 +153,85 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
     }
   }
 
+  const showLocationErrorToast = (message: string) => {
+    presentToast({
+      buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
+      duration: 6000,
+      message,
+      onDidDismiss: () => {},
+    })
+  }
+
   /**
-   *
+   * Move the camera to the user's current location. Falls back to the
+   * app's default view (and tells the user why) when the location is
+   * unavailable, e.g. permission denied or location services are off.
    */
   const goHome = async () => {
-    //when run in a web browser, cannot request geolocation permission
+    let lat = HOME_LATITUDE
+    let lon = HOME_LONGITUDE
+
     if (getPlatforms().includes('desktop')) {
-      currentLocationLat = HOME_LATITUDE
-      currentLocationLon = HOME_LONGITUDE
+      //cannot request geolocation permission when run in a web browser
     } else if (
-      currentLocationLat === undefined ||
-      currentLocationLon === undefined
+      currentLocationLat !== undefined &&
+      currentLocationLon !== undefined
     ) {
-      const permissions = await Geolocation.checkPermissions()
-      if (permissions.location !== 'denied') {
-        try {
-          const location = await Geolocation.getCurrentPosition()
-          // Only get location once to speed up home button response
-          currentLocationLon = location.coords.longitude
-          currentLocationLat = location.coords.latitude
-        } catch (err) {
-          console.log(err)
+      // reuse the location fetched earlier in this session
+      lat = currentLocationLat
+      lon = currentLocationLon
+    } else {
+      try {
+        await present({ message: 'Finding your location…' })
+        const permissions = await Geolocation.checkPermissions()
+        if (permissions.location === 'denied') {
+          throw new Error('permission denied')
         }
+        const location = await Geolocation.getCurrentPosition()
+        lat = location.coords.latitude
+        lon = location.coords.longitude
+        // Only cache a real fix so a later retry can pick up a permission
+        // grant instead of being stuck on the fallback forever.
+        currentLocationLat = lat
+        currentLocationLon = lon
+      } catch (err) {
+        console.log(err)
+        showLocationErrorToast(
+          err instanceof Error && err.message === 'permission denied'
+            ? 'Location permission denied. Enable location access for this app in your device settings to centre the globe on your location.'
+            : 'Could not get your location. Please check that location services are turned on. Showing the default view instead.',
+        )
+      } finally {
+        dismiss()
       }
     }
 
-    if (currentLocationLat !== undefined && currentLocationLon !== undefined) {
-      if (paleoAge === 0) {
-        getPlateID()
-        updateCurrentLocationEntity(currentLocationLat, currentLocationLon)
-        scene.camera.flyTo({
-          destination: Cartesian3.fromDegrees(
-            currentLocationLon,
-            currentLocationLat,
-            getDefaultCameraHeight(),
-          ),
-        })
-      } else {
-        if (currentModel !== undefined) {
-          await getPlateID()
-          let pid = plateIDMap.get(currentModel.name)
-          if (pid !== undefined) {
-            let newLatLon = currentModel.rotate(
-              { lat: currentLocationLat, lon: currentLocationLon, pid: pid },
-              paleoAge,
-            )
-            //console.log(newLatLon)
-            if (newLatLon !== undefined) {
-              paleoCurrentLocationLat = newLatLon.lat
-              paleoCurrentLocationLon = newLatLon.lon
-              updateCurrentLocationEntity(
-                paleoCurrentLocationLat,
-                paleoCurrentLocationLon,
-              )
-              scene.camera.flyTo({
-                destination: Cartesian3.fromDegrees(
-                  paleoCurrentLocationLon,
-                  paleoCurrentLocationLat,
-                  getDefaultCameraHeight(),
-                ),
-              })
-            }
-          }
+    if (paleoAge === 0) {
+      getPlateID(lat, lon)
+      updateCurrentLocationEntity(lat, lon)
+      scene.camera.flyTo({
+        destination: Cartesian3.fromDegrees(lon, lat, getDefaultCameraHeight()),
+      })
+    } else if (currentModel !== undefined) {
+      await getPlateID(lat, lon)
+      let pid = plateIDMap.get(currentModel.name)
+      if (pid !== undefined) {
+        let newLatLon = currentModel.rotate({ lat, lon, pid: pid }, paleoAge)
+        //console.log(newLatLon)
+        if (newLatLon !== undefined) {
+          paleoCurrentLocationLat = newLatLon.lat
+          paleoCurrentLocationLon = newLatLon.lon
+          updateCurrentLocationEntity(
+            paleoCurrentLocationLat,
+            paleoCurrentLocationLon,
+          )
+          scene.camera.flyTo({
+            destination: Cartesian3.fromDegrees(
+              paleoCurrentLocationLon,
+              paleoCurrentLocationLat,
+              getDefaultCameraHeight(),
+            ),
+          })
         }
       }
     }

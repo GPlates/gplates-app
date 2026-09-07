@@ -1,42 +1,42 @@
 PODS:
-  - Capacitor (7.4.3):
+  - Capacitor (7.6.9):
     - CapacitorCordova
-  - CapacitorApp (7.1.0):
+  - CapacitorApp (7.1.2):
     - Capacitor
-  - CapacitorBrowser (7.0.2):
+  - CapacitorBrowser (7.0.5):
     - Capacitor
   - CapacitorCommunityMedia (8.0.1):
     - Capacitor
     - SDWebImage
-  - CapacitorCommunitySqlite (7.0.1):
+  - CapacitorCommunitySqlite (7.0.3):
     - Capacitor
     - SQLCipher
     - ZIPFoundation
-  - CapacitorCordova (7.4.3)
-  - CapacitorFilesystem (7.1.4):
+  - CapacitorCordova (7.6.9)
+  - CapacitorFilesystem (7.1.8):
     - Capacitor
-    - IONFilesystemLib (~> 1.0.1)
-  - CapacitorGeolocation (7.1.4):
+    - IONFilesystemLib (~> 1.1.1)
+  - CapacitorGeolocation (7.1.8):
     - Capacitor
-    - IONGeolocationLib (~> 1.0)
-  - CapacitorHaptics (7.0.2):
+    - IONGeolocationLib (= 1.0.1)
+  - CapacitorHaptics (7.0.5):
     - Capacitor
-  - CapacitorKeyboard (7.0.2):
+  - CapacitorKeyboard (7.0.6):
     - Capacitor
-  - CapacitorNetwork (7.0.2):
+  - CapacitorNetwork (7.0.4):
     - Capacitor
-  - CapacitorPreferences (7.0.2):
+  - CapacitorPreferences (7.0.4):
     - Capacitor
-  - CapacitorShare (7.0.2):
+  - CapacitorShare (7.0.4):
     - Capacitor
-  - CapacitorSplashScreen (7.0.2):
+  - CapacitorSplashScreen (7.0.5):
     - Capacitor
-  - CapacitorStatusBar (7.0.2):
+  - CapacitorStatusBar (7.0.6):
     - Capacitor
-  - CordovaPlugins (7.4.3):
+  - CordovaPlugins (7.6.9):
     - CapacitorCordova
-  - IONFilesystemLib (1.0.1)
-  - IONGeolocationLib (1.0.2)
+  - IONFilesystemLib (1.1.2)
+  - IONGeolocationLib (1.0.1)
   - SDWebImage (5.15.5):
     - SDWebImage/Core (= 5.15.5)
   - SDWebImage/Core (5.15.5)
@@ -108,24 +108,24 @@ EXTERNAL SOURCES:
     :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
-  Capacitor: 28d6c01026a9a3f7156529498ec1f389a2a28dbc
-  CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
-  CapacitorBrowser: 22541e48442de44dc629c214388290d6eecc6ae9
+  Capacitor: 46067d1c8df89760dbed78780d436327d588c726
+  CapacitorApp: f01a913211780e0718dae9750442c3e23f96e106
+  CapacitorBrowser: 6d09f59655e89aede71654ef08b98de55cf032b6
   CapacitorCommunityMedia: d1538b56a3303298e7cf45a18b11e624fbcbdc8e
-  CapacitorCommunitySqlite: 8b2c6bab33e3519280811d481f8bd0fa90343e1b
-  CapacitorCordova: 435121e81a2df4d0034f0fb11fcefab5104cfdb5
-  CapacitorFilesystem: f9bd850c41e048180e5dc0cbb90f2033ede9d2cc
-  CapacitorGeolocation: 32a1f849c38c72b5071de36a28ebc548ef3bb611
-  CapacitorHaptics: b3fb2869e72c4466e18ce9ccbeb60a3d8723b3d4
-  CapacitorKeyboard: a86aa9e4741b6444a802df26440a92ae041b34a6
-  CapacitorNetwork: 695069886b3c5ed514db69aa3d026b8dc3c03a6b
-  CapacitorPreferences: 65107ed7437d96ee72583df5763985e3c0ff2bc2
-  CapacitorShare: be166411fa995ead2d39b104aa0aae56d8615c66
-  CapacitorSplashScreen: 157947576b59d913792063a8d442a79e6d283ee5
-  CapacitorStatusBar: e04d05e121d5a5979c29eb4249186a4e4a84cacb
-  CordovaPlugins: 7f93f2453343ddfcedc9e71fbae8ec74978b7b9d
-  IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
-  IONGeolocationLib: adbb2a739b0ccda686d4a66f9bc05f8c4fd3d3c0
+  CapacitorCommunitySqlite: 4813d82ad33001e612a39d313cb5d28066cbafda
+  CapacitorCordova: 2080fc0d6bfbc9dcc0e6d88e77fa624190d343ca
+  CapacitorFilesystem: c63fc54df41e5a6761785a7f3c49dc696c22e296
+  CapacitorGeolocation: ab54d708e2fcf99a7bafe0219eaa6f7a932f001a
+  CapacitorHaptics: 1b145fa83c622e5383a3bac04ea81e2514f0b0f5
+  CapacitorKeyboard: a2e0869edd229490ce36aed2549c0d6b95e27ee8
+  CapacitorNetwork: b719d692a8d1310da8d26d6648d3aa1ef1e100e1
+  CapacitorPreferences: 69d9991307507aeab8ef8019c10b9babfda0e9ca
+  CapacitorShare: 25f7fc5dd0e4edbde5d6801c6de5d14a8b450a41
+  CapacitorSplashScreen: 409eeaaeac603d264f209c0fcb718aa22fe1f7bb
+  CapacitorStatusBar: 416e9e53fd6397e668d4a181cd2131617d949bd6
+  CordovaPlugins: 46fae71ce07ddb6e78db46c1f75b877505fc746f
+  IONFilesystemLib: 21a63377696b2d8fab5632ecfb7d2ac67bddb68a
+  IONGeolocationLib: 20f9d0248a0b5264511fb57a37e25dd2badf797a
   SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
   SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37

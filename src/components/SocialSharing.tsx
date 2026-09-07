@@ -173,45 +173,30 @@ const getScreenShot = async (
 const saveImage = async (img: string) => {
   let savedPath = await saveImgToFileSystem(img, 'tempScreenShot.png')
   const albumName = 'GPlates App'
-  //let albums = await Media.getAlbums()
-  //console.log(albums)
-  //for ios
-  if (isPlatform('ios')) {
-    let albumID =
-      (await Media.getAlbums()).albums.find((a) => a.name === albumName)
-        ?.identifier || null
 
-    if (albumID === null) {
-      // no 'GPlates App' album, create one
-      await Media.createAlbum({ name: albumName })
-      await Media.savePhoto({
-        path: savedPath,
-        albumIdentifier: (await Media.getAlbums()).albums.find(
-          (a) => a.name === albumName,
-        )?.identifier,
-      })
-    } else {
-      await Media.savePhoto({
-        path: savedPath,
-        albumIdentifier: albumID,
-      })
-    }
-  }
-  // for android
-  else if (isPlatform('android')) {
-    const media = await Media.getAlbums().catch((err) => {
-      console.log(err)
-    })
-    if (media) {
-      if (media.albums.find((a) => a.name === albumName) === undefined) {
+  if (isPlatform('ios') || isPlatform('android')) {
+    try {
+      let albumID =
+        (await Media.getAlbums()).albums.find((a) => a.name === albumName)
+          ?.identifier || null
+
+      if (albumID === null) {
         // no 'GPlates App' album, create one
         await Media.createAlbum({ name: albumName })
+        // must re-fetch: the album we just created isn't in the list above
+        albumID =
+          (await Media.getAlbums()).albums.find((a) => a.name === albumName)
+            ?.identifier || null
       }
+
       await Media.savePhoto({
         path: savedPath,
-        albumIdentifier: media.albums.find((a) => a.name === albumName)
-          ?.identifier,
+        albumIdentifier: albumID ?? undefined,
       })
+    } catch (err) {
+      // Not fatal: the screenshot is still available to share from the
+      // app's cache even if it couldn't be added to the photo album.
+      console.log('saving screenshot to photo album failed', err)
     }
   }
   return savedPath

@@ -48,7 +48,11 @@ import {
 } from '../functions/graticule'
 import rasterMaps, { getRasterByID } from '../functions/rasterMaps'
 import { rotationModels } from '../functions/rotationModel'
-import { serverURL, setServerURL } from '../functions/settings'
+import {
+  serverURL,
+  setServerURL,
+  isValidServerURL,
+} from '../functions/settings'
 import { AnimationSettings } from './AnimationSettings'
 import { getCacheStatsData } from './CacheInfo'
 import './SettingMenuPage.scss'
@@ -313,7 +317,16 @@ export const SettingMenuPage: React.FC<ContainerProps> = ({
             onIonBlur={async (e) => {
               //console.log(e.target.value)
               if (e.target.value) {
-                let isChanged = await setServerURL(e.target.value.toString())
+                const newUrl = e.target.value.toString()
+                if (!isValidServerURL(newUrl)) {
+                  presentAlert({
+                    header: 'Invalid Server URL',
+                    message:
+                      'Please enter a valid URL starting with http:// or https://',
+                  })
+                  return
+                }
+                let isChanged = await setServerURL(newUrl)
                 if (isChanged) {
                   showReloadPageAlert(
                     'The server URL is changed. Would you like to reload the App?',
