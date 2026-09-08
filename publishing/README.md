@@ -120,3 +120,9 @@ For more detailed instructions on the following section, refer to [Prepare and r
 15. Review the summary and click **Upload**
 16. Do the rest in [App Store Connect](https://appstoreconnect.apple.com/apps)
 17. See [Create a new version](https://help.apple.com/app-store-connect/#/dev480217e79)
+
+### gplates-app-android-key-store.zip.enc
+
+https://repo.gplates.org/webdav/mchin/C++tutorials/encrypt.html
+
+七星二师兄
