@@ -6,6 +6,7 @@ resources/ios/
 *.DS_Store
 build/
 GPlatesAppData/
+publishing/gplates-app-android-key-store/
 
 # Logs
 logs
