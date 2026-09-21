@@ -1,7 +1,7 @@
 {
   "name": "gplates",
   "homepage": "/",
-  "version": "0.1.1",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
     "@capacitor-community/media": "^8.0.1",
