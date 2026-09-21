@@ -263,7 +263,7 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
     if (graphList.length === 0) {
       loadGraphList()
     }
-    globalThis.addEventListener('resize', function () {
+    const handleResize = () => {
       if (graphChart) {
         graphChart.resize()
       } else {
@@ -271,7 +271,11 @@ export const GraphPanel: React.FC<ContainerProps> = () => {
           'Unable to resize the graphChart. The graphChart object is invalid.',
         )
       }
-    })
+    }
+    globalThis.addEventListener('resize', handleResize)
+    return () => {
+      globalThis.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   /*

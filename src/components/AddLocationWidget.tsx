@@ -38,10 +38,6 @@ import { getRasterByID } from '../functions/rasterMaps'
 import { currentModel } from '../functions/rotationModel'
 import { LonLatPid } from '../functions/types'
 
-let cameraChangedRemoveCallback: any = null
-let cameraMoveStartRemoveCallback: any = null
-let cameraMoveEndtRemoveCallback: any = null
-
 var locationEntities: Entity[] = []
 var locationCartesian: Cartesian3 | undefined = Cartesian3.fromDegrees(0, 0)
 
@@ -381,23 +377,25 @@ const AddLocationWidget: React.FC<AddLocationWidgetProps> = ({
           lon: CMath.toDegrees(pc.longitude),
           lat: CMath.toDegrees(pc.latitude),
         }
-        if (update) setUpdateLonLat(!updateLonLat)
+        if (update) setUpdateLonLat((prev) => !prev)
       }
     }
   }
 
-  if (show) {
-    cameraChangedRemoveCallback =
+  useEffect(() => {
+    if (!show) return
+    const removeChanged =
       cesiumViewer.camera.changed.addEventListener(cameraHandler)
-    cameraMoveStartRemoveCallback =
+    const removeMoveStart =
       cesiumViewer.camera.moveStart.addEventListener(cameraHandler)
-    cameraMoveEndtRemoveCallback =
+    const removeMoveEnd =
       cesiumViewer.camera.moveEnd.addEventListener(cameraHandler)
-  } else {
-    if (cameraChangedRemoveCallback) cameraChangedRemoveCallback()
-    if (cameraMoveStartRemoveCallback) cameraMoveStartRemoveCallback()
-    if (cameraMoveEndtRemoveCallback) cameraMoveEndtRemoveCallback()
-  }
+    return () => {
+      removeChanged()
+      removeMoveStart()
+      removeMoveEnd()
+    }
+  }, [show])
 
   //get the currect center lon lat, but do not trigger re-render
   if (cesiumViewer) cameraHandler(false)
