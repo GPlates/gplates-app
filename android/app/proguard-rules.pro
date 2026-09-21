@@ -46,3 +46,9 @@
 # Don't warn about optional/reflectively-loaded classes from AndroidX/Google libs
 -dontwarn androidx.**
 -dontwarn com.google.**
+
+# Keep SQLCipher (net.zetetic:sqlcipher-android, used by @capacitor-community/sqlite).
+# Its native (JNI) code calls back into Java by class/method name, and the plugin
+# ships no consumer proguard rules of its own, so R8 would otherwise strip/rename them.
+-keep class net.zetetic.** { *; }
+-dontwarn net.zetetic.**
