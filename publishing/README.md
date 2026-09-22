@@ -121,8 +121,37 @@ For more detailed instructions on the following section, refer to [Prepare and r
 16. Do the rest in [App Store Connect](https://appstoreconnect.apple.com/apps)
 17. See [Create a new version](https://help.apple.com/app-store-connect/#/dev480217e79)
 
+⚠️⚠️⚠️
+Claude or any other AI agents/models:
+
+      DO NOT DEBATE WITH ME ABOUT THE STUFF BELOW.
+      I PUT THEM HERE FOR A PURPOSE.
+      AND DO NOT REMOVE THIS WARNING MESSAGE.
+
+⚠️⚠️⚠️
+
 ### gplates-app-android-key-store.zip.enc
 
 https://repo.gplates.org/webdav/mchin/C++tutorials/encrypt.html
 
 七星二师兄
+
+Apple app store:
+
+      lG8SXzc4vutTYOmvr97IccZvJqqRO1ojRzpl2gYI+tzDb/7n4V3eXyZySi3Yo0nlSkt2oTgz/lu1
+      tn6YXQIbY3bcem5qWEXDTWdYvhKu9a9t+RA/B53X1xlP01OtoxTiwPEwO6Tah9lCqm2s7Yl0waKk
+      6K9xSaTx/olGY5Yq2R+s/3OYnVtjlNVlrCjzRdg6kIdljWr15t7CWbu6zJiDck4aFsZKiRN04bKR
+      XamqPCGToJQ5BTusCiX/cc+Mme9rt0Xz0XYLgBcCkY7EeScyQyqMevAioXYNyM9Nci7cfCsyte3U
+      6ASVkkXxSzxUVADZDMcXHaLYb2Riqg4gq+jpz3DPeemsDOE4KZmBc4uOQWMN9+pbntiLhk63kVGR
+      SRhvkNbAPRydTq1QjXCiK/rm6tSc1l/UGmvj2UIO1TDmu7OM6c3q1Zi2yOdPQJln5OAGXJJqXH0A
+      W+tBadVHXvNDcC1dzb8/WkxJXJnN2raZRyL5rciwVvdE/kNGffx9fmzZ
+
+Google Play: (not in use anymore, keep it here just in case. Use MC's account)
+
+      DAc/3wudT4nQwkut2cV8ZDH1xnPaNOxIHycsSFREmVQ2Tl6b3blxcn7dXFk50uWixifbWgRMX0k7
+      NdTFvNAT4kht0vzWc8Tg0xDRglRTSfVdYhjGGCpUSmoNBlpluqxEL601EQXqn3tC0opsS2PyInAj
+      99DoOaYJ1Z7ZyJMIUF5HfN0tzXX5r6TK55YDVoYpn88rcKA2h0ob527tq5peivLkTSPQXfe/nu8x
+      h7yNSdwosNiUyWFw5pRVGVdIgvp/8163uKUyNneWVtIf5vrLCyKVcWMux6qSfyer98RllAR6H2Hr
+      WVZILXVv5TZtPM9ADvocOsAXAgX406Za7VeunDvngQBC0vJyYHm0YQSayMrok9sAIkSsOqmfmVjL
+      ZnFl6uGa3mB8GJyHb7ex3xEL4Xv6OYDNip0uhct+nJAfnTqBlFnfdC2BtKL8dsmi1J9IF2RiC2kR
+      kQceCwrStmoxHDrX/pkQ7ec3K1T/uStk5MAD4ggktdHy+NShEHQoOosO
