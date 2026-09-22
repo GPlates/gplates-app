@@ -4,6 +4,11 @@ App/App/public
 DerivedData
 xcuserdata
 
+# Xcode Cloud workflow linkage metadata - auto-created by Xcode when
+# opening the Report Navigator's Cloud tab; not an intentionally
+# configured CI workflow for this project
+App/App.xcodeproj/xcshareddata/xcodecloud
+
 # Cordova plugins for Capacitor
 capacitor-cordova-ios-plugins
 
