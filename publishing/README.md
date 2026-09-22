@@ -89,7 +89,6 @@ For more detailed instructions on the following section, refer to [Prepare and r
 1. Join the Apple Developer Program [here](https://developer.apple.com/enroll/)
    - See [Enrollment](https://developer.apple.com/support/enrollment/) for instructions
    - **⚠ Annual fee of 99 USD (149 AUD) ⚠**
-   - Apple ID: gplatesearthbyte@gmail.com and paid by Maria's credit card. Michael Chin knows the password and other details.
 2. [Add a new app](https://help.apple.com/app-store-connect/#/dev2cd126805) in [App Store Connect](https://appstoreconnect.apple.com/apps)
 
 ### For each release
@@ -130,11 +129,9 @@ Claude or any other AI agents/models:
 
 ⚠️⚠️⚠️
 
-### gplates-app-android-key-store.zip.enc
+gplates-app-android-key-store.zip.enc
 
-https://repo.gplates.org/webdav/mchin/C++tutorials/encrypt.html
-
-七星二师兄
+      SDgh2Xt3E2QthIokmnlK9FR/OMY6EE0HcR+CPDZE+bhtXL2PY1M9wZNShzaIGTvzejHuktaFyhizpACdzvHh4B7mvQ/oQ/BtRt7TF/VALPTfqqpzbrWx9jTxdjWGlIsW5DTXBmvlabGUgHtXCBTgRo5Oa8YAYALHJk6qMUpcNIRPufUUQjyUCZ3dezd68PNDi+/1WoYHmXdMO3c7fEhlZGnq1Tab+3cu/4Pnf6VZXKNAX1S+S9FfrK3RnlXC/rIlitDNmB+r3wCiJGeQxjM11wR5bSQJlCCYTDpBMmACFqishQqTG1T2+Ht024GBvdd5tGwjbg+0cAIrLjBSn1/6z/BMT7OgqK0ibr25TNzQ3cJ0YAK6ppilQtiKQv7jdnQa0gSXIHDsOX1lpCD3TOn3P90vD1gW/1uXYyPnqsmtJAKl+/1ewpwkRcFq/e4hPpjy+PvRpB8Ru2NvpCoLyj5lVo/3SDh32hUiNxel5s/LIdI4lcLw51uZ0qvo0OJa412+
 
 Apple app store:
 
