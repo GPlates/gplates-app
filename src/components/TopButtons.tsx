@@ -153,6 +153,23 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
     }
   }
 
+  // The native iOS plugin ignores GeolocationOptions.timeout and only
+  // settles its promise when CoreLocation reports success or failure, which
+  // never happens in some conditions (e.g. Simulator with no location set,
+  // or a real device with no GPS fix) - so this app has to enforce its own
+  // timeout or "Finding your location..." can hang forever.
+  const getCurrentPositionWithTimeout = (timeoutMs = 15000) => {
+    return Promise.race([
+      Geolocation.getCurrentPosition(),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('location request timed out')),
+          timeoutMs,
+        ),
+      ),
+    ])
+  }
+
   const showLocationErrorToast = (message: string) => {
     presentToast({
       buttons: [{ text: 'Dismiss', handler: () => dismissToast() }],
@@ -187,7 +204,7 @@ const TopButtons: React.FC<ToolbarProps> = ({ scene }) => {
         if (permissions.location === 'denied') {
           throw new Error('permission denied')
         }
-        const location = await Geolocation.getCurrentPosition()
+        const location = await getCurrentPositionWithTimeout()
         lat = location.coords.latitude
         lon = location.coords.longitude
         // Only cache a real fix so a later retry can pick up a permission
