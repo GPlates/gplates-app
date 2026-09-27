@@ -4,17 +4,17 @@ GPlates app data is stored in our GeoServer.
 
 https://geoserver.gplates.org/geoserver/web/?0
 
-Note: Some information below has been encrypted with Michael Chin's public key for security reasons.
+Note: Some information below has been encrypted with Xiaodong Qin's public key for security reasons.
 
-The user name and password is encrypted with Michael Chin's public key.
+The user name and password is encrypted with Xiaodong Qin's public key.
 
     MIOYPa6qG7tnyyF6uF8Mi6xt9Jo2keNNOBz0GrJk16TjntQ1nl8odG6snhbGttdXugCW0PqDyJQKN42Pl2gxvZC5hj43QWrfhUXsX3PrHVxwP4wWCHclHlsbwZqgea1O2/QLEZpHcPVUWnT4gOGQtRRJpfDso7UJwV6IgRLOlA92qHkT6OohN0dRhRDeESItf8tf4I8HLo13Ys8DeYgN0rFVkvnB34D/k//cE7guYJJ/xv8bkl8t9ehs1w2IrhKacBFo1IOFLkC86jzPDHuaF+5bPpke68p5i8jEMNKgrqT2CXeV2HZTAI2k+PT6dQrEEhJMsHh9/HhXjgf605+MG7PkxZflk7/sqWvyGjOG5X2Zctn//z7qKPPrO0pMQeQDRFbiNcmfucl3jg7bJUrlxgnf5Ur8WwTS50SkGYMb68wl9m3yG5ZvqKCyuYU+97RaEDNx/3R8uBtDfNrV5SBtoYPg5Y6iwIwV39VabqJE2khXAqhV0g85qflflo7HU5GQ
 
-Use the command below to ssh into the server. Ask Michael Chin to decipher the message and for the private key to login.
+Use the command below to ssh into the server. Ask Xiaodong Qin to decipher the message and for the private key to login.
 
     OOuaucdis86mQNg/daUh4ZI3JOVI9ik2V28VrHUrUdS28vC15tbjdPr/V3dQS8arO8RGH2WYYBpkQYTIfkd+rdsliItQn1YDMIPC5J3fnkeKUR+I6Y82nYN8xbtMjnUyw0f9ZYiI5bH7RhkFhOjsEN4RxlvCJFtA+vDXftohAOTTbEd+WQuHIYuzmkfbqAF9ZeldZy7k56ybyBXlt7p8KrdArNmiYCedr2XOQF1ZkINnPN505nq/L3V0CBdQzo+bciZKEcy23wRWOegg8pmgs50OAZ0I7i3/CEM9mSygt2XL6xV7b6RgNc1zHMnpBYZcUHdyZbNTJf8vfPy2U9Ylyp18FE/vdwIrTbkwQrcPa3hjHVU/wQSwLFH+DSW3LDp4GwvCA7rNII9Jqik1eUCbvJ8XXnpyQW0V1VkuYP3k9BDmLh1QaWjhVD9V+2MbK8bIIp2onUqo/XYXZ7WTVZHUDGs/xBd3A0qyIGoGiMT+bl+ccqSDwecRIsqwFGgVmAgl
 
-The folder path containing the data files is in the encrypted message below. Ask Michael Chin to decipher the message.
+The folder path containing the data files is in the encrypted message below. Ask Xiaodong Qin to decipher the message.
 
     TKkKgFqp+Vkakhx9gIZCCWP4gAF0c22ubd+XCYPLeithWJLml3vMfdGIQ+jUhiirsIcGwqnsvsbw2kNdkiDqYoTJrGab88bdvhw60oIo8p0U2d0rZWIbL1spMZuMhTdwNHMQlsx+p/bN2wvq0tzHDonfDGgSkDd3n6apQJkXm1JDDDu4Zr2y5x62rD6PzYPq2ndbISVguJXW8CDsgNKyfa54tWcf7bYuIlN/s9ccIgxmR0szdlCGDRNGAIFuM+WetC0ye2UG+ignxTxYjKt51bZ5744wkPj4sblodlv+LtkBAiK1V+2zGuEFNVIRg7UXdhZD5m2TWbGBea0EauNA3UI1inUpE46Nm/mBhBYRF/mUCjLI/TJl1BYp2hahLAVZQPR2wIRyXHZOETX3J4FhzC9PmSRdR2PMrtpSkZ5qo7sk0yLJY7Tc8OOSs+ih3jIVodDZoAvGLgs90ekVjl6LZAq/2R3YgoFyh6IZ3Rk0Nnnf+aJ8iqzsP8jbif/kPyO3
 

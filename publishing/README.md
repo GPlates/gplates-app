@@ -4,9 +4,9 @@ Some of these instructions might be a little wrong since I've never set up a new
 
 Note:
 
-Michael Chin verified the iOS steps on 29/12/2022.
+Xiaodong Qin verified the iOS steps on 29/12/2022.
 
-Michael Chin verified the Android steps on 22/03/2023.
+Xiaodong Qin verified the Android steps on 22/03/2023.
 
 ## Important
 
