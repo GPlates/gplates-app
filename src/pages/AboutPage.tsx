@@ -97,10 +97,25 @@ export const AboutPage: React.FC<ContainerProps> = () => {
           </a>
         </p>
         <p>
-          Michael Chin:&nbsp;
+          Xiaodong Qin:&nbsp;
           <a href="mailto:michael.chin@sydney.edu.au">
             michael.chin@sydney.edu.au
           </a>
+        </p>
+        <h4>Privacy</h4>
+        <p className={'about-page-intro-text'}>
+          The GPlates App does not require an account and contains no
+          advertising, analytics or tracking. See our&nbsp;
+          <a
+            onClick={async () => {
+              await Browser.open({
+                url: 'https://www.gplates.org/app-privacy-policy/',
+              })
+            }}
+          >
+            Privacy Policy
+          </a>
+          &nbsp;for details of what the App accesses and why.
         </p>
         <br />
       </div>
